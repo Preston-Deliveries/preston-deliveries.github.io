@@ -1951,6 +1951,14 @@ body.sh-more-on{overflow:hidden}
 .ck-note{font-size:.85rem!important}
 .ck-msg{font-weight:600;color:#1E8A4C!important}.ck-msg.err{color:#B3261E!important}
 .ck-load{color:var(--sh-muted);padding:8px 0}
+#mod-clock .ckx{max-width:640px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-left,0px)) 48px;display:flex;flex-direction:column;gap:18px}
+.ck-hist h2{font:700 1.15rem var(--sh-body);margin:0 0 8px;color:var(--sh-ink)}
+.ck-tab{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;overflow:hidden}
+.ck-r{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.6fr) auto;gap:10px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--sh-line);font-size:.95rem}
+.ck-r:last-child{border-bottom:0}.ck-r span{color:var(--sh-muted)}.ck-r em{font-style:normal;font-weight:700;color:var(--sh-ink)}
+.ck-r.tot{background:var(--sh-sunk)}.ck-r i{color:#B86E00;font-style:normal;font-weight:600}
+.ck-none{color:var(--sh-muted)}
+@media (max-width:599.98px){.ck-r{grid-template-columns:1fr auto}.ck-r span{grid-column:1/-1;order:3}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -2163,6 +2171,7 @@ body.sh-more-on{overflow:hidden}
 <section class="sh-sec" id="mod-invoices" hidden><div id="iv_root"></div></section>
 <section class="sh-sec" id="mod-directory" hidden><div id="dy_root"></div></section>
 <section class="sh-sec" id="mod-enquiries" hidden><div id="eq_root"></div></section>
+<section class="sh-sec" id="mod-clock" hidden><div class="ckx" id="ck_page"></div></section>
 <section class="sh-sec" id="mod-summary" hidden><div id="sm_root"></div></section>
 <section class="sh-sec" id="mod-vchecks" hidden><div id="vc_root"></div></section>
 <section class="sh-sec" id="mod-timesheets" hidden><div id="ts_root"></div></section>
@@ -2193,12 +2202,12 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
-const NAMES={home:'Home',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
-const MOD={home:'mod-home',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
+const NAMES={home:'Home',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const MOD={home:'mod-home',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
  sort:'<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/><path d="M8 10.5h5"/></svg>',
@@ -2210,6 +2219,7 @@ const ICONS={
  updates:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><circle cx="18" cy="5.5" r="2.2"/></svg>',
  timesheets:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>',
  vchecks:'<svg viewBox="0 0 24 24"><path d="M2.5 16V8.5h11V16M13.5 11h4l3 3v2h-18"/><circle cx="7" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/><path d="M5.5 11.5l1.5 1.5 3-3"/></svg>',
+ clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
  summary:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
  enquiries:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v3.5M12 14h.01"/></svg>',
  uniform:'<svg viewBox="0 0 24 24"><path d="M8.5 3.5 4 6l-1.5 5 3 1V20.5h13V12l3-1L20 6l-4.5-2.5a3.5 3.5 0 0 1-7 0z"/></svg>',
@@ -2221,8 +2231,8 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'One place to see the whole contract, each postcode or one driver for a day, week or month. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
+ mgr:{clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'One place to see the whole contract, each postcode or one driver for a day, week or month. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ drv:{clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -2237,7 +2247,7 @@ function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
   document.body.appendChild(w);document.body.classList.add('sh-more-on');}
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
-function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${esc({home:'Home',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
+function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${esc({home:'Home',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
@@ -2342,6 +2352,7 @@ function go(sec,opts){
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
   if((sec==='sort'||sec==='runs')&&window.RUNS) RUNS.setView(sec==='sort'?'lookup':'runs');
   if(sec==='home') renderHome();
+  if(sec==='clock'&&window.CLOCK) window.CLOCK.mount();
   renderNav();
   document.title=(sec==='home'?'Contract 1161':NAMES[sec]+' · 1161');
   if(!opts.keepScroll) window.scrollTo(0,0);
@@ -2355,7 +2366,7 @@ function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
+  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
@@ -2368,6 +2379,7 @@ function renderHome(){
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
+  <div id="sh-clock"></div>
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
@@ -2375,7 +2387,7 @@ function renderHome(){
     <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>
     
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}
-  </section>`;
+  </section>`;  if(window.CLOCK)window.CLOCK.mount();
 }
 function pageHtml(snap){
   const json=JSON.stringify(snap).replace(/</g,'\\u003c');
@@ -6617,18 +6629,24 @@ const hrs=m=>m==null?'':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
 const longDay=iso=>{const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'})};
 const BREAKS=[0,15,30,45,60];
 
-let db=null,me=null,today=null,yday=null,T=null,Y=null,ui={},busy=false,msg=null,loaded=false;
+let db=null,me=null,today=null,yday=null,T=null,Y=null,ui={},busy=false,msg=null,loaded=false,hist=[],noRec=false;
 const box=()=>document.getElementById('sh-clock');
+const page=()=>document.getElementById('ck_page');
+const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
 
 async function load(){
-  me=window.__webMe;if(!me||!me.staff||me.role!=='driver'){loaded=true;return}
+  const w=window.__webMe;if(!w){loaded=true;return}me={...w};
   db=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!db){loaded=true;return}
+  if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const d=st.docs.find(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
+  if(!me.staff){noRec=true;loaded=true;return}
   const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
-  try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}}catch(e){msg={err:true,t:'Could not load your times. Check your signal.'}}
+  try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}
+    hist=[];if(T)hist.push(T);for(const b of bs)if(b.exists)hist.push(__D(b));const more=[5,6].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const ms=await Promise.all(more.map(d=>db.doc('clock/'+d+'_'+me.staff).get()));for(const m of ms)if(m.exists)hist.push(__D(m));}catch(e){msg={err:true,t:'Could not load your times. Check your signal.'}}
   loaded=true;
 }
 function html(){
-  if(!me||!me.staff||me.role!=='driver')return '';
+  if(noRec)return `<section class="ck"><div class="ck-h"><b>Clock in isn't set up for you yet</b></div><p>Your email needs to be on your details on the Drivers page.</p></section>`;
+  if(loaded&&!ok())return '';
   if(!loaded)return `<section class="ck"><div class="ck-load">Loading your shift…</div></section>`;
   const m=msg?`<p class="ck-msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
   // yesterday left open
@@ -6666,13 +6684,19 @@ function html(){
 function breakHTML(k){const v=ui[k];return `<p class="ck-q">How long was your break?</p><div class="ck-chips" role="group" aria-label="Break">${BREAKS.map(b=>`<button type="button" data-ck="brk" data-k="${k}" data-v="${b}" aria-pressed="${v===b}">${b?b+' min':'None'}</button>`).join('')}</div>`}
 const first=()=>{const n=String(me&&me.name||'').trim().split(/\s+/)[0]||'';return n?n.charAt(0)+n.slice(1).toLowerCase():'there'};
 const greet=()=>{const h=+parts(new Date()).hour;return h<12?'morning':h<17?'afternoon':'evening'};
-function render(){const b=box();if(b)b.innerHTML=html()}
+function histHTML(){
+  if(!loaded||!ok())return '';
+  const rows=hist.filter(Boolean).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  const tot=rows.reduce((n,r)=>{const w=toMin(r.finish)-toMin(r.start)-(+r.brk||0);return n+(r.finish&&w>0?w:0)},0);
+  return `<section class="ck-hist"><h2>Your last 7 days</h2>${rows.length?`<div class="ck-tab">${rows.map(r=>{const w=r.finish?toMin(r.finish)-toMin(r.start)-(+r.brk||0):null;return `<div class="ck-r"><b>${esc(longDay(r.date))}</b><span>${esc(nice(r.start))} to ${r.finish?esc(nice(r.finish)):'<i>not finished</i>'}${r.finish?` · ${r.brk?r.brk+' min break':'no break'}`:''}</span><em>${w!=null&&w>0?hrs(w):''}</em></div>`}).join('')}<div class="ck-r tot"><b>Total</b><span></span><em>${hrs(tot)}</em></div></div>`:'<p class="ck-none">No shifts recorded yet.</p>'}</section>`;
+}
+function render(){const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
 async function mount(){render();if(!loaded&&!busy){busy=true;await load();busy=false}render()}
 
-async function save(fn,okMsg){busy=true;msg=null;render();try{await fn();msg=okMsg?{t:okMsg}:null;ui={}}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
+async function save(fn,okMsg){busy=true;msg=null;render();try{await fn();msg=okMsg?{t:okMsg}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
 const base=()=>({staff:me.staff,name:me.name||'',date:today});
 document.addEventListener('click',async e=>{
-  const el=e.target.closest('[data-ck]');if(!el||!box()||!box().contains(el))return;
+  const el=e.target.closest('[data-ck]');if(!el||!((box()&&box().contains(el))||(page()&&page().contains(el))))return;
   const a=el.dataset.ck;
   if(a==='brk'){ui[el.dataset.k]=+el.dataset.v;render();return}
   if(a==='late'){ui={late:true};msg=null;render();return}
@@ -6710,7 +6734,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251135';
+const VERSION='202610251139';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -6966,8 +6990,8 @@ async function boot(){
   EMAIL=String(u.email||'').toLowerCase();UID=u.uid;
   loading();
   ROLE=null;
-  if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,staff:'',name:'',role:'admin'}}
-  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,staff:d.staff||'',name:NAME,role:ROLE}}}catch(e){console.warn(e)}}
+  if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,emails:OWNERS.slice(),staff:'',name:'',role:'admin'}}
+  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE}}}catch(e){console.warn(e)}}
   if(!ROLE){deniedScreen();return}
   if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await fs.doc('meta/imported').get();if(!m.exists){importScreen();return}}catch(e){}}
   loading();
