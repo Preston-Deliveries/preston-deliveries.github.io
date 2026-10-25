@@ -1340,6 +1340,7 @@ body.sh-uv-on{overflow:hidden}
 :root:not([data-theme="light"]) #mod-summary .tb td.pts.good b,:root:not([data-theme="light"]) #mod-summary .tb td.pts.good .sub{color:#9BE8BA}:root:not([data-theme="light"]) #mod-summary .tb td.pts.warn b,:root:not([data-theme="light"]) #mod-summary .tb td.pts.warn .sub{color:#FFD58A}:root:not([data-theme="light"]) #mod-summary .tb td.pts.bad b,:root:not([data-theme="light"]) #mod-summary .tb td.pts.bad .sub{color:#FFB4AB}}
 :root[data-theme="dark"] #mod-summary .tb td.pts.good{background:#123222}:root[data-theme="dark"] #mod-summary .tb td.pts.warn{background:#36290E}:root[data-theme="dark"] #mod-summary .tb td.pts.bad{background:#3A181B}
 :root[data-theme="dark"] #mod-summary .tb td.pts.good b,:root[data-theme="dark"] #mod-summary .tb td.pts.good .sub{color:#9BE8BA}:root[data-theme="dark"] #mod-summary .tb td.pts.warn b,:root[data-theme="dark"] #mod-summary .tb td.pts.warn .sub{color:#FFD58A}:root[data-theme="dark"] #mod-summary .tb td.pts.bad b,:root[data-theme="dark"] #mod-summary .tb td.pts.bad .sub{color:#FFB4AB}
+#mod-summary .ft.warn{background:#D98B00}#mod-summary .tb tr.tot td{background:var(--sh-sunk);border-top:1px solid var(--sh-line)}
 </style>
 <style id="vchecks-css">#mod-vchecks .vcx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-vchecks .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -2270,7 +2271,7 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'One place to see the whole contract, each postcode or one driver for a day, week or month. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ mgr:{clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
  drv:{clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
@@ -6046,7 +6047,7 @@ const TODAY=iso(new Date());
 const dkey=d=>String(d||'').toUpperCase().replace(/\s+/g,'');
 const normName=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 
-let mode='wait',db=null,S={days:{},weeks:{},staff:{},runs:{},leave:{},enqlog:{},precards:{},lockers:{},settings:{},compliance:{},vchecks:{}};
+let mode='wait',db=null,S={days:{},weeks:{},staff:{},runs:{},leave:{},enqlog:{},precards:{},lockers:{},settings:{},compliance:{},vchecks:{},timesheets:{},clock:{},uniorders:{}};
 let period=(()=>{try{return localStorage.getItem('sm_period')||'week'}catch(e){return 'week'}})();
 let anchor=null,scope={t:'all'},q='',sortBy='points',msg=null,pending=false;
 
@@ -6058,7 +6059,7 @@ function people(){
     const login=dkey(p.login);const nos=(p.runs||[]).map(dkey).filter(Boolean);const role=String(p.role||'').toUpperCase();
     let pc=/^42\d\d$/.test(role)?role:'';if(!pc)for(const n of nos){if(runsByNo[n]&&runsByNo[n].postcode){pc=String(runsByNo[n].postcode);break}}
     pc=grpOf(role,pc,true);const key=login||('n:'+normName(p.first+p.last));
-    out[key]={key,login,name:tc([p.first,p.last].filter(Boolean).join(' '))||login,nos,role,pc,mobile:p.mobile||'',bay:p.bay||'',van:[tc(p.van),p.rego].filter(Boolean).join(' · '),runs:nos.map(n=>runsByNo[n]).filter(Boolean)};
+    out[key]={key,sid:p._id||'',login,name:tc([p.first,p.last].filter(Boolean).join(' '))||login,nos,role,pc,mobile:p.mobile||'',email:p.email||'',ec:[p.ecName,p.ecPhone].filter(Boolean).join(' · '),bay:p.bay||'',van:[tc(p.van),p.rego].filter(Boolean).join(' · '),notes:p.notes||'',runs:nos.map(n=>runsByNo[n]).filter(Boolean)};
   }
   for(const d of Object.values(S.days))for(const l of Object.keys((d&&d.rows)||{})){const k=dkey(l);if(!out[k])out[k]={key:k,login:k,name:names[k]?tc(names[k]):k,nos:[],role:'',pc:'Not in Drivers',mobile:'',bay:'',van:'',runs:[]}}
   return out;
@@ -6067,11 +6068,13 @@ function people(){
 function latestDay(){const ds=Object.values(S.days).map(d=>d&&d.date).filter(Boolean).sort();return ds.length?ds[ds.length-1]:TODAY}
 function range(){
   if(period==='day')return{from:anchor,to:anchor,label:longD(anchor),sub:'Day'};
+  if(period==='year'){const d=fromIso(anchor),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return{from:y+'-07-01',to:(y+1)+'-06-30',label:'Financial year '+y+'/'+String(y+1).slice(2),sub:'1 Jul '+y+' to 30 Jun '+(y+1)}}
   if(period==='week'){const f=monday(anchor),t=add(f,6);return{from:f,to:t,label:short(f)+' to '+short(add(f,4))+' '+fromIso(t).getFullYear(),sub:'Week'}}
   const f=cycleStart(anchor),t=add(f,27);return{from:f,to:t,label:monthName(f),sub:short(f)+' to '+short(t)+' '+fromIso(t).getFullYear()};
 }
 function step(n){
   if(period==='day'){let d=anchor;do{d=add(d,n)}while([0,6].includes(fromIso(d).getDay()));anchor=d}
+  else if(period==='year'){const d=fromIso(anchor);d.setFullYear(d.getFullYear()+n);anchor=iso(d)}
   else anchor=add(anchor,n*(period==='week'?7:28));
 }
 /* ---------- scoring ---------- */
@@ -6083,7 +6086,7 @@ function grade(kind,v){const t=targets();if(v==null||v===''||isNaN(v))return 'no
 const PTS={good:2,warn:1,bad:0,none:0};
 function dayPoints(r){return PTS[grade('eta',r.eta)]+PTS[grade('nc',r.nc)]+PTS[grade('enq',+(r.enq||0))]}
 /* ---------- aggregate ---------- */
-function blank(){return{days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0}}
+function blank(){return{days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
 function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
   if(r.ftd!=null&&r.ftd!==''){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
@@ -6098,9 +6101,23 @@ function compute(){
   for(const e of Object.values(S.enqlog)){if(!e||!e.date||e.date<R.from||e.date>R.to)continue;const a=get(dkey(e.login));a.enqRecs.push(e);if(e.fault==='yes')a.fault++}
   const byName={};for(const p of Object.values(P))byName[normName(p.name)]=p.key;
   for(const b of Object.values(S.leave)){if(!b)continue;const k=byName[normName(b.name)];if(!k)continue;const n=(b.days||[]).filter(x=>x>=R.from&&x<=R.to&&![0,6].includes(fromIso(x).getDay())).length;if(n)get(k).leave+=n}
+  const bySid={};for(const p of Object.values(P))if(p.sid)bySid[p.sid]=p.key;
+  const ids=new Set();for(const id of Object.keys(S.clock))ids.add(id);for(const id of Object.keys(S.timesheets))if(/^\d{4}-\d{2}-\d{2}_/.test(id))ids.add(id);
+  for(const id of ids){const date=id.slice(0,10),sid=id.slice(11);if(date<R.from||date>R.to)continue;const k=bySid[sid];if(!k)continue;const sh=shiftOf(id);if(!sh)continue;const a=get(k);a.shifts.push(sh);a.wd++;if(sh.hrs!=null)a.mins+=sh.hrs;a.xp+=+sh.xp||0;if(sh.tl)a.tl++;if(sh.hp)a.hp++}
   return{P,R,per,surveyWeeks:sw};
 }
-function sumOf(keys,per){const a=blank();for(const k of keys){const x=per[k];if(!x)continue;for(const f of ['days','pc','ftdW','ftdN','etaW','etaN','nc','enq','pts','max','fault','leave'])a[f]+=x[f];a.scores.push(...x.scores);a.enqRecs.push(...x.enqRecs)}return a}
+const bneHM=v=>{try{const p={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(v)))p[x.type]=x.value;return p.hour+':'+p.minute}catch(e){return ''}};
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null};
+const fmtH=m=>m==null?'':Math.floor(m/60)+'h '+pad(m%60)+'m';
+const nice=hm=>{const m=/^(\d{1,2}):(\d{2})$/.exec(hm||'');if(!m)return hm||'';let h=+m[1];const ap=h<12?'am':'pm';h=h%12||12;return h+':'+m[2]+' '+ap};
+function shiftOf(id){const o=S.timesheets[id]||{},c=S.clock[id]||null;if(o.removed&&!(c&&String(c.updatedAt||'')>String(o.removedAt||'')))return null;
+  const ck=w=>!c?'':(!c[w+'Late']&&!c[w+'Edited']&&c[w+'At']&&!isNaN(Date.parse(c[w+'At'])))?bneHM(c[w+'At']):(c[w]||'');
+  const start=o.start||ck('start'),finish=o.finish||ck('finish');if(!start&&!finish&&!c)return null;
+  const brk=o.brk!=null&&o.brk!==''?+o.brk:(c&&c.brk!=null?+c.brk:0);const yn=v=>v==='yes'?true:v==='no'?false:null;
+  const xp=o.xp!=null&&o.xp!==''?+o.xp:(c&&c.extra!=null?+c.extra:null),tl=o.tl?yn(o.tl):(c&&c.twoLoads!=null?!!c.twoLoads:null),hp=o.hp?yn(o.hp):(c&&c.held!=null?!!c.held:null),hc=o.hc!=null&&o.hc!==''?+o.hc:(c&&c.heldCount?+c.heldCount:null);
+  const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(brk||0)):null;
+  return{date:id.slice(0,10),start,finish,brk,hrs,xp,tl,hp,hc,note:o.note||'',src:c?(c.startLate||c.startEdited?'Entered':'Tapped'):'Typed'}}
+function sumOf(keys,per){const a=blank();for(const k of keys){const x=per[k];if(!x)continue;for(const f of ['days','pc','ftdW','ftdN','etaW','etaN','nc','enq','pts','max','fault','leave','wd','mins','xp','tl','hp'])a[f]+=x[f];a.scores.push(...x.scores);a.enqRecs.push(...x.enqRecs)}return a}
 const pct=(w,n)=>n?w/n:null;
 const fmtPct=v=>v==null?'–':(v*100).toFixed(1)+'%';
 const fmtN=v=>Number(v||0).toLocaleString('en-AU');
@@ -6130,15 +6147,15 @@ function tiles(a,extra){
   return `<div class="tiles">${T.map(([l,v,s,g])=>`<div class="tile ${g||''}"><span class="l">${esc(l)}</span><b>${esc(v)}</b><span class="s">${esc(s)}</span></div>`).join('')}</div>`;
 }
 function drvRows(keys,C){
-  const rows=keys.map(k=>({p:C.P[k],a:C.per[k]||blank()})).filter(x=>x.p&&(x.a.days||x.a.scores.length||x.a.enqRecs.length||x.a.leave));
+  const rows=keys.map(k=>({p:C.P[k],a:C.per[k]||blank()})).filter(x=>x.p&&(x.a.days||x.a.scores.length||x.a.enqRecs.length||x.a.leave||x.a.wd));
   const by={points:(x,y)=>(ptsPct(y.a)??-1)-(ptsPct(x.a)??-1)||y.a.pc-x.a.pc,parcels:(x,y)=>y.a.pc-x.a.pc,name:(x,y)=>x.p.name.localeCompare(y.p.name),eta:(x,y)=>(pct(y.a.etaW,y.a.etaN)??-1)-(pct(x.a.etaW,x.a.etaN)??-1),survey:(x,y)=>(nps(y.a.scores)??-999)-(nps(x.a.scores)??-999)};
   return rows.sort(by[sortBy]||by.points);
 }
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
-  return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th>No.</th><th>Group</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Points</th><th class="r">Survey</th><th class="r">Leave</th></tr></thead><tbody>
+  return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th>No.</th><th>Group</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Points</th><th class="r">Survey</th><th class="r">Leave</th><th class="r">Hours</th></tr></thead><tbody>
   ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0"><td class="n">${i+1}</td><td><b>${esc(p.name)}</b>${p.login&&p.login!==p.name?`<span class="sub">${esc(p.login)}</span>`:''}</td><td>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join(' ')}</td><td>${esc(p.pc)}</td>
-   <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':a.nc<=1?'warn':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${ptsPct(a)==null?'–':`<span class="pp ${ptsPct(a)>=90?'good':ptsPct(a)>=75?'warn':'bad'}">${ptsPct(a)}%</span>`}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td><td class="r">${a.leave||''}</td></tr>`}).join('')}
+   <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':a.nc<=1?'warn':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${ptsPct(a)==null?'–':`<span class="pp ${ptsPct(a)>=90?'good':ptsPct(a)>=75?'warn':'bad'}">${ptsPct(a)}%</span>`}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td><td class="r">${a.leave||''}</td><td class="r">${a.mins?fmtH(a.mins):''}</td></tr>`}).join('')}
   </tbody></table></div>`;
 }
 function attention(rows){
@@ -6152,21 +6169,22 @@ function attention(rows){
   if(!L.length)return '';L.sort((x,y)=>y.n-x.n);
   return `<details class="card att-c" ${L.length<=8?'open':''}><summary><h2>Needs attention <span class="cnt">${L.length}</span></h2><span class="tgl"></span></summary><ul class="att">${L.map(({p,why})=>`<li><button type="button" class="lnk" data-sm="drv" data-v="${esc(p.key)}">${esc(p.name)}</button><span>${esc(why.join('  ·  '))}</span></li>`).join('')}</ul></details>`;
 }
+const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
 function contractHTML(C){
   const keys=Object.keys(C.P),all=sumOf(keys,C.per),worked=keys.filter(k=>C.per[k]&&C.per[k].days).length;
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days));
   const rows=drvRows(keys,C);
-  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked','']])+
-  `<section class="card"><h2>By postcode and group</h2><div class="tw"><table class="tb"><thead><tr><th>Postcode or group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Survey</th><th class="r">Leave</th><th class="r ptsh">Points</th></tr></thead><tbody>
-   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.nc}</td><td class="r">${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td><td class="r">${a.leave||''}</td><td class="r pts ${ptsPct(a)==null?'':ptsPct(a)>=90?'good':ptsPct(a)>=75?'warn':'bad'}">${a.max?`<b>${fmtN(a.pts)}</b><span class="of"> / ${fmtN(a.max)}</span><span class="sub">${ptsPct(a)}%</span>`:'–'}</td></tr>`}).join('')}
+  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)])+
+  `<section class="card"><h2>By postcode and group</h2><div class="tw"><table class="tb"><thead><tr><th>Postcode or group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Survey</th><th class="r">Leave</th><th class="r">Hours</th><th class="r">Extra</th><th class="r ptsh">Points</th></tr></thead><tbody>
+   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.nc}</td><td class="r">${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td><td class="r">${a.leave||''}</td><td class="r">${a.mins?fmtH(a.mins):''}</td><td class="r">${a.xp||''}</td><td class="r pts ${ptsPct(a)==null?'':ptsPct(a)>=90?'good':ptsPct(a)>=75?'warn':'bad'}">${a.max?`<b>${fmtN(a.pts)}</b><span class="of"> / ${fmtN(a.max)}</span><span class="sub">${ptsPct(a)}%</span>`:'–'}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see just its drivers.</p></section>`+attention(rows)+
   `<section class="card"><div class="ch"><h2>Drivers</h2>${sortSel()}</div>${driverTable(rows)}<p class="hint">Tap a driver to see everything about them.</p></section>`;
 }
 function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_sort">${[['points','Points'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey'],['name','Name']].map(([k,l])=>`<option value="${k}" ${k===sortBy?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
-  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked','']])+attention(rows)+
+  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)])+attention(rows)+
    `<section class="card"><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}</section>`;
 }
 function driverHTML(C,k){
@@ -6180,18 +6198,28 @@ function driverHTML(C,k){
   const lck=Object.values(S.lockers).filter(x=>x&&((x.drivers&&x.drivers.length?x.drivers:String(x.driver||'').split(/[,\/&]+/)).map(dkey).some(d=>p.nos.includes(d)))).length;
   const streets=p.runs.reduce((n,r)=>n+((r.streets||[]).length),0);
   const fullEnq=Object.values(S.enqlog).filter(e=>e&&dkey(e.login)===p.login).sort((x,y)=>String(y.date).localeCompare(String(x.date)));
-  const prof=[['Driver number',p.nos.join(', ')],['Scanner login',p.login],[/^\d/.test(p.pc)?'Postcode':'Group',p.pc],['Role',p.role&&!/^42\d\d$/.test(p.role)?tc(p.role):''],['Mobile',p.mobile],['Parking bay',p.bay],['Van',p.van],['Streets on run',streets?String(streets):''],['Precard addresses',pre?String(pre):''],['Parcel lockers',lck?String(lck):''],['Leave this year',yrDays?yrDays+' weekday'+(yrDays===1?'':'s'):'None booked'],['Last van check',(()=>{const v=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&normName(r.driver)===normName(p.name)).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];return v?short(v.date)+' '+String(v.date).slice(0,4)+' · '+({pass:'Pass',minor:'Pass, fix needed',fail:'Fail'}[v.outcome]||'')+(v.checker?' · '+v.checker:''):''})()],['Next leave',next?short(next.from)+' to '+short(next.to)+' '+String(next.to).slice(0,4):'']].filter(x=>x[1]);
+  const ckT=p.sid?S.clock[TODAY+'_'+p.sid]:null;
+  const prof=[['Driver number',p.nos.join(', ')],['Scanner login',p.login],['Clock in today',ckT?(ckT.finish?'Finished '+nice(ckT.finish):'On shift since '+nice(ckT.start)):'Not clocked in'],['Email',p.email],['Emergency contact',p.ec],[/^\d/.test(p.pc)?'Postcode':'Group',p.pc],['Role',p.role&&!/^42\d\d$/.test(p.role)?tc(p.role):''],['Mobile',p.mobile],['Parking bay',p.bay],['Van',p.van],['Streets on run',streets?String(streets):''],['Precard addresses',pre?String(pre):''],['Parcel lockers',lck?String(lck):''],['Leave this year',yrDays?yrDays+' weekday'+(yrDays===1?'':'s'):'None booked'],['Last van check',(()=>{const v=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&normName(r.driver)===normName(p.name)).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];return v?short(v.date)+' '+String(v.date).slice(0,4)+' · '+({pass:'Pass',minor:'Pass, fix needed',fail:'Fail'}[v.outcome]||'')+(v.checker?' · '+v.checker:''):''})()],['Next leave',next?short(next.from)+' to '+short(next.to)+' '+String(next.to).slice(0,4):'']].filter(x=>x[1]);
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
   return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div>
    <dl class="facts">${prof.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></section>`+
-   tiles(a,[['Days off (leave)',String(a.leave),'In this period','']])+
+   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)])+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Points</th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fmtPct(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${dot(grade('nc',r.nc))}${r.nc??'–'}</td><td class="r">${dot(grade('enq',+(r.enq||0)))}${+(r.enq||0)}</td><td class="r"><b>${r.p}/6</b></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
     return `<section class="card"><h2>Start and finish</h2><div class="tw"><table class="tb"><thead><tr><th>Day</th><th>Start</th><th>Finish</th><th class="r">Hours</th><th class="r">Km</th><th>2 loads</th><th class="r">Extra</th><th>Issues</th></tr></thead><tbody>${cr.map(r=>{const st=r.start||{},f=r.finish||{},h=st.min!=null&&f.min!=null&&f.min>st.min?((f.min-st.min)/60).toFixed(1):'',k=st.odo!=null&&f.odo!=null?f.odo-st.odo:'';const is=[st.safe==='No'?'Not roadworthy':'',f.faults==='Yes'?'New fault':'',f.left==='Yes'?'Parcels left in van':'',st.own==='No'?'Other vehicle '+(st.rego||''):''].filter(Boolean).join(', ');return `<tr><td>${esc(longD(r.date))}</td><td>${st.min!=null?hm(st.min):'<b class="miss">Missing</b>'}</td><td>${f.min!=null?hm(f.min):'<b class="miss">Missing</b>'}</td><td class="r">${h}</td><td class="r">${k}</td><td>${esc(f.two||'')}</td><td class="r">${f.extra||''}</td><td>${esc(is)}</td></tr>`}).join('')}</tbody></table></div></section>`})()+
-   `<section class="card"><h2>Customer survey</h2>${a.scores.length?`<p class="lead2">Score <b>${nps(a.scores)}</b> from ${a.scores.length} customer${a.scores.length===1?'':'s'}  ·  ${a.scores.filter(x=>x.s>=9).length} gave 9 or 10${a.scores.some(x=>x.s<=6)?`  ·  ${a.scores.filter(x=>x.s<=6).length} gave 6 or less`:''}</p>
+   (()=>{const L=a.shifts.slice().sort((x,y)=>y.date.localeCompare(x.date));
+    return `<section class="card"><h2>Shifts and hours</h2>${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Day</th><th>Start</th><th>Finish</th><th class="r">Break</th><th class="r">Hours</th><th class="r">Extra parcels</th><th>2 loads</th><th>Held parcels</th><th>Note</th></tr></thead><tbody>${L.map(r=>`<tr><td>${esc(longD(r.date))}</td><td>${r.start?esc(nice(r.start)):'<b class="miss">Missing</b>'}</td><td>${r.finish?esc(nice(r.finish)):'<b class="miss">Missing</b>'}</td><td class="r">${r.brk?r.brk+' min':''}</td><td class="r"><b>${fmtH(r.hrs)}</b></td><td class="r">${r.xp??''}</td><td>${r.tl==null?'':r.tl?'Yes':'No'}</td><td>${r.hp==null?'':r.hp?`<b class="miss">Yes${r.hc?' ('+r.hc+')':''}</b>`:'No'}</td><td>${esc(r.note)}</td></tr>`).join('')}<tr class="tot"><td><b>Total</b></td><td></td><td></td><td></td><td class="r"><b>${fmtH(a.mins)||'0h 00m'}</b></td><td class="r"><b>${a.xp}</b></td><td>${a.tl?a.tl+(a.tl===1?' day':' days'):''}</td><td>${a.hp?a.hp+(a.hp===1?' day':' days'):''}</td><td></td></tr></tbody></table></div>`:'<div class="empty">No shifts clocked in this period.</div>'}</section>`})()+
+      `<section class="card"><h2>Customer survey</h2>${a.scores.length?`<p class="lead2">Score <b>${nps(a.scores)}</b> from ${a.scores.length} customer${a.scores.length===1?'':'s'}  ·  ${a.scores.filter(x=>x.s>=9).length} gave 9 or 10${a.scores.some(x=>x.s<=6)?`  ·  ${a.scores.filter(x=>x.s<=6).length} gave 6 or less`:''}</p>
     <ul class="cm">${a.scores.slice().sort((x,y)=>x.s-y.s).filter(x=>x.c).map(x=>`<li class="${x.s>=9?'good':x.s>=7?'warn':'bad'}"><b>${x.s}</b><span>${esc(x.c)}</span></li>`).join('')||'<li class="none"><span>No written comments.</span></li>'}</ul>`:'<div class="empty">No survey results for this period.</div>'}</section>`+
-   `<section class="card"><h2>Enquiries</h2>${fullEnq.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Case</th><th>Address</th><th>Outcome</th></tr></thead><tbody>${fullEnq.map(e=>`<tr class="${e.date>=C.R.from&&e.date<=C.R.to?'inp':''}"><td>${esc(longD(e.date))}</td><td>${esc(e.caseNo||'')}</td><td>${esc(e.address||'')}</td><td>${e.fault==='yes'?'<span class="ft yes">At fault</span>':e.fault==='no'?'<span class="ft no">Not at fault</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="hint">All enquiries on record. The ones in this period are highlighted.</p>`:'<div class="empty">No enquiries on record.</div>'}</section>`;
+   `<section class="card"><h2>Enquiries</h2>${fullEnq.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Case</th><th>Address</th><th>Outcome</th></tr></thead><tbody>${fullEnq.map(e=>`<tr class="${e.date>=C.R.from&&e.date<=C.R.to?'inp':''}"><td>${esc(longD(e.date))}</td><td>${esc(e.caseNo||'')}</td><td>${esc(e.address||'')}</td><td>${e.fault==='yes'?'<span class="ft yes">At fault</span>':e.fault==='no'?'<span class="ft no">Not at fault</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="hint">All enquiries on record. The ones in this period are highlighted.</p>`:'<div class="empty">No enquiries on record.</div>'}</section>`+
+   (()=>{const V=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&(r.driverId===p.sid||normName(r.driver)===normName(p.name))).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)));
+    const OUT={pass:'Pass',minor:'Pass, fix needed',fail:'Fail'};const cls={pass:'no',minor:'warn',fail:'yes'};
+    return `<section class="card"><h2>Vehicle checks</h2>${V.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Van</th><th>Result</th><th>Needs fixing</th><th>Checked by</th></tr></thead><tbody>${V.map(v=>`<tr class="${v.date>=C.R.from&&v.date<=C.R.to?'inp':''}"><td>${esc(longD(v.date))}</td><td>${esc([v.rego,v.vehicle].filter(Boolean).join(' · '))}</td><td><span class="ft ${cls[v.outcome]||''}">${esc(OUT[v.outcome]||'')}</span></td><td>${esc([Object.entries(v.items||{}).filter(([,x])=>x==='fix').map(([k])=>k).join(', '),v.notes,v.action?'Action: '+v.action:''].filter(Boolean).join(' · '))}</td><td>${esc(v.checker||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No vehicle checks on record.</div>'}</section>`})()+
+   (()=>{const B=Object.values(S.leave).filter(b=>b&&normName(b.name)===normName(p.name)).sort((x,y)=>String(y.from).localeCompare(String(x.from)));
+    return `<section class="card"><h2>Leave</h2>${B.length?`<div class="tw"><table class="tb"><thead><tr><th>From</th><th>To</th><th class="r">Weekdays</th><th>Note</th></tr></thead><tbody>${B.map(b=>`<tr class="${b.to>=C.R.from&&b.from<=C.R.to?'inp':''}"><td>${esc(longD(b.from))}</td><td>${esc(longD(b.to))}</td><td class="r">${(b.days||[]).filter(x=>![0,6].includes(fromIso(x).getDay())).length}</td><td>${esc(b.note||'')}${b.to>=TODAY?' <span class="ft warn">Upcoming</span>':''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No leave on record.</div>'}</section>`})()+
+   (()=>{const U=Object.values(S.uniorders).filter(o=>o&&normName(o.name)===normName(p.name)).sort((x,y)=>String(y.requestedAt).localeCompare(String(x.requestedAt)));if(!U.length)return '';
+    return `<section class="card"><h2>Uniform orders</h2><div class="tw"><table class="tb"><thead><tr><th>Requested</th><th>Items</th><th>Status</th></tr></thead><tbody>${U.map(o=>`<tr><td>${esc(o.requestedAt?longD(String(o.requestedAt).slice(0,10)):'')}</td><td>${esc((o.items||[]).map(i=>(i.q||1)+' x '+[i.id,i.fit,i.size].filter(Boolean).join(' ')).join(', '))}</td><td>${o.status==='completed'?'Completed':'Requested'}</td></tr>`).join('')}</tbody></table></div></section>`})();
 }
 /* ---------- render ---------- */
 function scopeLabel(C){return scope.t==='all'?'Whole contract':scope.t==='pc'?(/^\d/.test(scope.v)?'Postcode '+scope.v:scope.v):((C.P[scope.v]||{}).name||scope.v)}
@@ -6206,7 +6234,7 @@ function render0(){
    <div class="head"><h1>Summary</h1><div class="act"><button type="button" class="sh-btn primary" data-sm="pdf">Download PDF</button></div></div>
    <div class="ctl">
     <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
-    <label class="mini" for="sm_per">Show<select id="sm_per"><option value="day" ${period==='day'?'selected':''}>Day</option><option value="week" ${period==='week'?'selected':''}>Week</option><option value="month" ${period==='month'?'selected':''}>Month (pay cycle)</option></select></label>
+    <label class="mini" for="sm_per">Show<select id="sm_per"><option value="day" ${period==='day'?'selected':''}>Day</option><option value="week" ${period==='week'?'selected':''}>Week</option><option value="month" ${period==='month'?'selected':''}>Month (pay cycle)</option><option value="year" ${period==='year'?'selected':''}>Year (financial)</option></select></label>
     <div class="nav"><button type="button" class="sh-btn" data-sm="prev" aria-label="Previous">‹</button><div class="lab"><b>${esc(R.label)}</b><small>${esc(R.sub)}</small></div><button type="button" class="sh-btn" data-sm="next" aria-label="Next">›</button><button type="button" class="sh-btn" data-sm="latest">Latest</button></div>
    </div>
    <div class="scopes" role="group" aria-label="Show">${[['all','Whole contract'],...GRPS.map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
@@ -6229,13 +6257,14 @@ async function pdf(btn){
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
   const C=compute(),R=C.R,NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],INK=[20,32,29],LINE=[211,220,216],ALT=[246,248,247];
-  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan errors',String(a.nc)],['Enquiries',String(a.enq)],['Points',ptsPct(a)==null?'–':ptsPct(a)+'%'],['Survey',n==null?'–':n+' ('+a.scores.length+')'],['Leave days',String(a.leave)]]};
+  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan errors',String(a.nc)],['Enquiries',String(a.enq)],['Points',ptsPct(a)==null?'–':ptsPct(a)+'%'],['Survey',n==null?'–':n+' ('+a.scores.length+')'],['Leave days',String(a.leave)],['Hours',a.mins?fmtH(a.mins):'–'],['Extra parcels',String(a.xp||0)]]};
   let blocks=[],tops;
   const drvBody=rows=>rows.map(({p,a},i)=>[String(i+1),p.name,p.nos.join(', '),p.pc,String(a.days),fmtN(a.pc),fmtPct(pct(a.ftdW,a.ftdN)),fmtPct(pct(a.etaW,a.etaN)),String(a.nc),String(a.enq),ptsPct(a)==null?'–':ptsPct(a)+'%',nps(a.scores)==null?'–':nps(a.scores)+' ('+a.scores.length+')',a.leave?String(a.leave):'']);
   const drvHead=['#','DRIVER','NO.','GROUP','DAYS','PARCELS','FTD','2HR ETA','SCAN ERR','ENQ','POINTS','SURVEY','LEAVE'];
   if(scope.t==='drv'){const p=C.P[scope.v],a=C.per[scope.v]||blank();tops=kpi(a);
     blocks.push({title:'DRIVER',head:['DRIVER NUMBER','LOGIN','POSTCODE','MOBILE','VAN'],body:[[p.nos.join(', '),p.login,p.pc,p.mobile,p.van]]});
     blocks.push({title:'DAY BY DAY',head:['DAY','PARCELS','FTD','2HR ETA','SCAN ERRORS','ENQUIRIES','POINTS'],body:a.list.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),fmtN(r.pc),fmtPct(r.ftd),fmtPct(r.eta),String(r.nc??'–'),String(+(r.enq||0)),r.p+'/6'])});
+    if(a.shifts.length)blocks.push({title:'SHIFTS AND HOURS',head:['DAY','START','FINISH','BREAK','HOURS','EXTRA','2 LOADS','HELD'],body:a.shifts.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),r.start?nice(r.start):'Missing',r.finish?nice(r.finish):'Missing',r.brk?r.brk+' min':'',fmtH(r.hrs),r.xp==null?'':String(r.xp),r.tl==null?'':r.tl?'Yes':'No',r.hp==null?'':r.hp?'Yes'+(r.hc?' ('+r.hc+')':''):'No'])});
     const cm=a.scores.filter(x=>x.c).sort((x,y)=>x.s-y.s);if(cm.length)blocks.push({title:'CUSTOMER COMMENTS',head:['SCORE','COMMENT'],body:cm.map(x=>[String(x.s),x.c])});
     if(a.enqRecs.length)blocks.push({title:'ENQUIRIES',head:['DATE','CASE','ADDRESS','OUTCOME'],body:a.enqRecs.map(e=>[longD(e.date),e.caseNo||'',e.address||'',e.fault==='yes'?'At fault':e.fault==='no'?'Not at fault':''])});
   }else{
@@ -6248,13 +6277,13 @@ async function pdf(btn){
     doc.setFillColor(...NAV);doc.rect(0,0,W,20,'F');doc.setFillColor(...SIG);doc.rect(0,20,W,1.2,'F');
     doc.setTextColor(...SIG);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE PTY LTD  ·  CONTRACT 1161',10,7.5);
     doc.setTextColor(255);doc.setFontSize(15);doc.text('Summary  ·  '+scopeLabel(C),10,15.5);
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text((period==='month'?'Month ':period==='week'?'Week ':'')+R.label+(period==='month'?'  ('+R.sub+')':''),W-10,15.5,{align:'right'});
+    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text((period==='month'?'Month ':period==='week'?'Week ':period==='year'?'':'')+R.label+(period==='month'?'  ('+R.sub+')':''),W-10,15.5,{align:'right'});
     const kw=(W-20)/tops.length;tops.forEach(([l,v],i)=>{const x=10+i*kw;if(port){doc.setFontSize(10)}doc.setDrawColor(...LINE);doc.setFillColor(...ALT);doc.roundedRect(x+1,25,kw-2,14,1.5,1.5,'FD');doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(port?5.2:6.5);doc.text(l.toUpperCase(),x+(port?2.5:3.5),29.5);doc.setTextColor(...INK);doc.setFontSize(port?10.5:12);doc.text(v,x+(port?2.5:3.5),36)});
     let y=44;
     for(const b of blocks){if(!b.body.length)continue;doc.setFont('helvetica','bold');doc.setFontSize(fs+1.5);doc.setTextColor(11,107,92);doc.text(b.title,10,y+2.5);y+=4;
       doc.autoTable({head:[b.head],body:b.body,startY:y,margin:{left:10,right:10,top:24,bottom:10},theme:'plain',styles:{font:'helvetica',fontSize:fs,textColor:INK,cellPadding:{top:fs*.13,bottom:fs*.13,left:1.6,right:1.6},lineColor:LINE,lineWidth:{bottom:.15},overflow:'linebreak'},headStyles:{fontStyle:'bold',fontSize:Math.min(6.8,fs),textColor:MUT,fillColor:[238,242,240]},alternateRowStyles:{fillColor:ALT},columnStyles:b.title==='DRIVERS'?{0:{cellWidth:7,textColor:MUT},1:{fontStyle:'bold'}}:{0:{fontStyle:'bold'}}});
       y=doc.lastAutoTable.finalY+4}
-    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...MUT);doc.text('Made from Driver Results, Survey Ranking, Enquiries, Leave Calendar and Drivers on '+longD(TODAY)+'. Confidential.',10,H-5);
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...MUT);doc.text('Made from Driver Results, Survey Ranking, Enquiries, Leave, Timesheets, Vehicle Checks and Drivers on '+longD(TODAY)+'. Confidential.',10,H-5);
     return doc};
   let doc=null;for(let fs=9;fs>=4.4;fs-=.3){doc=make(fs);if(doc.internal.getNumberOfPages()===1)break}
   btn.disabled=false;btn.textContent=old;
@@ -6861,7 +6890,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251206';
+const VERSION='202610251214';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
