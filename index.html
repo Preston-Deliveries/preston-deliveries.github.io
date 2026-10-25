@@ -1016,6 +1016,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-briefs .sgd{background:#1E8A4C;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .tosign{background:#D98B00;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .cntsig{background:var(--sh-accent-soft);color:var(--sh-accent);font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
+#mod-briefs .older{display:flex;justify-content:center;margin:14px 0 4px}
 </style>
 <style id="leave-css">#mod-leave{--lv-open-bg:#E6F5EB;--lv-open-bd:#1E8A4C;--lv-open-ink:#0F5530;--lv-one-bg:#FFF1D6;--lv-one-bd:#C77A00;--lv-one-ink:#6E4200;--lv-full-bg:#FCE3E0;--lv-full-bd:#C8352B;--lv-full-ink:#8A1C14;--lv-bo1:#E6EAE8;--lv-bo2:#F3F5F4;--lv-bo-ink:#45524D;--lv-chip:#FFFFFF;--lv-chip-ink:#14201D;--lv-chip-bd:rgba(20,32,29,.22)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-leave{--lv-open-bg:#123222;--lv-open-bd:#3DBE74;--lv-open-ink:#9BE8BA;--lv-one-bg:#36290E;--lv-one-bd:#E8A63A;--lv-one-ink:#FFD58A;--lv-full-bg:#3A181B;--lv-full-bd:#EE6A5E;--lv-full-ink:#FFB3AA;--lv-bo1:#1F2725;--lv-bo2:#283230;--lv-bo-ink:#B9C6C1;--lv-chip:#0E1412;--lv-chip-ink:#F2F7F5;--lv-chip-bd:rgba(255,255,255,.22)}}
@@ -1434,6 +1435,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-vchecks .vc-pr{padding:5px 12px;min-height:0;font-size:.82rem;white-space:nowrap}
 #mod-vchecks td.pr{text-align:right;width:1%}
 #mod-vchecks .msg .vc-pr{margin-left:10px;vertical-align:middle}
+#mod-vchecks .older{display:flex;justify-content:center;margin:14px 0 4px}
 </style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -2019,6 +2021,10 @@ p.ck-alert{color:#5A3C00!important}
 .ck-step span{color:var(--sh-muted)}
 .ck-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px}
 .ck-x{color:var(--sh-ink)!important;font-size:.95rem!important}
+.sh-bk{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
+.sh-bk span{font-size:.88rem;color:#4e5a6b;flex:1;min-width:220px}
+.sh-bk span.due{color:#9a4a12;font-weight:600}
+.sh-bk span.ok{color:#17774f;font-weight:600}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -2444,10 +2450,10 @@ function renderHome(){
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
     <p>After you make changes, send them so drivers see the latest.</p>
-    <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>
+    <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}
-  </section>`;  if(window.CLOCK)window.CLOCK.mount();
+  </section>`;  if(window.CLOCK)window.CLOCK.mount();bkInfo();
 }
 function pageHtml(snap){
   const json=JSON.stringify(snap).replace(/</g,'\\u003c');
@@ -2470,6 +2476,17 @@ async function sharePart(btn,fn,what){
   catch(e){const c=e&&e.code;homeMsg={err:true,t:c==='conflict'?'The page changed somewhere else at the same time and is reloading. Try again after it loads.':c==='not_writer'||c==='not_granted'?'This view can\u2019t update the drivers\u2019 link.':'Could not send just now. Try again in a minute.'}}
   renderHome();
 }
+async function bkInfo(){const el=document.getElementById('sh-bkinfo');if(!el||!window.__lastBackup)return;const b=await window.__lastBackup();const e2=document.getElementById('sh-bkinfo');if(!e2)return;
+  if(!b||!b.upTo){e2.textContent='No backup yet. Download one now and then once a month.';e2.className='due';return}
+  const d=new Date(b.upTo+'T00:00:00'),days=Math.round((Date.now()-d.getTime())/864e5);
+  e2.textContent='Last backup '+d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+(days>0?' ('+days+' day'+(days===1?'':'s')+' ago)':' (today)')+'. Each backup holds everything set up in the app plus the records since the last one, so keep every file.';e2.className=days>31?'due':''}
+async function backup(btn){if(!window.__backup||btn.disabled)return;const old=btn.textContent;btn.disabled=true;const info=document.getElementById('sh-bkinfo');
+  try{const r=await window.__backup(c=>{btn.textContent='Backing up '+c+'…'});
+    const dl=window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null;
+    if(dl)await dl.save({filename:'Contract 1161 backup '+r.today+'.json',data:new Blob([r.json],{type:'application/json'})});
+    if(info){info.textContent='Saved '+r.docs.toLocaleString('en-AU')+' records. Keep the file somewhere safe, like Google Drive, with your other backups.';info.className='ok'}}
+  catch(e){if(info){info.textContent='The backup did not finish. Check your connection and try again.';info.className='due'}}
+  btn.disabled=false;btn.textContent=old}
 async function shareAll(btn){
   btn.disabled=true;homeMsg={t:'Sending everything to drivers\u2026'};renderHome();
   const parts=[['sort and run sheets',window.RUNS],['leave calendar',window.LEAVE],['precard list',window.PRECARDS],['locker list',window.LOCKERS],['directory',window.DIRECTORY]];
@@ -2492,8 +2509,12 @@ document.addEventListener('click',e=>{
   const mo=e.target.closest('[data-sh="more"]');if(mo){openMore();return}
   if(e.target.closest('[data-sh="moreclose"]')){closeMore();return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
-  const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
+  const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='backup')backup(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
 });
+/* older records load only when a page asks for them (see the data layer) */
+window.needHist=function(from,cols){from=(!from||from<'1000')?'':from;try{let W=window.__history?window:null;if(!W){try{if(window.parent!==window&&window.parent.__history)W=window.parent}catch(e){}}if(!W)return Promise.resolve();
+  if(cols&&cols.every(c=>{const f=W.__historyFrom(c);return f===''||(from&&from>=f)}))return Promise.resolve();return W.__history(from,cols)}catch(e){return Promise.resolve()}};
+window.histFrom=function(c){try{let W=window.__historyFrom?window:null;if(!W){try{if(window.parent!==window&&window.parent.__historyFrom)W=window.parent}catch(e){}}return W?W.__historyFrom(c):''}catch(e){return ''}};
 window.APP={SNAP,go,stat,publish,get isEditor(){return role==='mgr'},get section(){return cur},get role(){return role}};
 // first section
 const h=decodeURIComponent((location.hash||'').slice(1));
@@ -4768,7 +4789,22 @@ function render(){
       <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}${!isMgr()&&me?(mySig(b.id)?' <span class="sgd">Signed ✓</span>':' <span class="tosign">Please sign</span>'):''}${isMgr()?` <span class="cntsig">${sigsFor(b.id).length} signed</span>`:''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
       <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button>`:''}</div>`).join('')}</div></details>`).join('')
       :`<div class="empty">${isMgr()?'No team briefs yet. Add the first one with the button above.':'No team brief has been posted yet.'}</div>`}
+    ${olderBtn()}
   </div>`;
+}
+function olderBtn(){const f=window.histFrom?window.histFrom('briefs'):'';return f?`<div class="older"><button type="button" class="sh-btn" data-tb="older">${olderBusy?'Loading older briefs…':'Show briefs before '+esc(fmtShort(f))+' '+f.slice(0,4)}</button></div>`:''}
+let olderBusy=false;
+/* Clear the slide images of briefs older than 12 months to keep storage small. Titles, topics and signatures stay. */
+async function tidyOld(){
+  try{const c=db.collection('briefs');if(!c.range)return;
+    const d=new Date(Date.now()-365*864e5),cut=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const m=await db.doc('meta/tidy').get();const up=(m.exists&&__D(m).briefsUpTo)||'';if(up>=cut)return;
+    const old=await c.range(up,cut);
+    for(const snap of old.docs){const b=__D(snap)||{};const files=b.files||[];if(!files.some(f=>(f.pages||[]).length))continue;
+      for(const f of files)for(const p of (f.pages||[])){try{await db.doc('briefpages/'+p).delete()}catch(e){}}
+      await db.doc('briefs/'+snap.id).update({files:files.map(f=>(f.pages||[]).length?Object.assign({},f,{pages:[],archived:true}):f)})}
+    await db.doc('meta/tidy').set(Object.assign({},m.exists?__D(m):{},{briefsUpTo:cut,briefsAt:new Date().toISOString()}));
+  }catch(e){console.warn('brief tidy',e)}
 }
 function briefHTML(b){
   if(!b){openId=null;return ''}
@@ -4778,7 +4814,7 @@ function briefHTML(b){
     <header class="band"><div><small>Team brief and training</small><h2>${esc(b.title||'Team brief')}</h2><p>${esc(b.facility||'')}</p></div><div class="stamp"><b>${esc(fmt(b.date))}</b></div></header>
     ${(b.topics||[]).length?`<div class="topics"><h3>In this brief</h3><ol>${b.topics.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>`:''}
     <div class="doc">${clean(b.html)}</div>
-    ${(b.files||[]).length?`<section class="files"><h3>Attachments</h3>${b.files.map((f,fi)=>`<div class="file"><h4>${esc(f.name)}</h4><p class="sub">${f.pages.length} page${f.pages.length===1?'':'s'}. Tap a page to see it bigger.</p>
+    ${(b.files||[]).length?`<section class="files"><h3>Attachments</h3>${b.files.map((f,fi)=>`<div class="file"><h4>${esc(f.name)}</h4><p class="sub">${f.archived?'The page images were cleared after 12 months to save space. The sign off record is kept.':`${f.pages.length} page${f.pages.length===1?'':'s'}. Tap a page to see it bigger.`}</p>
       <div class="pages">${f.pages.map((p,pi)=>`<button type="button" class="pg" data-tb="zoom" aria-label="Page ${pi+1} of ${esc(f.name)}"><img data-pg="${esc(p)}" alt="Page ${pi+1} of ${esc(f.name)}" loading="lazy"></button>`).join('')}</div>
       ${isMgr()?`<button type="button" class="sh-btn danger sm" data-tb="rmfile" data-v="${fi}">Remove this attachment</button>`:''}</div>`).join('')}</section>`:''}
     ${isMgr()?`<div class="mgr"><label class="sh-btn up">+ Add attachments<input type="file" id="tb_more" accept=".pdf,.png,.jpg,.jpeg,.pptx,.ppt" multiple hidden></label>
@@ -4954,6 +4990,7 @@ async function signSheet(btn,bid){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-tb]');if(!el||!document.getElementById('mod-briefs').contains(el))return;
   const a=el.dataset.tb;if(a!=='del')armDel=false;
+  if(a==='older'){if(olderBusy)return;olderBusy=true;render();window.needHist('',isMgr()?['briefs','briefsigs']:['briefs']).then(()=>{olderBusy=false;render()});return}
   if(a==='new'){creating=true;msg=null;render();window.scrollTo(0,0);return}
   if(a==='cancel'){if(busy)return;creating=false;msg=null;render();return}
   if(a==='create'){if(!busy)create();return}
@@ -4976,6 +5013,7 @@ async function start(role){
   mode=role==='mgr'?'mgr':'drv';
   if(!db){msg={err:true,t:'Team briefs only open inside Claude while you are signed in.'};render();return}
   try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
+  if(mode==='mgr')setTimeout(tidyOld,8000);
   if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
     db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
   db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
@@ -5029,6 +5067,7 @@ function render(){
   const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='<div class="lvx"><div class="empty">Opening the leave calendar</div></div>';return}
   if(editing&&isMgr()){box.innerHTML=editHTML();return}
+  if(isMgr()&&window.needHist){if(view==='tot')window.needHist('',['leave']);else{const s0=cv==='week'&&wk?wk:month;if(s0)window.needHist(iso(s0),['leave'])}}
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.leave;
   box.innerHTML=`<div class="lvx">
    <div class="head"><h1>Leave calendar</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-lv="add">+ Add leave</button><button type="button" class="sh-btn" data-lv="pdf" title="One page PDF of the month showing">Download PDF</button><label class="sh-btn up">Import time off export<input type="file" id="lv_imp" accept=".xlsx,.xls,.csv" hidden></label></div>`:''}</div>
@@ -6296,6 +6335,7 @@ function render0(){
   if(mode!=='mgr'){box.innerHTML='<div class="smx"><div class="empty">Loading summary…</div></div>';return}
   if(!anchor)anchor=latestDay();
   const C=compute(),R=C.R;
+  if(window.needHist&&R&&R.from){window.needHist(R.from,['days','leave','enqlog','vchecks','timesheets','clock']);window.needHist(add(R.from,-35),['weeks'])}
   const body=scope.t==='all'?contractHTML(C):scope.t==='pc'?postcodeHTML(C,scope.v):driverHTML(C,scope.v);
   box.innerHTML=`<div class="smx">
    <div class="head"><h1>Summary</h1><div class="act"><button type="button" class="sh-btn primary" data-sm="pdf">Download PDF</button></div></div>
@@ -6447,13 +6487,14 @@ function statusHTML(){
   else if(sortS==='name')rows.sort((a,b)=>a.p.name.localeCompare(b.p.name));
   else rows.sort((a,b)=>{const s=x=>x.last&&x.last.outcome==='fail'?0:!x.last?1:x.due<0?2:x.last.outcome==='minor'?3:4;return s(a)-s(b)||(a.due??-9999)-(b.due??-9999)||a.p.name.localeCompare(b.p.name)});
   const cnt={never:rows.filter(x=>!x.last).length,over:rows.filter(x=>x.last&&x.due<0).length,fail:rows.filter(x=>x.last&&x.last.outcome==='fail').length,fix:rows.filter(x=>x.last&&x.last.outcome==='minor').length,ok:rows.filter(x=>x.last&&x.due>=0&&x.last.outcome==='pass').length};
-  return `<div class="tiles"><div class="tile bad"><span>Failed, do not drive</span><b>${cnt.fail}</b></div><div class="tile warn"><span>Fix needed</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none"><span>Never checked</span><b>${cnt.never}</b></div><div class="tile good"><span>Up to date</span><b>${cnt.ok}</b></div></div>
+  return `<div class="tiles"><div class="tile bad"><span>Failed, do not drive</span><b>${cnt.fail}</b></div><div class="tile warn"><span>Fix needed</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none"><span>No check in 4 months</span><b>${cnt.never}</b></div><div class="tile good"><span>Up to date</span><b>${cnt.ok}</b></div></div>
   <div class="bar"><input type="search" id="vc_q" placeholder="Search driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts">Sort<select id="vc_sorts">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every">Check every<select id="vc_every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>${n} days</option>`).join('')}</select></label></div>
   <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
-  ${rows.map(({p,last,due})=>`<tr data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span></td><td>${last?esc(nice(last.date)):'<span class="sub">Never</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
+  ${rows.map(({p,last,due})=>`<tr data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span></td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
    <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
   </tbody></table></div><p class="hint">Tap a driver to see their checks or add a new one. Office and supervisor roles are left out of this list.</p>`;
 }
+let olderBusy=false;
 function allHTML(){
   const t=q.trim().toLowerCase(),allC=checks(),months=[...new Set(allC.map(r=>String(r.date).slice(0,7)))].sort().reverse();
   if(mf!=='all'&&!months.includes(mf))mf='all';
@@ -6461,7 +6502,7 @@ function allHTML(){
   return `<div class="bar"><input type="search" id="vc_q" placeholder="Search driver, rego, checker, date or problem" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_mf">Month<select id="vc_mf"><option value="all">All months</option>${months.map(k=>`<option value="${k}" ${k===mf?'selected':''}>${monthLabel(k)}</option>`).join('')}</select></label><label class="mini" for="vc_sorta">Sort<select id="vc_sorta"><option value="newest" ${sortA==='newest'?'selected':''}>Newest first</option><option value="oldest" ${sortA==='oldest'?'selected':''}>Oldest first</option></select></label><span class="sub">${L.length} check${L.length===1?'':'s'}</span></div>
   ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th><th></th></tr></thead><tbody>
   ${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td><b>${esc(r.driver)}</b></td><td>${esc(r.rego)}<span class="sub">${esc(r.vehicle||'')}</span></td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td><td class="pr"><button type="button" class="sh-btn vc-pr" data-vc="pdfr" data-v="${esc(r.id)}">Print</button></td></tr>`).join('')}
-  </tbody></table></div>`:`<div class="empty">No vehicle checks recorded yet. Tap New check to add the first one.</div>`}`;
+  </tbody></table></div>`:`<div class="empty">No vehicle checks in this list. Tap New check to add one.</div>`}${window.histFrom&&window.histFrom('vchecks')?`<div class="older"><button type="button" class="sh-btn" data-vc="older">${olderBusy?'Loading older checks…':'Show older checks'}</button></div>`:''}`;
 }
 function driverHTML(id){
   const p=people().find(x=>x.id===id);if(!p){view='status';return statusHTML()}
@@ -6577,6 +6618,7 @@ document.addEventListener('click',async e=>{
   if(a==='out'&&draft){readForm();draft.outcome=v;render();return}
   if(a==='save'){save();return}
   if(a==='pdf0'){pdf(null,el);return}
+  if(a==='older'){if(olderBusy)return;olderBusy=true;render();window.needHist('',['vchecks']).then(()=>{olderBusy=false;render()});return}
   if(a==='pdfr'&&recs[v]){pdf({id:v,...recs[v]},el);return}
   if(a==='pdf1'&&open){pdf({id:open,...recs[open]},el);return}
   if(a==='del'&&open){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
@@ -6702,11 +6744,13 @@ function searchHTML(){
   return `<div class="srchbar"><input type="search" id="ts_s" placeholder="Search a driver to see their timesheet" value="${esc(sq)}" autocomplete="off" aria-label="Search a driver">${person?'<button type="button" class="sh-btn" data-ts="pclear">Back to all drivers</button>':''}
   ${L.length?`<div class="sug" role="listbox">${L.map(p=>`<button type="button" role="option" data-ts="pick" data-v="${esc(p.id)}"><b>${esc(p.name)}</b><small>${esc([p.no,p.login].filter(Boolean).join(' · '))}</small></button>`).join('')}</div>`:(t&&!person?'<div class="sug"><span class="none">No driver matches that.</span></div>':'')}</div>`;
 }
+const TSC=['clock','timesheets','days'];
 function render(){
   const box=document.getElementById('ts_root');if(!box)return;
   if(mode!=='mgr'){box.innerHTML='<div class="tsx"><div class="empty">Loading…</div></div>';return}
   if(!wk)wk=latest();
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:'';
+  if(mode==='mgr'&&window.needHist){if(person)window.needHist(periodRange()[0],TSC);else if(wk)window.needHist(monday(wk),TSC)}
   if(person){box.innerHTML=`<div class="tsx">${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
   const W=weekHTML();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
@@ -6727,7 +6771,8 @@ function saveTs(id,field,val){
 let cfgTimer=null,cfgTimerOn=false;
 function saveCfg(){clearTimeout(cfgTimer);cfgTimerOn=true;cfgTimer=setTimeout(async()=>{cfgTimerOn=false;try{await db.doc('timesheets/_settings').set(cfg)}catch(e){msg={err:true,t:'Could not save start times just now.'};render()}},500)}
 /* ---------- export ---------- */
-function exportRange(from,to,name,pid){
+async function exportRange(from,to,name,pid){
+  if(window.needHist)await window.needHist(from,TSC);
   if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
   const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
@@ -6961,7 +7006,7 @@ try{if(window.APP&&window.APP.section==='clock')mount()}catch(e){}
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251259';
+const VERSION='202610251330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -7010,11 +7055,49 @@ const db={
   }},
   collection(p){const c=fs.collection(p);return{
     path:p,
-    async get(){return qSnap(await c.get())},
-    onSnapshot(cb,err){const u=c.onSnapshot(q=>cb(qSnap(q)),e=>{if(err)err(e)});subs.add(u);return u},
+    async get(){if(WIN[p]){const h=hist(p);const q=await winQ(p,h.since).get();const docs=q.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}}return qSnap(await c.get())},
+    async range(lo,hi){const f=firebase.firestore.FieldPath.documentId();let q=c;if(lo)q=q.where(f,'>=',lo);if(hi)q=q.where(f,'<',hi);return qSnap(await q.get())},
+    onSnapshot(cb,err){if(WIN[p])return winListen(p,cb,err);const u=c.onSnapshot(q=>cb(qSnap(q)),e=>{if(err)err(e)});subs.add(u);return u},
     doc(id){return db.doc(p+'/'+id)}
   }}
 };
+
+/* ---------- load only recent records; older ones only when a longer report asks for them ----------
+   Records that pile up over the years (clock ins, timesheets, signatures...) are loaded for the last few
+   weeks or months only. This keeps every open of the app small, so we stay well inside Google's free
+   daily allowance however many years of records we keep. */
+const WIN={clock:{d:14},timesheets:{d:14},days:{d:14},weeks:{d:120},briefs:{d:60},briefsigs:{d:60},enqlog:{d:400},vchecks:{d:120},leave:{d:35,f:'to'}};
+const isoAgo=n=>{const d=new Date(Date.now()-n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const HIST={};
+function hist(c){if(!HIST[c]){const s=isoAgo(WIN[c].d);HIST[c]={since:s,from:s,extra:new Map(),ls:new Set(),busy:null}}return HIST[c]}
+function winQ(c,lo,hi){const f=WIN[c].f?WIN[c].f:firebase.firestore.FieldPath.documentId();let q=fs.collection(c);if(lo)q=q.where(f,'>=',lo);if(hi)q=q.where(f,'<',hi);return q}
+function winEmit(c,L){if(!L.last)return;const h=hist(c);const docs=L.last.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);L.cb({docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)})}
+function winListen(c,cb,err){const h=hist(c);const L={cb,last:null};h.ls.add(L);
+  const u=winQ(c,h.since).onSnapshot(q=>{L.last=q;winEmit(c,L)},e=>{if(err)err(e)});
+  const off=()=>{u();h.ls.delete(L)};subs.add(off);return off}
+/* from: 'YYYY-MM-DD' to load back to that date, or '' for everything. cols: which record types (default all). */
+window.__history=function(from,cols){
+  from=from||'';const list=(cols&&cols.length?cols:Object.keys(WIN)).filter(c=>WIN[c]);const jobs=[];
+  for(const c of list){const h=hist(c);if(h.from===''||(from&&from>=h.from))continue;
+    const run=async()=>{const hi=h.from;if(h.from===''||(from&&from>=hi))return;
+      const snap=await winQ(c,from,hi).get();for(const d of snap.docs)h.extra.set(d.id,docSnap(d));h.from=from;for(const L of h.ls)winEmit(c,L)};
+    h.busy=(h.busy||Promise.resolve()).then(run).catch(e=>console.warn('history',c,e));jobs.push(h.busy)}
+  return Promise.all(jobs)};
+window.__historyFrom=c=>WIN[c]?hist(c).from:'';
+/* ---------- backup: all the setup data, plus records added since the last backup ---------- */
+const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared'];
+const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks'];
+window.__backup=async function(onStep){
+  let last='';try{const m=await fs.doc('meta/backup').get();if(m.exists)last=m.data().upTo||''}catch(e){}
+  const from=last?isoAgo(Math.max(0,Math.round((Date.now()-new Date(last+'T00:00:00').getTime())/864e5)+14)):'';
+  const out={app:'Contract 1161',made:new Date().toISOString(),by:EMAIL,recordsFrom:from||'the start',collections:{}};let n=0;
+  for(const c of BK_ALL.concat(BK_NEW)){if(onStep)onStep(c);
+    let q=fs.collection(c);if(from&&BK_NEW.includes(c))q=q.where(firebase.firestore.FieldPath.documentId(),'>=',from);
+    try{const sn=await q.get();const m={};sn.docs.forEach(d=>{m[d.id]=d.data()});out.collections[c]=m;n+=sn.size}catch(e){out.collections[c]={_error:String(e&&e.code||e)}}}
+  const today=isoAgo(0);
+  try{await fs.doc('meta/backup').set({upTo:today,at:new Date().toISOString(),by:EMAIL,docs:n})}catch(e){}
+  return {json:JSON.stringify(out),docs:n,from,today}};
+window.__lastBackup=async function(){try{const m=await fs.doc('meta/backup').get();return m.exists?m.data():null}catch(e){return null}};
 
 /* ---------- who is signed in ---------- */
 let ROLE=null,EMAIL='',UID='',NAME='';
