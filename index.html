@@ -1431,6 +1431,9 @@ body.sh-uv-on{overflow:hidden}
 #mod-vchecks .danger{color:#B3261E}#mod-vchecks .danger.arm{background:#B3261E;color:#fff;border-color:#B3261E}
 #mod-vchecks .tabs small{opacity:.75;margin-left:4px}
 @media (max-width:700px){#mod-vchecks .grid{grid-template-columns:1fr}#mod-vchecks .seg.big{flex-direction:column}#mod-vchecks .seg.big button{border-right:0;border-bottom:1px solid var(--sh-line)}}
+#mod-vchecks .vc-pr{padding:5px 12px;min-height:0;font-size:.82rem;white-space:nowrap}
+#mod-vchecks td.pr{text-align:right;width:1%}
+#mod-vchecks .msg .vc-pr{margin-left:10px;vertical-align:middle}
 </style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -6456,8 +6459,8 @@ function allHTML(){
   if(mf!=='all'&&!months.includes(mf))mf='all';
   const L=allC.filter(r=>(mf==='all'||String(r.date).startsWith(mf))&&(!t||hay(r).includes(t)));if(sortA==='oldest')L.reverse();
   return `<div class="bar"><input type="search" id="vc_q" placeholder="Search driver, rego, checker, date or problem" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_mf">Month<select id="vc_mf"><option value="all">All months</option>${months.map(k=>`<option value="${k}" ${k===mf?'selected':''}>${monthLabel(k)}</option>`).join('')}</select></label><label class="mini" for="vc_sorta">Sort<select id="vc_sorta"><option value="newest" ${sortA==='newest'?'selected':''}>Newest first</option><option value="oldest" ${sortA==='oldest'?'selected':''}>Oldest first</option></select></label><span class="sub">${L.length} check${L.length===1?'':'s'}</span></div>
-  ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th></tr></thead><tbody>
-  ${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td><b>${esc(r.driver)}</b></td><td>${esc(r.rego)}<span class="sub">${esc(r.vehicle||'')}</span></td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td></tr>`).join('')}
+  ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th><th></th></tr></thead><tbody>
+  ${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td><b>${esc(r.driver)}</b></td><td>${esc(r.rego)}<span class="sub">${esc(r.vehicle||'')}</span></td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td><td class="pr"><button type="button" class="sh-btn vc-pr" data-vc="pdfr" data-v="${esc(r.id)}">Print</button></td></tr>`).join('')}
   </tbody></table></div>`:`<div class="empty">No vehicle checks recorded yet. Tap New check to add the first one.</div>`}`;
 }
 function driverHTML(id){
@@ -6466,7 +6469,7 @@ function driverHTML(id){
   return `<button type="button" class="sh-btn back" data-vc="back">‹ All drivers</button>
   <section class="card"><div class="ch"><h2>${esc(p.name)}</h2><button type="button" class="sh-btn primary" data-vc="new" data-v="${esc(p.id)}">+ New check for ${esc(p.name.split(' ')[0])}</button></div>
   <dl class="facts"><div><dt>Driver number</dt><dd>${esc(p.no||'Not set')}</dd></div><div><dt>Rego</dt><dd>${esc(p.rego||'Not set')}</dd></div><div><dt>Vehicle</dt><dd>${esc(p.van||'Not set')}</dd></div><div><dt>Checks on record</dt><dd>${L.length}</dd></div></dl></section>
-  ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th></tr></thead><tbody>${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td>${esc(r.rego)}</td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">No checks for ${esc(p.name.split(' ')[0])} yet.</div>`}`;
+  ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th><th></th></tr></thead><tbody>${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td>${esc(r.rego)}</td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td><td class="pr"><button type="button" class="sh-btn vc-pr" data-vc="pdfr" data-v="${esc(r.id)}">Print</button></td></tr>`).join('')}</tbody></table></div>`:`<div class="empty">No checks for ${esc(p.name.split(' ')[0])} yet.</div>`}`;
 }
 function detailHTML(r){
   return `<button type="button" class="sh-btn back" data-vc="back">‹ Back</button>
@@ -6505,7 +6508,7 @@ function render(){
   else if(view==='drv'&&open)body=driverHTML(open);
   else body=`<div class="tabs" role="group" aria-label="View"><button type="button" data-vc="view" data-v="status" aria-pressed="${view==='status'}">Drivers and vans</button><button type="button" data-vc="view" data-v="all" aria-pressed="${view==='all'}">All checks <small>${checks().length}</small></button></div>`+(view==='all'?allHTML():statusHTML());
   box.innerHTML=`<div class="vcx"><div class="head"><h1>Vehicle Checks</h1><div class="act"><button type="button" class="sh-btn primary" data-vc="new">+ New check</button><button type="button" class="sh-btn" data-vc="pdf0">Print blank form</button></div></div>
-   ${editing?'':`<p class="lead">Supervisors and managers check each driver's van and record it here. Drivers report any problem straight away on WhatsApp.</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}`}
+   ${editing?'':`<p class="lead">Supervisors and managers check each driver's van and record it here. Drivers report any problem straight away on WhatsApp.</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.pr&&open?' <button type="button" class="sh-btn vc-pr" data-vc="pdf1">Print this check</button>':''}</p>`:''}`}
    ${body}</div>`;
 }
 /* ---------- form ---------- */
@@ -6520,7 +6523,7 @@ async function save(){
   busy=true;render();
   const id=editing==='new'?d.date+'_'+d.driverId+'_'+Math.random().toString(36).slice(2,6):editing;
   const o={...d,updatedAt:new Date().toISOString(),createdAt:d.createdAt||new Date().toISOString()};
-  try{await db.doc('vchecks/'+id).set(o);recs[id]=o;busy=false;editing=null;draft=null;open=id;msg={t:'Check saved.'};render();window.scrollTo(0,0)}
+  try{await db.doc('vchecks/'+id).set(o);recs[id]=o;busy=false;editing=null;draft=null;open=id;msg={t:'Check saved.',pr:1};render();window.scrollTo(0,0)}
   catch(e){busy=false;msg={err:true,t:'Could not save just now. Try again.'};render()}
 }
 /* ---------- PDF ---------- */
@@ -6532,7 +6535,7 @@ async function pdf(r,btn){
   doc.setFillColor(19,32,28);doc.rect(0,0,W,22,'F');doc.setFillColor(242,183,5);doc.rect(0,22,W,1.2,'F');
   doc.setTextColor(242,183,5);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE  ·  CONTRACT 1161',M,8);
   doc.setTextColor(255);doc.setFontSize(17);doc.text('Vehicle Safety Check',M,17);
-  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text('Keep for 7 years. Enter it in the app.',W-M,17,{align:'right'});
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text(r?'Copy of the check saved in the app':'Keep for 7 years. Enter it in the app.',W-M,17,{align:'right'});
   const field=(x,y,w,l,v)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(l.toUpperCase(),x,y);doc.setDrawColor(...LINE);doc.setLineWidth(.3);doc.line(x,y+7,x+w,y+7);if(v){doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(11);doc.text(String(v),x+1,y+5.6)}};
   const cw=(W-2*M-8)/3;let y=30;
   field(M,y,cw,'Date',r?nice(r.date):'');field(M+cw+4,y,cw,'Checked by',r&&r.checker);field(M+2*cw+8,y,cw,'Driver',r&&r.driver);y+=12;
@@ -6551,7 +6554,7 @@ async function pdf(r,btn){
   doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('RESULT',M,y);y+=2;
   Object.entries(OUT).forEach(([k,[t]],i)=>{const x=M+i*62;doc.setDrawColor(...INK);doc.setLineWidth(.35);doc.rect(x,y,5.2,5.2);if(r&&r.outcome===k){doc.setFontSize(10);doc.setTextColor(...INK);doc.text('X',x+1.2,y+4.3)}doc.setTextColor(...INK);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(t,x+7.5,y+4.2)});y+=13;
   field(M,y,(W-2*M-8)/2,'Checker signature','');field(M+(W-2*M-8)/2+8,y,(W-2*M-8)/2,'Driver signature','');
-  doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...MUT);doc.text('If the result is Fail, the van must not be driven until it is fixed. Tell the contract manager straight away.',M,290);
+  doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(...MUT);if(r){doc.text('Printed '+new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}),W-M,286,{align:'right'})}doc.text('If the result is Fail, the van must not be driven until it is fixed. Tell the contract manager straight away.',M,290);
   btn.disabled=false;btn.textContent=old;
   const name=r?`Vehicle check ${r.driver} ${r.date}.pdf`:'Vehicle check form (blank).pdf';
   const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);
@@ -6574,6 +6577,7 @@ document.addEventListener('click',async e=>{
   if(a==='out'&&draft){readForm();draft.outcome=v;render();return}
   if(a==='save'){save();return}
   if(a==='pdf0'){pdf(null,el);return}
+  if(a==='pdfr'&&recs[v]){pdf({id:v,...recs[v]},el);return}
   if(a==='pdf1'&&open){pdf({id:open,...recs[open]},el);return}
   if(a==='del'&&open){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{const r=recs[open];await db.doc('vchecks/'+open).delete();delete recs[open];open=view==='drv'&&r?r.driverId:null;arm=false;msg={t:'Check deleted.'};render()}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'};render()}return}
@@ -6956,7 +6960,7 @@ window.CLOCK={mount,whoami};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251227';
+const VERSION='202610251245';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
