@@ -1222,6 +1222,24 @@ body.sh-uv-on{overflow:hidden}
 #mod-invoices .empty{padding:24px;text-align:center;color:var(--sh-muted)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im .warn{background:#3A2A0C;border-color:#6E5216;color:#FFE2A8}:root:not([data-theme="light"]) #mod-invoices .im small.nt{color:#F2B26B}}
 @media (max-width:640px){#mod-invoices .im .cfg .wide,#mod-invoices .im .seg2{grid-column:auto}#mod-invoices .im td input{width:64px}}
+#mod-invoices .im .tickbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;background:#FFF4E0;border:1px solid #F0C27A;color:#6B3A00;border-radius:8px;padding:9px 12px;font-size:.9rem}
+#mod-invoices .im .tickbar.ok{background:#E6F4EC;border-color:#9CD3B3;color:#14532D}
+#mod-invoices .im .tickbar .sh-btn{margin-left:auto}
+#mod-invoices .im .c{text-align:center;width:1%}
+#mod-invoices .im small.sd{display:block;color:var(--sh-muted);font-size:.76rem}
+#mod-invoices .im small.sd.q{color:#B4570C}
+#mod-invoices .im .swap{border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:1rem}
+#mod-invoices .im .swap:hover{border-color:var(--sh-accent)}
+#mod-invoices .im .wk2{color:var(--sh-muted);white-space:nowrap}
+#mod-invoices .im .tick{display:inline-grid;place-items:center;cursor:pointer}
+#mod-invoices .im .tick input{position:absolute;opacity:0;width:1px;height:1px}
+#mod-invoices .im .tick span{width:26px;height:26px;border:2px solid var(--sh-line);border-radius:7px;display:grid;place-items:center;background:var(--sh-surface)}
+#mod-invoices .im .tick input:checked+span{background:#1E8A4C;border-color:#1E8A4C}
+#mod-invoices .im .tick input:checked+span::after{content:'';width:7px;height:13px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-2px)}
+#mod-invoices .im .tick input:focus-visible+span{outline:2px solid var(--sh-accent);outline-offset:2px}
+#mod-invoices .im tr.tk td:first-child{box-shadow:inset 3px 0 0 #1E8A4C}
+#mod-invoices .im .sum .wh{color:var(--sh-muted);font-size:.9rem;border-top:1px dashed var(--sh-line);padding-top:6px;margin-top:4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im .tickbar{background:#3A2A0C;border-color:#6E5216;color:#FFE2A8}:root:not([data-theme="light"]) #mod-invoices .im .tickbar.ok{background:#12301F;border-color:#2C6B45;color:#BFF0D0}}
 </style>
 <style id="directory-css">#mod-directory .dyx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-directory h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -7178,7 +7196,8 @@ function html(){
     ${T.held?'<p class="ck-alert">You held parcels in your van. Make sure your supervisor or manager knows.</p>':''}
     ${me.role==='admin'?`<button type="button" class="ck-link" data-ck="clear">Clear today's entry (admin)</button>`:`<p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>`}${m}</section>`;
 }
-const extrasLine=r=>(r.extra!=null||r.twoLoads!=null||r.held!=null)?`<p class="ck-x">${r.held!=null?`Held parcels: <b>${r.held?'Yes'+(r.heldCount?' ('+r.heldCount+')':''):'No'}</b> · `:''}${r.extra!=null?`Extra parcels: <b>${+r.extra||0}</b> · `:''}${r.twoLoads!=null?`2 loads: <b>${r.twoLoads?'Yes':'No'}</b>`:''}</p>`:'';
+const extrasLine=r=>(r.extra!=null||r.twoLoads!=null||r.held!=null)?`<p class="ck-x">${r.held!=null?`Held parcels: <b>${r.held?'Yes'+(r.heldCount?' ('+r.heldCount+')':''):'No'}</b> · `:''}${r.extra!=null?`Extra parcels: <b>${+r.extra||0}</b> · `:''}${r.twoLoads!=null?`Loads: <b>${r.twoLoads?'2':'1'}</b>`:''}</p>`:'';
+function loads(k){const v=ui[k];return `<p class="ck-q">How many loads did you do today?</p><div class="ck-chips two" role="group" aria-label="Loads"><button type="button" data-ck="yn" data-k="${k}" data-v="0" aria-pressed="${v===false}">1 load</button><button type="button" data-ck="yn" data-k="${k}" data-v="1" aria-pressed="${v===true}">2 loads</button></div>`}
 function yn(k,label){const v=ui[k];return `<p class="ck-q">${label}</p><div class="ck-chips two" role="group" aria-label="${esc(label)}"><button type="button" data-ck="yn" data-k="${k}" data-v="1" aria-pressed="${v===true}">Yes</button><button type="button" data-ck="yn" data-k="${k}" data-v="0" aria-pressed="${v===false}">No</button></div>`}
 function endQs(p){
   return `${breakHTML(p+'b')}
@@ -7186,7 +7205,7 @@ function endQs(p){
   ${ui[p+'h']===true?`<div class="ck-alert"><b>Let your supervisor or manager know</b> before you leave.<label class="ck-n">How many parcels? <input type="number" inputmode="numeric" min="0" id="ck-${p}hc" value="${esc(ui[p+'hc']??'')}" placeholder="0"></label></div>`:''}
   <p class="ck-q">Did you do any extra parcels today?</p>
   <div class="ck-step"><button type="button" data-ck="step" data-k="${p}x" data-v="-1" aria-label="Less">−</button><input type="number" inputmode="numeric" min="0" id="ck-${p}x" value="${esc(ui[p+'x']??0)}" aria-label="Extra parcels"><button type="button" data-ck="step" data-k="${p}x" data-v="1" aria-label="More">+</button><span>extra parcels</span></div>
-  ${yn(p+'l','Did you do 2 loads today?')}`;
+  ${loads(p+'l')}`;
 }
 const answered=p=>ui[p+'b']!=null&&typeof ui[p+'h']==='boolean'&&typeof ui[p+'l']==='boolean';
 const endData=p=>{const o={brk:ui[p+'b'],held:ui[p+'h'],extra:Math.max(0,parseInt(ui[p+'x'],10)||0),twoLoads:ui[p+'l']};if(ui[p+'h']){const c=parseInt(ui[p+'hc'],10);if(c>0)o.heldCount=c}return o};
@@ -7380,7 +7399,7 @@ function period(k){const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);co
 const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,abn:'',address:'',phone:'',email:'',acct:'',bsb:'',acctNo:''};
 
 let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={};
-let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false;
+let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false,ticks={};
 const P=()=>staff[sid]||{};
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
@@ -7401,12 +7420,12 @@ function dayData(date){
   if(o.removed&&!(c.updatedAt&&String(c.updatedAt)>String(o.removedAt||'')))return null;
   const row=days[date]&&days[date].rows?days[date].rows[login]:null;
   const pc=row&&row.pc!=null?+row.pc:null;
-  const tl=o.tl==='yes'?true:o.tl==='no'?false:c.twoLoads===true;
+  const tl=o.tl==='yes'?true:o.tl==='no'?false:c.twoLoads===true;const tlSet=o.tl==='yes'||o.tl==='no'||c.twoLoads===true||c.twoLoads===false;
   const xp=o.xp!==undefined&&o.xp!==''?+o.xp:(c.extra!=null?+c.extra:null);
   const st=o.start||c.start,fi=o.finish||c.finish,br=o.brk!==undefined&&o.brk!==''?+o.brk:(c.brk!=null?+c.brk:0);
   let hrs=null;if(st&&fi){const a=mins(st),b=mins(fi);if(a!=null&&b!=null&&b>a)hrs=Math.round(((b-a-(br||0))/60)*100)/100}
   if(pc==null&&!c.start&&!o.start&&xp==null)return null;
-  return{pc,tl,xp,hrs,worked:!!(c.start||o.start)}
+  return{pc,tl,tlSet,xp,hrs,worked:!!(c.start||o.start)}
 }
 function rows(){
   if(!sid||!from||!to||to<from)return[];const out=[];const m0=monday(from);
@@ -7443,22 +7462,30 @@ function html(){
      ${[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel rate ($)'],['rh','Hourly rate ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
      ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
     </div><div class="acts"><button type="button" class="sh-btn primary" data-im="savecfg">Save details for next time</button><span class="sub">Only managers can see these.</span></div></details>`;
-  h+=`<div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="r">1 load</th><th class="r">2 load</th><th class="r">Extra parcels</th><th class="r">Hours</th><th class="r">Day total</th></tr></thead><tbody>`;
-  let wk=-1;
-  for(const r of R){if(r.wk!==wk){wk=r.wk;h+=`<tr class="wk"><td colspan="6">Week ${wk+1}${wk>3?' (outside the 4 week template)':''}</td></tr>`}
-    const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;
-    h+=`<tr class="${r.edited?'ed':''} ${r.auto?'':'none'}"><td><b>${esc(short(r.d))}</b>${r.note?`<small class="nt">${esc(r.note)}</small>`:''}${r.edited?`<button type="button" class="lk" data-im="undo" data-v="${r.d}">Undo change</button>`:''}</td>
-     ${['l1','l2','xp','hr'].map(k=>`<td class="r"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`).join('')}<td class="r">${dt?money(dt):''}</td></tr>`}
-  h+=`</tbody><tfoot><tr><td>Totals</td><td class="r">${T.l1||''}</td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td><td class="r">${T.hr||''}</td><td class="r">${money(T.sub)}</td></tr></tfoot></table></div>
-   <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div></div>
+  const showHr=cfg.hourly||R.some(r=>num(r.v.hr));const fmtH=x=>x==null?'':Math.floor(x)+'h '+String(Math.round((x%1)*60)).padStart(2,'0')+'m';
+  const needTick=R.filter(r=>num(r.v.l1)||num(r.v.l2)),ticked=needTick.filter(r=>ticks[r.d]).length,allTicked=ticked===needTick.length;
+  let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;
+  h+=`<div class="tickbar ${allTicked?'ok':''}"><span><b>${ticked} of ${needTick.length}</b> days checked. Tick each day once you have checked the parcels are in the right column: 1 load or 2 loads.</span>${needTick.length&&!allTicked?'<button type="button" class="sh-btn sm" data-im="tickall">Tick all</button>':''}</div>
+   <div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th><th class="c">Checked</th></tr></thead><tbody>`;
+  let wk=-1;const nc=showHr?9:8;
+  for(const r of R){if(r.wk!==wk){wk=r.wk;h+=`<tr class="wk"><td colspan="${nc}">Week ${wk+1}${wk>3?' (outside the 4 week template)':''}</td></tr>`}
+    const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;const hasP=num(r.v.l1)||num(r.v.l2);
+    const said=r.auto&&r.auto.worked?(r.auto.tlSet?`Driver said ${r.auto.tl?'2 loads':'1 load'}`:'Driver did not answer loads'):'';
+    const inp=k=>`<td class="r"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`;
+    h+=`<tr class="${r.edited?'ed':''} ${r.auto?'':'none'} ${ticks[r.d]?'tk':''}"><td><b>${esc(short(r.d))}</b>${said?`<small class="sd ${r.auto.tlSet?'':'q'}">${said}</small>`:''}${r.note?`<small class="nt">${esc(r.note)}</small>`:''}${r.edited?`<button type="button" class="lk" data-im="undo" data-v="${r.d}">Undo change</button>`:''}</td>
+     ${inp('l1')}<td class="c">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
+     <td class="r">${dt?money(dt):''}</td><td class="r wk2">${r.auto&&r.auto.hrs?fmtH(r.auto.hrs):''}</td>
+     <td class="c">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td></tr>`}
+  h+=`</tbody><tfoot><tr><td>Totals</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td><td class="c">${ticked}/${needTick.length}</td></tr></tfoot></table></div>
+   <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div><div class="wh"><span>Hours worked (for your info)</span><b>${worked?fmtH(worked):'None recorded'}</b></div></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   <div class="acts"><button type="button" class="sh-btn primary" data-im="xlsx" ${busy?'disabled':''}>Download invoice (Excel)</button><button type="button" class="sh-btn" data-im="pdf" ${busy?'disabled':''}>Download invoice (PDF)</button>
-    <span class="sub">Rows in grey had no work recorded. Type over any number to change it.</span></div></section>`;
+   <div class="acts"><button type="button" class="sh-btn primary" data-im="xlsx" ${busy||!allTicked?'disabled':''}>Download invoice (Excel)</button><button type="button" class="sh-btn" data-im="pdf" ${busy||!allTicked?'disabled':''}>Download invoice (PDF)</button>
+    <span class="sub">${allTicked?'Rows in grey had no work recorded. Type over any number to change it.':'Tick every day with parcels to unlock the download.'}</span></div></section>`;
   return h;
 }
 function paint(){const box=document.getElementById('im_root');if(!box)return;const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
   box.innerHTML=html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
-function pick(id){sid=id;ov={};msg=null;const p=staff[id]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[id]||{})};invNo=nextNo();showCfg=!cfgs[id];need();paint()}
+function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[id]||{})};invNo=nextNo();showCfg=!cfgs[id];need();paint()}
 
 /* ---------- files ---------- */
 function loadScript(src,test){return new Promise((ok,no)=>{if(test())return ok();const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
@@ -7541,18 +7568,21 @@ async function makePdf(){
 /* ---------- events ---------- */
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]');if(!inMe(el))return;const a=el.dataset.im,v=el.dataset.v;
-  if(a==='per'){[from,to]=period(+v);ov={};need();msg=null;paint();return}
+  if(a==='per'){[from,to]=period(+v);ov={};ticks={};need();msg=null;paint();return}
   if(a==='c'){cfg[el.dataset.k]=v==='1';ov={};paint();return}
   if(a==='savecfg'){try{await db.doc('invcfg/'+sid).set({...cfg});cfgs[sid]={...cfg};msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
-  if(a==='undo'){delete ov[v];paint();return}
+  if(a==='undo'){delete ov[v];delete ticks[v];paint();return}
+  if(a==='swap'){const r=rows().find(x=>x.d===v);if(r){ov[v]={...r.v,l1:r.v.l2,l2:r.v.l1};ticks[v]=true}paint();return}
+  if(a==='tickall'){for(const r of rows())if(num(r.v.l1)||num(r.v.l2))ticks[r.d]=true;paint();return}
   if(a==='xlsx'){makeXlsx();return}
   if(a==='pdf'){makePdf();return}
 });
 document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_sid'){if(t.value)pick(t.value);else{sid='';paint()}return}
-  if(t.id==='im_from'){from=t.value;ov={};need();paint();return}
-  if(t.id==='im_to'){to=t.value;ov={};need();paint();return}
-  if(t.id==='im_date'){invDate=t.value||TODAY;return}});
+  if(t.id==='im_from'){from=t.value;ov={};ticks={};need();paint();return}
+  if(t.id==='im_to'){to=t.value;ov={};ticks={};need();paint();return}
+  if(t.id==='im_date'){invDate=t.value||TODAY;return}
+  if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_no'){invNo=t.value;return}
   if(t.dataset.imc){const k=t.dataset.imc;cfg[k]=['r1','r2','rx','rh'].includes(k)?(t.value===''?'':+t.value):t.value;if(['r1','r2','rx','rh'].includes(k))paint();return}
@@ -7919,7 +7949,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251732';
+const VERSION='202610251741';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
