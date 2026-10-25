@@ -2453,12 +2453,98 @@ p.ck-alert{color:#5A3C00!important}
   .sh-side .sh-links button.tab[aria-current="page"]::before{content:"";position:absolute;top:-7px;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--pds-orange)}
 }
 </style>
+<style id="home-v3">
+/* Section colours: green start, blue on the road, amber news, purple performance, green team, orange admin */
+#sh-home .sh-tgroup h2{display:flex;align-items:center;gap:8px;color:var(--g)}
+#sh-home .sh-tgroup h2::before{content:"";display:block;width:8px;height:8px;border-radius:2px;background:var(--g)}
+.sh-li .ic{background:var(--gs);color:var(--g)}
+#sh-home .sh-grid .sh-li .ic{background:var(--g);color:#fff}
+#sh-home .sh-grid .sh-li:hover{border-color:var(--g)}
+#sh-home .sh-grid .sh-li{box-shadow:inset 0 3px 0 var(--g),0 1px 2px rgba(15,26,42,.05)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-home .sh-grid .sh-li .ic{background:var(--gs);color:var(--g)}}
+:root[data-theme="dark"] #sh-home .sh-grid .sh-li .ic{background:var(--gs);color:var(--g)}
+
+/* Menu and bottom bar: every icon in its colour */
+.sh-alerts-c,[data-nav="alerts"]{--g:#E5484D;--gs:#FBE3E4}
+[data-nav="me"]{--g:#2F6FDB;--gs:#E0EAFB}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) [data-nav="alerts"]{--g:#FF8A8E;--gs:#3D1C1E}:root:not([data-theme="light"]) [data-nav="me"]{--g:#7FA8F5;--gs:#1B2A47}}
+:root[data-theme="dark"] [data-nav="alerts"]{--g:#FF8A8E;--gs:#3D1C1E}:root[data-theme="dark"] [data-nav="me"]{--g:#7FA8F5;--gs:#1B2A47}
+.sh-side [data-nav="alerts"]{--g:#FF8A8E}.sh-side [data-nav="me"]{--g:#7FA8F5}
+.sh-side .sh-grp button svg,.sh-side .sh-links button svg,.sh-side .sh-links button[aria-current="page"] svg{color:var(--g)}
+.sh-side .sh-gl{color:var(--g)}
+.sh-gl::before{background:var(--g)}
+@media (min-width:900px){.sh-side .sh-links button[aria-current="page"]{border-left-color:var(--g)}}
+@media (max-width:899.98px){
+  .sh-side .sh-links button.tab[aria-current="page"]::before{background:var(--g);left:30%;right:30%}
+  .sh-side .sh-links button.tab svg{width:26px;height:26px}
+  .sh-side .sh-links button.tab .sm{font-size:.76rem}
+}
+.sh-links button{position:relative}
+@media (max-width:899.98px){.sh-links [data-nav="home"]{order:1}.sh-links [data-nav="updates"]{order:2}.sh-links [data-nav="alerts"]{order:3}.sh-links [data-nav="me"]{order:4}}
+.bdg{position:absolute;top:3px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:999px;background:#E5484D;color:#fff;font:700 .68rem/18px var(--sh-body);text-align:center;box-shadow:0 0 0 2px var(--sh-nav)}
+@media (min-width:900px){.sh-side .bdg{position:static;margin-left:auto;box-shadow:none}}
+
+/* Notifications */
+.alx,.mex{max-width:720px;margin:0 auto;box-sizing:border-box;padding:16px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.me-wait{padding:40px 0;text-align:center;color:var(--sh-muted)}
+.al-top{display:flex;align-items:center;justify-content:space-between;color:var(--sh-muted);font-size:.88rem;font-weight:600;padding:0 2px}
+.al-list{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+.al-i{display:flex;align-items:flex-start;gap:12px;width:100%;padding:14px;border:0;border-bottom:1px solid var(--sh-line);background:transparent;color:var(--sh-ink);font:inherit;text-align:left;cursor:pointer;position:relative}
+.al-i:last-child{border-bottom:0}
+.al-i.new{background:var(--sh-accent-soft)}
+.al-i .ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:#fff}
+.al-i .ic svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.al-i .tx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;padding-right:14px}
+.al-i .tx b{font:700 1rem/1.3 var(--sh-body)}
+.al-i .tx span{font-size:.92rem;line-height:1.4;color:var(--sh-ink);opacity:.85}
+.al-i .tx small{font-size:.8rem;color:var(--sh-muted);margin-top:2px}
+.al-i .tx em{font-style:normal;font-weight:700;color:#C2410C}
+.al-i .dot{position:absolute;right:14px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#2F6FDB}
+.me-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:48px 20px;color:var(--sh-muted)}
+.me-empty svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px}
+.me-empty b{color:var(--sh-ink);font-size:1.1rem}
+.me-empty p{margin:0;max-width:34ch;line-height:1.45}
+.me-note{margin:0;text-align:center;color:var(--sh-muted);font-size:.82rem}
+
+/* Profile */
+.me-card{display:flex;align-items:center;gap:14px;background:var(--pds-navy);color:#fff;border-radius:14px;padding:18px;box-shadow:0 6px 20px rgba(15,42,68,.18)}
+.me-av{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--pds-orange);color:#fff;font:700 1.5rem var(--sh-body);letter-spacing:.02em}
+.me-who{min-width:0}
+.me-who h1{margin:0;font:700 1.4rem/1.2 var(--sh-body);color:#fff}
+.me-who p{margin:2px 0 0;color:#C9D6E6;font-weight:600}
+.me-who small{display:block;margin-top:2px;color:#AEBCCF;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.me-st{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;box-shadow:inset 0 3px 0 var(--g);color:var(--sh-ink);font:inherit;text-align:left;cursor:pointer;min-width:0}
+.me-st .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--gs);color:var(--g);margin-bottom:4px}
+.me-st .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.me-st b{font:700 1.5rem/1.1 var(--sh-body);font-variant-numeric:tabular-nums}
+.me-st small{font-size:.82rem;line-height:1.3;color:var(--sh-muted)}
+.me-box{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.me-box h2{margin:0;display:flex;align-items:center;gap:8px;font:700 .74rem/1 var(--sh-body);letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+.me-box h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--g)}
+.me-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.95rem}
+.me-kv span{color:var(--sh-muted)}
+.me-sh>div{display:grid;grid-template-columns:5.5rem minmax(0,1fr) auto;gap:8px;padding:8px 0;border-top:1px solid var(--sh-line);font-size:.93rem;align-items:center}
+.me-sh>div:first-child{border-top:0}
+.me-sh>div.off{color:var(--sh-muted)}
+.me-sh>div.td span:first-child{font-weight:700;color:var(--g)}
+.me-sh>div.tot{font-weight:700}
+.me-sh b{font-variant-numeric:tabular-nums}
+.me-sh .st{font-size:.8rem;padding:3px 8px;border-radius:999px;background:var(--sh-sunk);color:var(--sh-muted)}
+.me-sh .st.paid{background:#DDF2E5;color:#14804A}.me-sh .st.checked{background:#E0EAFB;color:#1D5FD1}
+.me-line{margin:0;font-size:.95rem;color:var(--sh-muted)}
+.me-line .ok{color:#14804A;font-weight:700}.me-line .due{color:#C2410C;font-weight:700}
+.me-q{margin:0;padding:10px 12px;border-left:3px solid var(--g);background:var(--sh-sunk);border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.45}
+.me-go{align-self:flex-start;min-height:42px}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
 <div class="sh-mtop"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
 <div class="sh-viewbar" id="sh-viewbar" hidden></div><header class="sh-ph" id="sh-ph" hidden></header>
 <section class="sh-sec" id="mod-home"><div class="sh-home" id="sh-home"></div></section>
+<section class="sh-sec" id="mod-me" hidden><div class="mex" id="me_box"></div></section>
+<section class="sh-sec" id="mod-alerts" hidden><div class="alx" id="al_box"></div></section>
 <section class="sh-sec" id="mod-runs" hidden>
 <header class="top">
   <div class="wrap">
@@ -2701,12 +2787,12 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
-const NAMES={home:'Home',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
-const MOD={home:'mod-home',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
+const NAMES={home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const MOD={home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
  reports:'<svg viewBox="0 0 24 24"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>',
  feedback:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
@@ -2717,7 +2803,9 @@ const ICONS={
  survey:'<svg viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.2 5.7.7-4.2 3.9 1.1 5.6L12 16.4l-5.1 2.8 1.1-5.6-4.2-3.9 5.7-.7z"/></svg>',
  precards:'<svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="M3.5 8l8.5 5.5L20.5 8"/></svg>',
  briefs:'<svg viewBox="0 0 24 24"><path d="M4 10v4h3l6 4V6l-6 4z"/><path d="M16.5 9a4 4 0 0 1 0 6"/><path d="M19 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
- updates:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><circle cx="18" cy="5.5" r="2.2"/></svg>',
+ updates:'<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7 9h10M7 12.5h10M7 16h6"/></svg>',
+ alerts:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+ me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg>',
  timesheets:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>',
  vchecks:'<svg viewBox="0 0 24 24"><path d="M2.5 16V8.5h11V16M13.5 11h4l3 3v2h-18"/><circle cx="7" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/><path d="M5.5 11.5l1.5 1.5 3-3"/></svg>',
  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
@@ -2732,8 +2820,8 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{reports:'Report an incident, a vehicle accident or a safety hazard. Only managers can read it.',feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
+ mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ drv:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally, like a new precard on your run or a brief to sign.',reports:'Report an incident, a vehicle accident or a safety hazard. Only managers can read it.',feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -2742,17 +2830,17 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
 function visible(){return SECS.filter(s=>!MGR_ONLY.includes(s)||role==='mgr')}
-function tabSecs(){return ['home','updates','results','survey','leave']}
+function tabSecs(){return ['home','updates','alerts','me']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
   document.body.appendChild(w);document.body.classList.add('sh-more-on');}
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
-function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${esc({home:'Home',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
+function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
-  if(cur==='home'){ph.hidden=true;ph.innerHTML='';return}
+  if(cur==='home'||cur==='me'){ph.hidden=true;ph.innerHTML='';return}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
   ph.innerHTML=`<div class="in"><span class="eb">${esc(g&&g.k!=='start'?g.name:'Overview')}</span><h1>${esc(NAMES[cur]||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;
@@ -2872,6 +2960,8 @@ function go(sec,opts){
   if((sec==='sort'||sec==='runs')&&window.RUNS) RUNS.setView(sec==='sort'?'lookup':'runs');
   if(sec==='home') renderHome();
   if(sec==='clock'&&window.CLOCK) window.CLOCK.mount();
+  if(sec==='me'&&window.ME) window.ME.profile();
+  if(sec==='alerts'&&window.ME) window.ME.alerts();
   renderNav();
   document.title=(sec==='home'?'Contract 1161':NAMES[sec]+' · 1161');
   if(!opts.keepScroll) window.scrollTo(0,0);
@@ -2920,7 +3010,8 @@ async function publish(patch){
   const art=window.claude&&window.claude.use?await window.claude.use('artifact'):null;
   if(!art){const e=new Error('Sending to drivers is not available in this view.');e.code='not_granted';throw e}
   const next=Object.assign({},SNAP,patch);next.updated=Object.assign({},SNAP.updated);
-  for(const k in patch) next.updated[k]=stamp();
+  next.at=Object.assign({},SNAP.at);
+  for(const k in patch){next.updated[k]=stamp();next.at[k]=new Date().toISOString()}
   await art.publish(pageHtml(next));
 }
 async function sharePart(btn,fn,what){
@@ -4022,13 +4113,14 @@ function boardsNow(){
   view=keep;drawBoard();
   return out;
 }
+function mineNow(){const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days});try{return{week:ranked(scoreSort(weekRows())).map(f),day:ranked(scoreSort(dayRows(selDay))).map(f),cycle:ranked(scoreSort(weekRows(cycleList()))).map(f)}}catch(e){return null}}
 async function shareDrivers(){
   const sm=$("shareMsg"),btn=$("shareDrivers");
   const say=(t,err)=>{sm.textContent=t;sm.hidden=false;sm.classList.toggle("err",!!err)};
   if(!art){say("Updating the drivers’ link is not available in this view. Open the page in Claude while signed in.",true);return}
   if(!Object.keys(week.days).length){say("There is no data for this week yet, so there is nothing to share.",true);return}
   const now=new Date();
-  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow()};
+  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow()};
   btn.disabled=true;say("Updating the drivers’ link…");
   try{await APP.publish({results:snap});say("Done. Drivers now see these results on the same link. The page is reloading.")}
   catch(e){btn.disabled=false;const c=e&&e.code;
@@ -5496,6 +5588,193 @@ window.addEventListener('app:role',e=>start(e.detail));
 if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 })();
 
+</script>
+<script type="text/x-mod" data-mod="me">
+/* Profile and Notifications: each person sees only their own things.
+   Everything here comes from records that person is already allowed to read. */
+(()=>{
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TZ='Australia/Brisbane';
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const S=()=>(window.APP&&APP.SNAP)||{};
+const dkey=d=>String(d||'').toUpperCase().replace(/\s+/g,'');
+const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+const dayOf=d=>{const o={};for(const p of new Intl.DateTimeFormat('en-AU',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d))o[p.type]=p.value;return `${o.year}-${o.month}-${o.day}`};
+const fromIso=s=>{const[a,b,c]=String(s).split('-').map(Number);return new Date(a,b-1,c)};
+const niceDay=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})/.exec(t||'');return m?+m[1]*60+ +m[2]:NaN};
+const nice=t=>{const n=toMin(t);if(!isFinite(n))return t||'';let h=Math.floor(n/60),m=n%60;const ap=h<12?'am':'pm';h=h%12||12;return h+(m?':'+String(m).padStart(2,'0'):'')+ap};
+const hrs=m=>{const h=Math.floor(m/60),r=Math.round(m%60);return h+'h'+(r?' '+String(r).padStart(2,'0')+'m':'')};
+const ord=n=>{const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+const ago=iso=>{const t=Date.parse(iso);if(!isFinite(t))return '';const s=(Date.now()-t)/1000;if(s<60)return 'Just now';if(s<3600)return Math.floor(s/60)+' min ago';if(s<86400)return Math.floor(s/3600)+' h ago';const d=Math.floor(s/86400);if(d<7)return d===1?'Yesterday':d+' days ago';const x=new Date(t);return x.getDate()+' '+MON[x.getMonth()]};
+const hash=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)};
+const ICON={
+ me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20.5c1.2-4 4.3-6 8-6s6.8 2 8 6"/></svg>',
+ brief:'<svg viewBox="0 0 24 24"><path d="M4 10v4h3l6 4V6l-6 4z"/><path d="M16.5 9a4 4 0 0 1 0 6"/></svg>',
+ news:'<svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7 9h10M7 12.5h10M7 16h6"/></svg>',
+ results:'<svg viewBox="0 0 24 24"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="7"/><rect x="10.5" y="6" width="3" height="12"/><rect x="15.5" y="13" width="3" height="5"/></svg>',
+ survey:'<svg viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.2 5.7.7-4.2 3.9 1.1 5.6L12 16.4l-5.1 2.8 1.1-5.6-4.2-3.9 5.7-.7z"/></svg>',
+ precard:'<svg viewBox="0 0 24 24"><rect x="3.5" y="6" width="17" height="12" rx="2"/><path d="M3.5 8l8.5 5.5L20.5 8"/></svg>',
+ run:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5v2h6v-2"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg>',
+ money:'<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 15h7M9 19h4"/></svg>',
+ clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ bell:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>'
+};
+/* per person memory on this phone: which notifications were seen, and when each first showed up */
+let me=null,db=null,data=null,loading=null,seenAtOpen=null;
+const KEY=k=>'me1161_'+((me&&(me.staff||me.email))||'x')+'_'+k;
+const get=k=>{try{return JSON.parse(localStorage.getItem(KEY(k)))}catch(e){return null}};
+const put=(k,v)=>{try{localStorage.setItem(KEY(k),JSON.stringify(v))}catch(e){}};
+
+async function who(){
+  let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}
+  for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));
+  let c=null;try{c=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){}
+  const m={email:(w&&w.email)||'',name:(c&&c.name)||(w&&w.name)||'',staff:(c&&c.staff)||(w&&w.staff)||'',login:dkey(w&&w.login),run:(w&&w.run)||'',admin:!!(w&&w.role==='admin')};
+  if(m.staff&&(!m.login||!m.phone)&&db){try{const d=await db.doc('staff/'+m.staff).get();if(d.exists){const v=window.__D(d)||{};m.login=m.login||dkey(v.login);m.run=m.run||(v.runs||[]).filter(Boolean).join(', ');m.phone=v.phone||v.mobile||'';m.role=v.role||'';if(!m.name)m.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
+  const R=S().runs||{};
+  if(!m.login&&m.name){const id=Object.keys(R).find(k=>dkey(R[k].driver)===dkey(m.name));if(id)m.login=dkey(R[id].login)}
+  m.name=tc(m.name);
+  return m;
+}
+async function load(force){
+  if(loading&&!force)return loading;
+  loading=(async()=>{
+    try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}
+    me=await who();
+    const d={clock:[],briefs:[],sigs:{},inv:[]};
+    const now=new Date();
+    const tasks=[];
+    if(db&&me.staff){
+      const days=Array.from({length:14},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
+      tasks.push(Promise.all(days.map(x=>db.doc('clock/'+x+'_'+me.staff).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
+      tasks.push(db.collection('briefs').get().then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+        await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+me.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
+      tasks.push((async()=>{try{const q=db.collection('invlog').where('sid','==',me.staff);const sn=await q.get();d.inv=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}catch(e){}})());
+    }
+    await Promise.all(tasks);
+    data=d;return d;
+  })();
+  return loading;
+}
+
+/* ---------- what is mine in the shared data ---------- */
+function myRun(){const R=S().runs||{};const id=Object.keys(R).find(k=>me.login&&dkey(R[k].login)===me.login);return id?{id,...R[id]}:null}
+function myResults(){
+  const r=S().results;if(!r||!r.mine||!me.login)return null;
+  const out={};for(const k of['week','day','cycle']){const L=r.mine[k]||[];const x=L.find(y=>dkey(y.l)===me.login);if(x)out[k]={...x,of:L.length,label:(r.boards||[]).find(b=>b.key===k)?.label||''}}
+  return Object.keys(out).length?out:null;
+}
+function mySurvey(){
+  const s=S().survey;if(!s||!s.weekly||!s.weekly.html)return null;
+  let doc;try{doc=new DOMParser().parseFromString(s.weekly.html,'text/html')}catch(e){return null}
+  const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
+  const keys=[me.login,dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
+  const row=rows.find(t=>keys.includes(dkey(t.querySelector('.id').textContent)));
+  const sub=(doc.querySelector('.band .s')||{}).textContent||'';
+  if(!row)return{found:false,of:rows.length,sub};
+  const scores=[...row.querySelectorAll('.bx .b')].map(b=>+b.textContent);
+  const said=[...row.querySelectorAll('.cm .c .tx')].map(x=>x.textContent);
+  return{found:true,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
+}
+function myPrecards(){return(S().precards||[]).filter(p=>me.login&&dkey(p.driver)===me.login).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
+function weekShifts(){
+  const now=new Date(),t=dayOf(now);const dow=(fromIso(t).getDay()+6)%7;const mon=new Date(fromIso(t).getTime()-dow*864e5);
+  const ids=Array.from({length:7},(_,i)=>{const x=new Date(mon.getTime()+i*864e5);return dayOf(new Date(x.getTime()+12*36e5))});
+  const by={};(data&&data.clock||[]).forEach(c=>by[c.date]=c);
+  let tot=0;const rows=ids.map(id=>{const c=by[id];if(!c)return{id,c:null,m:0};const m=c.finish?Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0)):0;tot+=m;return{id,c,m}});
+  return{rows,tot,days:rows.filter(r=>r.c).length,today:t};
+}
+
+/* ---------- notifications ---------- */
+function build(){
+  const L=[],first=get('first')||{},add=n=>{if(!n.at||!isFinite(Date.parse(n.at))){n.at=first[n.id]||new Date().toISOString()}first[n.id]=first[n.id]||n.at;L.push(n)};
+  const now=Date.now(),old=iso=>now-Date.parse(iso)>45*864e5;
+  const snapAt=k=>(S().at||{})[k];
+  // team brief to sign
+  if(data){const b=data.briefs[0];if(b&&data.sigs[b.id]===false)add({id:'brief-'+b.id,at:b.createdAt,g:'news',ic:'brief',nav:'briefs',title:'Sign this week’s team brief',body:'Read the brief'+(b.date?' for '+niceDay(b.date):'')+' and sign that you have seen it.',act:true});}
+  // latest updates from the office
+  for(const n of S().notices||[]){const at=n.edited||n.postedAt;if(at&&old(at))continue;add({id:'nt-'+n.id+(n.edited?'-'+n.edited:''),at,g:'news',ic:'news',nav:'updates',title:(n.important?'Important: ':'')+n.title,body:n.edited?'This update was changed. Tap to see what it says now.':'New update from the office.'})}
+  // results
+  const r=S().results;if(r&&r.updated){const m=myResults();const w=m&&(m.week||m.cycle||m.day);
+    add({id:'res-'+r.updated,at:snapAt('results'),g:'perf',ic:'results',nav:'results',title:'Driver results updated',body:w?`You are ${ord(w.k)} of ${w.of} ${m.week?'this week':''} with ${w.p} of ${w.m} points.`.replace('  ',' '):'See this week’s scores and ranking.'})}
+  // survey
+  const s=S().survey;if(s&&s.updated){const m=mySurvey();
+    add({id:'sv-'+s.updated,at:snapAt('survey'),g:'perf',ic:'survey',nav:'survey',title:'Survey ranking updated',body:m&&m.found?`You are ${ord(m.rank)} of ${m.of} with ${m.pts>0?'+':''}${m.pts} points${m.said.length?` and ${m.said.length} customer comment${m.said.length===1?'':'s'}`:''}.`:'See what customers said and where you rank.'})}
+  // precards on my run
+  for(const p of myPrecards().slice(0,10)){if(p.date&&old(p.date+'T08:00:00'))continue;add({id:'pc-'+(p.id||p.address),at:snapAt('precards'),g:'road',ic:'precard',nav:'precards',title:'New precard on your run',body:[p.address,p.suburb].filter(Boolean).join(', ')+(p.reason?'. '+p.reason:'')})}
+  // my run sheet changed
+  const run=myRun();if(run){const h=hash(JSON.stringify(run));const was=get('runhash');if(was==null)put('runhash',h);else if(was!==h){add({id:'run-'+h,at:snapAt('runs'),g:'road',ic:'run',nav:'runs',run:true,title:'Your run sheet was updated',body:'Check the delivery order, gate codes and notes for '+(run.id||'your run')+'.'})}}
+  // invoices
+  if(data)for(const v of data.inv.slice(0,8)){if(v.status==='paid')add({id:'inv-'+v.id+'-paid',at:v.paidAt,g:'admin',ic:'money',nav:'invoices',title:'Your invoice was paid',body:'Invoice from '+(v.from?niceDay(v.from):'')+(v.total?', $'+(+v.total).toFixed(2):'')+'.'});
+    else if(v.status==='checked')add({id:'inv-'+v.id+'-checked',at:v.checkedAt,g:'admin',ic:'money',nav:'invoices',title:'Your invoice was checked',body:'Invoice from '+(v.from?niceDay(v.from):'')+' is checked and waiting to be paid.'})}
+  // a shift left open
+  if(data){const t=dayOf(new Date());for(const c of data.clock){if(c.date<t&&c.start&&!c.finish){add({id:'ck-'+c.date,at:c.updatedAt,g:'start',ic:'clock',nav:'home',title:'You didn’t finish your shift',body:niceDay(c.date)+': you started at '+nice(c.start)+'. Add your finish time on Home.',act:true});break}}}
+  const keep={};L.forEach(n=>keep[n.id]=first[n.id]);put('first',keep);
+  return L.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+}
+function unread(L){const seen=new Set(get('seen')||[]);return L.filter(n=>!seen.has(n.id)).length}
+function badge(n){window.__alertN=n;document.querySelectorAll('[data-nav="alerts"]').forEach(b=>{let x=b.querySelector('.bdg');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';b.appendChild(x)}x.textContent=n>9?'9+':String(n)})}
+async function refresh(force){await load(force);const L=build();badge(unread(L));return L}
+
+function alertsHTML(L){
+  const seen=seenAtOpen||new Set();
+  if(!L.length)return `<div class="me-empty">${ICON.bell}<b>You’re all caught up</b><p>When something changes for you, like a new precard on your run, your results or a brief to sign, it shows here.</p></div>`;
+  return `<div class="al-top"><span>${L.filter(n=>!seen.has(n.id)).length?L.filter(n=>!seen.has(n.id)).length+' new':'No new notifications'}</span></div>
+  <div class="al-list">${L.map(n=>`<button type="button" class="al-i g-${n.g}${seen.has(n.id)?'':' new'}" data-al="${esc(n.id)}"><span class="ic">${ICON[n.ic]}</span><span class="tx"><b>${esc(n.title)}</b><span>${esc(n.body)}</span><small>${esc(ago(n.at))}${n.act?' · <em>Action needed</em>':''}</small></span>${seen.has(n.id)?'':'<i class="dot" aria-label="New"></i>'}</button>`).join('')}</div>
+  <p class="me-note">Only you can see your notifications.</p>`;
+}
+let LAST=[];
+async function showAlerts(){
+  const box=document.getElementById('al_box');if(!box)return;
+  if(!data)box.innerHTML='<div class="me-wait">Loading your notifications…</div>';
+  const L=await refresh(true);LAST=L;
+  seenAtOpen=new Set(get('seen')||[]);
+  box.innerHTML=alertsHTML(L);
+  put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);
+}
+/* ---------- profile ---------- */
+function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
+function profileHTML(){
+  const run=myRun(),res=myResults(),sv=mySurvey(),pcs=myPrecards(),wk=weekShifts();
+  const brief=data&&data.briefs[0],signed=brief?data.sigs[brief.id]:null;
+  const stat=(g,ic,big,lab,nav)=>`<button type="button" class="me-st g-${g}" ${nav?`data-nav="${nav}"`:''}><span class="ic">${ICON[ic]}</span><b>${big}</b><small>${lab}</small></button>`;
+  const w=res&&(res.week||res.cycle);
+  return `<section class="me-card">
+    <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
+    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.admin?'Manager':'Driver',me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
+  </section>
+  <div class="me-stats">
+    ${stat('start','clock',wk.tot?hrs(wk.tot):'0h',wk.days?`worked this week, ${wk.days} day${wk.days===1?'':'s'}`:'worked this week','clock')}
+    ${stat('perf','results',w?ord(w.k):'–',w?`of ${w.of} in results, ${w.p} of ${w.m} points`:'in results this week','results')}
+    ${stat('perf','survey',sv&&sv.found?ord(sv.rank):'–',sv&&sv.found?`of ${sv.of} in the survey, ${sv.pts>0?'+':''}${sv.pts} points`:'in the survey this week','survey')}
+    ${stat('road','precard',String(pcs.length),pcs.length===1?'precard address on your run':'precard addresses on your run','precards')}
+  </div>
+  ${run?`<section class="me-box g-road"><h2>My run</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run">Open my run sheet</button></section>`:''}
+  <section class="me-box g-start"><h2>My shifts this week</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
+  ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p><button type="button" class="sh-btn${signed?'':' primary'} me-go" data-nav="briefs">${signed?'View team brief':'Read and sign'}</button></section>`:''}
+  ${data&&data.inv.length?`<section class="me-box g-admin"><h2>My invoices</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div><button type="button" class="sh-btn me-go" data-nav="invoices">Go to invoices</button></section>`:''}
+  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>What your customers said</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}<button type="button" class="sh-btn me-go" data-nav="survey">See the survey ranking</button></section>`:''}
+  <p class="me-note">Only you can see this page.</p>`;
+}
+async function showProfile(){
+  const box=document.getElementById('me_box');if(!box)return;
+  if(!data)box.innerHTML='<div class="me-wait">Loading your profile…</div>';
+  await load(true);box.innerHTML=profileHTML();
+  const L=build();badge(unread(L));
+}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
+  if(e.target.closest('[data-me="run"]'))openRun();
+});
+function openRun(){try{if(window.RUNS&&RUNS.openLogin&&me&&me.login&&RUNS.openLogin(me.login))return}catch(x){}if(window.APP)APP.go('runs')}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refresh(true)});
+window.ME={profile:showProfile,alerts:showAlerts,refresh};
+function start(){setTimeout(()=>refresh(),400)}
+window.addEventListener('app:role',start);
+if(window.APP&&APP.role&&APP.role!=='loading')start();
+})();
 </script>
 <script type="text/x-mod" data-mod="leave">
 (()=>{
@@ -8316,7 +8595,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610260730';
+const VERSION='202610260830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
