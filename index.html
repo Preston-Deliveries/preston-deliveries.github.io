@@ -2270,6 +2270,15 @@ p.ck-alert{color:#5A3C00!important}
 .sh-bk span.ok{color:#17774f;font-weight:600}
 .sh-bkwarn{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 16px;padding:12px 14px;border-radius:8px;background:#FFF4E0;border:1px solid #F2B24A;border-left:5px solid #E07B16;color:#5A3200}
 .sh-bkwarn[hidden]{display:none}
+.sh-wa{max-width:1100px;margin:22px auto 28px;padding:14px 16px;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:5px solid #25D366;border-radius:8px;display:flex;flex-direction:column;gap:10px;box-sizing:border-box}
+.sh-wa[hidden]{display:none}
+.sh-wa h2{margin:0;font-size:1.05rem}
+.sh-wa p{margin:0;color:var(--sh-muted);font-size:.88rem}
+.sh-wa textarea{box-sizing:border-box;width:100%;min-height:84px;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--sh-line);border-radius:6px;background:var(--sh-sunk);color:var(--sh-ink);resize:vertical}
+.sh-wa .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sh-wa .go{background:#1E8E4E;border-color:#1E8E4E;color:#fff}
+.sh-wa .ok{font-size:.88rem;color:#17774f;font-weight:600}
+@media (max-width:899.98px){.sh-wa{margin:18px 12px 24px}}
 .sh-bkwarn b{display:block;font-size:.98rem}
 .sh-bkwarn span{flex:1;min-width:200px;font-size:.9rem}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sh-bkwarn{background:#3A2C10;border-color:#8A5A12;color:#FFE2B0}}
@@ -2711,7 +2720,25 @@ function openUserView(){
 }
 window.__closeUV=()=>{let sec=null;try{const f=document.querySelector('#sh-uvwrap iframe');const w=f&&f.contentWindow;sec=w&&w.APP&&w.APP.section;if(w&&sec===w.__uvFirst&&MGR_ONLY.includes(window.__uvStart))sec=null}catch(e){}closeUserView();if(sec&&SECS.includes(sec)&&sec!==cur)go(sec)};
 function closeUserView(){(window.__uvSubs||[]).splice(0).forEach(u=>{try{u()}catch(e){}});const w=document.getElementById('sh-uvwrap');if(w)w.remove();document.body.classList.remove('sh-uv-on')}
-function renderNav(){renderViewbar();$('sh-links').innerHTML=navHTML();
+/* Let drivers know: open WhatsApp with a ready message and a link straight to the page (admin only) */
+const WA_MSG={updates:'Please read the latest update in the PDS app.',briefs:'A new team brief is up. Please read it and sign off in the PDS app.',results:'Driver results have been updated. Check yours in the PDS app.',survey:'The survey ranking has been updated. Check it in the PDS app.'};
+const waLink=s=>location.origin+location.pathname+'#'+s;
+function renderWa(){
+  document.querySelectorAll('.sh-wa').forEach(el=>{if(el.dataset.for!==cur||role!=='mgr'||previewChild)el.hidden=true});
+  if(!WA_MSG[cur]||role!=='mgr'||previewChild)return;
+  const sec=document.getElementById(MOD[cur]);if(!sec)return;
+  let box=document.querySelector('.sh-wa[data-for="'+cur+'"]');
+  if(!box){box=document.createElement('section');box.className='sh-wa';box.dataset.for=cur;box.setAttribute('aria-label','Let drivers know');
+    box.innerHTML=`<h2>Let drivers know</h2><p>Opens WhatsApp with this message. Pick the group, then tap send.</p>
+    <textarea aria-label="Message">${esc(WA_MSG[cur]+'\n'+waLink(cur))}</textarea>
+    <div class="row"><button type="button" class="sh-btn go" data-wa="send">Send to WhatsApp</button><button type="button" class="sh-btn" data-wa="copy">Copy message</button><button type="button" class="sh-btn" data-wa="reset">Reset message</button><span class="ok" role="status"></span></div>`;
+    box.addEventListener('click',async e=>{const b=e.target.closest('[data-wa]');if(!b)return;const t=box.querySelector('textarea'),ok=box.querySelector('.ok');ok.textContent='';
+      if(b.dataset.wa==='reset'){t.value=WA_MSG[box.dataset.for]+'\n'+waLink(box.dataset.for);return}
+      if(b.dataset.wa==='copy'){try{await navigator.clipboard.writeText(t.value);ok.textContent='Copied. Paste it in the group.'}catch(x){t.select();ok.textContent='Select the text and copy it.'}return}
+      window.open('https://wa.me/?text='+encodeURIComponent(t.value),'_blank','noopener')});
+    sec.insertAdjacentElement('afterend',box)}
+  box.hidden=false}
+function renderNav(){renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
   document.querySelectorAll('.sh-role').forEach(e=>e.innerHTML=r)}
 function go(sec,opts){
@@ -8127,7 +8154,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610252100';
+const VERSION='202610252110';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
