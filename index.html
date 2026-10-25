@@ -1240,6 +1240,22 @@ body.sh-uv-on{overflow:hidden}
 #mod-invoices .im tr.tk td:first-child{box-shadow:inset 3px 0 0 #1E8A4C}
 #mod-invoices .im .sum .wh{color:var(--sh-muted);font-size:.9rem;border-top:1px dashed var(--sh-line);padding-top:6px;margin-top:4px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im .tickbar{background:#3A2A0C;border-color:#6E5216;color:#FFE2A8}:root:not([data-theme="light"]) #mod-invoices .im .tickbar.ok{background:#12301F;border-color:#2C6B45;color:#BFF0D0}}
+#mod-invoices .im .subd{margin:0;background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:8px;padding:8px 12px;font-size:.88rem}
+#mod-invoices .im .tiles4{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+#mod-invoices .im .tiles4>div{background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column}
+#mod-invoices .im .tiles4 span{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-invoices .im .tiles4 b{font-family:var(--sh-display);font-size:1.5rem}
+#mod-invoices .im .tiles4 small{color:var(--sh-muted);font-size:.78rem}
+#mod-invoices .im .segs{display:flex;flex-wrap:wrap;gap:6px}
+#mod-invoices .im .segs button{font:600 .9rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:6px;padding:7px 14px;cursor:pointer}
+#mod-invoices .im .segs button[aria-pressed="true"]{background:var(--sh-accent);border-color:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-invoices .im .segs i{font-style:normal;opacity:.75;font-size:.8rem}
+#mod-invoices .im td small{display:block;color:var(--sh-muted);font-size:.76rem}
+#mod-invoices .im td b+small{display:inline;margin-left:6px}
+#mod-invoices .im .acts2{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+#mod-invoices .im .st{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:#E6EAF0;color:#2B3A52;white-space:nowrap}
+#mod-invoices .im .st-checked{background:#E3EEFB;color:#1D4E9A}#mod-invoices .im .st-paid{background:#E6F4EC;color:#14532D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im .st{background:#24324A;color:#C9D6EA}:root:not([data-theme="light"]) #mod-invoices .im .st-checked{background:#17304F;color:#A9CBF5}:root:not([data-theme="light"]) #mod-invoices .im .st-paid{background:#12301F;color:#BFF0D0}}
 </style>
 <style id="directory-css">#mod-directory .dyx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-directory h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -5623,8 +5639,8 @@ function render(){
   if(mode==='wait'){box.innerHTML='';return}
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
-  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
-  if(isMgr()&&ivtab==='make'){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount();return}
+  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
   const due=c.due?`<b>Next invoice due ${esc(nice(c.due))}.</b> `:'';
   box.innerHTML=`<div class="ivx">${tabs}
   <div class="head"><h1>Invoices</h1>${isMgr()?'<div class="act"><button type="button" class="sh-btn" data-iv="edit">Edit notice and contact</button></div>':''}</div>
@@ -5707,6 +5723,7 @@ document.addEventListener('click',async e=>{
     try{await APP.publish({invoices:o})}catch(x){el.disabled=false;msg={err:true,t:'Could not send just now. Try again in a minute.'};render()}
     return}
 });
+window.IV_SETTAB=t=>{ivtab=t;msg=null;render();window.scrollTo(0,0)};
 function start(role){mode=role==='mgr'?'mgr':'drv';render()}
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -7479,13 +7496,14 @@ function html(){
   h+=`</tbody><tfoot><tr><td>Totals</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td><td class="c">${ticked}/${needTick.length}</td></tr></tfoot></table></div>
    <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div><div class="wh"><span>Hours worked (for your info)</span><b>${worked?fmtH(worked):'None recorded'}</b></div></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   <div class="acts"><button type="button" class="sh-btn primary" data-im="xlsx" ${busy||!allTicked?'disabled':''}>Download invoice (Excel)</button><button type="button" class="sh-btn" data-im="pdf" ${busy||!allTicked?'disabled':''}>Download invoice (PDF)</button>
-    <span class="sub">${allTicked?'Rows in grey had no work recorded. Type over any number to change it.':'Tick every day with parcels to unlock the download.'}</span></div></section>`;
+   ${logs[logId(sid,from)]?`<p class="subd">Already submitted for this pay period on ${esc(nice(String(logs[logId(sid,from)].submittedAt||logs[logId(sid,from)].at||'').slice(0,10)))} (${esc(STAT[logs[logId(sid,from)].status]||'Submitted')}). Submitting again replaces it.</p>`:''}
+   <div class="acts"><button type="button" class="sh-btn primary" data-im="submit" ${busy||!allTicked?'disabled':''}>${logs[logId(sid,from)]?'Submit again':'Submit invoice'}</button><button type="button" class="sh-btn" data-im="pdf" ${busy||!allTicked?'disabled':''}>PDF</button><button type="button" class="sh-btn" data-im="xlsx" ${busy||!allTicked?'disabled':''}>Excel</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">See submitted invoices</button>':''}
+    <span class="sub">${allTicked?'Rows in grey had no work recorded. Type over any number to change it.':'Tick every day with parcels to unlock Submit.'}</span></div></section>`;
   return h;
 }
 function paint(){const box=document.getElementById('im_root');if(!box)return;const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
-  box.innerHTML=html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
-function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[id]||{})};invNo=nextNo();showCfg=!cfgs[id];need();paint()}
+  box.innerHTML=view==='list'?listHTML():html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
+function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[id]||{})};invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();showCfg=!cfgs[id];need();paint()}
 
 /* ---------- files ---------- */
 function loadScript(src,test){return new Promise((ok,no)=>{if(test())return ok();const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
@@ -7498,72 +7516,151 @@ function setCell(xml,ref,val){const re=new RegExp('<c r="'+ref+'"([^>]*?)(/>|>[\
 function setCached(xml,ref,val){const re=new RegExp('<c r="'+ref+'"([^>]*?)>([\\s\\S]*?)</c>');const m=re.exec(xml);if(!m||!/<f[ >]/.test(m[2]))return xml;
   let attrs=m[1].replace(/ t="[^"]*"/,'');const f=/<f[\s\S]*?<\/f>|<f[^>]*\/>/.exec(m[2])[0];const isNum=typeof val==='number';
   const out='<c r="'+ref+'"'+attrs+(isNum?'':' t="str"')+'>'+f+'<v>'+(isNum?Math.round(val*10000)/10000:xesc(val))+'</v></c>';return xml.replace(re,()=>out)}
-function fname(ext){const p=P();return `Invoice ${invNo||''} ${nameOf(p)} ${from} to ${to}.${ext}`.replace(/\s+/g,' ')}
 async function save(blob,name){const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl)throw new Error('no downloads');await dl.save({filename:name,data:blob})}
-async function logIt(T){try{const id=sid+'_'+from+'_'+(invNo||'x').replace(/[^\w-]/g,'');await db.doc('invlog/'+id).set({sid,name:nameOf(P()),no:invNo,from,to,total:T.total,gst:cfg.gst,at:new Date().toISOString()})}catch(e){}}
-async function makeXlsx(){
-  const R=rows(),T=totals(R);if(!R.length){msg={err:true,t:'There are no days in that range.'};paint();return}
-  busy=true;msg={t:'Making the invoice…'};paint();
-  try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>window.JSZip);
-    const F=window.IV_FILES||{};const k=cfg.gst?'gst':'nogst';const bin=atob(F[k].b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
-    const zip=await window.JSZip.loadAsync(u);let x=await zip.file('xl/worksheets/sheet1.xml').async('string');const p=P();
-    const set=(r,v)=>{x=setCell(x,r,v)};
-    set('C6',nameOf(p));set('C7',cfg.abn);set('C8',cfg.address);set('C9',cfg.phone);set('C10',cfg.email);
-    set('G6',invNo);set('G7',serial(invDate));set('G8',serial(from));set('G9',serial(to));
-    set('C13',cfg.acct);set('C14',cfg.bsb);set('C15',cfg.acctNo);
-    set('C20',+cfg.r1);set('D20',+cfg.r2);set('E20',+cfg.rx);set('F20',+cfg.rh);
-    for(const r of R){if(r.wk>3)continue;const row=21+r.wk*7+r.di;['C','D','E','F'].forEach((col,i)=>{const v=r.v[['l1','l2','xp','hr'][i]];set(col+row,v===''||v==null?'':+v)})}
-    /* fill in the totals too, so the file shows the right figures in any app, not only Excel */
-    const rate=[+cfg.r1,+cfg.r2,+cfg.rx,+cfg.rh],cols=['C','D','E','F'],keys=['l1','l2','xp','hr'];const grid={};for(const r of R){if(r.wk<=3)grid[21+r.wk*7+r.di]=r.v}
-    const q=[0,0,0,0];
-    for(let w=0;w<4;w++){const wt=[0,0,0,0];let wsum=0;for(let di=0;di<6;di++){const row=21+w*7+di,v=grid[row];const has=v&&keys.some(k=>v[k]!==''&&v[k]!=null);
-        if(has){let dt=0;keys.forEach((k,i)=>{const n=num(v[k]);wt[i]+=n;dt+=n*rate[i]});wsum+=dt;x=setCached(x,'G'+row,dt)}else x=setCached(x,'G'+row,'')}
-      const tr=27+w*7;cols.forEach((c,i)=>{x=setCached(x,c+tr,wt[i]);q[i]+=wt[i]});x=setCached(x,'G'+tr,wsum)}
-    let sub=0;for(let i=0;i<4;i++){x=setCached(x,'E'+(51+i),q[i]);x=setCached(x,'F'+(51+i),rate[i]);x=setCached(x,'G'+(51+i),q[i]*rate[i]);sub+=q[i]*rate[i]}
-    if(cfg.gst){const g=Math.round(sub*10)/100;x=setCached(x,'G55',sub);x=setCached(x,'G56',g);x=setCached(x,'G57',sub+g)}else x=setCached(x,'G55',sub);
-    zip.file('xl/worksheets/sheet1.xml',x);
-    let wb=await zip.file('xl/workbook.xml').async('string');wb=wb.replace(/<calcPr([^>]*?)\/>/,(m,a)=>'<calcPr'+a.replace(/ fullCalcOnLoad="[^"]*"/,'')+' fullCalcOnLoad="1"/>');zip.file('xl/workbook.xml',wb);
-    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    await save(blob,fname('xlsx'));await logIt(T);msg={t:'Invoice saved. Open it to check, then send it on.'}}
-  catch(e){msg={err:true,t:'Could not make the Excel file. Check your connection and try again.'}}
+const fname=(inv,ext)=>`Invoice ${inv.no||''} ${inv.name} ${inv.from} to ${inv.to}.${ext}`.replace(/\s+/g,' ');
+const logId=(s,f)=>s+'_'+f;
+/* a full copy of the invoice as it stands, so it can be printed again later exactly the same */
+function snap(){const R=rows(),T=totals(R);let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;const p=P();
+  return{sid,name:nameOf(p),run:(p.runs||[]).filter(Boolean).join(', '),no:invNo,date:invDate,from,to,cfg:{...cfg},
+    rows:R.filter(r=>['l1','l2','xp','hr'].some(k=>num(r.v[k]))).map(r=>({d:r.d,wk:r.wk,di:r.di,l1:num(r.v.l1),l2:num(r.v.l2),xp:num(r.v.xp),hr:num(r.v.hr),worked:r.auto&&r.auto.hrs||0,said:r.auto&&r.auto.tlSet?(r.auto.tl?2:1):0})),
+    T,worked:Math.round(worked*100)/100}}
+async function buildXlsx(inv){
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>window.JSZip);const c=inv.cfg;
+  const F=window.IV_FILES||{};const k=c.gst?'gst':'nogst';const bin=atob(F[k].b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  const zip=await window.JSZip.loadAsync(u);let x=await zip.file('xl/worksheets/sheet1.xml').async('string');const set=(r,v)=>{x=setCell(x,r,v)};
+  set('C6',inv.name);set('C7',c.abn);set('C8',c.address);set('C9',c.phone);set('C10',c.email);
+  set('G6',inv.no);set('G7',serial(inv.date));set('G8',serial(inv.from));set('G9',serial(inv.to));
+  set('C13',c.acct);set('C14',c.bsb);set('C15',c.acctNo);
+  set('C20',+c.r1);set('D20',+c.r2);set('E20',+c.rx);set('F20',+c.rh);
+  const rate=[+c.r1,+c.r2,+c.rx,+c.rh],cols=['C','D','E','F'],keys=['l1','l2','xp','hr'];const grid={};
+  for(const r of inv.rows){if(r.wk>3)continue;const row=21+r.wk*7+r.di;grid[row]=r;keys.forEach((k,i)=>set(cols[i]+row,num(r[k])?num(r[k]):''))}
+  /* fill in the totals too, so the file shows the right figures in any app, not only Excel */
+  const q=[0,0,0,0];
+  for(let w=0;w<4;w++){const wt=[0,0,0,0];let wsum=0;for(let di=0;di<6;di++){const row=21+w*7+di,v=grid[row];
+      if(v){let dt=0;keys.forEach((k,i)=>{const n=num(v[k]);wt[i]+=n;dt+=n*rate[i]});wsum+=dt;x=setCached(x,'G'+row,dt)}else x=setCached(x,'G'+row,'')}
+    const tr=27+w*7;cols.forEach((cc,i)=>{x=setCached(x,cc+tr,wt[i]);q[i]+=wt[i]});x=setCached(x,'G'+tr,wsum)}
+  let sub=0;for(let i=0;i<4;i++){x=setCached(x,'E'+(51+i),q[i]);x=setCached(x,'F'+(51+i),rate[i]);x=setCached(x,'G'+(51+i),q[i]*rate[i]);sub+=q[i]*rate[i]}
+  if(c.gst){const g=Math.round(sub*10)/100;x=setCached(x,'G55',sub);x=setCached(x,'G56',g);x=setCached(x,'G57',sub+g)}else x=setCached(x,'G55',sub);
+  zip.file('xl/worksheets/sheet1.xml',x);
+  let wb=await zip.file('xl/workbook.xml').async('string');wb=wb.replace(/<calcPr([^>]*?)\/>/,(m,a)=>'<calcPr'+a.replace(/ fullCalcOnLoad="[^"]*"/,'')+' fullCalcOnLoad="1"/>');zip.file('xl/workbook.xml',wb);
+  return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+const C={INK:[22,30,45],MUT:[96,108,124],LINE:[214,220,228],NAVY:[19,33,58],SOFT:[244,246,249]};
+function drawInvoice(doc,inv){
+  const W=210,M=14,{INK,MUT,LINE,NAVY,SOFT}=C,c=inv.cfg,T=inv.T,R=inv.rows;
+  doc.setFillColor(...NAVY);doc.rect(0,0,W,24,'F');doc.setFillColor(233,177,10);doc.rect(0,24,W,1.2,'F');
+  doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(c.gst?'TAX INVOICE':'INVOICE',M,15);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text('4 WEEKLY  ·  SUBCONTRACTOR DELIVERY SERVICES',W-M,15,{align:'right'});
+  let y=34;const col=(x,yy,title,lines)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(title,x,yy);let k=yy+5;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...INK);for(const[l,v]of lines){if(l){doc.setTextColor(...MUT);doc.text(l,x,k);doc.setTextColor(...INK);doc.text(String(v||''),x+24,k)}else doc.text(String(v||''),x,k);k+=4.6}return k};
+  const y1=col(M,y,'FROM (SUBCONTRACTOR)',[['Name',inv.name],['ABN',c.abn],['Address',c.address],['Phone',c.phone],['Email',c.email]]);
+  const y2=col(115,y,'INVOICE DETAILS',[['Invoice No.',inv.no],['Invoice Date',nice(inv.date)],['Period From',nice(inv.from)],['Period To',nice(inv.to)]]);
+  y=Math.max(y1,y2)+4;
+  const y3=col(M,y,'PAYMENT DETAILS',[['Account',c.acct],['BSB',c.bsb],['Account No.',c.acctNo]]);
+  const y4=col(115,y,'BILL TO',[['','Preston Delivery Service Pty Ltd'],['','7/10 Ivan Street, Arundel QLD 4214'],['','Ph 0424 512 661'],['','ABN 56 109 175 046']]);
+  y=Math.max(y3,y4)+4;
+  const cx=[M,62,90,118,146,W-M];const head=['DAY','1 LOAD','2 LOAD','EXTRA','HOURS','DAY TOTAL'];
+  doc.setFillColor(...NAVY);doc.rect(M,y,W-2*M,7,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
+  head.forEach((t,i)=>doc.text(t,i===0?cx[0]+2:cx[i]+(i===5?-2:20),y+4.8,{align:i===0?'left':'right'}));y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...MUT);doc.text('Rates',cx[0]+2,y+4.2);[c.r1,c.r2,c.rx,c.rh].forEach((v,i)=>doc.text(money(v),cx[i+1]+20,y+4.2,{align:'right'}));y+=6;
+  let wk=-1;const rh=4.9;
+  const wkTot=w=>{const t={l1:0,l2:0,xp:0,hr:0,s:0};for(const r of R.filter(r=>r.wk===w)){for(const k of['l1','l2','xp','hr'])t[k]+=num(r[k])}t.s=t.l1*c.r1+t.l2*c.r2+t.xp*c.rx+t.hr*c.rh;return t};
+  const flush=w=>{if(w<0)return;const t=wkTot(w);doc.setFillColor(...SOFT);doc.rect(M,y,W-2*M,rh+.6,'F');doc.setFont('helvetica','bold');doc.setTextColor(...INK);doc.text('Week '+(w+1)+' total',cx[0]+2,y+3.7);[t.l1,t.l2,t.xp,t.hr].forEach((v,i)=>doc.text(v?String(v):'',cx[i+1]+20,y+3.7,{align:'right'}));doc.text(money(t.s),W-M-2,y+3.7,{align:'right'});doc.setFont('helvetica','normal');y+=rh+1.6};
+  for(const r of R){if(r.wk!==wk){flush(wk);wk=r.wk}const dt=num(r.l1)*c.r1+num(r.l2)*c.r2+num(r.xp)*c.rx+num(r.hr)*c.rh;doc.setTextColor(...INK);doc.text(DAYN[r.di]+'  '+fromIso(r.d).getDate()+' '+MON[fromIso(r.d).getMonth()],cx[0]+2,y+3.5);
+    ['l1','l2','xp','hr'].forEach((k,i)=>{if(num(r[k]))doc.text(String(r[k]),cx[i+1]+20,y+3.5,{align:'right'})});doc.text(money(dt),W-M-2,y+3.5,{align:'right'});doc.setDrawColor(...LINE);doc.setLineWidth(.15);doc.line(M,y+rh,W-M,y+rh);y+=rh}
+  flush(wk);y+=4;
+  const sx=118;const line=(l,v)=>{doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...INK);doc.text(l,sx,y);doc.text(v,W-M-2,y,{align:'right'});y+=5.5};
+  doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('SUMMARY',sx,y);y+=5;
+  const qty=(l,q,r)=>{doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...INK);doc.text(l,sx,y);doc.text(String(q),sx+38,y,{align:'right'});doc.text(money(r),sx+56,y,{align:'right'});doc.text(money(q*r),W-M-2,y,{align:'right'});y+=5};
+  if(T.l1)qty('1 Load',T.l1,c.r1);if(T.l2)qty('2 Load',T.l2,c.r2);if(T.xp)qty('Extra Parcels',T.xp,c.rx);if(T.hr)qty('Hours',T.hr,c.rh);
+  doc.setDrawColor(...LINE);doc.line(sx,y-2,W-M,y-2);y+=2;
+  if(c.gst){line('Subtotal (ex GST)',money(T.sub));line('GST (10%)',money(T.gst))}
+  doc.setFillColor(...NAVY);doc.rect(sx-3,y-5,W-M-sx+3,9,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.text(c.gst?'TOTAL DUE (inc GST)':'TOTAL DUE',sx,y+1);doc.text(money(T.total),W-M-2,y+1,{align:'right'});y+=12;
+  if(!c.gst){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...MUT);doc.text('No GST has been charged as the supplier is not registered for GST.',M,y);y+=6}
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...MUT);doc.text('Thank you for your services!',W/2,Math.min(Math.max(y+6,250),286),{align:'center'})}
+async function pdfOf(list,cover){
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf);
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});let first=true;
+  if(cover){drawCover(doc,cover);first=false}
+  for(const inv of list){if(!first)doc.addPage();first=false;drawInvoice(doc,inv)}
+  return doc.output('blob')}
+function drawCover(doc,cv){
+  const W=210,M=14,{INK,MUT,LINE,NAVY,SOFT}=C;
+  doc.setFillColor(...NAVY);doc.rect(0,0,W,24,'F');doc.setFillColor(233,177,10);doc.rect(0,24,W,1.2,'F');
+  doc.setTextColor(233,177,10);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE  ·  CONTRACT 1161',M,8);
+  doc.setTextColor(255);doc.setFontSize(16);doc.text('Driver invoices for checking',M,17);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(nice(cv.from)+' to '+nice(cv.to),W-M,17,{align:'right'});
+  const done=cv.rows.filter(r=>r.inv),todo=cv.rows.filter(r=>!r.inv);
+  let y=34;const X={n:M+2,name:M+10,no:84,st:108,ex:150,gst:172,tot:W-M-2};
+  doc.setFillColor(...SOFT);doc.rect(M,y,W-2*M,7,'F');doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7.2);
+  doc.text('#',X.n,y+4.8);doc.text('DRIVER',X.name,y+4.8);doc.text('INVOICE NO.',X.no,y+4.8);doc.text('STATUS',X.st,y+4.8);doc.text('EX GST',X.ex,y+4.8,{align:'right'});doc.text('GST',X.gst,y+4.8,{align:'right'});doc.text('TOTAL',X.tot,y+4.8,{align:'right'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.8);let sub=0,gst=0,tot=0;
+  done.forEach((r,i)=>{if(y>262){doc.addPage();y=20}const T=r.inv.T;doc.setTextColor(...INK);doc.text(String(i+1),X.n,y+4.2);doc.text(doc.splitTextToSize(r.name,X.no-X.name-3)[0],X.name,y+4.2);doc.text(String(r.inv.no||''),X.no,y+4.2);doc.text(STAT[r.inv.status]||'Submitted',X.st,y+4.2);
+    doc.text(money(T.sub),X.ex,y+4.2,{align:'right'});doc.text(T.gst?money(T.gst):'',X.gst,y+4.2,{align:'right'});doc.text(money(T.total),X.tot,y+4.2,{align:'right'});sub+=T.sub;gst+=T.gst;tot+=T.total;
+    doc.setDrawColor(...LINE);doc.setLineWidth(.15);doc.line(M,y+6.2,W-M,y+6.2);y+=6.2});
+  y+=3;doc.setFillColor(...NAVY);doc.rect(M,y,W-2*M,8,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(9.2);
+  doc.text(done.length+' invoice'+(done.length===1?'':'s'),X.name,y+5.4);doc.text(money(sub),X.ex,y+5.4,{align:'right'});doc.text(money(gst),X.gst,y+5.4,{align:'right'});doc.text(money(tot),X.tot,y+5.4,{align:'right'});y+=16;
+  if(todo.length){doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7.2);doc.text('NOT SUBMITTED YET ('+todo.length+')',M,y);y+=4.5;doc.setFont('helvetica','normal');doc.setFontSize(8.4);doc.setTextColor(...INK);
+    const L=doc.splitTextToSize(todo.map(r=>r.name).join(',  '),W-2*M);doc.text(L.slice(0,Math.max(1,Math.floor((282-y)/3.8))),M,y)}
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUT);doc.text('Printed '+nice(TODAY)+'. Each invoice follows on its own page.',M,290)}
+const STAT={submitted:'Submitted',checked:'Checked',paid:'Paid'};
+
+/* ---------- submit and download from the maker ---------- */
+async function submit(){
+  const inv=snap();if(!inv.rows.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
+  if(!invNo.trim()){msg={err:true,t:'Add an invoice number first.'};paint();return}
+  busy=true;msg={t:'Submitting…'};paint();
+  const id=logId(sid,from);const prev=logs[id];
+  try{const by=(window.__webMe&&window.__webMe.email)||'';await db.doc('invlog/'+id).set({...inv,total:inv.T.total,status:prev&&prev.status==='paid'?'paid':'submitted',submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()});
+    if(!cfgs[sid]||JSON.stringify(cfgs[sid])!==JSON.stringify(cfg)){try{await db.doc('invcfg/'+sid).set({...cfg});cfgs[sid]={...cfg}}catch(x){}}
+    msg={t:(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
+  catch(e){msg={err:true,t:'Could not submit just now. Check your connection and try again.'}}
   busy=false;paint()}
-async function makePdf(){
-  const R=rows(),T=totals(R);if(!R.length){msg={err:true,t:'There are no days in that range.'};paint();return}
-  busy=true;msg={t:'Making the PDF…'};paint();
-  try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf);
-    const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=14,INK=[22,30,45],MUT=[96,108,124],LINE=[214,220,228],NAVY=[19,33,58],SOFT=[244,246,249];const p=P();
-    doc.setFillColor(...NAVY);doc.rect(0,0,W,24,'F');doc.setFillColor(233,177,10);doc.rect(0,24,W,1.2,'F');
-    doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(cfg.gst?'TAX INVOICE':'INVOICE',M,15);
-    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text('4 WEEKLY  ·  SUBCONTRACTOR DELIVERY SERVICES',W-M,15,{align:'right'});
-    let y=34;const col=(x,yy,title,lines)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(title,x,yy);let k=yy+5;doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...INK);for(const[l,v]of lines){if(l){doc.setTextColor(...MUT);doc.text(l,x,k);doc.setTextColor(...INK);doc.text(String(v||''),x+24,k)}else doc.text(String(v||''),x,k);k+=4.6}return k};
-    const y1=col(M,y,'FROM (SUBCONTRACTOR)',[['Name',nameOf(p)],['ABN',cfg.abn],['Address',cfg.address],['Phone',cfg.phone],['Email',cfg.email]]);
-    const y2=col(115,y,'INVOICE DETAILS',[['Invoice No.',invNo],['Invoice Date',nice(invDate)],['Period From',nice(from)],['Period To',nice(to)]]);
-    y=Math.max(y1,y2)+4;
-    const y3=col(M,y,'PAYMENT DETAILS',[['Account',cfg.acct],['BSB',cfg.bsb],['Account No.',cfg.acctNo]]);
-    const y4=col(115,y,'BILL TO',[['','Preston Delivery Service Pty Ltd'],['','7/10 Ivan Street, Arundel QLD 4214'],['','Ph 0424 512 661'],['','ABN 56 109 175 046']]);
-    y=Math.max(y3,y4)+4;
-    const cx=[M,62,90,118,146,W-M];const head=['DAY','1 LOAD','2 LOAD','EXTRA','HOURS','DAY TOTAL'];
-    doc.setFillColor(...NAVY);doc.rect(M,y,W-2*M,7,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-    head.forEach((t,i)=>doc.text(t,i===0?cx[0]+2:cx[i]+(i===5?-2:20),y+4.8,{align:i===0?'left':'right'}));y+=7;
-    doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...MUT);doc.text('Rates',cx[0]+2,y+4.2);[cfg.r1,cfg.r2,cfg.rx,cfg.rh].forEach((v,i)=>doc.text(money(v),cx[i+1]+20,y+4.2,{align:'right'}));y+=6;
-    const shown=R.filter(r=>['l1','l2','xp','hr'].some(k=>num(r.v[k])));let wk=-1;const rh=4.9;
-    const wkTot=w=>{const t={l1:0,l2:0,xp:0,hr:0,s:0};for(const r of shown.filter(r=>r.wk===w)){for(const k of['l1','l2','xp','hr'])t[k]+=num(r.v[k])}t.s=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh;return t};
-    const flush=w=>{if(w<0)return;const t=wkTot(w);doc.setFillColor(...SOFT);doc.rect(M,y,W-2*M,rh+.6,'F');doc.setFont('helvetica','bold');doc.setTextColor(...INK);doc.text('Week '+(w+1)+' total',cx[0]+2,y+3.7);[t.l1,t.l2,t.xp,t.hr].forEach((v,i)=>doc.text(v?String(v):'',cx[i+1]+20,y+3.7,{align:'right'}));doc.text(money(t.s),W-M-2,y+3.7,{align:'right'});doc.setFont('helvetica','normal');y+=rh+1.6};
-    for(const r of shown){if(r.wk!==wk){flush(wk);wk=r.wk}const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;doc.setTextColor(...INK);doc.text(DAYN[r.di]+'  '+fromIso(r.d).getDate()+' '+MON[fromIso(r.d).getMonth()],cx[0]+2,y+3.5);
-      ['l1','l2','xp','hr'].forEach((k,i)=>{const v=r.v[k];if(v!==''&&v!=null&&num(v))doc.text(String(v),cx[i+1]+20,y+3.5,{align:'right'})});doc.text(money(dt),W-M-2,y+3.5,{align:'right'});doc.setDrawColor(...LINE);doc.setLineWidth(.15);doc.line(M,y+rh,W-M,y+rh);y+=rh}
-    flush(wk);y+=4;
-    const sx=118;const line=(l,v,b)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(b?10.5:9);doc.setTextColor(...INK);doc.text(l,sx,y);doc.text(v,W-M-2,y,{align:'right'});y+=b?7:5.5};
-    doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('SUMMARY',sx,y);y+=5;
-    const qty=(l,q,r)=>{doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(...INK);doc.text(l,sx,y);doc.text(String(q),sx+38,y,{align:'right'});doc.text(money(r),sx+56,y,{align:'right'});doc.text(money(q*r),W-M-2,y,{align:'right'});y+=5};
-    if(T.l1)qty('1 Load',T.l1,cfg.r1);if(T.l2)qty('2 Load',T.l2,cfg.r2);if(T.xp)qty('Extra Parcels',T.xp,cfg.rx);if(T.hr)qty('Hours',T.hr,cfg.rh);
-    doc.setDrawColor(...LINE);doc.line(sx,y-2,W-M,y-2);y+=2;
-    if(cfg.gst){line('Subtotal (ex GST)',money(T.sub));line('GST (10%)',money(T.gst))}
-    doc.setFillColor(...NAVY);doc.rect(sx-3,y-5,W-M-sx+3,9,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.text(cfg.gst?'TOTAL DUE (inc GST)':'TOTAL DUE',sx,y+1);doc.text(money(T.total),W-M-2,y+1,{align:'right'});y+=12;
-    if(!cfg.gst){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...MUT);doc.text('No GST has been charged as the supplier is not registered for GST.',M,y);y+=6}
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...MUT);doc.text('Thank you for your services!',W/2,Math.min(Math.max(y+6,250),286),{align:'center'});
-    await save(doc.output('blob'),fname('pdf'));await logIt(T);msg={t:'Invoice PDF saved.'}}
-  catch(e){msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
+async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making…'}
+  try{const blob=kind==='xlsx'?await buildXlsx(inv):await pdfOf([inv]);await save(blob,fname(inv,kind));msg={t:(kind==='xlsx'?'Excel':'PDF')+' saved for '+inv.name+'.'}}
+  catch(e){msg={err:true,t:'Could not make the file. Check your connection and try again.'}}
+  if(btn){btn.disabled=false;btn.textContent=old}paint()}
+
+/* ---------- submitted invoices ---------- */
+let view='make',lper='',lf='all';
+function periods(){const set=new Set(Object.values(logs).map(x=>x.from).filter(Boolean));const[a]=period(0),[b]=period(-1);set.add(a);set.add(b);return[...set].sort().reverse()}
+function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:nameOf(p),login:p.login,role:String(p.role||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.name&&(x.login||Object.values(logs).some(l=>l.sid===x.id))&&!['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR'].includes(x.role)).sort((a,b)=>a.name.localeCompare(b.name))}
+function listHTML(){
+  const P2=periods();if(!lper||!P2.includes(lper)){const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from===f));lper=withLogs[0]||period(-1)[0]}
+  const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x}));const byS={};for(const x of L)byS[x.sid]=x;
+  const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name,run:x.run||''});
+  const all=D.map(d=>({...d,inv:byS[d.id]||null}));
+  const show=all.filter(r=>lf==='all'||(lf==='todo'?!r.inv:lf==='sub'?r.inv&&r.inv.status==='submitted':r.inv&&r.inv.status===lf));
+  const sum=L.reduce((a,x)=>{a.t+=x.T?x.T.total:x.total||0;a.g+=x.T?x.T.gst:0;return a},{t:0,g:0});
+  const cnt=k=>all.filter(r=>k==='todo'?!r.inv:r.inv&&r.inv.status===k).length;
+  const to=x=>add(x,25);
+  return `<section class="card im"><h2>Submitted invoices</h2>
+   <div class="row"><label class="f grow"><span>Pay period</span><select id="im_lper">${P2.map(f=>`<option value="${f}" ${f===lper?'selected':''}>${esc(nice(f))} to ${esc(nice(to(f)))}${f===period(0)[0]?' (this period)':f===period(-1)[0]?' (last period)':''}</option>`).join('')}</select></label>
+    <div class="acts"><button type="button" class="sh-btn primary" data-im="pall" ${L.length&&!busy?'':'disabled'}>Print all invoices (PDF)</button><button type="button" class="sh-btn" data-im="xsum" ${L.length?'':'disabled'}>Download summary (Excel)</button></div></div>
+   <div class="tiles4"><div><span>Submitted</span><b>${L.length} of ${all.length}</b></div><div><span>Checked</span><b>${cnt('checked')+cnt('paid')}</b></div><div><span>Paid</span><b>${cnt('paid')}</b></div><div><span>Period total</span><b>${money(sum.t)}</b><small>${sum.g?'incl. '+money(sum.g)+' GST':''}</small></div></div>
+   <div class="segs" role="group">${[['all','Everyone'],['todo','Not submitted'],['submitted','Submitted'],['checked','Checked'],['paid','Paid']].map(([k,l])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l}${k==='all'?'':` <i>${k==='todo'?cnt('todo'):cnt(k)}</i>`}</button>`).join('')}</div>
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
+   ${show.map(r=>{const v=r.inv;return `<tr class="${v?'':'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
+     <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
+     <td class="r">${v?money(v.T?v.T.total:v.total):''}</td>
+     <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>`:''}</td>
+     <td class="acts2">${v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
+       ${v.status==='submitted'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Mark checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Mark paid</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo paid</button>`}`
+       :`<button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make invoice</button>`}</td></tr>`}).join('')||'<tr><td colspan="5" class="sub">Nobody here.</td></tr>'}
+   </tbody></table></div>
+   <p class="sub">Open an invoice to fix it and submit it again. Print all puts a summary page first, then each driver’s invoice on its own page.</p></section>`}
+async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x})).filter(x=>x.rows&&x.T).sort((a,b)=>a.name.localeCompare(b.name));
+  const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name});const cover={from:lper,to:add(lper,25),rows:D.map(d=>({name:d.name,inv:L.find(x=>x.sid===d.id)||null}))};
+  busy=true;msg={t:'Making '+L.length+' invoices…'};paint();
+  try{const blob=await pdfOf(L,cover);await save(blob,`Driver invoices ${lper} to ${add(lper,25)}.pdf`);msg={t:'Saved. The summary page is first, then each invoice.'}}catch(e){msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
   busy=false;paint()}
+function exportSum(){if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};paint();return}
+  const L=Object.values(logs).filter(x=>x.from===lper).sort((a,b)=>a.name.localeCompare(b.name));
+  const aoa=[['Driver','Run','Invoice no.','Invoice date','From','To','1 load parcels','2 load parcels','Extra parcels','Paid hours','Hours worked','Ex GST','GST','Total','Status']];
+  for(const x of L){const T=x.T||{};aoa.push([x.name,x.run||'',x.no,x.date,x.from,x.to,T.l1||0,T.l2||0,T.xp||0,T.hr||0,x.worked||0,T.sub||0,T.gst||0,T.total||x.total||0,STAT[x.status]||'Submitted'])}
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[22,10,10,11,11,11,10,10,10,9,10,11,9,11,10].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Invoices');
+  const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});save(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Invoice summary ${lper} to ${add(lper,25)}.xlsx`).then(()=>{msg={t:'Summary saved.'};paint()}).catch(()=>{})}
+function openLog(id){const x=logs[id];if(!x)return;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;const p=staff[sid]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[sid]||{}),...(x.cfg||{})};
+  ov={};ticks={};for(const r of x.rows||[]){ov[r.d]={l1:r.l1||'',l2:r.l2||'',xp:r.xp||'',hr:r.hr||''};ticks[r.d]=true}showCfg=false;msg={t:'Opened the submitted invoice. Change anything, then submit again to replace it.'};need();setView('make')}
+function setView(v){view=v;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?'sub':'make');else paint()}
 
 /* ---------- events ---------- */
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
@@ -7574,14 +7671,24 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='undo'){delete ov[v];delete ticks[v];paint();return}
   if(a==='swap'){const r=rows().find(x=>x.d===v);if(r){ov[v]={...r.v,l1:r.v.l2,l2:r.v.l1};ticks[v]=true}paint();return}
   if(a==='tickall'){for(const r of rows())if(num(r.v.l1)||num(r.v.l2))ticks[r.d]=true;paint();return}
-  if(a==='xlsx'){makeXlsx();return}
-  if(a==='pdf'){makePdf();return}
+  if(a==='submit'){submit();return}
+  if(a==='xlsx'||a==='pdf'){dlOne(snap(),a,el);return}
+  if(a==='golist'){msg=null;lper=from;setView('list');return}
+  if(a==='lf'){lf=v;paint();return}
+  if(a==='pall'){printAll(el);return}
+  if(a==='xsum'){exportSum();return}
+  if(a==='lpdf'&&logs[v]){dlOne({...logs[v]},'pdf',el);return}
+  if(a==='lxls'&&logs[v]){dlOne({...logs[v]},'xlsx',el);return}
+  if(a==='lopen'){openLog(v);return}
+  if(a==='lmake'){msg=null;from=lper;to=add(lper,25);invDate=TODAY;pick(v);setView('make');return}
+  if(a==='lst'&&logs[v]){const s2=el.dataset.s;const up={status:s2,[s2+'At']:new Date().toISOString()};logs[v]={...logs[v],...up};paint();try{await db.doc('invlog/'+v).update(up)}catch(x){msg={err:true,t:'Could not update just now.'};paint()}return}
 });
 document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_sid'){if(t.value)pick(t.value);else{sid='';paint()}return}
   if(t.id==='im_from'){from=t.value;ov={};ticks={};need();paint();return}
   if(t.id==='im_to'){to=t.value;ov={};ticks={};need();paint();return}
   if(t.id==='im_date'){invDate=t.value||TODAY;return}
+  if(t.id==='im_lper'){lper=t.value;paint();return}
   if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_no'){invNo=t.value;return}
@@ -7589,7 +7696,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;const cur=rows().find(r=>r.d===d);const base=cur?{...cur.v}:{l1:'',l2:'',xp:'',hr:''};ov[d]={...base,...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('cfg')&&inMe(e.target))showCfg=e.target.open},true);
 
-window.INVMAKE={async mount(){await init();need();paint()}};
+window.INVMAKE={async mount(v){view=v||'make';await init();need();paint()}};
 })();
 
 </script>
@@ -7949,7 +8056,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251741';
+const VERSION='202610251747';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
