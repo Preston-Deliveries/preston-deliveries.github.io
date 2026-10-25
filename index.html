@@ -2536,6 +2536,31 @@ p.ck-alert{color:#5A3C00!important}
 .me-line .ok{color:#14804A;font-weight:700}.me-line .due{color:#C2410C;font-weight:700}
 .me-q{margin:0;padding:10px 12px;border-left:3px solid var(--g);background:var(--sh-sunk);border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.45}
 .me-go{align-self:flex-start;min-height:42px}
+.me-box h3{margin:6px 0 0;font:700 1rem var(--sh-body);color:var(--sh-ink)}.me-box h3 small{font-weight:500;color:var(--sh-muted);font-size:.82rem}
+.me-sub{margin:-4px 0 0;font-size:.82rem;color:var(--sh-muted)}
+.me-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:10px;padding:3px;gap:3px}
+.me-seg button{border:0;background:transparent;color:var(--sh-muted);font:700 .9rem var(--sh-body);padding:8px 4px;border-radius:8px;cursor:pointer}
+.me-seg button[aria-selected="true"]{background:var(--g);color:#fff}
+.me-rank{display:flex;align-items:center;gap:14px}
+.me-pl{flex:none;width:72px;height:72px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--gs);color:var(--g)}
+.me-pl b{font:800 1.45rem/1 var(--sh-body)}.me-pl small{font-size:.74rem;font-weight:700}
+.me-pt{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.me-pt>b{font:700 1.3rem/1.1 var(--sh-body)}.me-pt>b small{font-size:.85rem;font-weight:600;color:var(--sh-muted)}
+.me-pt>span{font-size:.82rem;color:var(--sh-muted)}
+.me-pt .bar{height:8px;border-radius:99px;background:var(--sh-sunk);overflow:hidden}.me-pt .bar i{display:block;height:100%;background:var(--g);border-radius:99px}
+.me-ms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.me-m{padding:10px 12px;border-radius:10px;background:var(--sh-sunk);border:1px solid var(--sh-line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.me-m small{font-size:.78rem;font-weight:700;color:var(--sh-muted)}
+.me-m b{font:700 1.35rem/1.15 var(--sh-body);font-variant-numeric:tabular-nums}
+.me-m.r-g{background:#E3F4EA;border-color:#9ED3B4}.me-m.r-g b{color:#14804A}
+.me-m.r-w{background:#FDF1DC;border-color:#EBC27A}.me-m.r-w b{color:#A35F00}
+.me-m.r-b{background:#FBE5E3;border-color:#EBA59E}.me-m.r-b b{color:#B3261E}
+.me-mix{display:flex;flex-wrap:wrap;gap:4px}.me-mix span{font-size:.76rem;font-weight:700;padding:3px 7px;border-radius:99px;color:#fff}
+.me-mix .r-g{background:#1f8a4c}.me-mix .r-w{background:#c27a00}.me-mix .r-b{background:#c23b2e}
+.me-btns{display:flex;flex-wrap:wrap;gap:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .me-m.r-g{background:#14321F;border-color:#24603B}:root:not([data-theme="light"]) .me-m.r-g b{color:#5CCB8E}:root:not([data-theme="light"]) .me-m.r-w{background:#3A2C10;border-color:#6B4E14}:root:not([data-theme="light"]) .me-m.r-w b{color:#F2B24A}:root:not([data-theme="light"]) .me-m.r-b{background:#3D1C1E;border-color:#6E2D30}:root:not([data-theme="light"]) .me-m.r-b b{color:#FF8A8E}}
+:root[data-theme="dark"] .me-m.r-g{background:#14321F;border-color:#24603B}:root[data-theme="dark"] .me-m.r-g b{color:#5CCB8E}:root[data-theme="dark"] .me-m.r-w{background:#3A2C10;border-color:#6B4E14}:root[data-theme="dark"] .me-m.r-w b{color:#F2B24A}:root[data-theme="dark"] .me-m.r-b{background:#3D1C1E;border-color:#6E2D30}:root[data-theme="dark"] .me-m.r-b b{color:#FF8A8E}
+
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -4113,7 +4138,7 @@ function boardsNow(){
   view=keep;drawBoard();
   return out;
 }
-function mineNow(){const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days});try{return{week:ranked(scoreSort(weekRows())).map(f),day:ranked(scoreSort(dayRows(selDay))).map(f),cycle:ranked(scoreSort(weekRows(cycleList()))).map(f)}}catch(e){return null}}
+function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,nc:r.nc,enq:r.enq,ftd:r.ftd,r:{eta:c(rate('eta',r.eta)),nc:c(rate('nc',r.ncAvg)),enq:c(rate('enq',r.enqAvg))}});try{return{week:ranked(scoreSort(weekRows())).map(f),day:ranked(scoreSort(dayRows(selDay))).map(f),cycle:ranked(scoreSort(weekRows(cycleList()))).map(f)}}catch(e){return null}}
 async function shareDrivers(){
   const sm=$("shareMsg"),btn=$("shareDrivers");
   const say=(t,err)=>{sm.textContent=t;sm.hidden=false;sm.classList.toggle("err",!!err)};
@@ -5666,17 +5691,18 @@ function myResults(){
   const out={};for(const k of['week','day','cycle']){const L=r.mine[k]||[];const x=L.find(y=>dkey(y.l)===me.login);if(x)out[k]={...x,of:L.length,label:(r.boards||[]).find(b=>b.key===k)?.label||''}}
   return Object.keys(out).length?out:null;
 }
-function mySurvey(){
-  const s=S().survey;if(!s||!s.weekly||!s.weekly.html)return null;
-  let doc;try{doc=new DOMParser().parseFromString(s.weekly.html,'text/html')}catch(e){return null}
+function mySurvey(which){
+  const s=S().survey;const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
+  let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
   const keys=[me.login,dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
   const row=rows.find(t=>keys.includes(dkey(t.querySelector('.id').textContent)));
   const sub=(doc.querySelector('.band .s')||{}).textContent||'';
   if(!row)return{found:false,of:rows.length,sub};
+  const sc=[...row.querySelectorAll('.bx .b')].map(b=>+b.textContent);
   const scores=[...row.querySelectorAll('.bx .b')].map(b=>+b.textContent);
   const said=[...row.querySelectorAll('.cm .c .tx')].map(x=>x.textContent);
-  return{found:true,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
+  return{found:true,sub,n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:sc.length?sc.reduce((a,x)=>a+x,0)/sc.length:null,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
 }
 function myPrecards(){return(S().precards||[]).filter(p=>me.login&&dkey(p.driver)===me.login).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
 function weekShifts(){
@@ -5735,6 +5761,31 @@ async function showAlerts(){
   put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);
 }
 /* ---------- profile ---------- */
+let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
+const pctf=v=>v==null?'n/a':(v>=.9995?'100':(v*100).toFixed(1).replace(/\.0$/,''))+'%';
+function perfHTML(){
+  const R=S().results,res=myResults();
+  const tabs=[['day','Day'],['week','Week'],['cycle','Pay cycle']];
+  const x=res&&res[PER];
+  const lab=(R&&(R.boards||[]).find(b=>b.key===PER)||{}).label||'';
+  const m=(label,val,rt)=>`<div class="me-m ${rt?'r-'+rt:''}"><small>${label}</small><b>${val}</b></div>`;
+  const sv=mySurvey(PER==='cycle'?'cycle':'weekly');
+  let body='';
+  if(!R)body='<p class="me-line">Results show here once they are shared.</p>';
+  else if(!R.mine)body='<p class="me-line">Your numbers show here after the next time results are sent to drivers.</p>';
+  else if(!x)body=`<p class="me-line">No results for you ${PER==='day'?'on this day':PER==='week'?'this week':'this pay cycle'} yet.</p>`;
+  else body=`<div class="me-rank"><div class="me-pl"><b>${ord(x.k)}</b><small>of ${x.of}</small></div><div class="me-pt"><b>${x.p} <small>of ${x.m} points</small></b><div class="bar"><i style="width:${x.m?Math.round(100*x.p/x.m):0}%"></i></div>${PER!=='day'?`<span>${x.d} day${x.d===1?'':'s'} worked</span>`:''}</div></div>
+    <div class="me-ms">${m('Parcels',x.pc==null?'n/a':(+x.pc).toLocaleString('en-AU'),'')}${m('2 hr ETA',pctf(x.eta),x.r&&x.r.eta)}${m('NC scans',x.nc==null?'n/a':Math.round(x.nc),x.r&&x.r.nc)}${m('Enquiries',x.enq==null?'0':Math.round(x.enq),x.r&&x.r.enq)}</div>`;
+  const svh=!sv?`<p class="me-line">${PER==='cycle'?'The monthly survey ranking':'The survey ranking'} shows here once it is shared.</p>`:!sv.found?`<p class="me-line">No customer surveys for you in this ${PER==='cycle'?'month':'week'}.</p>`:
+   `<div class="me-rank"><div class="me-pl"><b>${ord(sv.rank)}</b><small>of ${sv.of}</small></div><div class="me-pt"><b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span>Average score ${sv.avg.toFixed(1)}</span>`:''}</div></div>`;
+  return `<section class="me-box g-perf"><h2>My results</h2>
+   <div class="me-seg" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
+   ${lab||(R&&R.updated)?`<p class="me-sub">${esc(lab)}${R&&R.updated?`${lab?' · ':''}updated ${esc(R.updated)}`:''}</p>`:''}
+   ${body}
+   <h3>Customer survey${PER==='day'?' <small>(weekly, so this shows the week)</small>':''}</h3>
+   ${sv&&sv.sub?`<p class="me-sub">${esc(sv.sub)}</p>`:''}${svh}
+   <div class="me-btns"><button type="button" class="sh-btn" data-nav="results">Driver results</button><button type="button" class="sh-btn" data-nav="survey">Survey ranking</button></div></section>`;
+}
 function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
 function profileHTML(){
   const run=myRun(),res=myResults(),sv=mySurvey(),pcs=myPrecards(),wk=weekShifts();
@@ -5747,10 +5798,9 @@ function profileHTML(){
   </section>
   <div class="me-stats">
     ${stat('start','clock',wk.tot?hrs(wk.tot):'0h',wk.days?`worked this week, ${wk.days} day${wk.days===1?'':'s'}`:'worked this week','clock')}
-    ${stat('perf','results',w?ord(w.k):'–',w?`of ${w.of} in results, ${w.p} of ${w.m} points`:'in results this week','results')}
-    ${stat('perf','survey',sv&&sv.found?ord(sv.rank):'–',sv&&sv.found?`of ${sv.of} in the survey, ${sv.pts>0?'+':''}${sv.pts} points`:'in the survey this week','survey')}
     ${stat('road','precard',String(pcs.length),pcs.length===1?'precard address on your run':'precard addresses on your run','precards')}
   </div>
+  ${perfHTML()}
   ${run?`<section class="me-box g-road"><h2>My run</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run">Open my run sheet</button></section>`:''}
   <section class="me-box g-start"><h2>My shifts this week</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p><button type="button" class="sh-btn${signed?'':' primary'} me-go" data-nav="briefs">${signed?'View team brief':'Read and sign'}</button></section>`:''}
@@ -5767,6 +5817,7 @@ async function showProfile(){
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
   if(e.target.closest('[data-me="run"]'))openRun();
+  const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;try{localStorage.setItem('me1161_per',PER)}catch(x){}const box=document.getElementById('me_box');if(box&&me)box.innerHTML=profileHTML()}
 });
 function openRun(){try{if(window.RUNS&&RUNS.openLogin&&me&&me.login&&RUNS.openLogin(me.login))return}catch(x){}if(window.APP)APP.go('runs')}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refresh(true)});
@@ -8595,7 +8646,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610260830';
+const VERSION='202610260915';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
