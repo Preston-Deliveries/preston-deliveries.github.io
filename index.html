@@ -1923,6 +1923,8 @@ body.sh-uv-on{overflow:hidden}
 #sh-more .sh-list .sh-li{border-right:0;border-bottom:1px solid var(--sh-line)}#sh-more .sh-list .sh-li:last-child{border-bottom:0}
 @media (min-width:900px){#sh-more .sh-more-sheet{left:50%;transform:translateX(-50%);width:560px;bottom:auto;top:8vh;border-radius:8px}}
 body.sh-more-on{overflow:hidden}
+
+.sh-all{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:4px 0 12px}.sh-all .sh-btn{min-height:46px!important;font-size:1rem!important;padding:10px 18px!important}.sh-all span{color:var(--sh-muted);font-size:.9rem}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -2342,6 +2344,7 @@ function renderHome(){
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
     <p>Drivers open this same page. They get the street lookup, run sheets and the latest boards, and can’t change anything. Send the latest version to them here after you make changes.</p>
+    <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>
     <div class="sh-rows">
       ${row('Sort and run sheets',u.runs,'<button type="button" class="sh-btn primary" data-sh="shareRuns">Send latest to drivers</button>')}
       ${row('Leave calendar',u.leave,'<button type="button" class="sh-btn primary" data-sh="shareLeave">Send latest to drivers</button>')}
@@ -2365,6 +2368,7 @@ function pageHtml(snap){
   return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'+body+'\n'+mods+'</body></html>';
 }
 async function publish(patch){
+  if(window.__collect){Object.assign(window.__collect,patch);return}
   const art=window.claude&&window.claude.use?await window.claude.use('artifact'):null;
   if(!art){const e=new Error('Sending to drivers is not available in this view.');e.code='not_granted';throw e}
   const next=Object.assign({},SNAP,patch);next.updated=Object.assign({},SNAP.updated);
@@ -2374,6 +2378,17 @@ async function publish(patch){
 async function sharePart(btn,fn,what){
   btn.disabled=true;homeMsg={t:'Sending to drivers\u2026'};renderHome();
   try{await fn();homeMsg={t:'Done. Drivers now see the latest '+what+'. The page is reloading.'}}
+  catch(e){const c=e&&e.code;homeMsg={err:true,t:c==='conflict'?'The page changed somewhere else at the same time and is reloading. Try again after it loads.':c==='not_writer'||c==='not_granted'?'This view can\u2019t update the drivers\u2019 link.':'Could not send just now. Try again in a minute.'}}
+  renderHome();
+}
+async function shareAll(btn){
+  btn.disabled=true;homeMsg={t:'Sending everything to drivers\u2026'};renderHome();
+  const parts=[['sort and run sheets',window.RUNS],['leave calendar',window.LEAVE],['precard list',window.PRECARDS],['locker list',window.LOCKERS],['directory',window.DIRECTORY]];
+  const missed=[];window.__collect={};
+  try{for(const [nm,m] of parts){try{if(m&&m.share)await m.share();else missed.push(nm)}catch(e){missed.push(nm)}}}finally{}
+  const patch=window.__collect;window.__collect=null;
+  if(!Object.keys(patch).length){homeMsg={err:true,t:'Nothing was ready to send. Wait for the pages to finish loading and try again.'};renderHome();return}
+  try{await publish(patch);homeMsg={t:'Done. Drivers now see the latest of everything'+(missed.length?' except the '+missed.join(', ')+' (still loading, try again in a moment)':'')+'. The page is reloading.'}}
   catch(e){const c=e&&e.code;homeMsg={err:true,t:c==='conflict'?'The page changed somewhere else at the same time and is reloading. Try again after it loads.':c==='not_writer'||c==='not_granted'?'This view can\u2019t update the drivers\u2019 link.':'Could not send just now. Try again in a minute.'}}
   renderHome();
 }
@@ -2388,7 +2403,7 @@ document.addEventListener('click',e=>{
   const mo=e.target.closest('[data-sh="more"]');if(mo){openMore();return}
   if(e.target.closest('[data-sh="moreclose"]')){closeMore();return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
-  const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
+  const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
 });
 window.APP={SNAP,go,stat,publish,get isEditor(){return role==='mgr'},get section(){return cur},get role(){return role}};
 // first section
@@ -6571,7 +6586,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251120';
+const VERSION='202610251123';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
