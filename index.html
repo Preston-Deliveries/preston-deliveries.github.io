@@ -2718,6 +2718,21 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-uniform .order{border-radius:12px;box-shadow:inset 0 3px 0 var(--pds-navy)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-uniform .fit button[aria-pressed="true"]{background:#24466D}}
 :root[data-theme="dark"] #sh-main #mod-uniform .fit button[aria-pressed="true"]{background:#24466D}
+</style><style id="dir-v3">
+/* Directory: numbers on the right, WhatsApp button beside each number */
+#sh-main #mod-directory .row{grid-template-columns:auto minmax(0,1fr) auto;row-gap:2px;align-items:center}
+#sh-main #mod-directory .row .nm b{overflow-wrap:break-word;word-break:normal}
+#sh-main #mod-directory .row .ph .tel{white-space:nowrap}
+#sh-main #mod-directory .row .ph{min-width:0}
+#sh-main #mod-directory .row .nm .no{white-space:nowrap}
+#sh-main #mod-directory .row .av{grid-row:1}
+#sh-main #mod-directory .row .nm{grid-column:2;grid-row:1}
+#sh-main #mod-directory .row .ph{grid-column:3;grid-row:1;display:flex;align-items:center;justify-content:flex-end;gap:8px;text-align:right}
+#sh-main #mod-directory .row .ph .na{white-space:nowrap}
+#sh-main #mod-directory .wa{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff}
+#sh-main #mod-directory .wa svg{width:22px;height:22px;fill:currentColor}
+#sh-main #mod-directory .wa:active{filter:brightness(.92)}
+@media (max-width:420px){#sh-main #mod-directory .tel{padding:7px 10px;font-size:.86rem}#sh-main #mod-directory .tel svg{display:none}}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -6520,6 +6535,8 @@ const grpFromText=t=>{t=String(t||'');const m=t.match(/^Driver, (\d{4})$/);if(m)
 const ORDER=['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN','SUPERVISOR'];
 const roleText=r=>{r=String(r||'').toUpperCase().trim();return ROLE[r]||(/^\d{4}$/.test(r)?'Driver, '+r:tc(r)||'Driver')};
 const phoneText=p=>{const d=String(p||'').replace(/\D/g,'');return d.length===10&&d[0]==='0'?d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7):String(p||'')};
+const first1=p=>String(p||'').split(/\s*(?:\bor\b|\/|,|;)\s*/i).filter(Boolean)[0]||'';
+const waOf=p=>{let d=String(p||'').split(/\s*(?:or|\/|,)\s*/i)[0].replace(/\D/g,'');if(/^04\d{8}$/.test(d))return '61'+d.slice(1);if(/^614\d{8}$/.test(d))return d;if(/^4\d{8}$/.test(d))return '61'+d;return ''};
 const telOf=p=>{const d=String(p||'').replace(/[^\d+]/g,'');return d};
 let mode='wait',db=null,people={},hide=new Set(),q='',msg=null,busy=false;
 const isMgr=()=>mode==='mgr';
@@ -6557,7 +6574,7 @@ function listHTML(L){
   return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dy="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
   ${G.map(g=>`<section class="grp dg-${g.k}" id="dy_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(x=>{const off=false;
     return `<li class="row ${off?'off':''}"><span class="av" aria-hidden="true">${esc(String(x.name).split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span><span class="nm"><b>${esc(x.name)}</b>${x.no?`<span class="no">${esc(x.no)}</span>`:''}${showRole(x)?`<span class="rl">${esc(x.roleT)}</span>`:''}</span>
-     <span class="l2"><span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(x.phone))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(x.phone))}</a>`:'<span class="na">No number</span>'}</span></span></li>`}).join('')}</ul></section>`).join('')}`;
+     <span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(first1(x.phone)))}" title="${esc(x.phone)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(first1(x.phone)))}</a>${waOf(x.phone)?`<a class="wa" href="https://wa.me/${waOf(x.phone)}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(x.name)}" title="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm5.3 13.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}`:'<span class="na">No number</span>'}</span></li>`}).join('')}</ul></section>`).join('')}`;
 }
 async function saveHide(){try{await db.doc('dircfg/main').set({hide:[...hide]});msg={t:'Saved. Send the latest to drivers when you are ready.'}}catch(e){msg={err:true,t:'Could not save just now.'}}render()}
 async function share(){
@@ -9007,7 +9024,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261315';
+const VERSION='202610261335';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
