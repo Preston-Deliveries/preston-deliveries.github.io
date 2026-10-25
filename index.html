@@ -1002,8 +1002,6 @@ body.sh-uv-on{overflow:hidden}
 #mod-briefs .sign{margin-top:18px;border:1px solid var(--sh-line);border-radius:8px;padding:16px;background:var(--sh-sunk);display:flex;flex-direction:column;gap:10px}
 #mod-briefs .sign h3{margin:0;font-size:1.15rem}
 #mod-briefs .sign.done{background:#EAF6EE;border-color:#9FD3B3}
-#mod-briefs .sign.done,#mod-briefs .sign.done p,#mod-briefs .sign.done b{color:#14361F}
-#mod-briefs .sign.done h3{color:#1E8A4C}
 #mod-briefs .sign .agree{display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:1rem}
 #mod-briefs .sign .agree input{width:24px;height:24px;flex:none;margin-top:1px}
 #mod-briefs .padwrap{position:relative;background:#fff;border:2px dashed #9AA6B5;border-radius:8px}
@@ -1019,6 +1017,8 @@ body.sh-uv-on{overflow:hidden}
 #mod-briefs .tosign{background:#D98B00;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .cntsig{background:var(--sh-accent-soft);color:var(--sh-accent);font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .older{display:flex;justify-content:center;margin:14px 0 4px}
+#mod-briefs .sign.done,#mod-briefs .sign.done p,#mod-briefs .sign.done b{color:#14361F}
+#mod-briefs .sign.done h3{color:#1E8A4C}
 </style>
 <style id="leave-css">#mod-leave{--lv-open-bg:#E6F5EB;--lv-open-bd:#1E8A4C;--lv-open-ink:#0F5530;--lv-one-bg:#FFF1D6;--lv-one-bd:#C77A00;--lv-one-ink:#6E4200;--lv-full-bg:#FCE3E0;--lv-full-bd:#C8352B;--lv-full-ink:#8A1C14;--lv-bo1:#E6EAE8;--lv-bo2:#F3F5F4;--lv-bo-ink:#45524D;--lv-chip:#FFFFFF;--lv-chip-ink:#14201D;--lv-chip-bd:rgba(20,32,29,.22)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-leave{--lv-open-bg:#123222;--lv-open-bd:#3DBE74;--lv-open-ink:#9BE8BA;--lv-one-bg:#36290E;--lv-one-bd:#E8A63A;--lv-one-ink:#FFD58A;--lv-full-bg:#3A181B;--lv-full-bd:#EE6A5E;--lv-full-ink:#FFB3AA;--lv-bo1:#1F2725;--lv-bo2:#283230;--lv-bo-ink:#B9C6C1;--lv-chip:#0E1412;--lv-chip-ink:#F2F7F5;--lv-chip-bd:rgba(255,255,255,.22)}}
@@ -2695,12 +2695,12 @@ async function printPage(btn){
   btn.disabled=false;btn.textContent=old;
 }
 function openUserView(){
-  closeUserView();
+  closeUserView();window.__uvStart=cur;
   const wrap=document.createElement('div');wrap.id='sh-uvwrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','User view');
   const f=document.createElement('iframe');f.title='User view';f.srcdoc=pageHtml(SNAP);wrap.appendChild(f);
   document.body.appendChild(wrap);document.body.classList.add('sh-uv-on');
 }
-window.__closeUV=()=>closeUserView();
+window.__closeUV=()=>{let sec=null;try{const f=document.querySelector('#sh-uvwrap iframe');const w=f&&f.contentWindow;sec=w&&w.APP&&w.APP.section;if(w&&sec===w.__uvFirst&&MGR_ONLY.includes(window.__uvStart))sec=null}catch(e){}closeUserView();if(sec&&SECS.includes(sec)&&sec!==cur)go(sec)};
 function closeUserView(){(window.__uvSubs||[]).splice(0).forEach(u=>{try{u()}catch(e){}});const w=document.getElementById('sh-uvwrap');if(w)w.remove();document.body.classList.remove('sh-uv-on')}
 function renderNav(){renderViewbar();$('sh-links').innerHTML=navHTML();
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
@@ -2718,7 +2718,7 @@ function go(sec,opts){
   renderNav();
   document.title=(sec==='home'?'Contract 1161':NAMES[sec]+' · 1161');
   if(!opts.keepScroll) window.scrollTo(0,0);
-  try{localStorage.setItem('sec1161',sec)}catch(e){}
+  if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
 }
 function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
@@ -2819,8 +2819,9 @@ if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
 else if(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h)) first='guide';
 else if(h) first='runs';
+else if(previewChild){try{const v=window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
 else{try{const v=localStorage.getItem('sec1161');if(SECS.includes(v))first=v}catch(e){}}
-cur=first;
+cur=first;window.__uvFirst=first;
 document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==MOD[first]);
 renderNav();renderHome();
 (async()=>{
@@ -8114,7 +8115,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251811';
+const VERSION='202610251928';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
