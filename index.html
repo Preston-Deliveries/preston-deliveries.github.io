@@ -1480,6 +1480,24 @@ body.sh-uv-on{overflow:hidden}
 #mod-timesheets .sh-btn.ghost:hover{color:#B3261E}
 #mod-timesheets .sh-btn.danger{background:#B3261E;border-color:#B3261E;color:#fff}
 #mod-timesheets .tb td.dl .sh-btn+.sh-btn{margin-left:6px}
+#mod-timesheets details.day{padding:0}
+#mod-timesheets details.day>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px;flex-wrap:wrap}
+#mod-timesheets details.day>summary::-webkit-details-marker{display:none}
+#mod-timesheets details.day>summary h3{margin:0}
+#mod-timesheets details.day .tg{margin-left:auto;width:10px;height:10px;border-right:2px solid var(--sh-muted);border-bottom:2px solid var(--sh-muted);transform:rotate(45deg);transition:transform .15s}
+#mod-timesheets details.day[open] .tg{transform:rotate(-135deg)}
+#mod-timesheets details.day .dbody{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+#mod-timesheets details.day .dtools{display:flex;justify-content:flex-end}
+#mod-timesheets b.mi{color:#B86E00}
+#mod-timesheets .srchbar{position:relative;display:flex;gap:8px;align-items:center}
+#mod-timesheets .srchbar input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:11px 12px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink)}
+#mod-timesheets .sug{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:20;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;box-shadow:0 8px 24px rgba(15,26,42,.12);overflow:hidden}
+#mod-timesheets .sug button{display:flex;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;border-bottom:1px solid var(--sh-line);background:transparent;padding:10px 12px;font:inherit;color:var(--sh-ink);cursor:pointer}
+#mod-timesheets .sug button:hover{background:var(--sh-sunk)}#mod-timesheets .sug button:last-child{border-bottom:0}
+#mod-timesheets .sug small{color:var(--sh-muted)}#mod-timesheets .sug .none{display:block;padding:10px 12px;color:var(--sh-muted)}
+#mod-timesheets .pv{display:flex;flex-direction:column;gap:14px}
+#mod-timesheets .pvh{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+#mod-timesheets .pvh>div{margin-right:auto}#mod-timesheets .pvh h2{margin:0;font:700 1.5rem var(--sh-body)}
 </style>
 <style id="uniform-css">#mod-uniform .unx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-uniform .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -6509,7 +6527,7 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return 
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let delArm=null,lastDel=null,mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
+let delArm=null,lastDel=null,openWk={},sq='',person=null,per='month',mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
 /* ---------- people ---------- */
 function people(){const out={};for(const[id,p]of Object.entries(staff)){const login=dkey(p.login);out[login||'id:'+id]={id,login,name:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', '),role:String(p.role||'').toUpperCase()}}return out}
 function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).sort();return ds.length?ds[ds.length-1]:TODAY}
@@ -6544,41 +6562,63 @@ function setHTML(){
    <div class="tw"><table class="tb st"><thead><tr><th>Driver</th>${WD.map(([,d])=>`<th>${d}</th>`).join('')}<th></th></tr></thead><tbody>${L.map(p=>{const v=cfg.starts[p.id];const get=n=>typeof v==='string'?v:(v&&v[n])||'';return `<tr><td><b>${esc(p.name)}</b>${p.no?`<small>${esc(p.no)}</small>`:''}</td>${WD.map(([n,d])=>`<td><input type="time" data-start="${esc(p.id)}" data-dow="${n}" value="${esc(get(n))}" aria-label="${esc(p.name)} ${d} start"></td>`).join('')}<td><button type="button" class="sh-btn sm" data-ts="copy" data-v="${esc(p.id)}">Same all week</button></td></tr>`}).join('')}</tbody></table></div>
   </details>`;
 }
-function weekHTML(){
-  const f=monday(wk),dd=[0,1,2,3,4,5].map(i=>add(f,i));if(Object.keys(clock).some(k=>k.startsWith(add(f,6)+'_')))dd.push(add(f,6));
-  let miss=0,tot=0,seen=new Set();
-  const cnt=dd.map(d=>rowsFor(d).length);
-  if(!dselUser||!dsel||!dd.includes(dsel)){const withData=dd.filter((d,i)=>cnt[i]);dsel=withData.length?withData[withData.length-1]:dd[0]}
-  const daySel=`<label class="daysel" for="ts_day">Day<select id="ts_day">${dd.map((d,i)=>`<option value="${d}" ${d===dsel?'selected':''}>${esc(longD(d).replace(/ \d{4}$/,''))}${cnt[i]?'  ('+cnt[i]+' drivers)':'  (no results)'}</option>`).join('')}</select></label>`;
-  const secs=dd.map(d=>{const R=rowsFor(d);if(!R.length)return '';
-    return `<section class="card day"><div class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'}</span>${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
-    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Extra</th><th>2 loads</th><th>Held</th><th>Note</th><th></th></tr></thead><tbody>
-    ${R.map(r=>{const e=eff(r);if(e.hrs!=null){tot+=e.hrs}else miss++;seen.add(r.key);const id=r.date+'_'+r.key;
-      return `<tr class="${e.hrs==null?'miss':''}"><td><b>${esc(r.p.name)}</b>${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
+function rowHTML(r,showDate){const e=eff(r);const id=r.date+'_'+r.key;
+      return `<tr class="${e.hrs==null?'miss':''}"><td>${showDate?`<b>${esc(longD(r.date).replace(/ \d{4}$/,''))}</b>`:`<b>${esc(r.p.name)}</b>`}${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
        <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Preset'?'':'late'}"${e.c&&e.c.startEdited&&e.c.startAt?` title="Tapped at ${esc(bneHM(e.c.startAt))}"`:''}>${e.sS}${e.c&&e.c.startEdited&&e.c.startAt&&e.sS==='Changed by driver'?` (tapped ${esc(bneHM(e.c.startAt))})`:''}</small>`:''}</td>
        <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time">${e.sF?`<small class="${e.sF==='Tapped'?'tap':'late'}">${e.sF}</small>`:(e.c&&e.c.start&&!e.c.finish?'<small class="late">Still on shift</small>':'')}</td>
        <td><input type="number" min="0" step="5" data-f="brk" data-id="${esc(id)}" value="${esc(e.brk)}" class="brk ${e.o.brk==null||e.o.brk===''?'off':''}" aria-label="Break minutes"></td>
        <td class="r"><b>${fmtH(e.hrs)}</b></td><td><input type="number" min="0" class="xp" data-f="xp" data-id="${esc(id)}" value="${e.xp==null?'':esc(e.xp)}" aria-label="Extra parcels"></td>
        <td><select data-f="tl" data-id="${esc(id)}" aria-label="2 loads"><option value=""></option><option value="yes" ${e.tl===true?'selected':''}>Yes</option><option value="no" ${e.tl===false?'selected':''}>No</option></select></td>
        <td class="hpc"><select data-f="hp" data-id="${esc(id)}" class="${e.hp?'held':''}" aria-label="Held parcels"><option value=""></option><option value="no" ${e.hp===false?'selected':''}>No</option><option value="yes" ${e.hp===true?'selected':''}>Yes</option></select>${e.hp?`<input type="number" min="0" class="hc" data-f="hc" data-id="${esc(id)}" value="${e.hc==null?'':esc(e.hc)}" placeholder="How many" aria-label="How many held">`:''}</td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td>
-       <td class="dl">${delArm===id?`<button type="button" class="sh-btn sm danger" data-ts="delok" data-v="${esc(id)}">Delete</button><button type="button" class="sh-btn sm" data-ts="delno">Keep</button>`:`<button type="button" class="sh-btn sm ghost" data-ts="del" data-v="${esc(id)}" aria-label="Delete this entry" title="Delete this entry"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>`}</td></tr>`}).join('')}
-    </tbody></table></div></section>`});
-  const di=dd.indexOf(dsel),day=secs[di]||`<div class="empty">No Driver Results loaded for ${esc(longD(dsel))}, so there is no one to show. Load that day on Driver Results, or pick another day.</div>`;
-  const dayStats=(()=>{let m=0;for(const r of rowsFor(dsel))if(eff(r).hrs==null)m++;return m})();
-  return {secs:day,daySel,dayMiss:dayStats,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
+       <td class="dl">${delArm===id?`<button type="button" class="sh-btn sm danger" data-ts="delok" data-v="${esc(id)}">Delete</button><button type="button" class="sh-btn sm" data-ts="delno">Keep</button>`:`<button type="button" class="sh-btn sm ghost" data-ts="del" data-v="${esc(id)}" aria-label="Delete this entry" title="Delete this entry"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>`}</td></tr>`}
+const THEAD=(first)=>`<thead><tr><th>${first}</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Extra</th><th>2 loads</th><th>Held</th><th>Note</th><th></th></tr></thead>`;
+function weekHTML(){
+  const f=monday(wk),dd=[0,1,2,3,4,5].map(i=>add(f,i));if(Object.keys(clock).some(k=>k.startsWith(add(f,6)+'_')))dd.push(add(f,6));
+  let miss=0,tot=0;const seen=new Set();
+  const withData=dd.filter(d=>rowsFor(d).length);
+  if(!openWk[f]&&withData.length){openWk[f]=new Set([withData[withData.length-1]])}
+  const open=openWk[f]||new Set();
+  const secs=dd.slice().reverse().map(d=>{const R=rowsFor(d);if(!R.length)return '';
+    let dt=0,dm=0;for(const r of R){const e=eff(r);if(e.hrs!=null){dt+=e.hrs;tot+=e.hrs}else{dm++;miss++}seen.add(r.key)}
+    return `<details class="card day" data-day="${d}" ${open.has(d)?'open':''}><summary class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'} · ${fmtH(dt)||'0h 00m'}${dm?` · <b class="mi">${dm} missing a time</b>`:''}</span><span class="tg" aria-hidden="true"></span></summary>
+    <div class="dbody"><div class="dtools">${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
+    <div class="tw"><table class="tb">${THEAD('Driver')}<tbody>${R.map(r=>rowHTML(r,false)).join('')}</tbody></table></div></div></details>`}).join('');
+  return {secs:secs||`<div class="empty">No one worked this week yet. Days appear when Driver Results are loaded or drivers clock in.</div>`,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
+}
+/* ---------- one person's timesheet ---------- */
+function allDates(){return [...new Set(Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d))))].sort()}
+function periodRange(){const T=TODAY;if(per==='week')return[monday(T),add(monday(T),6)];if(per==='lastweek'){const m=add(monday(T),-7);return[m,add(m,6)]}if(per==='month')return[T.slice(0,8)+'01',T];if(per==='fy'){const d=fromIso(T),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return[y+'-07-01',(y+1)+'-06-30']}return['0000','9999']}
+function personRows(pid){const [a,b]=periodRange();const out=[];for(const d of allDates()){if(d<a||d>b)continue;const r=rowsFor(d).find(x=>x.key===pid);if(r)out.push(r)}return out.sort((x,y)=>y.date.localeCompare(x.date))}
+const PER=[['week','This week'],['lastweek','Last week'],['month','This month'],['fy','This financial year'],['all','All time']];
+function personHTML(){
+  const p=Object.values(people()).find(x=>x.id===person)||{name:person,no:'',login:''};
+  const R=personRows(person);let tot=0,miss=0,xp=0,tl=0,hp=0;for(const r of R){const e=eff(r);if(e.hrs!=null)tot+=e.hrs;else miss++;xp+=+e.xp||0;if(e.tl)tl++;if(e.hp)hp++}
+  return `<div class="pv"><div class="pvh"><div><h2>${esc(p.name)}</h2><span class="sub">${[p.no,p.login].filter(Boolean).map(esc).join(' · ')}</span></div>
+    <label class="daysel" for="ts_per">Show<select id="ts_per">${PER.map(([k,l])=>`<option value="${k}" ${per===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <button type="button" class="sh-btn" data-ts="px">Download Excel</button><button type="button" class="sh-btn primary" data-ts="pp">Download PDF</button></div>
+    <div class="tiles"><div class="tile"><span>Days worked</span><b>${R.length}</b></div><div class="tile"><span>Total hours</span><b>${fmtH(tot)||'0h 00m'}</b></div><div class="tile"><span>Extra parcels</span><b>${xp}</b></div><div class="tile"><span>2 load days</span><b>${tl}</b></div><div class="tile ${hp?'warn':''}"><span>Held parcels</span><b>${hp}</b></div><div class="tile ${miss?'warn':'good'}"><span>Missing a time</span><b>${miss}</b></div></div>
+    ${R.length?`<section class="card day"><div class="tw"><table class="tb">${THEAD('Date')}<tbody>${R.map(r=>rowHTML(r,true)).join('')}</tbody></table></div></section>`:'<div class="empty">No entries for this period.</div>'}</div>`;
+}
+function searchHTML(){
+  const t=sq.trim().toLowerCase();
+  const L=t&&!person?Object.values(people()).filter(p=>p.id&&[p.name,p.no,p.login].join(' ').toLowerCase().includes(t)).sort((a,b)=>a.name.localeCompare(b.name)).slice(0,8):[];
+  return `<div class="srchbar"><input type="search" id="ts_s" placeholder="Search a driver to see their timesheet" value="${esc(sq)}" autocomplete="off" aria-label="Search a driver">${person?'<button type="button" class="sh-btn" data-ts="pclear">Back to all drivers</button>':''}
+  ${L.length?`<div class="sug" role="listbox">${L.map(p=>`<button type="button" role="option" data-ts="pick" data-v="${esc(p.id)}"><b>${esc(p.name)}</b><small>${esc([p.no,p.login].filter(Boolean).join(' · '))}</small></button>`).join('')}</div>`:(t&&!person?'<div class="sug"><span class="none">No driver matches that.</span></div>':'')}</div>`;
 }
 function render(){
   const box=document.getElementById('ts_root');if(!box)return;
   if(mode!=='mgr'){box.innerHTML='<div class="tsx"><div class="empty">Loading…</div></div>';return}
   if(!wk)wk=latest();
+  const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:'';
+  if(person){box.innerHTML=`<div class="tsx">${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
   const W=weekHTML();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
-   <p class="lead">A daily record of dates worked, start, finish, breaks and hours for every driver, kept for 7 years. Days worked come from Driver Results. Drivers tap Start and Finish shift in the app; those times show here marked Tapped. Anything typed here replaces it.</p>
-   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:''}
-   <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button>${W.daySel}<button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
-   <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div><div class="tile ${W.dayMiss?'warn':'good'}"><span>Missing on this day</span><b>${W.dayMiss}</b></div></div>
+   ${searchHTML()}
+   ${m}
+   <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
+   <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
    ${W.secs}
-   <p class="hint">Times save as you type. Tapped means the driver tapped Start or Finish shift in the app. Entered later means they typed it in afterwards. Preset is their normal start. Type over any time or answer to change it. Use the bin to delete an entry.</p>
+   <p class="hint">Newest day first. Tap a day to open or close it. Tapped means the driver tapped Start or Finish shift in the app; Entered later means they typed it afterwards; Preset is their normal start. Type over anything to change it, or use the bin to delete.</p>
   </div>`;
 }
 /* ---------- saving ---------- */
@@ -6590,11 +6630,11 @@ function saveTs(id,field,val){
 let cfgTimer=null,cfgTimerOn=false;
 function saveCfg(){clearTimeout(cfgTimer);cfgTimerOn=true;cfgTimer=setTimeout(async()=>{cfgTimerOn=false;try{await db.doc('timesheets/_settings').set(cfg)}catch(e){msg={err:true,t:'Could not save start times just now.'};render()}},500)}
 /* ---------- export ---------- */
-function exportRange(from,to,name){
+function exportRange(from,to,name,pid){
   if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
   const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
-  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'',r.pc??''])}
+  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){if(pid&&r.key!==pid)continue;const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'',r.pc??''])}
   if(aoa.length===1){msg={err:true,t:'No days worked in that period yet.'};render();return}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,5,26,10,12,7,7,10,7,8,7,10,30,8].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Timesheets');
@@ -6602,10 +6642,37 @@ function exportRange(from,to,name){
   (async()=>{const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
     try{await dl.save({filename:name,data:new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})});msg={t:'Saved. Keep it in your records folder for 7 years.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the file.'};render()}}})();
 }
+function loadScript(src){return new Promise((res,rej)=>{if([...document.scripts].some(s=>s.src===src))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+async function personPdf(btn){
+  const p=Object.values(people()).find(x=>x.id===person)||{name:person,no:'',login:''};const R=personRows(person).slice().reverse();
+  if(!R.length){msg={err:true,t:'No entries for this period.'};render();return}
+  btn.disabled=true;
+  try{
+    if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
+    const lbl=(PER.find(x=>x[0]===per)||['',''])[1],[a,b]=periodRange();
+    const rows=R.map(r=>{const e=eff(r);return[longD(r.date),e.start?e.start:'',e.finish||'',e.brk===''?'':e.brk,e.hrs==null?'':fmtH(e.hrs),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'']});
+    let tot=0,xp=0;for(const r of R){const e=eff(r);if(e.hrs!=null)tot+=e.hrs;xp+=+e.xp||0}
+    const {jsPDF}=window.jspdf;let d,fs=9;
+    for(;;){d=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+      d.setFont('helvetica','bold');d.setFontSize(16);d.text('Timesheet: '+p.name,12,14);d.setFont('helvetica','normal');d.setFontSize(9);
+      d.text('Preston Delivery Service Pty Ltd  |  Contract 1161  |  '+lbl+(a!=='0000'?' ('+longD(a)+' to '+longD(b>TODAY?TODAY:b)+')':'')+(p.no?'  |  '+p.no:''),12,20);
+      d.autoTable({startY:25,head:[['Date','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note']],body:rows,foot:[['Total ('+R.length+' days)','','','',fmtH(tot),String(xp),'','','']],styles:{fontSize:fs,cellPadding:1.4},headStyles:{fillColor:[27,63,107]},footStyles:{fillColor:[227,234,243],textColor:20,fontStyle:'bold'},margin:{left:12,right:12}});
+      if(d.getNumberOfPages()<=1||fs<=5.5)break;fs-=.5}
+    const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);
+    if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
+    await dl.save({filename:'Timesheet '+p.name+' '+lbl+'.pdf',data:d.output('blob')});msg={t:'PDF saved.'};
+  }catch(e){if(!e||e.code!=='declined')msg={err:true,t:'Could not make the PDF just now.'}}
+  btn.disabled=false;render();
+}
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-ts]');const sec=document.getElementById('mod-timesheets');if(!el||!sec||!sec.contains(el))return;
   const a=el.dataset.ts;msg=null;
+  if(a==='pick'){person=el.dataset.v;const p=Object.values(people()).find(x=>x.id===person);sq=p?p.name:'';render();window.scrollTo(0,0);return}
+  if(a==='pclear'){person=null;sq='';render();return}
+  if(a==='px'){const p=Object.values(people()).find(x=>x.id===person)||{name:person};const [f,t2]=periodRange();exportRange(f,t2,'Timesheet '+p.name+' '+((PER.find(x=>x[0]===per)||['',''])[1])+'.xlsx',person);return}
+  if(a==='pp'){personPdf(el);return}
   if(a==='prev'||a==='next'){wk=add(monday(wk),a==='prev'?-7:7);dsel=null;dselUser=false;render();return}
   if(a==='latest'){wk=latest();dsel=null;dselUser=false;render();return}
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
@@ -6621,15 +6688,15 @@ document.addEventListener('click',e=>{
   if(a==='addno'){addFor=null;render();return}
   if(a==='addok'){const d=el.dataset.v,pid=($('addsel')||{}).value;if(!pid)return;const p=Object.values(people()).find(x=>x.id===pid);const id=d+'_'+pid;ts[id]={...(ts[id]||{}),extra:true,removed:false,name:p?p.name:pid};db.doc('timesheets/'+id).set(ts[id]).catch(()=>{});addFor=null;render();return}
 });
-document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('set')&&e.target.closest('#mod-timesheets'))showSet=e.target.open},true);
+document.addEventListener('toggle',e=>{const x=e.target;if(!x.closest||!x.closest('#mod-timesheets'))return;if(x.classList.contains('set'))showSet=x.open;if(x.dataset&&x.dataset.day){const f=monday(x.dataset.day);(openWk[f]=openWk[f]||new Set())[x.open?'add':'delete'](x.dataset.day)}},true);
 document.addEventListener('change',e=>{
   const t=e.target;if(!t.closest||!t.closest('#mod-timesheets'))return;
   if(t.dataset.start!=null){const id=t.dataset.start,cur=cfg.starts[id];const o=typeof cur==='string'?Object.fromEntries(WD.map(([n])=>[n,cur])):{...(cur||{})};o[t.dataset.dow]=t.value;cfg.starts={...cfg.starts,[id]:o};saveCfg();render();return}
-  if(t.id==='ts_day'){dsel=t.value;dselUser=true;addFor=null;render();return}
+  if(t.id==='ts_per'){per=t.value;render();return}
   if(t.id==='ts_brk'){cfg.brk=t.value;saveCfg();render();return}
   if(t.dataset.f&&t.dataset.id){saveTs(t.dataset.id,t.dataset.f,t.value);if(!['note','xp','hc','brk'].includes(t.dataset.f))render();else setTimeout(()=>{if(!typing())render()},0)}
 });
-document.addEventListener('input',e=>{if(e.target.id==='ts_q'){q=e.target.value;const pos=e.target.selectionStart;render();const n=$('q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}});
+document.addEventListener('input',e=>{if(e.target.id==='ts_s'){sq=e.target.value;if(person)person=null;const pos=e.target.selectionStart;render();const n=$('s');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}return}if(e.target.id==='ts_q'){q=e.target.value;const pos=e.target.selectionStart;render();const n=$('q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}});
 const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-timesheets')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)};
 async function start(role){
   if(role!=='mgr'){mode='drv';render();return}
@@ -6789,7 +6856,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251150';
+const VERSION='202610251159';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
