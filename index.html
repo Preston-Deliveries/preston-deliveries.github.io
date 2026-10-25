@@ -1583,6 +1583,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-reports .rw{display:flex;gap:8px;align-items:stretch}
 #mod-reports .rw .ri{flex:1;min-width:0}
 #mod-reports .rw .lp{align-self:center}
+#mod-reports .f select{font:600 1rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1.5px solid var(--sh-line);border-radius:8px;padding:10px 12px;min-height:46px}
 </style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -7339,6 +7340,8 @@ function formHTML(){
   let h=`<button type="button" class="sh-btn back" data-rp="back">‹ Back</button><section class="card form ${K.c}"><h2>${K.long}</h2>
    <div class="sos sm"><b>Emergency? Call 000 first.</b><a class="sh-btn danger sm" href="tel:000">Call 000</a></div>`;
   if(kind==='vehicle')h+=vehChecklist();
+  if(mode==='mgr'){const L=Object.entries(staff).map(([id,p])=>({id,n:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
+    h+=Q(N(),'Which driver is this about?',`<label class="f"><span>Driver</span><select id="rp_about"><option value="">Choose a driver</option>${L.map(x=>`<option value="${esc(x.id)}" ${f.about===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label><p class="hint">The report is saved under this driver, with a note that you entered it.</p>`,true)}
   h+=Q(N(),'When did it happen?',`<div class="row2">${inp('date','Date',f.date,'','date',`max="${isoD(new Date())}"`)}${inp('time','Time',f.time,'','time')}</div>`,true);
   if(kind==='incident'){
     h+=Q(N(),'What happened?',chips('type',INC_TYPES,f.type),true);
@@ -7382,34 +7385,37 @@ function formHTML(){
    ${miss.length?`<p class="hint">Still needed: ${esc(miss.join(', '))}.</p>`:''}</section>`;
   return h;
 }
-function missing(){const m=[];if(!f.date)m.push('date');if(!f.type)m.push('what happened');if(!f.where&&!f.whereType)m.push('where');
+function missing(){const m=[];if(mode==='mgr'&&!f.about)m.push('which driver');if(!f.date)m.push('date');if(!f.type)m.push('what happened');if(!f.where&&!f.whereType)m.push('where');
   if(kind!=='hazard'&&f.hurt===null)m.push('was anyone hurt');if(f.hurt&&!f.treat)m.push('treatment');
   if(kind==='incident'&&f.police===null)m.push('police');if(kind==='vehicle'&&!String(f.rego||'').trim())m.push('van rego');if(kind==='vehicle'&&(f.drivable===null||f.towed===null||f.police===null))m.push('van and police questions');
   if(kind==='hazard'&&(!f.risk||!f.still))m.push('how serious and is it still there');if(f.desc.trim().length<5)m.push('description');return m}
-function sentHTML(){return `<section class="card sent"><h2>Report sent${sent.first?', thanks '+esc(sent.first):''}.</h2><p>The managers have it. Keep a copy for yourself if you like, for example for insurance.</p>
+function sentHTML(){return `<section class="card sent"><h2>${mode==='mgr'?'Report saved.':'Report sent'+(sent.first?', thanks '+esc(sent.first):'')+'.'}</h2><p>${mode==='mgr'?'It is in the reports list under the driver you chose.':'The managers have it. Keep a copy for yourself if you like, for example for insurance.'}</p>
   <div class="acts"><button type="button" class="sh-btn" data-rp="mycopy">Download my copy (PDF)</button><button type="button" class="sh-btn primary" data-rp="again">Done</button></div>
   ${sent.serious?'<p class="warnbox">Someone needed a doctor or hospital. Call the manager now if you have not already.</p>':''}</section>`}
 function driverHTML(){
   if(sent)return sentHTML();
   if(!meTried)return '<div class="empty">Opening…</div>';
-  if(!me)return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so reports cannot be sent. Ask the manager to check your email on the Drivers page.</div>';
+  if(!me&&mode!=='mgr')return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so reports cannot be sent. Ask the manager to check your email on the Drivers page.</div>';
   return kind?formHTML():chooseHTML();
 }
-function clean(){const o=JSON.parse(JSON.stringify(f));
+function clean(){const o=JSON.parse(JSON.stringify(f));delete o.about;
   if(!o.hurt){o.who='';o.inj='';o.part='';o.treat=''}if(!o.police)o.policeRef='';
   const keep={incident:['person'],vehicle:['other','rego','odo','drivable','towed','cond','ourDamage','theirDamage'],hazard:['risk','still','fix']};
   for(const k of ['person','other','rego','odo','drivable','towed','cond','ourDamage','theirDamage','risk','still','fix'])if(!keep[kind].includes(k))delete o[k];
   if(kind==='hazard'){delete o.hurt;delete o.who;delete o.inj;delete o.part;delete o.treat;delete o.police;delete o.policeRef;delete o.witness}
   delete o.kind;return o}
 async function send(){
-  if(busy||!db||!me||missing().length)return;busy=true;msg=null;render();
-  const id=f.date+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'_'+me.staff;const ph=[];
+  if(busy||!db||(!me&&mode!=='mgr')||missing().length)return;busy=true;msg=null;render();
+  const forId=mode==='mgr'?f.about:me.staff,sp=staff[forId]||{};
+  const forName=mode==='mgr'?tc([sp.first,sp.last].filter(Boolean).join(' ')):(me.name||''),forRun=mode==='mgr'?(sp.runs||[]).filter(Boolean).join(', '):(me.run||'');
+  const by=mode==='mgr'?{staff:(me&&me.staff)||'',name:mgrName().name}:null;
+  const id=f.date+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'_'+forId;const ph=[];
   try{
-    for(let i=0;i<photos.length;i++){const pid=id+'_p'+i+'_'+me.staff;await db.doc('reportimg/'+pid).set({staff:me.staff,img:photos[i],at:db.serverTime?db.serverTime():new Date().toISOString()});ph.push(pid)}
+    for(let i=0;i<photos.length;i++){const pid=id+'_p'+i+'_'+forId;await db.doc('reportimg/'+pid).set({staff:forId,img:photos[i],at:db.serverTime?db.serverTime():new Date().toISOString()});ph.push(pid)}
     const serious=['Doctor or medical centre','Hospital or ambulance'].includes(f.treat);
-    const data={kind,staff:me.staff,name:me.name||'',run:me.run||'',f:clean(),photos:ph,serious,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()};
+    const data={kind,staff:forId,name:forName,run:forRun,...(by?{by}:{}),f:clean(),photos:ph,serious,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()};
     await db.doc('reports/'+id).set(data);
-    sent={first:tc(String(me.name||'').split(' ')[0]),serious,copy:{...data,id,f:{...clean(),kind},at:new Date().toISOString()},imgs:photos.slice()};
+    sent={first:mode==='mgr'?'':tc(String(me.name||'').split(' ')[0]),serious,copy:{...data,id,f:{...clean(),kind},at:new Date().toISOString()},imgs:photos.slice()};
     busy=false;kind=null;f=null;photos=[];render();window.scrollTo(0,0);
   }catch(e){busy=false;msg={err:true,t:'Could not send just now. Check your connection and try again. Nothing you typed has been lost.'};render()}
 }
@@ -7443,7 +7449,7 @@ function mgrListHTML(){
    <p class="hint">Keep incident records for at least 5 years. The Excel register and the backup on Home both include them.</p>`;
 }
 const row=(l,v)=>v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length)?'':`<div><dt>${esc(l)}</dt><dd>${esc(Array.isArray(v)?v.join(', '):v===true?'Yes':v===false?'No':v)}</dd></div>`;
-function factsOf(r){const F=r.f||{},p=person(r);const R=[['Reported by',p.name+(p.no?' ('+p.no+')':'')],['Date',niceD(F.date)+(F.time?' at '+niceT(F.time):'')],['What happened',F.type],['Where',[F.whereType,F.where].filter(Boolean).join(': ')]];
+function factsOf(r){const F=r.f||{},p=person(r);const R=[[r.by?'Driver':'Reported by',p.name+(p.no?' ('+p.no+')':'')],...(r.by&&r.by.name?[['Entered by',r.by.name]]:[]),['Date',niceD(F.date)+(F.time?' at '+niceT(F.time):'')],['What happened',F.type],['Where',[F.whereType,F.where].filter(Boolean).join(': ')]];
   if(r.kind==='vehicle')R.push(['Our van',[F.rego,tc(p.van)].filter(Boolean).join(' ')],['Odometer',F.odo?F.odo+' km':''],['Van drivable',F.drivable],['Vehicle towed',F.towed],['Road and weather',F.cond]);
   if(r.kind!=='hazard'){R.push(['Anyone hurt',F.hurt]);if(F.hurt)R.push(['Who was hurt',F.who],['Injury',[F.inj,F.part].filter(Boolean).join(', ')],['Treatment',F.treat]);R.push(['Police',F.police===true?'Yes'+(F.policeRef?', event '+F.policeRef:''):F.police===false?'No':''])}
   if(r.kind==='hazard')R.push(['How serious',(RISK.find(x=>x[0]===F.risk)||['',''])[1]],['Still there',F.still]);
@@ -7529,7 +7535,7 @@ async function makePdf(r,pics,btn,forMgr){
   if(forMgr){const who=mgrName();const cx=[M,M+CW/2+4],w3=CW/2-4;
     [['PREPARED BY',who.name+(who.role?', '+who.role:'')],['DATE',new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})]].forEach(([l,v],i)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(l,cx[i],sy);doc.setDrawColor(...INK);doc.setLineWidth(.3);doc.line(cx[i],sy+9,cx[i]+w3,sy+9);if(v){doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(doc.splitTextToSize(v,w3)[0],cx[i],sy+7.5)}})}
   doc.setDrawColor(...LINE);doc.line(M,288,W-M,288);doc.setFont('helvetica','normal');doc.setFontSize(6.8);doc.setTextColor(...MUT);
-  doc.text('Confidential. Reported by '+P.name+' on '+(toDate(r.at)?toDate(r.at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):niceD(F.date))+'. Keep incident records for at least 5 years.',M,292);doc.text('Page 1 of 1',W-M,292,{align:'right'});
+  doc.text('Confidential. '+(r.by&&r.by.name?'Entered by '+r.by.name+' about '+P.name:'Reported by '+P.name)+' on '+(toDate(r.at)?toDate(r.at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):niceD(F.date))+'. Keep incident records for at least 5 years.',M,292);doc.text('Page 1 of 1',W-M,292,{align:'right'});
   if(btn){btn.disabled=false;btn.textContent=old}
   const name=`${ref} ${K.long} ${P.name||r.name||''} ${F.date||''}.pdf`.replace(/\s+/g,' ');
   const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
@@ -7556,7 +7562,7 @@ function rerenderKeep(){const a=document.activeElement;const key=a&&(a.dataset&&
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-rp]');const sec=document.getElementById('mod-reports');if(!el||!sec||!sec.contains(el))return;
   const a=el.dataset.rp,v=el.dataset.v,k=el.dataset.k;if(a!=='del')arm=false;
-  if(a==='kind'){kind=v;f=blank(v);photos=[];msg=null;render();window.scrollTo(0,0);return}
+  if(a==='kind'){kind=v;f=blank(v);if(mode==='mgr')f.rego='';photos=[];msg=null;render();window.scrollTo(0,0);return}
   if(a==='back'){kind=null;f=null;photos=[];msg=null;render();return}
   if(a==='chip'){if(k.startsWith('m_')){const map={m_status:'status',m_ws:'ws'};edit[map[k]]=v;render();return}setP(f,k,getP(f,k)===v?'':v);render();return}
   if(a==='mchip'){const arr=getP(f,k)||[];setP(f,k,arr.includes(v)?arr.filter(x=>x!==v):arr.concat(v));render();return}
@@ -7584,6 +7590,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest
   if(t.id==='rp_q'){q=t.value;rerenderKeep()}});
 document.addEventListener('change',async e=>{const t=e.target;if(!t.closest||!t.closest('#mod-reports'))return;
   if(t.id==='rp_kf'){kf=t.value;render();return}
+  if(t.id==='rp_about'&&f){f.about=t.value;const p=staff[t.value];if(p&&kind==='vehicle'&&p.rego&&!String(f.rego||'').trim())f.rego=p.rego;render();return}
   if(t.id==='rp_file'&&t.files){const fs=[...t.files].slice(0,MAXPH-photos.length);msg={t:'Adding photos…'};render();for(const fl of fs){const d=await shrink(fl);if(d)photos.push(d)}msg=null;render()}});
 
 async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new Promise(r=>setTimeout(r,150));tries++}
@@ -7611,7 +7618,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251403';
+const VERSION='202610251411';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
