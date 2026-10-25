@@ -2866,7 +2866,7 @@ function go(sec,opts){
   if(sec==='clock'&&window.CLOCK) window.CLOCK.mount();
   renderNav();
   document.title=(sec==='home'?'Contract 1161':NAMES[sec]+' · 1161');
-  if(!opts.keepScroll) window.scrollTo(0,0);
+  if(!opts.keepScroll){window.scrollTo(0,0);if(previewChild)document.body.scrollTop=0}
   if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
 }
@@ -2904,7 +2904,7 @@ function pageHtml(snap){
   const json=JSON.stringify(snap).replace(/</g,'\\u003c');
   const body=String(window.__PRISTINE||'').replace(/(<script type="application\/json" id="snapshot">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+json+b);
   const mods=[...document.querySelectorAll('script[data-mod]')].map(s=>s.outerHTML).join('\n');
-  const RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
+  const RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}html{height:100%;overflow:hidden}body{position:fixed;top:0;right:0;bottom:0;left:0;width:auto;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}';
   return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'+body+'\n'+mods+'</body></html>';
 }
 async function publish(patch){
@@ -8308,7 +8308,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610252340';
+const VERSION='202610252350';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
