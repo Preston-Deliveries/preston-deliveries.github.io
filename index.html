@@ -2536,11 +2536,30 @@ p.ck-alert{color:#5A3C00!important}
 .me-line .ok{color:#14804A;font-weight:700}.me-line .due{color:#C2410C;font-weight:700}
 .me-q{margin:0;padding:10px 12px;border-left:3px solid var(--g);background:var(--sh-sunk);border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.45}
 .me-go{align-self:flex-start;min-height:42px}
+.me-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;padding:4px;gap:4px}
+.me-seg button{border:0;background:transparent;color:var(--sh-muted);font:700 .95rem var(--sh-body);padding:10px 4px;border-radius:9px;cursor:pointer}
+.me-seg button[aria-selected="true"]{background:var(--g);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .me-seg button[aria-selected="true"]{color:#140B2B}}
+:root[data-theme="dark"] .me-seg button[aria-selected="true"]{color:#140B2B}
+.me-per{margin:-6px 2px 0;font-size:.86rem;font-weight:600;color:var(--sh-muted)}
+.me-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.me-c{position:relative;display:flex;flex-direction:column;gap:3px;padding:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;box-shadow:inset 0 3px 0 var(--g);min-width:0}
+.me-c .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--gs);color:var(--g);margin-bottom:6px}
+.me-c .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.me-c>small{font-size:.8rem;font-weight:700;color:var(--sh-muted)}
+.me-c>b{font:700 1.65rem/1.1 var(--sh-body);font-variant-numeric:tabular-nums;color:var(--sh-ink)}
+.me-c>b small{font-size:.9rem;font-weight:600;color:var(--sh-muted)}
+.me-c .sb{font-size:.8rem;color:var(--sh-muted);line-height:1.3}
+.me-c .bar{height:8px;border-radius:99px;background:var(--sh-sunk);overflow:hidden;margin:4px 0 2px}.me-c .bar i{display:block;height:100%;background:var(--g);border-radius:99px}
+.me-c.r-g{box-shadow:inset 0 3px 0 #1f8a4c}.me-c.r-g>b,.me-c.r-g .sb{color:#14804A}.me-c.r-g .ic{background:#E3F4EA;color:#14804A}
+.me-c.r-w{box-shadow:inset 0 3px 0 #c27a00}.me-c.r-w>b,.me-c.r-w .sb{color:#A35F00}.me-c.r-w .ic{background:#FDF1DC;color:#A35F00}
+.me-c.r-b{box-shadow:inset 0 3px 0 #c23b2e}.me-c.r-b>b,.me-c.r-b .sb{color:#B3261E}.me-c.r-b .ic{background:#FBE5E3;color:#B3261E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .me-c.r-g>b,:root:not([data-theme="light"]) .me-c.r-g .sb{color:#5CCB8E}:root:not([data-theme="light"]) .me-c.r-g .ic{background:#14321F;color:#5CCB8E}:root:not([data-theme="light"]) .me-c.r-w>b,:root:not([data-theme="light"]) .me-c.r-w .sb{color:#F2B24A}:root:not([data-theme="light"]) .me-c.r-w .ic{background:#3A2C10;color:#F2B24A}:root:not([data-theme="light"]) .me-c.r-b>b,:root:not([data-theme="light"]) .me-c.r-b .sb{color:#FF8A8E}:root:not([data-theme="light"]) .me-c.r-b .ic{background:#3D1C1E;color:#FF8A8E}}
+:root[data-theme="dark"] .me-c.r-g>b,:root[data-theme="dark"] .me-c.r-g .sb{color:#5CCB8E}:root[data-theme="dark"] .me-c.r-g .ic{background:#14321F;color:#5CCB8E}:root[data-theme="dark"] .me-c.r-w>b,:root[data-theme="dark"] .me-c.r-w .sb{color:#F2B24A}:root[data-theme="dark"] .me-c.r-w .ic{background:#3A2C10;color:#F2B24A}:root[data-theme="dark"] .me-c.r-b>b,:root[data-theme="dark"] .me-c.r-b .sb{color:#FF8A8E}:root[data-theme="dark"] .me-c.r-b .ic{background:#3D1C1E;color:#FF8A8E}
+.me-sv .me-mix{margin:4px 0 2px}
+
 .me-box h3{margin:6px 0 0;font:700 1rem var(--sh-body);color:var(--sh-ink)}.me-box h3 small{font-weight:500;color:var(--sh-muted);font-size:.82rem}
 .me-sub{margin:-4px 0 0;font-size:.82rem;color:var(--sh-muted)}
-.me-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:10px;padding:3px;gap:3px}
-.me-seg button{border:0;background:transparent;color:var(--sh-muted);font:700 .9rem var(--sh-body);padding:8px 4px;border-radius:8px;cursor:pointer}
-.me-seg button[aria-selected="true"]{background:var(--g);color:#fff}
 .me-rank{display:flex;align-items:center;gap:14px}
 .me-pl{flex:none;width:72px;height:72px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--gs);color:var(--g)}
 .me-pl b{font:800 1.45rem/1 var(--sh-body)}.me-pl small{font-size:.74rem;font-weight:700}
@@ -4145,7 +4164,7 @@ async function shareDrivers(){
   if(!art){say("Updating the drivers’ link is not available in this view. Open the page in Claude while signed in.",true);return}
   if(!Object.keys(week.days).length){say("There is no data for this week yet, so there is nothing to share.",true);return}
   const now=new Date();
-  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow()};
+  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow(),targets:{...T()}};
   btn.disabled=true;say("Updating the drivers’ link…");
   try{await APP.publish({results:snap});say("Done. Drivers now see these results on the same link. The page is reloading.")}
   catch(e){btn.disabled=false;const c=e&&e.code;
@@ -5644,7 +5663,11 @@ const ICON={
  run:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5v2h6v-2"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg>',
  money:'<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 11h7M9 15h7M9 19h4"/></svg>',
  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
- bell:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>'
+ bell:'<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+ box:'<svg viewBox="0 0 24 24"><path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5 12 12l8.5-4.5M12 12v9"/></svg>',
+ scan:'<svg viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>',
+ enq:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v3.5M12 14h.01"/></svg>',
+ eta:'<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>'
 };
 /* per person memory on this phone: which notifications were seen, and when each first showed up */
 let me=null,db=null,data=null,loading=null,seenAtOpen=null;
@@ -5668,11 +5691,15 @@ async function load(force){
   loading=(async()=>{
     try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}
     me=await who();
-    const d={clock:[],briefs:[],sigs:{},inv:[]};
+    const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null};
     const now=new Date();
     const tasks=[];
+    const days=Array.from({length:36},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
+    if(db){
+      tasks.push(Promise.all(days.map(x=>db.doc('days/'+x).get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.rows)d.days[x]=v}}).catch(()=>{}))));
+      if(me.admin)tasks.push(db.doc('settings/main').get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.targets)d.tg=v.targets}}).catch(()=>{}));
+    }
     if(db&&me.staff){
-      const days=Array.from({length:14},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
       tasks.push(Promise.all(days.map(x=>db.doc('clock/'+x+'_'+me.staff).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
       tasks.push(db.collection('briefs').get().then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
         await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+me.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
@@ -5723,11 +5750,11 @@ function build(){
   // latest updates from the office
   for(const n of S().notices||[]){const at=n.edited||n.postedAt;if(at&&old(at))continue;add({id:'nt-'+n.id+(n.edited?'-'+n.edited:''),at,g:'news',ic:'news',nav:'updates',title:(n.important?'Important: ':'')+n.title,body:n.edited?'This update was changed. Tap to see what it says now.':'New update from the office.'})}
   // results
-  const r=S().results;if(r&&r.updated){const m=myResults();const w=m&&(m.week||m.cycle||m.day);
-    add({id:'res-'+r.updated,at:snapAt('results'),g:'perf',ic:'results',nav:'results',title:'Driver results updated',body:w?`You are ${ord(w.k)} of ${w.of} ${m.week?'this week':''} with ${w.p} of ${w.m} points.`.replace('  ',' '):'See this week’s scores and ranking.'})}
+  const r=S().results;if(r&&r.updated){let w=null;try{if(data)w=statsFor(periods().week.dates)}catch(e){}
+    add({id:'res-'+r.updated,at:snapAt('results'),g:'perf',ic:'results',nav:'me',title:'Your results are updated',body:w?`This week: ${w.points} of ${w.max} points, ${pctf(w.eta)} 2 hr ETA, ${w.nc==null?0:Math.round(w.nc)} NC scans, ${Math.round(w.enq)} enquiries.`:'See your score on your Profile.'})}
   // survey
   const s=S().survey;if(s&&s.updated){const m=mySurvey();
-    add({id:'sv-'+s.updated,at:snapAt('survey'),g:'perf',ic:'survey',nav:'survey',title:'Survey ranking updated',body:m&&m.found?`You are ${ord(m.rank)} of ${m.of} with ${m.pts>0?'+':''}${m.pts} points${m.said.length?` and ${m.said.length} customer comment${m.said.length===1?'':'s'}`:''}.`:'See what customers said and where you rank.'})}
+    add({id:'sv-'+s.updated,at:snapAt('survey'),g:'perf',ic:'survey',nav:'survey',title:'Customer survey updated',body:m&&m.found?`You got ${m.pts>0?'+':''}${m.pts} points from ${m.n} survey${m.n===1?'':'s'}${m.said.length?` and ${m.said.length} customer comment${m.said.length===1?'':'s'}`:''}.`:'See what customers said.'})}
   // precards on my run
   for(const p of myPrecards().slice(0,10)){if(p.date&&old(p.date+'T08:00:00'))continue;add({id:'pc-'+(p.id||p.address),at:snapAt('precards'),g:'road',ic:'precard',nav:'precards',title:'New precard on your run',body:[p.address,p.suburb].filter(Boolean).join(', ')+(p.reason?'. '+p.reason:'')})}
   // my run sheet changed
@@ -5761,51 +5788,76 @@ async function showAlerts(){
   put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);
 }
 /* ---------- profile ---------- */
+/* ---------- my own numbers, worked out from the daily results records ---------- */
+const DEFT={etaG:98,etaA:95,ncG:0,ncA:1,enqG:0,enqA:0};
+const isoL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const addD=(s,n)=>{const d=fromIso(s);d.setDate(d.getDate()+n);return isoL(d)};
+const targets=()=>Object.assign({},DEFT,(S().results&&S().results.targets)||{},(data&&data.tg)||{});
+function rate(kind,v){if(v==null)return '';const t=targets();
+  if(kind==='eta')return v*100>=t.etaG?'g':v*100>=t.etaA?'w':'b';
+  if(kind==='nc')return v<=t.ncG?'g':v<=t.ncA?'w':'b';
+  return v<=t.enqG?'g':v<=t.enqA?'w':'b'}
+const PT={g:2,w:1,b:0,'':0};
+function myRow(rows){if(!rows||!me.login)return null;const k=Object.keys(rows).find(x=>dkey(x)===me.login);return k?rows[k]:null}
+function statsFor(dates){
+  const rs=[];for(const dt of dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)rs.push(r)}
+  if(!rs.length)return null;const n=rs.length;
+  const nn=a=>a.filter(x=>x!=null&&x!=='');const sum=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0):null};const avg=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0)/b.length:null};
+  const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
+  const points=rs.reduce((s,r)=>s+PT[rate('eta',r.eta)]+PT[rate('nc',r.nc)]+PT[rate('enq',r.enq==null?0:r.enq)],0);
+  return{days:n,pc,eta,nc,enq,points,max:n*6,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
+}
+const CYC0='2026-10-05';
+function periods(){
+  const all=Object.keys((data&&data.days)||{}).filter(k=>Object.keys(data.days[k].rows||{}).length).sort();
+  const mine=all.filter(k=>myRow(data.days[k].rows));
+  const D=all[all.length-1]||dayOf(new Date());const dd=mine[mine.length-1]||D;
+  const dow=(fromIso(D).getDay()+6)%7,mon=addD(D,-dow);
+  const k=Math.floor(Math.round((fromIso(D)-fromIso(CYC0))/864e5)/28),cs=addD(CYC0,k*28);
+  const sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]};
+  const longDay=s=>{const d=fromIso(s);return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]+' '+sh(s)};
+  const wkNo=Math.floor(Math.round((fromIso(mon)-fromIso(cs))/864e5)/7)+1;
+  return{day:{dates:[dd],label:longDay(dd)},week:{dates:Array.from({length:7},(_,i)=>addD(mon,i)),label:'Week of '+sh(mon)+' to '+sh(addD(mon,6))+(wkNo>=1&&wkNo<=4?' · pay week '+wkNo+' of 4':'')},
+    cycle:{dates:Array.from({length:28},(_,i)=>addD(cs,i)),label:'Pay cycle '+sh(cs)+' to '+sh(addD(cs,27))}};
+}
+function hoursFor(dates){const set=new Set(dates);let m=0,n=0;for(const c of (data&&data.clock)||[]){if(!set.has(c.date)||!c.start)continue;n++;if(c.finish)m+=Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0))}return{m,n}}
 let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
 const pctf=v=>v==null?'n/a':(v>=.9995?'100':(v*100).toFixed(1).replace(/\.0$/,''))+'%';
-function perfHTML(){
-  const R=S().results,res=myResults();
-  const tabs=[['day','Day'],['week','Week'],['cycle','Pay cycle']];
-  const x=res&&res[PER];
-  const lab=(R&&(R.boards||[]).find(b=>b.key===PER)||{}).label||'';
-  const m=(label,val,rt)=>`<div class="me-m ${rt?'r-'+rt:''}"><small>${label}</small><b>${val}</b></div>`;
-  const sv=mySurvey(PER==='cycle'?'cycle':'weekly');
-  let body='';
-  if(!R)body='<p class="me-line">Results show here once they are shared.</p>';
-  else if(!R.mine)body='<p class="me-line">Your numbers show here after the next time results are sent to drivers.</p>';
-  else if(!x)body=`<p class="me-line">No results for you ${PER==='day'?'on this day':PER==='week'?'this week':'this pay cycle'} yet.</p>`;
-  else body=`<div class="me-rank"><div class="me-pl"><b>${ord(x.k)}</b><small>of ${x.of}</small></div><div class="me-pt"><b>${x.p} <small>of ${x.m} points</small></b><div class="bar"><i style="width:${x.m?Math.round(100*x.p/x.m):0}%"></i></div>${PER!=='day'?`<span>${x.d} day${x.d===1?'':'s'} worked</span>`:''}</div></div>
-    <div class="me-ms">${m('Parcels',x.pc==null?'n/a':(+x.pc).toLocaleString('en-AU'),'')}${m('2 hr ETA',pctf(x.eta),x.r&&x.r.eta)}${m('NC scans',x.nc==null?'n/a':Math.round(x.nc),x.r&&x.r.nc)}${m('Enquiries',x.enq==null?'0':Math.round(x.enq),x.r&&x.r.enq)}</div>`;
-  const svh=!sv?`<p class="me-line">${PER==='cycle'?'The monthly survey ranking':'The survey ranking'} shows here once it is shared.</p>`:!sv.found?`<p class="me-line">No customer surveys for you in this ${PER==='cycle'?'month':'week'}.</p>`:
-   `<div class="me-rank"><div class="me-pl"><b>${ord(sv.rank)}</b><small>of ${sv.of}</small></div><div class="me-pt"><b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span>Average score ${sv.avg.toFixed(1)}</span>`:''}</div></div>`;
-  return `<section class="me-box g-perf"><h2>My results</h2>
-   <div class="me-seg" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
-   ${lab||(R&&R.updated)?`<p class="me-sub">${esc(lab)}${R&&R.updated?`${lab?' · ':''}updated ${esc(R.updated)}`:''}</p>`:''}
-   ${body}
-   <h3>Customer survey${PER==='day'?' <small>(weekly, so this shows the week)</small>':''}</h3>
-   ${sv&&sv.sub?`<p class="me-sub">${esc(sv.sub)}</p>`:''}${svh}
-   <div class="me-btns"><button type="button" class="sh-btn" data-nav="results">Driver results</button><button type="button" class="sh-btn" data-nav="survey">Survey ranking</button></div></section>`;
-}
 function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
 function profileHTML(){
-  const run=myRun(),res=myResults(),sv=mySurvey(),pcs=myPrecards(),wk=weekShifts();
+  const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates),h=hoursFor(per.dates);
+  const run=myRun(),pcs=myPrecards(),wk=weekShifts();
+  const sv=mySurvey(PER==='cycle'?'cycle':'weekly');
   const brief=data&&data.briefs[0],signed=brief?data.sigs[brief.id]:null;
-  const stat=(g,ic,big,lab,nav)=>`<button type="button" class="me-st g-${g}" ${nav?`data-nav="${nav}"`:''}><span class="ic">${ICON[ic]}</span><b>${big}</b><small>${lab}</small></button>`;
-  const w=res&&(res.week||res.cycle);
+  const when={day:'that day',week:'this week',cycle:'this pay cycle'}[PER];
+  const card=(g,ic,lab,val,sub,rt)=>`<div class="me-c g-${g}${rt?' r-'+rt:''}"><span class="ic">${ICON[ic]}</span><small>${lab}</small><b>${val}</b>${sub?`<span class="sb">${sub}</span>`:''}</div>`;
+  const rtTxt={g:'On target',w:'Close to target',b:'Below target','':''};
+  const svBody=!sv||!sv.found?`<b>No surveys</b><span class="sb">No customer surveys for you ${PER==='cycle'?'this month':'this week'} yet.</span>`:
+    `<b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span class="sb">Average score ${sv.avg.toFixed(1)} out of 10</span>`:''}`;
   return `<section class="me-card">
     <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
     <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.admin?'Manager':'Driver',me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
   </section>
-  <div class="me-stats">
-    ${stat('start','clock',wk.tot?hrs(wk.tot):'0h',wk.days?`worked this week, ${wk.days} day${wk.days===1?'':'s'}`:'worked this week','clock')}
-    ${stat('road','precard',String(pcs.length),pcs.length===1?'precard address on your run':'precard addresses on your run','precards')}
+  <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
+  <p class="me-per">${esc(per.label)}</p>
+  ${x?`<div class="me-c me-wide g-perf"><small>My score</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.round(100*x.points/x.max):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
+     :`<div class="me-c me-wide g-perf"><small>My score</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
+  <div class="me-grid">
+    ${card('road','box','Parcels',x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–',x&&x.days>1?'about '+Math.round(x.pc/x.days).toLocaleString('en-AU')+' a day':'')}
+    ${card('perf','eta','2 hr ETA',x?pctf(x.eta):'–',x?rtTxt[x.r.eta]:'',x&&x.r.eta)}
+    ${card('perf','scan','NC scans',x&&x.nc!=null?Math.round(x.nc):'–',x?rtTxt[x.r.nc]:'',x&&x.r.nc)}
+    ${card('perf','enq','Enquiries',x?Math.round(x.enq):'–',x?rtTxt[x.r.enq]:'',x&&x.r.enq)}
   </div>
-  ${perfHTML()}
+  <div class="me-c me-wide g-perf me-sv"><span class="ic">${ICON.survey}</span><small>Customer survey${PER==='day'?' (weekly)':PER==='cycle'?' (monthly)':''}</small>${svBody}</div>
+  <div class="me-grid">
+    ${card('start','clock','Hours worked',h.m?hrs(h.m):'0h',h.n?h.n+' shift'+(h.n===1?'':'s'):'No shifts '+when)}
+    ${card('road','precard','Precards on my run',String(pcs.length),pcs.length===1?'address':'addresses')}
+  </div>
   ${run?`<section class="me-box g-road"><h2>My run</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run">Open my run sheet</button></section>`:''}
   <section class="me-box g-start"><h2>My shifts this week</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
-  ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p><button type="button" class="sh-btn${signed?'':' primary'} me-go" data-nav="briefs">${signed?'View team brief':'Read and sign'}</button></section>`:''}
-  ${data&&data.inv.length?`<section class="me-box g-admin"><h2>My invoices</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div><button type="button" class="sh-btn me-go" data-nav="invoices">Go to invoices</button></section>`:''}
-  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>What your customers said</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}<button type="button" class="sh-btn me-go" data-nav="survey">See the survey ranking</button></section>`:''}
+  ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
+  ${data&&data.inv.length?`<section class="me-box g-admin"><h2>My invoices</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
+  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>What your customers said</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}</section>`:''}
   <p class="me-note">Only you can see this page.</p>`;
 }
 async function showProfile(){
@@ -8646,7 +8698,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610260915';
+const VERSION='202610260945';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
