@@ -1882,6 +1882,24 @@ body.sh-uv-on{overflow:hidden}
 #sh-main #mod-guide .bar-in{max-width:1180px;padding-block:14px}
 #sh-main #mod-guide main:has(>.home-head){max-width:1180px;padding-top:18px}
 @media screen{#sh-main #mod-guide main{padding-top:18px}}
+
+/* Home: list menu with round coloured icons */
+.sh-list{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.sh-list{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sh-list .sh-li:nth-child(odd){border-right:1px solid var(--sh-line)}.sh-list .sh-li:nth-last-child(2):nth-child(odd){border-bottom:0}}
+.sh-li{display:flex;align-items:center;gap:16px;width:100%;min-height:72px;padding:12px 16px;border:0;border-bottom:1px solid var(--sh-line);background:transparent;color:var(--sh-ink);font:inherit;text-align:left;cursor:pointer}
+.sh-li:last-child{border-bottom:0}
+.sh-li:hover{background:var(--sh-sunk)}
+.sh-li:focus-visible{outline:2px solid var(--sh-accent);outline-offset:-2px}
+.sh-li .ic{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:#fff}
+.sh-li .ic svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sh-li .tx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.sh-li .tx b{font:600 1.15rem/1.2 var(--sh-body)}
+.sh-li .tx small{font-size:.85rem;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-li .nw{flex:none;background:#2BB6E8;color:#fff;font:700 .8rem var(--sh-body);padding:4px 12px;border-radius:6px}
+.sh-li .chev{flex:none;width:18px;height:18px;fill:none;stroke:var(--sh-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+.sh-tgroup h2{font:700 1.25rem var(--sh-body);letter-spacing:0}
+.sh-tgroup h2::before{display:none}
+@media (max-width:599.98px){.sh-home .sh-hello h1{font-size:1.8rem}.sh-li{min-height:66px;padding:10px 14px}.sh-li .ic{width:42px;height:42px}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -2273,13 +2291,14 @@ function go(sec,opts){
   try{localStorage.setItem('sec1161',sec)}catch(e){}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
 }
-function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el)el.textContent=text||''}
-function tile(s){const d=role==='mgr'?DESC.mgr:DESC.drv;return `<button type="button" class="sh-tile g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(NAMES[s])}</b><p>${esc(d[s])}</p>${role==='mgr'||s==='briefs'||s==='updates'?`<span class="st" id="sh-st-${s}">${esc(stats[s]||'')}</span>`:''}</button>`}
+function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
+function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
+function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-tiles">${ss.map(tile).join('')}</div></section>`}).join('');
+  const tilesOrder=(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
@@ -6521,7 +6540,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251108';
+const VERSION='202610251113';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
