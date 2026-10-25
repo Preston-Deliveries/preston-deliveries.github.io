@@ -5655,9 +5655,9 @@ function render(){
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
   const tabs=!isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
-  if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
+  if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
   if(isMgr()&&ivtab==='mine')ivtab='make';
-  if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
+  if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
   const due=c.due?`<b>Next invoice due ${esc(nice(c.due))}.</b> `:'';
   box.innerHTML=`<div class="ivx">${tabs}
   <div class="head"><h1>Invoices</h1>${isMgr()?'<div class="act"><button type="button" class="sh-btn" data-iv="edit">Edit notice and contact</button></div>':''}</div>
@@ -7397,7 +7397,7 @@ document.addEventListener('change',e=>{if(e.target.id==='fb_tf'){tf=e.target.val
 async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new Promise(r=>setTimeout(r,150));tries++}
   me=window.CLOCK?await window.CLOCK.whoami():null}catch(x){me=null}meTried=true;render()}
 async function start(role){
-  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}
   if(role!=='mgr'){mode='drv';render();loadMe();return}
   mode='mgr';render();if(!db)return;
   const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-feedback')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='fb_q'};
@@ -7440,7 +7440,7 @@ const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
 async function init(r){
   if(ready)return;ready=true;role=r==='drv'?'drv':'mgr';
-  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}if(!db)return;
+  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db)return;
   const[a,b]=period(-1);from=a;to=b;
   if(role==='mgr'){
     const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
@@ -7560,7 +7560,7 @@ function setCell(xml,ref,val){const re=new RegExp('<c r="'+ref+'"([^>]*?)(/>|>[\
 function setCached(xml,ref,val){const re=new RegExp('<c r="'+ref+'"([^>]*?)>([\\s\\S]*?)</c>');const m=re.exec(xml);if(!m||!/<f[ >]/.test(m[2]))return xml;
   let attrs=m[1].replace(/ t="[^"]*"/,'');const f=/<f[\s\S]*?<\/f>|<f[^>]*\/>/.exec(m[2])[0];const isNum=typeof val==='number';
   const out='<c r="'+ref+'"'+attrs+(isNum?'':' t="str"')+'>'+f+'<v>'+(isNum?Math.round(val*10000)/10000:xesc(val))+'</v></c>';return xml.replace(re,()=>out)}
-async function save(blob,name){const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl)throw new Error('no downloads');await dl.save({filename:name,data:blob})}
+async function save(blob,name){const dl=window.__UVDL||((window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM));if(!dl)throw new Error('no downloads');await dl.save({filename:name,data:blob})}
 const fname=(inv,ext)=>`Invoice ${inv.no||''} ${inv.name} ${inv.from} to ${inv.to}.${ext}`.replace(/\s+/g,' ');
 const logId=(s,f)=>s+'_'+f;
 /* a full copy of the invoice as it stands, so it can be printed again later exactly the same */
@@ -8031,7 +8031,7 @@ async function makePdf(r,pics,btn,forMgr){
   doc.text('Confidential. '+(r.by&&r.by.name?'Entered by '+r.by.name+' about '+P.name:'Reported by '+P.name)+' on '+(toDate(r.at)?toDate(r.at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):niceD(F.date))+'. Keep incident records for at least 5 years.',M,292);doc.text('Page 1 of 1',W-M,292,{align:'right'});
   if(btn){btn.disabled=false;btn.textContent=old}
   const name=`${ref} ${K.long} ${P.name||r.name||''} ${F.date||''}.pdf`.replace(/\s+/g,' ');
-  const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
+  const dl=window.__UVDL||((window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM));if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
   try{await dl.save({filename:name,data:doc.output('blob')});msg={t:'PDF saved. Attach it to your email to management or print it.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
 }
 function mgrName(){const s=me&&staff[me.staff];const role=s&&s.role?tc(String(s.role).replace(/^PRINCIPLE$/,'Principal')):'';return{name:tc(me&&me.name||'')||'Contract Manager',role:role||'Contract Manager'}}
@@ -8040,7 +8040,7 @@ async function exportXls(){
   const H=['Date','Time','Report','What happened','Reported by','Driver no.','Where','Anyone hurt','Who hurt','Injury','Treatment','Police','Vehicle towed','Risk','Still there','Description','Action taken','Status','WorkSafe','Manager notes','Fix'];
   const aoa=[H];for(const r of list().slice().reverse()){const F=r.f||{},p=person(r);aoa.push([F.date,F.time,KINDS[r.kind].t,F.type,p.name,p.no,[F.whereType,F.where].filter(Boolean).join(': '),F.hurt==null?'':F.hurt?'Yes':'No',F.who||'',[F.inj,F.part].filter(Boolean).join(', '),F.treat||'',F.police==null?'':F.police?'Yes'+(F.policeRef?' '+F.policeRef:''):'No',F.towed==null?'':F.towed?'Yes':'No',(RISK.find(x=>x[0]===F.risk)||['',''])[1],F.still||'',F.desc||'',F.action||'',STAT[r.status]||'',r.ws==='yes'?'Notified '+(r.wsRef||''):'',r.notes||'',r.fixAct||''])}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,7,15,26,20,8,30,8,14,18,18,14,8,18,12,50,30,12,16,30,30].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Reports');
-  const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl)return;
+  const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});const dl=window.__UVDL||((window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM));if(!dl)return;
   try{await dl.save({filename:'1161 Incident and hazard register '+isoD(new Date())+'.xlsx',data:new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})});msg={t:'Register saved.'};render()}catch(e){}
 }
 
@@ -8090,7 +8090,7 @@ async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new
   me=window.CLOCK?await window.CLOCK.whoami():null;
   if(me&&db){try{const s=await db.doc('staff/'+me.staff).get();if(s.exists){const p=__D(s);me={...me,rego:p.rego||'',run:(p.runs||[]).filter(Boolean).join(', ')}}}catch(x){}}}catch(x){me=null}meTried=true;render()}
 async function start(role){
-  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}
   if(role!=='mgr'){mode='drv';render();loadMe();return}
   mode='mgr';render();if(!db)return;loadMe();
   const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-reports')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='rp_q'};
@@ -8111,7 +8111,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251800';
+const VERSION='202610251804';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
