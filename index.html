@@ -1469,6 +1469,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-timesheets .daysel select{font:700 1rem var(--sh-body);letter-spacing:0;text-transform:none;color:var(--sh-ink);background:var(--sh-surface);border:2px solid var(--sh-accent);border-radius:8px;padding:9px 12px}
 @media (max-width:700px){#mod-timesheets .daysel{margin-left:0;width:100%}#mod-timesheets .daysel select{flex:1}}
 #mod-timesheets td small.tap{color:#1E8A4C;font-weight:700}#mod-timesheets td small.late{color:#B86E00;font-weight:700}
+#mod-timesheets b.held{color:#B3261E}
 </style>
 <style id="uniform-css">#mod-uniform .unx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-uniform .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -1959,6 +1960,16 @@ body.sh-more-on{overflow:hidden}
 .ck-r.tot{background:var(--sh-sunk)}.ck-r i{color:#B86E00;font-style:normal;font-weight:600}
 .ck-none{color:var(--sh-muted)}
 @media (max-width:599.98px){.ck-r{grid-template-columns:1fr auto}.ck-r span{grid-column:1/-1;order:3}}
+.ck-chips.two{grid-template-columns:1fr 1fr}
+.ck-alert{background:#FFF4DC;border:1px solid #E8B44A;color:#5A3C00;border-radius:8px;padding:12px 14px;font-size:.98rem;display:flex;flex-direction:column;gap:8px;margin:0}
+p.ck-alert{color:#5A3C00!important}
+.ck-n{display:flex;align-items:center;gap:10px;font-weight:600}
+.ck-n input,.ck-step input{box-sizing:border-box;width:90px;font:700 1.2rem var(--sh-body);padding:10px;border:1px solid var(--sh-line);border-radius:8px;text-align:center;background:var(--sh-surface);color:var(--sh-ink)}
+.ck-step{display:flex;align-items:center;gap:8px}
+.ck-step button{width:52px;height:52px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink);font:700 1.5rem var(--sh-body);cursor:pointer}
+.ck-step span{color:var(--sh-muted)}
+.ck-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px}
+.ck-x{color:var(--sh-ink)!important;font-size:.95rem!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6504,12 +6515,12 @@ const WD=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat']];
 function startFor(key,date){const v=cfg.starts[key];if(!v)return '';if(typeof v==='string')return v;return v[fromIso(date).getDay()]||''}
 const hasStart=id=>{const v=cfg.starts[id];return typeof v==='string'?!!v:!!(v&&Object.values(v).some(Boolean))};
 const bneHM=iso=>{try{const p={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(iso)))p[x.type]=x.value;return p.hour+':'+p.minute}catch(e){return ''}};
-const ckT=(c,w)=>!c?'':(!c[w+'Late']&&c[w+'At']&&!isNaN(Date.parse(c[w+'At'])))?bneHM(c[w+'At']):(c[w]||'');
+const ckT=(c,w)=>!c?'':(!c[w+'Late']&&!c[w+'Edited']&&c[w+'At']&&!isNaN(Date.parse(c[w+'At'])))?bneHM(c[w+'At']):(c[w]||'');
 function eff(row){const o=ts[row.date+'_'+row.key]||{};const c=clock[row.date+'_'+row.key]||null;const off=startFor(row.key,row.date);
   const cs=ckT(c,'start'),cf=ckT(c,'finish');
   const start=o.start||cs||off,finish=o.finish||cf||'',brk=o.brk!=null&&o.brk!==''?o.brk:(c&&c.brk!=null&&cf?c.brk:(cfg.brk||''));
   const src=(own,ck,late,pre)=>own?'':ck?(late?'Entered later':'Tapped'):(pre?'Preset':'');
-  const sS=src(o.start,cs,c&&c.startLate,off),sF=src(o.finish,cf,c&&c.finishLate,'');
+  const sS=o.start?'':(c&&c.startEdited&&cs)?'Changed by driver':src(o.start,cs,c&&c.startLate,off),sF=src(o.finish,cf,c&&c.finishLate,'');
   const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(+brk||0)):null;return{o,c,off,start,finish,brk,hrs,fromOff:sS==='Preset',sS,sF,brkFromClock:!(o.brk!=null&&o.brk!=='')&&!!(c&&c.brk!=null&&cf)}}
 /* ---------- render ---------- */
 function setHTML(){
@@ -6530,13 +6541,13 @@ function weekHTML(){
   const daySel=`<label class="daysel" for="ts_day">Day<select id="ts_day">${dd.map((d,i)=>`<option value="${d}" ${d===dsel?'selected':''}>${esc(longD(d).replace(/ \d{4}$/,''))}${cnt[i]?'  ('+cnt[i]+' drivers)':'  (no results)'}</option>`).join('')}</select></label>`;
   const secs=dd.map(d=>{const R=rowsFor(d);if(!R.length)return '';
     return `<section class="card day"><div class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'}</span>${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
-    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Note</th></tr></thead><tbody>
+    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Extra</th><th>2 loads</th><th>Held</th><th>Note</th></tr></thead><tbody>
     ${R.map(r=>{const e=eff(r);if(e.hrs!=null){tot+=e.hrs}else miss++;seen.add(r.key);const id=r.date+'_'+r.key;
       return `<tr class="${e.hrs==null?'miss':''}"><td><b>${esc(r.p.name)}</b>${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
-       <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Entered later'?'late':''}">${e.sS}</small>`:''}</td>
+       <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Preset'?'':'late'}"${e.c&&e.c.startEdited&&e.c.startAt?` title="Tapped at ${esc(bneHM(e.c.startAt))}"`:''}>${e.sS}${e.c&&e.c.startEdited&&e.c.startAt&&e.sS==='Changed by driver'?` (tapped ${esc(bneHM(e.c.startAt))})`:''}</small>`:''}</td>
        <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time">${e.sF?`<small class="${e.sF==='Tapped'?'tap':'late'}">${e.sF}</small>`:(e.c&&e.c.start&&!e.c.finish?'<small class="late">Still on shift</small>':'')}</td>
        <td><input type="number" min="0" step="5" data-f="brk" data-id="${esc(id)}" value="${esc(e.brk)}" class="brk ${e.o.brk==null||e.o.brk===''?'off':''}" aria-label="Break minutes"></td>
-       <td class="r"><b>${fmtH(e.hrs)}</b></td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td></tr>`}).join('')}
+       <td class="r"><b>${fmtH(e.hrs)}</b></td><td>${e.c&&e.c.extra!=null?esc(e.c.extra):''}</td><td>${e.c&&e.c.twoLoads!=null?(e.c.twoLoads?'Yes':'No'):''}</td><td>${e.c&&e.c.held!=null?(e.c.held?`<b class="held">Yes${e.c.heldCount?' ('+esc(e.c.heldCount)+')':''}</b>`:'No'):''}</td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td></tr>`}).join('')}
     </tbody></table></div></section>`});
   const di=dd.indexOf(dsel),day=secs[di]||`<div class="empty">No Driver Results loaded for ${esc(longD(dsel))}, so there is no one to show. Load that day on Driver Results, or pick another day.</div>`;
   const dayStats=(()=>{let m=0;for(const r of rowsFor(dsel))if(eff(r).hrs==null)m++;return m})();
@@ -6567,11 +6578,11 @@ function saveCfg(){clearTimeout(cfgTimer);cfgTimerOn=true;cfgTimer=setTimeout(as
 /* ---------- export ---------- */
 function exportRange(from,to,name){
   if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
-  const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Note','Parcels']];
-  const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
-  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.o.note||'',r.pc??''])}
+  const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
+  const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
+  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.c&&e.c.extra!=null?+e.c.extra:'',e.c&&e.c.twoLoads!=null?(e.c.twoLoads?'Yes':'No'):'',e.c&&e.c.held!=null?(e.c.held?'Yes'+(e.c.heldCount?' ('+e.c.heldCount+')':''):'No'):'',e.o.note||'',r.pc??''])}
   if(aoa.length===1){msg={err:true,t:'No days worked in that period yet.'};render();return}
-  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,5,26,10,12,7,7,10,7,30,8].map(w=>({wch:w}));
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,5,26,10,12,7,7,10,7,8,7,10,30,8].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Timesheets');
   const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});
   (async()=>{const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
@@ -6649,13 +6660,13 @@ function html(){
   if(loaded&&!ok())return '';
   if(!loaded)return `<section class="ck"><div class="ck-load">Loading your shift…</div></section>`;
   const m=msg?`<p class="ck-msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
-  // yesterday left open
-  if(Y&&Y.start&&!Y.finish&&!(ui.skipY)){
+  // an earlier shift left open
+  if(Y&&Y.start&&!Y.finish){
     return `<section class="ck warn"><div class="ck-h"><span class="ck-dot"></span><b>You didn't finish ${esc(longDay(yday))}</b></div>
     <p>You started at ${esc(nice(Y.start))}. What time did you finish?</p>
-    <div class="ck-row"><input type="time" id="ck-yt" value="${esc(ui.yt||'')}" aria-label="Finish time yesterday"></div>
-    ${breakHTML('yb')}
-    <button type="button" class="ck-big stop" data-ck="yfin" ${busy?'disabled':''}>Save finish time</button>${m}</section>`;
+    <div class="ck-row"><input type="time" id="ck-yt" value="${esc(ui.yt||'')}" aria-label="Finish time"></div>
+    ${endQs('y')}
+    <button type="button" class="ck-big stop" data-ck="yfin" ${busy||!answered('y')?'disabled':''}>Save that day</button>${m}</section>`;
   }
   if(!T||!T.start){
     if(ui.late)return `<section class="ck"><div class="ck-h"><b>When did you start today?</b></div>
@@ -6667,20 +6678,39 @@ function html(){
       <button type="button" class="ck-link" data-ck="late">Forgot? I started earlier</button>${m}</section>`;
   }
   if(!T.finish){
+    if(ui.edit)return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>Change your start time</b></div>
+      <div class="ck-row"><input type="time" id="ck-et" value="${esc(ui.et!=null?ui.et:T.start)}" aria-label="Start time"></div>
+      <button type="button" class="ck-big go" data-ck="saveedit" ${busy?'disabled':''}>Save start time</button>
+      <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
     if(ui.fin)return `<section class="ck"><div class="ck-h"><span class="ck-dot on"></span><b>Finishing up</b></div>
-      ${ui.late?`<p>What time did you finish?</p><div class="ck-row"><input type="time" id="ck-ft" value="${esc(ui.ft||'')}" aria-label="Finish time"></div>`:''}
-      ${breakHTML('b')}
-      <button type="button" class="ck-big stop" data-ck="${ui.late?'latefin':'finish'}" ${busy||ui.b==null?'disabled':''}>${ui.late?'Save finish time':'Finish shift now'}</button>
+      ${ui.late?`<p class="ck-q">What time did you finish?</p><div class="ck-row"><input type="time" id="ck-ft" value="${esc(ui.ft||'')}" aria-label="Finish time"></div>`:''}
+      ${endQs('')}
+      <button type="button" class="ck-big stop" data-ck="${ui.late?'latefin':'finish'}" ${busy||!answered('')?'disabled':''}>${ui.late?'Save finish time':'Finish shift now'}</button>
+      ${answered('')?'':'<p class="ck-note">Answer the questions above to finish.</p>'}
       <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
     return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>On shift since ${esc(nice(T.start))}</b></div>
       <button type="button" class="ck-big stop" data-ck="fin"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Finish shift</button>
-      <button type="button" class="ck-link" data-ck="finlate">Forgot? I finished earlier</button>${m}</section>`;
+      <div class="ck-links"><button type="button" class="ck-link" data-ck="edit">Change start time</button><button type="button" class="ck-link" data-ck="finlate">Forgot? I finished earlier</button></div>${m}</section>`;
   }
   const w=toMin(T.finish)-toMin(T.start)-(+T.brk||0);
   return `<section class="ck done"><div class="ck-h"><span class="ck-tick">✓</span><b>Done for today</b></div>
     <p class="ck-sum">${esc(nice(T.start))} to ${esc(nice(T.finish))}${T.brk?`, ${T.brk} min break`:', no break'}${w>0?` · <b>${hrs(w)}</b>`:''}</p>
+    ${extrasLine(T)}
+    ${T.held?'<p class="ck-alert">You held parcels in your van. Make sure your supervisor or manager knows.</p>':''}
     <p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>${m}</section>`;
 }
+const extrasLine=r=>(r.extra!=null||r.twoLoads!=null||r.held!=null)?`<p class="ck-x">${r.held!=null?`Held parcels: <b>${r.held?'Yes'+(r.heldCount?' ('+r.heldCount+')':''):'No'}</b> · `:''}${r.extra!=null?`Extra parcels: <b>${+r.extra||0}</b> · `:''}${r.twoLoads!=null?`2 loads: <b>${r.twoLoads?'Yes':'No'}</b>`:''}</p>`:'';
+function yn(k,label){const v=ui[k];return `<p class="ck-q">${label}</p><div class="ck-chips two" role="group" aria-label="${esc(label)}"><button type="button" data-ck="yn" data-k="${k}" data-v="1" aria-pressed="${v===true}">Yes</button><button type="button" data-ck="yn" data-k="${k}" data-v="0" aria-pressed="${v===false}">No</button></div>`}
+function endQs(p){
+  return `${breakHTML(p+'b')}
+  ${yn(p+'h','Did you hold any parcels in your van?')}
+  ${ui[p+'h']===true?`<div class="ck-alert"><b>Let your supervisor or manager know</b> before you leave.<label class="ck-n">How many parcels? <input type="number" inputmode="numeric" min="0" id="ck-${p}hc" value="${esc(ui[p+'hc']??'')}" placeholder="0"></label></div>`:''}
+  <p class="ck-q">Did you do any extra parcels today?</p>
+  <div class="ck-step"><button type="button" data-ck="step" data-k="${p}x" data-v="-1" aria-label="Less">−</button><input type="number" inputmode="numeric" min="0" id="ck-${p}x" value="${esc(ui[p+'x']??0)}" aria-label="Extra parcels"><button type="button" data-ck="step" data-k="${p}x" data-v="1" aria-label="More">+</button><span>extra parcels</span></div>
+  ${yn(p+'l','Did you do 2 loads today?')}`;
+}
+const answered=p=>ui[p+'b']!=null&&typeof ui[p+'h']==='boolean'&&typeof ui[p+'l']==='boolean';
+const endData=p=>{const o={brk:ui[p+'b'],held:ui[p+'h'],extra:Math.max(0,parseInt(ui[p+'x'],10)||0),twoLoads:ui[p+'l']};if(ui[p+'h']){const c=parseInt(ui[p+'hc'],10);if(c>0)o.heldCount=c}return o};
 function breakHTML(k){const v=ui[k];return `<p class="ck-q">How long was your break?</p><div class="ck-chips" role="group" aria-label="Break">${BREAKS.map(b=>`<button type="button" data-ck="brk" data-k="${k}" data-v="${b}" aria-pressed="${v===b}">${b?b+' min':'None'}</button>`).join('')}</div>`}
 const first=()=>{const n=String(me&&me.name||'').trim().split(/\s+/)[0]||'';return n?n.charAt(0)+n.slice(1).toLowerCase():'there'};
 const greet=()=>{const h=+parts(new Date()).hour;return h<12?'morning':h<17?'afternoon':'evening'};
@@ -6688,7 +6718,7 @@ function histHTML(){
   if(!loaded||!ok())return '';
   const rows=hist.filter(Boolean).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   const tot=rows.reduce((n,r)=>{const w=toMin(r.finish)-toMin(r.start)-(+r.brk||0);return n+(r.finish&&w>0?w:0)},0);
-  return `<section class="ck-hist"><h2>Your last 7 days</h2>${rows.length?`<div class="ck-tab">${rows.map(r=>{const w=r.finish?toMin(r.finish)-toMin(r.start)-(+r.brk||0):null;return `<div class="ck-r"><b>${esc(longDay(r.date))}</b><span>${esc(nice(r.start))} to ${r.finish?esc(nice(r.finish)):'<i>not finished</i>'}${r.finish?` · ${r.brk?r.brk+' min break':'no break'}`:''}</span><em>${w!=null&&w>0?hrs(w):''}</em></div>`}).join('')}<div class="ck-r tot"><b>Total</b><span></span><em>${hrs(tot)}</em></div></div>`:'<p class="ck-none">No shifts recorded yet.</p>'}</section>`;
+  return `<section class="ck-hist"><h2>Your last 7 days</h2>${rows.length?`<div class="ck-tab">${rows.map(r=>{const w=r.finish?toMin(r.finish)-toMin(r.start)-(+r.brk||0):null;return `<div class="ck-r"><b>${esc(longDay(r.date))}</b><span>${esc(nice(r.start))} to ${r.finish?esc(nice(r.finish)):'<i>not finished</i>'}${r.finish?` · ${r.brk?r.brk+' min break':'no break'}`:''}${r.extra?` · ${r.extra} extra`:''}${r.twoLoads?' · 2 loads':''}${r.held?' · held parcels':''}</span><em>${w!=null&&w>0?hrs(w):''}</em></div>`}).join('')}<div class="ck-r tot"><b>Total</b><span></span><em>${hrs(tot)}</em></div></div>`:'<p class="ck-none">No shifts recorded yet.</p>'}</section>`;
 }
 function render(){const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
 async function mount(){render();if(!loaded&&!busy){busy=true;await load();busy=false}render()}
@@ -6699,6 +6729,11 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-ck]');if(!el||!((box()&&box().contains(el))||(page()&&page().contains(el))))return;
   const a=el.dataset.ck;
   if(a==='brk'){ui[el.dataset.k]=+el.dataset.v;render();return}
+  if(a==='yn'){ui[el.dataset.k]=el.dataset.v==='1';render();return}
+  if(a==='step'){const k=el.dataset.k;ui[k]=Math.max(0,(parseInt(ui[k],10)||0)+(+el.dataset.v));render();return}
+  if(a==='edit'){ui={edit:true};msg=null;render();return}
+  if(a==='saveedit'){const t=(document.getElementById('ck-et')||{}).value;if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
+    const f={start:t,startEdited:true,updatedAt:new Date().toISOString()};await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Start time changed to '+nice(t)+'.');return}
   if(a==='late'){ui={late:true};msg=null;render();return}
   if(a==='cancel'){ui={};msg=null;render();return}
   if(a==='fin'){ui={fin:true};msg=null;render();return}
@@ -6709,18 +6744,18 @@ document.addEventListener('click',async e=>{
     if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const d={...base(),start:t,startLate:true,updatedAt:new Date().toISOString()};
     await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).set(d);T=d},'Start time saved.');return}
-  if(a==='finish'){if(ui.b==null)return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,brk:ui.b,updatedAt:now.toISOString()};
+  if(a==='finish'){if(!answered(''))return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,...endData(''),updatedAt:now.toISOString()};
     await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Shift finished. Thanks!');return}
-  if(a==='latefin'){const t=(document.getElementById('ck-ft')||{}).value;if(!t||ui.b==null){msg={err:true,t:'Pick the finish time and your break.'};render();return}
+  if(a==='latefin'){const t=(document.getElementById('ck-ft')||{}).value;if(!t||!answered('')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(T.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
-    const f={finish:t,finishLate:true,brk:ui.b,updatedAt:new Date().toISOString()};
+    const f={finish:t,finishLate:true,...endData(''),updatedAt:new Date().toISOString()};
     await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Finish time saved.');return}
-  if(a==='yfin'){const t=(document.getElementById('ck-yt')||{}).value;if(!t||ui.yb==null){msg={err:true,t:'Pick the finish time and your break.'};render();return}
+  if(a==='yfin'){const t=(document.getElementById('ck-yt')||{}).value;if(!t||!answered('y')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(Y.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
-    const f={finish:t,finishLate:true,brk:ui.yb,updatedAt:new Date().toISOString()};
+    const f={finish:t,finishLate:true,...endData('y'),updatedAt:new Date().toISOString()};
     await save(async()=>{await db.doc('clock/'+yday+'_'+me.staff).update(f);Y={...Y,...f}},'Thanks, yesterday is saved.');return}
 });
-document.addEventListener('input',e=>{if(e.target.id==='ck-st')ui.st=e.target.value;if(e.target.id==='ck-ft')ui.ft=e.target.value;if(e.target.id==='ck-yt')ui.yt=e.target.value});
+document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&dayOf(new Date())!==today){loaded=false;mount()}});
 window.CLOCK={mount};
 })();
@@ -6734,7 +6769,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251140';
+const VERSION='202610251146';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();

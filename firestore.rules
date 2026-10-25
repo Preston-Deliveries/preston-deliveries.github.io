@@ -39,13 +39,15 @@ service cloud.firestore {
       allow create: if isAdmin() || (hasAccess()
         && request.resource.data.staff == myStaff()
         && id == request.resource.data.date + '_' + myStaff()
-        && request.resource.data.keys().hasOnly(['staff', 'name', 'date', 'start', 'startAt', 'startLate', 'finish', 'finishAt', 'finishLate', 'brk', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['staff', 'name', 'date', 'start', 'startAt', 'startLate', 'startEdited', 'finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
         && (request.resource.data.startLate == true || request.resource.data.startAt == request.time));
       allow update: if isAdmin() || (hasAccess()
         && resource.data.staff == myStaff()
         && !('finish' in resource.data)
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'updatedAt'])
-        && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time));
+        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['start', 'startEdited', 'updatedAt'])
+             && request.resource.data.startEdited == true)
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
+             && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time))));
       allow delete: if isAdmin();
     }
     match /access/{email} {
