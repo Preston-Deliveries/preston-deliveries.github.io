@@ -2268,6 +2268,12 @@ p.ck-alert{color:#5A3C00!important}
 .sh-bk span{font-size:.88rem;color:#4e5a6b;flex:1;min-width:220px}
 .sh-bk span.due{color:#9a4a12;font-weight:600}
 .sh-bk span.ok{color:#17774f;font-weight:600}
+.sh-bkwarn{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 16px;padding:12px 14px;border-radius:8px;background:#FFF4E0;border:1px solid #F2B24A;border-left:5px solid #E07B16;color:#5A3200}
+.sh-bkwarn[hidden]{display:none}
+.sh-bkwarn b{display:block;font-size:.98rem}
+.sh-bkwarn span{flex:1;min-width:200px;font-size:.9rem}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sh-bkwarn{background:#3A2C10;border-color:#8A5A12;color:#FFE2B0}}
+:root[data-theme="dark"] .sh-bkwarn{background:#3A2C10;border-color:#8A5A12;color:#FFE2B0}
 
 /* ===== Page toolbar: same order and look on every page =====
    1 view tabs, 2 actions, 3 send to drivers strip, 4 summary tiles (some pages), 5 filters, then the content */
@@ -2540,10 +2546,13 @@ p.ck-alert{color:#5A3C00!important}
 <section class="sh-sec" id="mod-staff" hidden><div id="dm_root"></div></section>
 </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="application/json" id="snapshot">{}</script>
 <script type="text/x-mod" data-mod="shell">
+/* Heavy tools load only when needed: the spreadsheet tool for imports and Excel downloads, the screenshot tool for PDFs and images */
+window.__libs=window.__libs||{};
+window.loadLib=function(src,ready){if(ready())return Promise.resolve();if(!window.__libs[src])window.__libs[src]=new Promise((ok,no)=>{const e=document.createElement("script");e.src=src;e.onload=()=>ok();e.onerror=()=>{delete window.__libs[src];e.remove();no(new Error("load"))};document.head.appendChild(e)});return window.__libs[src]};
+window.loadXLSX=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",()=>typeof XLSX!=="undefined").catch(()=>{});
+window.loadH2C=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",()=>!!window.html2canvas).catch(()=>{});
 window.__D=s=>{const v=s.data();return v==null?v:JSON.parse(JSON.stringify(v))};
 window.__UV=false;
 window.__DLSHIM={save:async({filename,data})=>{let P=null;try{P=window.parent!==window&&window.parent.__uvSave?window.parent:null}catch(e){}
@@ -2741,6 +2750,7 @@ function renderHome(){
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
+  ${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <div id="sh-clock"></div>
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
@@ -2773,14 +2783,15 @@ async function sharePart(btn,fn,what){
   renderHome();
 }
 async function bkInfo(){const el=document.getElementById('sh-bkinfo');if(!el||!window.__lastBackup)return;const b=await window.__lastBackup();const e2=document.getElementById('sh-bkinfo');if(!e2)return;
-  if(!b||!b.upTo){e2.textContent='No backup yet. Download one now and then once a month.';e2.className='due';return}
+  const warn=(t)=>{const w=document.getElementById('sh-bkwarn');if(!w)return;if(!t){w.hidden=true;w.innerHTML='';return}w.innerHTML='<span><b>Backup due</b>'+esc(t)+'</span><button type="button" class="sh-btn primary" data-sh="backup">Download backup now</button>';w.hidden=false};
+  if(!b||!b.upTo){e2.textContent='No backup yet. Download one now and then once a week.';e2.className='due';warn('There is no backup of the app yet. It takes a few seconds; save the file to Google Drive.');return}
   const d=new Date(b.upTo+'T00:00:00'),days=Math.round((Date.now()-d.getTime())/864e5);
-  e2.textContent='Last backup '+d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+(days>0?' ('+days+' day'+(days===1?'':'s')+' ago)':' (today)')+'. Each backup holds everything set up in the app plus the records since the last one, so keep every file.';e2.className=days>31?'due':''}
+  e2.textContent='Last backup '+d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+(days>0?' ('+days+' day'+(days===1?'':'s')+' ago)':' (today)')+'. Each backup holds everything set up in the app plus the records since the last one, so keep every file.';e2.className=days>7?'due':'';warn(days>7?'The last backup was '+days+' days ago. Download a new one and save it to Google Drive with the others.':'')}
 async function backup(btn){if(!window.__backup||btn.disabled)return;const old=btn.textContent;btn.disabled=true;const info=document.getElementById('sh-bkinfo');
   try{const r=await window.__backup(c=>{btn.textContent='Backing up '+c+'…'});
     const dl=window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null;
     if(dl)await dl.save({filename:'Contract 1161 backup '+r.today+'.json',data:new Blob([r.json],{type:'application/json'})});
-    if(info){info.textContent='Saved '+r.docs.toLocaleString('en-AU')+' records. Keep the file somewhere safe, like Google Drive, with your other backups.';info.className='ok'}}
+    if(info){info.textContent='Saved '+r.docs.toLocaleString('en-AU')+' records. Keep the file somewhere safe, like Google Drive, with your other backups.';info.className='ok'}bkInfo().then(()=>{const i2=document.getElementById('sh-bkinfo');if(i2){i2.textContent='Saved '+r.docs.toLocaleString('en-AU')+' records. Keep the file somewhere safe, like Google Drive, with your other backups.';i2.className='ok'}})}
   catch(e){if(info){info.textContent='The backup did not finish. Check your connection and try again.';info.className='due'}}
   btn.disabled=false;btn.textContent=old}
 async function shareAll(btn){
@@ -3581,7 +3592,7 @@ function parseFile(name,rows){
 }
 async function handleFiles(list){
   const files=[...list]; if(!files.length)return;
-  if(typeof XLSX==="undefined"){note("The spreadsheet reader did not load. Reload the page and try again.",true);return}
+  if(typeof XLSX==="undefined")await window.loadXLSX();if(typeof XLSX==="undefined"){note("The spreadsheet reader did not load. Reload the page and try again.",true);return}
   const parsed=[], unknown=[];
   for(const f of files){
     try{
@@ -3827,8 +3838,8 @@ function sheetFrom(title,rows){
   ws["!cols"]=[{wch:14},{wch:8},{wch:9},{wch:9},{wch:9},{wch:9}];
   return ws;
 }
-function saveXlsx(){
-  if(typeof XLSX==="undefined")return;
+async function saveXlsx(){
+  if(typeof XLSX==="undefined")await window.loadXLSX();if(typeof XLSX==="undefined")return;
   const wb=XLSX.utils.book_new();const ddmmyy=d=>pad(d.getDate())+"/"+pad(d.getMonth()+1)+"/"+String(d.getFullYear()).slice(2);
   let any=false;
   for(const[k,name]of DAYS){if(!week.days[k])continue;any=true;XLSX.utils.book_append_sheet(wb,sheetFrom("1161 "+name.toUpperCase()+" "+ddmmyy(dayDate(k))+" PERFORMANCE",dayRows(k)),name)}
@@ -4083,9 +4094,9 @@ function isoFromName(n){
   const d=new Date(+m[3],+m[2]-1,+m[1]); return isNaN(d)||d.getDate()!==+m[1]?null:toISO(d);
 }
 
-function load(file){
+async function load(file){
   if(!file) return;
-  if(typeof XLSX==="undefined"){status("The sheet reader didn't load. Reload the page and try again.","err");return;}
+  if(typeof XLSX==="undefined")await window.loadXLSX();if(typeof XLSX==="undefined"){status("The sheet reader didn't load. Reload the page and try again.","err");return;}
   const fr=new FileReader();
   fr.onload=()=>{
     try{
@@ -4151,6 +4162,7 @@ function startDb(){
 // Saving images
 async function capture(boardId,boxId,W,name,shotId,shotBox,say){
   if(document.fonts?.ready) await document.fonts.ready;
+  if(!window.html2canvas)await window.loadH2C();
   const canvas=await html2canvas($(boardId),{scale:1.25,backgroundColor:"#ffffff",width:W,windowWidth:W+120,
     onclone:doc=>{doc.getElementById("v_"+boardId).style.transform="none";doc.getElementById("v_"+boxId).style.height="auto";}});
   const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
@@ -4629,7 +4641,7 @@ async function exportPdf(btn){
   catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
 }
 async function exportXlsx(){
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
   const dl=await window.claude.use('downloads');
   const aoa=[['1161 DRIVER DATA '+new Date().toLocaleDateString('en-AU')],['FIRST NAME','LAST NAME','LOGIN',...(shown.has('pw')?['PASSWORD']:[]),'MOBILE','EMAIL','ROLE','DRIVER','PARKING BAY','TROLLEY BAY','VAN YEAR/MAKE/MODEL','REGO','EMERGENCY CONTACT','NUMBER','NOTES']];
   for(const p of sorted(Object.values(people)))aoa.push([p.first,p.last,p.login,...(shown.has('pw')?[p.pw||'']:[]),p.mobile,p.email,p.role,runsOf(p).join(', '),p.bay,trolleys(p),p.van,p.rego,p.ecName,p.ecPhone,p.notes]);
@@ -4781,7 +4793,7 @@ async function pdf(btn){
   try{await dl.save({filename:'1161 Precard list '+new Date().toLocaleDateString('en-AU').replace(/\//g,'.')+'.pdf',data:doc.output('blob')});msg={t:'PDF saved. Open it to print.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
 }
 async function xlsx(){
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
   const dl=await window.claude.use('downloads');if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
   const wb=XLSX.utils.book_new();
   for(const[s,t]of[['approved','1161 PRECARDED APPROVED LIST'],['review','1161 PRECARDED REVIEW LIST']]){
@@ -4940,7 +4952,7 @@ async function pdf(btn){
   try{await dl.save({filename:'1161 Parcel lockers '+new Date().toLocaleDateString('en-AU').replace(/\//g,'.')+'.pdf',data:doc.output('blob')});msg={t:'PDF saved. Open it to print.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
 }
 async function xlsx(){
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page and try again.'};render();return}
   const dl=await window.claude.use('downloads');if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
   const aoa=[['MY PARCEL LOCKERS'],['ADDRESS','BUILDING NAME','POSTCODE','DRIVER','LOCATION','LOCKER LOCATION DESCRIPTION']];
   const add=t=>Object.values(items).filter(p=>(p.type||'building')===t).forEach(p=>aoa.push([p.address,p.name,p.postcode,dlist(p).join(', ')||'N/A',p.location,p.description]));
@@ -5556,7 +5568,7 @@ function parseExport(rows){
   return out;
 }
 async function importFile(f){
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet reader did not load. Reload and try again.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet reader did not load. Reload and try again.'};render();return}
   try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:''});
     const bl=parseExport(rows);if(!bl.length)throw new Error('No leave days found in that file.');const fm=f.name.match(/(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})/);let ds=[];for(const r of rows.slice(1))for(const c of r){const m=String(c).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)ds.push(`${m[3]}-${pad(m[2])}-${pad(m[1])}`)}ds.sort();
     const range=fm?{from:fm[1],to:fm[2]}:{from:bl.reduce((a,b)=>a<b.from?a:b.from,'9999'),to:bl.reduce((a,b)=>a>b.to?a:b.to,'0000')};if(!fm&&ds.length){range.from=ds[0]<range.from?ds[0]:range.from;range.to=ds[ds.length-1]>range.to?ds[ds.length-1]:range.to}
@@ -7076,7 +7088,7 @@ function saveCfg(){clearTimeout(cfgTimer);cfgTimerOn=true;cfgTimer=setTimeout(as
 /* ---------- export ---------- */
 async function exportRange(from,to,name,pid){
   if(window.needHist)await window.needHist(from,TSC);
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
   const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
   for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){if(pid&&r.key!==pid)continue;const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'',r.pc??''])}
@@ -7711,7 +7723,7 @@ async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>x.from=
   busy=true;msg={t:'Making '+L.length+' invoices…'};paint();
   try{const blob=await pdfOf(L,cover);await save(blob,`Driver invoices ${lper} to ${add(lper,25)}.pdf`);msg={t:'Saved. The summary page is first, then each invoice.'}}catch(e){msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
   busy=false;paint()}
-function exportSum(){if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};paint();return}
+async function exportSum(){if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};paint();return}
   const L=Object.values(logs).filter(x=>x.from===lper).sort((a,b)=>a.name.localeCompare(b.name));
   const aoa=[['Driver','Run','Invoice no.','Invoice date','From','To','1 load parcels','2 load parcels','Extra parcels','Paid hours','Hours worked','Ex GST','GST','Total','Status']];
   for(const x of L){const T=x.T||{};aoa.push([x.name,x.run||'',x.no,x.date,x.from,x.to,T.l1||0,T.l2||0,T.xp||0,T.hr||0,x.worked||0,T.sub||0,T.gst||0,T.total||x.total||0,STAT[x.status]||'Submitted'])}
@@ -8040,7 +8052,7 @@ async function makePdf(r,pics,btn,forMgr){
 }
 function mgrName(){const s=me&&staff[me.staff];const role=s&&s.role?tc(String(s.role).replace(/^PRINCIPLE$/,'Principal')):'';return{name:tc(me&&me.name||'')||'Contract Manager',role:role||'Contract Manager'}}
 async function exportXls(){
-  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
+  if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const H=['Date','Time','Report','What happened','Reported by','Driver no.','Where','Anyone hurt','Who hurt','Injury','Treatment','Police','Vehicle towed','Risk','Still there','Description','Action taken','Status','WorkSafe','Manager notes','Fix'];
   const aoa=[H];for(const r of list().slice().reverse()){const F=r.f||{},p=person(r);aoa.push([F.date,F.time,KINDS[r.kind].t,F.type,p.name,p.no,[F.whereType,F.where].filter(Boolean).join(': '),F.hurt==null?'':F.hurt?'Yes':'No',F.who||'',[F.inj,F.part].filter(Boolean).join(', '),F.treat||'',F.police==null?'':F.police?'Yes'+(F.policeRef?' '+F.policeRef:''):'No',F.towed==null?'':F.towed?'Yes':'No',(RISK.find(x=>x[0]===F.risk)||['',''])[1],F.still||'',F.desc||'',F.action||'',STAT[r.status]||'',r.ws==='yes'?'Notified '+(r.wsRef||''):'',r.notes||'',r.fixAct||''])}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,7,15,26,20,8,30,8,14,18,18,14,8,18,12,50,30,12,16,30,30].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Reports');
@@ -8115,7 +8127,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251928';
+const VERSION='202610252100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -8395,7 +8407,7 @@ function startApp(snap){
     const n=document.createElement('script');if(s.dataset.mod)n.dataset.mod=s.dataset.mod;n.textContent=s.textContent;s.replaceWith(n);
   }
   addSignOut();
-  if(ROLE==='admin'){setTimeout(syncAccess,4000);watchStaff()}
+  if(ROLE==='admin'){setTimeout(syncAccess,4000);watchStaff();setTimeout(()=>{if(window.loadXLSX)window.loadXLSX()},2500)}
 }
 function addSignOut(){
   const mk=()=>{const b=document.createElement('button');b.type='button';b.className='web-out';b.dataset.web='1';b.textContent='Sign out';b.title='Signed in as '+EMAIL;
