@@ -2536,6 +2536,9 @@ p.ck-alert{color:#5A3C00!important}
 .me-line .ok{color:#14804A;font-weight:700}.me-line .due{color:#C2410C;font-weight:700}
 .me-q{margin:0;padding:10px 12px;border-left:3px solid var(--g);background:var(--sh-sunk);border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.45}
 .me-go{align-self:flex-start;min-height:42px}
+.me-pick{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:4px solid var(--pds-orange);border-radius:12px}
+.me-pick span{flex:none;font:700 .74rem var(--sh-body);letter-spacing:.12em;text-transform:uppercase;color:var(--sh-muted)}
+.me-pick select{flex:1;min-width:0;min-height:44px;font:600 16px var(--sh-body);color:var(--sh-ink);background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:8px;padding:8px 10px}
 .me-seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;padding:4px;gap:4px}
 .me-seg button{border:0;background:transparent;color:var(--sh-muted);font:700 .95rem var(--sh-body);padding:10px 4px;border-radius:9px;cursor:pointer}
 .me-seg button[aria-selected="true"]{background:var(--g);color:#fff}
@@ -5686,31 +5689,61 @@ async function who(){
   m.name=tc(m.name);
   return m;
 }
-async function load(force){
-  if(loading&&!force)return loading;
-  loading=(async()=>{
-    try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}
-    me=await who();
+async function fetchData(m){
     const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null};
     const now=new Date();
     const tasks=[];
     const days=Array.from({length:36},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
     if(db){
       tasks.push(Promise.all(days.map(x=>db.doc('days/'+x).get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.rows)d.days[x]=v}}).catch(()=>{}))));
-      if(me.admin)tasks.push(db.doc('settings/main').get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.targets)d.tg=v.targets}}).catch(()=>{}));
+      if(me&&me.admin)tasks.push(db.doc('settings/main').get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.targets)d.tg=v.targets}}).catch(()=>{}));
     }
-    if(db&&me.staff){
-      tasks.push(Promise.all(days.map(x=>db.doc('clock/'+x+'_'+me.staff).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
+    if(db&&m.staff){
+      tasks.push(Promise.all(days.map(x=>db.doc('clock/'+x+'_'+m.staff).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
       tasks.push(db.collection('briefs').get().then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-        await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+me.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
-      tasks.push((async()=>{try{const q=db.collection('invlog').where('sid','==',me.staff);const sn=await q.get();d.inv=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}catch(e){}})());
+        await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+m.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
+      tasks.push((async()=>{try{const q=db.collection('invlog').where('sid','==',m.staff);const sn=await q.get();d.inv=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(v=>!v.sid||v.sid===m.staff).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}catch(e){}})());
     }
     await Promise.all(tasks);
-    data=d;return d;
+    return d;
+}
+async function load(force){
+  if(loading&&!force)return loading;
+  loading=(async()=>{
+    try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}
+    me=await who();
+    data=await fetchData(me);return data;
   })();
   return loading;
 }
-
+/* ---------- managers: look at any driver's profile ---------- */
+let STAFF=null,PICK=(()=>{try{return sessionStorage.getItem('me1161_pick')||''}catch(e){return ''}})(),pickData=null,pickSubj=null;
+const isAdminView=()=>!!(window.APP&&APP.role==='mgr');
+async function staffList(){
+  if(STAFF)return STAFF;
+  try{const sn=await db.collection('staff').get();STAFF=sn.docs.map(x=>{const v=window.__D(x)||{};return{staff:x.id,name:tc([v.first,v.last].filter(Boolean).join(' ')),login:dkey(v.login),run:(v.runs||[]).filter(Boolean).join(', '),email:String(v.email||'').trim().toLowerCase(),role:String(v.role||'').trim(),admin:false}}).filter(p=>p.name||p.login).sort((a,b)=>a.name.localeCompare(b.name))}catch(e){STAFF=[]}
+  return STAFF;
+}
+function pickerHTML(){
+  if(!isAdminView()||!STAFF||!STAFF.length)return '';
+  return `<label class="me-pick"><span>Viewing</span><select data-me="pick" aria-label="Choose a driver"><option value="">Me (${esc(me.name||'my profile')})</option>${STAFF.filter(p=>p.staff!==me.staff).map(p=>`<option value="${esc(p.staff)}"${p.staff===PICK?' selected':''}>${esc(p.name||p.login)}${p.login?' · '+esc(p.login):''}</option>`).join('')}</select></label>`;
+}
+function renderProfile(){
+  const box=document.getElementById('me_box');if(!box||!me)return;
+  const pick=pickerHTML();
+  if(PICK&&pickSubj&&pickData){const m0=me,d0=data;me=pickSubj;data=Object.assign({},pickData,{tg:d0&&d0.tg});
+    try{box.innerHTML=pick+profileHTML()}finally{me=m0;data=d0}}
+  else box.innerHTML=pick+profileHTML();
+}
+async function setPick(id){
+  PICK=id||'';try{sessionStorage.setItem('me1161_pick',PICK)}catch(e){}
+  const box=document.getElementById('me_box');
+  if(!PICK){pickSubj=pickData=null;renderProfile();return}
+  const p=(STAFF||[]).find(x=>x.staff===PICK);if(!p){PICK='';pickSubj=pickData=null;renderProfile();return}
+  if(box)box.innerHTML=pickerHTML()+'<div class="me-wait">Loading '+esc(p.name)+'’s profile…</div>';
+  const d=await fetchData(p);if(PICK!==p.staff)return;
+  pickSubj=Object.assign({},p,{roleLabel:p.role?tc(p.role):'Driver'});pickData=d;renderProfile();
+}
 /* ---------- what is mine in the shared data ---------- */
 function myRun(){const R=S().runs||{};const id=Object.keys(R).find(k=>me.login&&dkey(R[k].login)===me.login);return id?{id,...R[id]}:null}
 function myResults(){
@@ -5830,18 +5863,19 @@ function profileHTML(){
   const sv=mySurvey(PER==='cycle'?'cycle':'weekly');
   const brief=data&&data.briefs[0],signed=brief?data.sigs[brief.id]:null;
   const when={day:'that day',week:'this week',cycle:'this pay cycle'}[PER];
+  const own=!(pickSubj&&me===pickSubj),my=(a,b)=>own?a:b;
   const card=(g,ic,lab,val,sub,rt)=>`<div class="me-c g-${g}${rt?' r-'+rt:''}"><span class="ic">${ICON[ic]}</span><small>${lab}</small><b>${val}</b>${sub?`<span class="sb">${sub}</span>`:''}</div>`;
   const rtTxt={g:'On target',w:'Close to target',b:'Below target','':''};
   const svBody=!sv||!sv.found?`<b>No surveys</b><span class="sb">No customer surveys for you ${PER==='cycle'?'this month':'this week'} yet.</span>`:
     `<b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span class="sb">Average score ${sv.avg.toFixed(1)} out of 10</span>`:''}`;
   return `<section class="me-card">
     <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
-    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.admin?'Manager':'Driver',me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
+    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
   </section>
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   <p class="me-per">${esc(per.label)}</p>
-  ${x?`<div class="me-c me-wide g-perf"><small>My score</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.round(100*x.points/x.max):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
-     :`<div class="me-c me-wide g-perf"><small>My score</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
+  ${x?`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.round(100*x.points/x.max):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
+     :`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
   <div class="me-grid">
     ${card('road','box','Parcels',x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–',x&&x.days>1?'about '+Math.round(x.pc/x.days).toLocaleString('en-AU')+' a day':'')}
     ${card('perf','eta','2 hr ETA',x?pctf(x.eta):'–',x?rtTxt[x.r.eta]:'',x&&x.r.eta)}
@@ -5851,27 +5885,31 @@ function profileHTML(){
   <div class="me-c me-wide g-perf me-sv"><span class="ic">${ICON.survey}</span><small>Customer survey${PER==='day'?' (weekly)':PER==='cycle'?' (monthly)':''}</small>${svBody}</div>
   <div class="me-grid">
     ${card('start','clock','Hours worked',h.m?hrs(h.m):'0h',h.n?h.n+' shift'+(h.n===1?'':'s'):'No shifts '+when)}
-    ${card('road','precard','Precards on my run',String(pcs.length),pcs.length===1?'address':'addresses')}
+    ${card('road','precard',my('Precards on my run','Precards on their run'),String(pcs.length),pcs.length===1?'address':'addresses')}
   </div>
-  ${run?`<section class="me-box g-road"><h2>My run</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run">Open my run sheet</button></section>`:''}
-  <section class="me-box g-start"><h2>My shifts this week</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
-  ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
-  ${data&&data.inv.length?`<section class="me-box g-admin"><h2>My invoices</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
-  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>What your customers said</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}</section>`:''}
-  <p class="me-note">Only you can see this page.</p>`;
+  ${run?`<section class="me-box g-road"><h2>${my('My run','Run')}</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run" data-login="${esc(me.login)}">${my('Open my run sheet','Open their run sheet')}</button></section>`:''}
+  <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
+  ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
+  ${data&&data.inv.length?`<section class="me-box g-admin"><h2>${my('My invoices','Invoices')}</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
+  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>${my('What your customers said','What customers said')}</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}</section>`:''}
+  <p class="me-note">${pickSubj&&me===pickSubj?'Managers can see each driver\u2019s profile. Drivers only ever see their own.':'Only you can see this page.'}</p>`;
 }
 async function showProfile(){
   const box=document.getElementById('me_box');if(!box)return;
   if(!data)box.innerHTML='<div class="me-wait">Loading your profile…</div>';
-  await load(true);box.innerHTML=profileHTML();
+  await load(true);
   const L=build();badge(unread(L));
+  if(isAdminView()){await staffList();if(PICK&&STAFF.some(p=>p.staff===PICK))return setPick(PICK);PICK='';pickSubj=pickData=null}
+  else{PICK='';pickSubj=pickData=null}
+  renderProfile();
 }
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
-  if(e.target.closest('[data-me="run"]'))openRun();
-  const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;try{localStorage.setItem('me1161_per',PER)}catch(x){}const box=document.getElementById('me_box');if(box&&me)box.innerHTML=profileHTML()}
+  const rb=e.target.closest('[data-me="run"]');if(rb)openRun(rb.dataset.login);
+  const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;try{localStorage.setItem('me1161_per',PER)}catch(x){}renderProfile()}
 });
-function openRun(){try{if(window.RUNS&&RUNS.openLogin&&me&&me.login&&RUNS.openLogin(me.login))return}catch(x){}if(window.APP)APP.go('runs')}
+function openRun(l){l=l||(me&&me.login);try{if(window.RUNS&&RUNS.openLogin&&l&&RUNS.openLogin(l))return}catch(x){}if(window.APP)APP.go('runs')}
+document.addEventListener('change',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.me==='pick')setPick(t.value)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refresh(true)});
 window.ME={profile:showProfile,alerts:showAlerts,refresh};
 function start(){setTimeout(()=>refresh(),400)}
@@ -8698,7 +8736,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610260945';
+const VERSION='202610261015';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
