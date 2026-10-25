@@ -2598,13 +2598,17 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .grp h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--d)}
 #sh-main #mod-directory .grp h2 span{background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.74rem;letter-spacing:0}
 #sh-main #mod-directory .rows{border-radius:12px;box-shadow:inset 4px 0 0 var(--d)}
-#sh-main #mod-directory .row{grid-template-columns:auto minmax(0,1fr) auto;column-gap:12px;padding:10px 14px 10px 16px}
+#sh-main #mod-directory .row{grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:6px;padding:10px 14px 10px 16px}
+#sh-main #mod-directory .row .l2{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;min-width:0}
+#sh-main #mod-directory .row .l2 .no,#sh-main #mod-directory .row .l2 .ph{grid-column:auto;grid-row:auto;min-width:0;max-width:100%}
+#sh-main #mod-directory .row .l2 .ph{margin-left:auto}
+#sh-main #mod-directory .row .l2 .no:empty+.ph{margin-left:0}
+#sh-main #mod-directory .tel{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.25}
 #sh-main #mod-directory .row .av{grid-row:1/span 2;align-self:center;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--ds);color:var(--d);font:700 .95rem var(--sh-body)}
 #sh-main #mod-directory .row .nm{grid-column:2/-1;grid-row:1}
 #sh-main #mod-directory .row .no{grid-column:2;grid-row:2;justify-self:start;font-size:.8rem;font-weight:700;color:var(--d);background:var(--ds);padding:2px 8px;border-radius:6px}
 #sh-main #mod-directory .row .ph{grid-column:3;grid-row:2;text-align:right}
 #sh-main #mod-directory .row .vis{grid-column:2/-1}
-#sh-main #mod-directory .row:not(:has(.no:not(:empty))) .ph{grid-column:2/-1;justify-self:start}
 #sh-main #mod-directory .tel{display:inline-flex;align-items:center;gap:6px;border:0;background:#1E8A4C;color:#fff;padding:7px 12px;border-radius:999px;font:700 .92rem var(--sh-body)}
 #sh-main #mod-directory .tel svg{width:15px;height:15px;fill:currentColor}
 #sh-main #mod-directory .tel:active{filter:brightness(.92)}
@@ -6403,10 +6407,10 @@ function render(){
   const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='<div class="dyx"><div class="empty">Opening the directory</div></div>';return}
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.directory;
-  const L=list();const shown=isMgr()?L.filter(x=>!hide.has(x.id)).length:L.length;
+  const L=list();const shown=L.length;
   box.innerHTML=`<div class="dyx">
    <div class="head"><h1>Directory</h1></div>
-   <p class="lead">${isMgr()?'Name, role, phone number and driver number for everyone. Untick anyone who shouldn’t be listed for drivers.':'Phone numbers for the team. Tap a number to call. Please only use these for work.'}</p>
+   <p class="lead">${isMgr()?'Name, role, phone number and driver number for everyone on the Drivers page.':'Phone numbers for the team. Tap a number to call. Please only use these for work.'}</p>
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the directory from ${esc(shared)}. `:'Not shared with drivers yet. '}${shown} of ${L.length} people will be listed.</span><button type="button" class="sh-btn primary" data-dy="share" ${busy?'disabled':''}>Send latest to drivers</button></div>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <label class="srch" for="dy_q"><span>Search</span><input type="search" id="dy_q" value="${esc(q)}" placeholder="Name, role, driver number or phone" autocomplete="off"></label>
@@ -6420,15 +6424,14 @@ function listHTML(L){
   const showRole=x=>x.grp==='office'||x.grp==='other'||(x.grp==='relief'&&x.roleT!=='Relief driver');
   const G=GROUPS.map(([k,t])=>({k,t,L:R.filter(x=>x.grp===k)})).filter(g=>g.L.length);
   return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dy="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
-  ${G.map(g=>`<section class="grp dg-${g.k}" id="dy_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(x=>{const off=isMgr()&&hide.has(x.id);
+  ${G.map(g=>`<section class="grp dg-${g.k}" id="dy_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(x=>{const off=false;
     return `<li class="row ${off?'off':''}"><span class="av" aria-hidden="true">${esc(String(x.name).split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span><span class="nm"><b>${esc(x.name)}</b>${showRole(x)?`<span class="rl">${esc(x.roleT)}</span>`:''}</span>
-     <span class="no">${x.no?esc(x.no):''}</span>
-     <span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(x.phone))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(x.phone))}</a>`:'<span class="na">No number</span>'}</span>
-     ${isMgr()?`<label class="vis" title="Show to drivers"><input type="checkbox" data-dy="vis" data-v="${esc(x.id)}" ${off?'':'checked'}><span>Show</span></label>`:''}</li>`}).join('')}</ul></section>`).join('')}`;
+     <span class="l2"><span class="no">${x.no?esc(x.no):''}</span>
+     <span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(x.phone))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(x.phone))}</a>`:'<span class="na">No number</span>'}</span></span></li>`}).join('')}</ul></section>`).join('')}`;
 }
 async function saveHide(){try{await db.doc('dircfg/main').set({hide:[...hide]});msg={t:'Saved. Send the latest to drivers when you are ready.'}}catch(e){msg={err:true,t:'Could not save just now.'}}render()}
 async function share(){
-  const out=fromStaff().filter(x=>!hide.has(x.id)).map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));
+  const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));
   await APP.publish({directory:out});
 }
 document.addEventListener('click',async e=>{
@@ -8762,7 +8765,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261100';
+const VERSION='202610261105';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
