@@ -2343,20 +2343,9 @@ function renderHome(){
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
-    <p>Drivers open this same page. They get the street lookup, run sheets and the latest boards, and can’t change anything. Send the latest version to them here after you make changes.</p>
+    <p>After you make changes, send them so drivers see the latest.</p>
     <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>
-    <div class="sh-rows">
-      ${row('Sort and run sheets',u.runs,'')}
-      ${row('Leave calendar',u.leave,'')}
-      ${row('Precard list',u.precards,'')}
-      ${row('Parcel lockers',u.lockers,'')}
-      ${row('Driver results',SNAP.results&&SNAP.results.updated,'<button type="button" class="sh-btn" data-nav="results">Open Driver Results</button>')}
-      ${row('Survey ranking',SNAP.survey&&SNAP.survey.updated,'<button type="button" class="sh-btn" data-nav="survey">Open Survey Ranking</button>')}
-      <div class="sh-row"><span class="nm">Team briefs</span><span class="when">Drivers see each brief as soon as you show it to them</span><button type="button" class="sh-btn" data-nav="briefs">Open Team Brief</button></div>
-      ${row('Directory',u.directory,'')}
-      <div class="sh-row"><span class="nm">Invoices</span><span class="when">${u.invoices?'Notice sent '+esc(u.invoices):'Templates are always there for drivers'}</span><button type="button" class="sh-btn" data-nav="invoices">Open Invoices</button></div>
-      <div class="sh-row"><span class="nm">Driver guide</span><span class="when">Drivers see each change as soon as you save a sheet</span><button type="button" class="sh-btn" data-nav="guide">Open Driver Guide</button></div>
-    </div>
+    
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}
   </section>`;
 }
@@ -6586,7 +6575,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251125';
+const VERSION='202610251126';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
