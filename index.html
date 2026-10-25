@@ -7615,19 +7615,20 @@ function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>
 /* ---------- rows ---------- */
 function rowsFor(date){
   const P=people(),r=(days[date]&&days[date].rows)||{},out=[];
-  for(const[l,v]of Object.entries(r)){const k=dkey(l),p=P[k]||{id:'',login:k,name:k,no:''};out.push({date,key:p.id||'L'+k,p,pc:v&&v.pc})}
+  for(const[l,v]of Object.entries(r)){const k=dkey(l),p=P[k]||{id:'',login:k,name:k,no:''};const key=p.id||'L'+k,id=date+'_'+key;if(!clock[id]&&!ts[id])continue;out.push({date,key,p,pc:v&&v.pc})}
   for(const[id,c]of Object.entries(clock)){if(!id.startsWith(date+'_')||!c||!c.staff)continue;if(out.some(x=>x.key===c.staff))continue;const p=Object.values(P).find(x=>x.id===c.staff)||{id:c.staff,login:'',name:c.name||c.staff,no:''};out.push({date,key:c.staff,p,pc:null,clocked:true})}
   for(const[id,t]of Object.entries(ts)){if(!id.startsWith(date+'_')||!t||!t.extra)continue;const sid=id.slice(11);if(out.some(x=>x.key===sid))continue;const p=Object.values(P).find(x=>x.id===sid)||{id:sid,login:'',name:t.name||sid,no:''};out.push({date,key:sid,p,pc:null,extra:true})}
   return out.filter(r=>{const id=r.date+'_'+r.key,o=ts[id];if(!o||!o.removed)return true;const c=clock[id];return !!(c&&String(c.updatedAt||'')>String(o.removedAt||''))}).sort((a,b)=>a.p.name.localeCompare(b.p.name));
 }
 const WD=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat']];
-function startFor(key,date){const v=cfg.starts[key];if(!v)return '';if(typeof v==='string')return v;return v[fromIso(date).getDay()]||''}
+/* No preset start times: a day's times come only from the driver clocking in, or from you typing them */
+function startFor(key,date){return ''}
 const hasStart=id=>{const v=cfg.starts[id];return typeof v==='string'?!!v:!!(v&&Object.values(v).some(Boolean))};
 const bneHM=iso=>{try{const p={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(iso)))p[x.type]=x.value;return p.hour+':'+p.minute}catch(e){return ''}};
 const ckT=(c,w)=>!c?'':(!c[w+'Late']&&!c[w+'Edited']&&c[w+'At']&&!isNaN(Date.parse(c[w+'At'])))?bneHM(c[w+'At']):(c[w]||'');
 function eff(row){const o=ts[row.date+'_'+row.key]||{};const c=clock[row.date+'_'+row.key]||null;const off=startFor(row.key,row.date);
   const cs=ckT(c,'start'),cf=ckT(c,'finish');
-  const start=o.start||cs||off,finish=o.finish||cf||'',brk=o.brk!=null&&o.brk!==''?o.brk:(c&&c.brk!=null&&cf?c.brk:(cfg.brk||''));
+  const start=o.start||cs||off,finish=o.finish||cf||'',brk=o.brk!=null&&o.brk!==''?o.brk:(c&&c.brk!=null&&cf?c.brk:'');
   const src=(own,ck,late,pre)=>own?'':ck?(late?'Entered later':'Tapped'):(pre?'Preset':'');
   const sS=o.start?'':(c&&c.startEdited&&cs)?'Changed by driver':src(o.start,cs,c&&c.startLate,off),sF=src(o.finish,cf,c&&c.finishLate,'');
   const yn=v=>v==='yes'?true:v==='no'?false:null;const xp=o.xp!=null&&o.xp!==''?+o.xp:(c&&c.extra!=null?+c.extra:null);const tl=o.tl?yn(o.tl):(c&&c.twoLoads!=null?!!c.twoLoads:null);const hp=o.hp?yn(o.hp):(c&&c.held!=null?!!c.held:null);const hc=o.hc!=null&&o.hc!==''?+o.hc:(c&&c.heldCount?+c.heldCount:null);
@@ -7644,7 +7645,7 @@ function setHTML(){
   </details>`;
 }
 function rowHTML(r,showDate){const e=eff(r);const id=r.date+'_'+r.key;
-      return `<tr class="${e.hrs==null?'miss':''}"><td>${showDate?`<b>${esc(longD(r.date).replace(/ \d{4}$/,''))}</b>`:`<b>${esc(r.p.name)}</b>`}${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
+      return `<tr class="${e.hrs==null?'miss':''}"><td>${showDate?`<b>${esc(longD(r.date).replace(/ \d{4}$/,''))}</b>`:`<b>${esc(r.p.name)}</b>`}${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}</td><td>${esc(r.p.no)}</td>
        <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Preset'?'':'late'}"${e.c&&e.c.startEdited&&e.c.startAt?` title="Tapped at ${esc(bneHM(e.c.startAt))}"`:''}>${e.sS}${e.c&&e.c.startEdited&&e.c.startAt&&e.sS==='Changed by driver'?` (tapped ${esc(bneHM(e.c.startAt))})`:''}</small>`:''}</td>
        <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time">${e.sF?`<small class="${e.sF==='Tapped'?'tap':'late'}">${e.sF}</small>`:(e.c&&e.c.start&&!e.c.finish?'<small class="late">Still on shift</small>':'')}</td>
        <td><input type="number" min="0" step="5" data-f="brk" data-id="${esc(id)}" value="${esc(e.brk)}" class="brk ${e.o.brk==null||e.o.brk===''?'off':''}" aria-label="Break minutes"></td>
@@ -7664,7 +7665,7 @@ function weekHTML(){
     return `<details class="card day" data-day="${d}" ${open.has(d)?'open':''}><summary class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'} · ${fmtH(dt)||'0h 00m'}${dm?` · <b class="mi">${dm} missing a time</b>`:''}</span><span class="tg" aria-hidden="true"></span></summary>
     <div class="dbody"><div class="dtools">${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
     <div class="tw"><table class="tb">${THEAD('Driver')}<tbody>${R.map(r=>rowHTML(r,false)).join('')}</tbody></table></div></div></details>`}).join('');
-  return {secs:secs||`<div class="empty">No one worked this week yet. Days appear when Driver Results are loaded or drivers clock in.</div>`,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
+  return {secs:secs||`<div class="empty">No one has clocked in this week yet. Each shift shows here as soon as a driver taps Start shift.</div>`,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
 }
 /* ---------- one person's timesheet ---------- */
 function allDates(){return [...new Set(Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d))))].sort()}
@@ -7701,7 +7702,7 @@ function render(){
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
    ${W.secs}
-   <p class="hint">Newest day first. Tap a day to open or close it. Tapped means the driver tapped Start or Finish shift in the app; Entered later means they typed it afterwards; Preset is their normal start. Type over anything to change it, or use the bin to delete.</p>
+   <p class="hint">Newest day first. Tap a day to open or close it. Every shift is logged when the driver taps Start shift and Finish shift in the app. Tapped means they tapped it at the time; Entered later means they typed it afterwards. Type over any time to change it, use + Add someone for a driver who forgot to clock in, or the bin to delete.</p>
   </div>`;
 }
 /* ---------- saving ---------- */
@@ -8780,7 +8781,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261120';
+const VERSION='202610261130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
