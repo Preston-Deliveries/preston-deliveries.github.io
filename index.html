@@ -7442,7 +7442,7 @@ const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 async function init(r){
   if(ready)return;ready=true;role=r==='drv'?'drv':'mgr';
   try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db)return;
-  const[a,b]=period(-1);from=a;to=b;
+  to=TODAY;from=add(TODAY,-27);
   if(role==='mgr'){
     const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
     coll('staff',m=>staff=m);coll('days',m=>{const o={};for(const[k,v]of Object.entries(m))if(v&&v.rows)o[v.date||k]=v;days=o});
@@ -7485,7 +7485,7 @@ function dayData(date){
   return{pc,tl,tlSet,xp,hrs,worked:!!(c.start||o.start)}
 }
 function rows(){
-  if(!sid||!from||!to||to<from)return[];const out=[];const m0=monday(from);
+  if(!sid||!from||!to||to<from)return[];const out=[];const m0=from;
   for(let d=from;d<=to;d=add(d,1)){const w=fromIso(d).getDay();if(w===0)continue;const k=Math.floor((fromIso(d)-fromIso(m0))/864e5);const wk=Math.floor(k/7),di=(w+6)%7;
     const auto=dayData(d);const a={l1:'',l2:'',xp:'',hr:''};
     if(auto){if(cfg.hourly){a.hr=auto.hrs??''}else{if(auto.pc!=null){if(auto.tl)a.l2=auto.pc;else a.l1=auto.pc}}if(auto.xp)a.xp=auto.xp}
@@ -7509,7 +7509,7 @@ function html(){
    ${role==='drv'?'':`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`}
    <div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label>
     <div class="quick"><button type="button" class="sh-btn sm" data-im="per" data-v="-1">Last pay period<small>${esc(short(ls))} to ${esc(short(le))}</small></button><button type="button" class="sh-btn sm" data-im="per" data-v="0">This pay period<small>${esc(short(cs))} to ${esc(short(ce))}</small></button></div></div>`;
-  if(from&&to&&(fromIso(to)-fromIso(monday(from)))/864e5>27)h+=`<p class="warn">The invoice template holds 4 weeks. Pick 4 weeks or less.</p>`;
+  if(from&&to&&(fromIso(to)-fromIso(from))/864e5>27)h+=`<p class="warn">The invoice template holds 4 weeks. Pick 4 weeks or less.</p>`;
   if(!sid)return h+'</section>';
   const p=P(),R=rows(),T=totals(R),last=lastLog();
   h+=`<div class="row"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
@@ -8112,7 +8112,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251807';
+const VERSION='202610251811';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
