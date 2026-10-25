@@ -1580,6 +1580,9 @@ body.sh-uv-on{overflow:hidden}
 :root[data-theme="dark"] #mod-reports .fl i.bad,#mod-reports .flag.bad{background:#3A1512;color:#FFB4AA}
 :root[data-theme="dark"] #mod-reports .fl i.warn,#mod-reports .flag.warn{background:#3A2A0C;color:#FFD58A}
 :root[data-theme="dark"] #mod-reports .req{color:#F2B26B}
+#mod-reports .rw{display:flex;gap:8px;align-items:stretch}
+#mod-reports .rw .ri{flex:1;min-width:0}
+#mod-reports .rw .lp{align-self:center}
 </style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -7433,9 +7436,9 @@ function mgrListHTML(){
    <input type="search" id="rp_q" placeholder="Search name, place or words" value="${esc(q)}" autocomplete="off" aria-label="Search">
    <button type="button" class="sh-btn" data-rp="xls">Download register (Excel)</button><button type="button" class="sh-btn primary" data-rp="file">+ New report</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${show.length?`<div class="list">${show.map(r=>{const p=person(r),F=r.f||{};return `<button type="button" class="ri ${KINDS[r.kind].c} st-${r.status}" data-rp="open" data-v="${esc(r.id)}">
+   ${show.length?`<div class="list">${show.map(r=>{const p=person(r),F=r.f||{};return `<div class="rw"><button type="button" class="ri ${KINDS[r.kind].c} st-${r.status}" data-rp="open" data-v="${esc(r.id)}">
      <span class="k">${esc(KINDS[r.kind].t)}</span><span class="m"><b>${esc(F.type||'')}</b><small>${esc(p.name)} · ${esc(niceD(F.date))}${F.time?' '+esc(niceT(F.time)):''}${F.where||F.whereType?' · '+esc(F.where||F.whereType):''}</small>
-     <span class="fl">${r.status==='new'?'<i class="nw">New</i>':`<i class="stt">${esc(STAT[r.status]||'')}</i>`}${flags(r).map(([c,l])=>`<i class="${c}">${esc(l)}</i>`).join('')}${(r.photos||[]).length?`<i class="pc">${r.photos.length} photo${r.photos.length===1?'':'s'}</i>`:''}</span></span></button>`}).join('')}</div>`
+     <span class="fl">${r.status==='new'?'<i class="nw">New</i>':`<i class="stt">${esc(STAT[r.status]||'')}</i>`}${flags(r).map(([c,l])=>`<i class="${c}">${esc(l)}</i>`).join('')}${(r.photos||[]).length?`<i class="pc">${r.photos.length} photo${r.photos.length===1?'':'s'}</i>`:''}</span></span></button><button type="button" class="sh-btn sm lp" data-rp="lpdf" data-v="${esc(r.id)}" aria-label="PDF of this report">PDF</button></div>`}).join('')}</div>`
    :`<div class="empty">${L.length?'No reports here. Try another tab or type.':'No reports yet. When a driver sends an incident, vehicle accident or safety hazard report, it shows up here.'}</div>`}
    <p class="hint">Keep incident records for at least 5 years. The Excel register and the backup on Home both include them.</p>`;
 }
@@ -7452,8 +7455,8 @@ function detailHTML(r){
   const p=person(r),F=r.f||{},K=KINDS[r.kind];const E=edit||{status:r.status,notes:r.notes||'',fixAct:r.fixAct||'',ws:r.ws||'',wsRef:r.wsRef||''};edit=E;
   const oth=otherOf(r);
   return `<button type="button" class="sh-btn back" data-rp="close">‹ All reports</button>
-  <section class="card det ${K.c}"><div class="dh"><span class="k">${esc(K.long)}</span><span class="sp"></span><button type="button" class="sh-btn" data-rp="pdf">Print (PDF)</button></div>
-   <h2>${esc(F.type||K.t)}</h2>
+  <section class="card det ${K.c}"><div class="dh"><span class="k">${esc(K.long)}</span><span class="sp"></span><button type="button" class="sh-btn primary" data-rp="pdf">PDF for management</button></div>
+   <h2>${esc(F.type||K.t)}</h2>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${flags(r).map(([c,l])=>`<p class="flag ${c}">${esc(l)}</p>`).join('')}
    ${r.serious?`<div class="warnbox"><b>This may be a notifiable incident.</b> If the injury needed a doctor or hospital, WorkSafe Queensland must be told straight away on <a href="tel:1300362128">1300 362 128</a>. Leave the site as it is unless it is unsafe, until they say otherwise. Keep this record for at least 5 years.</div>`:''}
    <dl class="facts">${factsOf(r).map(([l,v])=>row(l,v)).join('')}</dl>
@@ -7467,7 +7470,7 @@ function detailHTML(r){
    <label class="f"><span>Notes</span><textarea id="rp_m_notes" rows="3" placeholder="Calls made, what was found, who was told">${esc(E.notes)}</textarea></label>
    <label class="f"><span>What we changed so it does not happen again</span><textarea id="rp_m_fix" rows="2">${esc(E.fixAct)}</textarea></label>
    ${r.kind!=='hazard'?`<span class="lb">Reported to WorkSafe QLD?</span>${chips('m_ws',[['no','Not needed'],['yes','Yes, notified']],E.ws)}${E.ws==='yes'?`<label class="f"><span>WorkSafe reference</span><input id="rp_m_wsref" value="${esc(E.wsRef)}"></label>`:''}`:''}
-   <div class="acts"><button type="button" class="sh-btn primary" data-rp="msave">Save follow up</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-rp="del">${arm?'Tap again to delete':'Delete report'}</button></div>
+   <div class="acts"><button type="button" class="sh-btn primary" data-rp="msave">Save follow up</button><button type="button" class="sh-btn" data-rp="pdf">PDF for management</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-rp="del">${arm?'Tap again to delete':'Delete report'}</button></div>
   </section>`;
 }
 async function loadImgs(r){for(const pid of (r.photos||[])){if(imgs[pid])continue;try{const s=await db.doc('reportimg/'+pid).get();imgs[pid]=s.exists?__D(s).img:'';}catch(e){imgs[pid]=''}if(open===r.id)render()}}
@@ -7475,35 +7478,64 @@ function pushStat(){if(mode!=='mgr'||!window.APP||!APP.stat)return;const n=list(
 
 /* ---------- PDF (one page) ---------- */
 function loadScript(src){return new Promise((ok,no)=>{if(window.jspdf){ok();return}const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
-async function makePdf(r,pics,btn){
+async function makePdf(r,pics,btn,forMgr){
   const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making PDF…'}
   try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')}catch(e){if(btn){btn.disabled=false;btn.textContent=old}msg={err:true,t:'The PDF maker did not load. Check your connection.'};render();return}
-  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=12,INK=[20,32,29],MUT=[86,101,95],LINE=[200,206,212];const F=r.f||{},K=KINDS[r.kind];
-  doc.setFillColor(19,33,58);doc.rect(0,0,W,20,'F');doc.setFillColor(...(r.kind==='vehicle'?[47,111,219]:r.kind==='hazard'?[217,98,43]:[200,53,43]));doc.rect(0,20,W,1.4,'F');
-  doc.setTextColor(233,177,10);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE  ·  CONTRACT 1161',M,7.5);
-  doc.setTextColor(255);doc.setFontSize(15);doc.text(K.long,M,15.5);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Ref '+String(r.id||'').split('_').slice(0,2).join('-'),W-M,15.5,{align:'right'});
-  let y=27;const bottom=285;
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=13,CW=W-2*M,INK=[22,30,45],MUT=[96,108,124],LINE=[214,220,228],SOFT=[244,246,249],NAVY=[19,33,58];
+  const F=r.f||{},K=KINDS[r.kind],P=person(r);const KC=r.kind==='vehicle'?[47,111,219]:r.kind==='hazard'?[217,98,43]:[200,53,43];
+  const ref=String(r.id||'').split('_').slice(0,2).join('-').toUpperCase();
+  /* header */
+  doc.setFillColor(...NAVY);doc.rect(0,0,W,26,'F');doc.setFillColor(...KC);doc.rect(0,26,W,1.6,'F');
+  doc.setTextColor(233,177,10);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE PTY LTD  ·  CONTRACT 1161, GOLD COAST',M,8.5);
+  doc.setTextColor(255);doc.setFontSize(17);doc.text(K.long,M,18.5);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Reference  '+ref,W-M,9,{align:'right'});
+  if(forMgr){const st=STAT[r.status]||'New';const sc=r.status==='closed'?[30,138,76]:r.status==='inv'?[217,139,0]:[200,53,43];doc.setFont('helvetica','bold');doc.setFontSize(8);const sw=doc.getTextWidth(st.toUpperCase())+8;doc.setFillColor(...sc);doc.roundedRect(W-M-sw,13.5,sw,6.5,3.2,3.2,'F');doc.setTextColor(255);doc.text(st.toUpperCase(),W-M-sw/2,18,{align:'center'})}
+  let y=33;
+  const sec=(t)=>{doc.setFillColor(...KC);doc.rect(M,y-3.2,1.4,4.2,'F');doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text(t,M+3.5,y);y+=3.5};
+  /* alert */
+  const alerts=flags(r).filter(x=>x[0]==='bad');
+  if(r.serious||alerts.length){const t=r.serious?('Serious injury: notifiable to WorkSafe Queensland (1300 362 128). '+(r.ws==='yes'?'Notified'+(r.wsRef?', reference '+r.wsRef:'')+'.':'Not yet recorded as notified.')):alerts.map(x=>x[1]).join('. ')+'.';
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);const L=doc.splitTextToSize(t,CW-8);const h=L.length*4+4;doc.setFillColor(253,236,234);doc.setDrawColor(240,180,172);doc.roundedRect(M,y-1,CW,h,1.5,1.5,'FD');doc.setTextColor(155,28,18);doc.text(L,M+4,y+3.6);y+=h+4}
+  /* summary grid */
+  sec('Summary');
   const facts=factsOf(r).filter(([,v])=>!(v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length))).map(([l,v])=>[l,Array.isArray(v)?v.join(', '):v===true?'Yes':v===false?'No':String(v)]);
-  const cw=(W-2*M-6)/2;doc.setFontSize(8.5);
-  for(let i=0;i<facts.length;i+=2){let h=0;for(let j=0;j<2;j++){const it=facts[i+j];if(!it)continue;const x=M+j*(cw+6);doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(it[0].toUpperCase(),x,y);
-    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);const L=doc.splitTextToSize(it[1],cw).slice(0,2);doc.text(L,x,y+4);h=Math.max(h,4+L.length*3.8)}y+=h+2.2}
-  const oth=otherOf(r);if(oth.length){doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=4.5;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text((r.kind==='vehicle'?'OTHER DRIVER AND VEHICLE':'PERSON INVOLVED'),M,y);y+=4;
-    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.5);const txt=oth.map(([l,v])=>l+': '+v).join('   ·   ');const L=doc.splitTextToSize(txt,W-2*M).slice(0,4);doc.text(L,M,y);y+=L.length*3.7+2}
-  const pics2=(pics||[]).filter(Boolean);const photoH=pics2.length?(pics2.length>3?2:1)*36+6:0;const sign=22;
-  const texts=textsOf(r);const avail=bottom-sign-photoH-y;const per=texts.length?avail/texts.length:0;
-  for(const[l,v]of texts){doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=4.5;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(l.toUpperCase(),M,y);y+=4;
-    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);const maxL=Math.max(2,Math.floor((per-9)/3.9));let L=doc.splitTextToSize(String(v),W-2*M);if(L.length>maxL){L=L.slice(0,maxL);L[maxL-1]+=' …'}doc.text(L,M,y);y+=L.length*3.9+2}
-  if(pics2.length){y+=2;const n=pics2.length,pw=(W-2*M-2*4)/3,ph=34;pics2.slice(0,6).forEach((d,i)=>{const x=M+(i%3)*(pw+4),yy=y+Math.floor(i/3)*(ph+2);try{const pr=doc.getImageProperties(d);const s=Math.min(pw/pr.width,ph/pr.height);const w=pr.width*s,h=pr.height*s;doc.addImage(d,'JPEG',x+(pw-w)/2,yy+(ph-h)/2,w,h)}catch(e){}});y+=(n>3?2:1)*(ph+2)+2}
-  y=Math.max(y,bottom-sign);doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=5;
-  const half=(W-2*M-8)/2;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('STATUS',M,y);doc.text('MANAGER NOTES',M+half+8,y);
-  doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text((STAT[r.status]||'New')+(r.ws==='yes'?' · WorkSafe notified'+(r.wsRef?' ('+r.wsRef+')':''):''),M,y+4.2);
-  doc.text(doc.splitTextToSize(r.notes||'',half).slice(0,3),M+half+8,y+4.2);
-  doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text('Printed '+new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'. Keep incident records for at least 5 years.',M,292);
+  const cols=3,cw=CW/cols;y+=1;
+  for(let i=0;i<facts.length;i+=cols){let h=0;const rows=[];for(let j=0;j<cols;j++){const it=facts[i+j];if(!it)continue;doc.setFontSize(8.8);const L=doc.splitTextToSize(it[1],cw-5).slice(0,3);rows.push([j,it,L]);h=Math.max(h,7+L.length*3.7)}
+    if((i/cols)%2===0){doc.setFillColor(...SOFT);doc.rect(M,y,CW,h,'F')}
+    for(const[j,it,L]of rows){const x=M+j*cw+2.5;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.6);doc.text(it[0].toUpperCase(),x,y+3.8);doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.8);doc.text(L,x,y+7.6)}
+    y+=h}
+  doc.setDrawColor(...LINE);doc.setLineWidth(.25);doc.line(M,y,W-M,y);y+=6;
+  /* people */
+  const oth=otherOf(r);
+  if(oth.length){sec(r.kind==='vehicle'?'Other driver and vehicle':'Person involved');doc.setFontSize(8.6);const L=doc.splitTextToSize(oth.map(([l,v])=>l+': '+v).join('   ·   '),CW).slice(0,3);doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.text(L,M,y+1.5);y+=L.length*3.8+5}
+  /* text sections share the remaining space */
+  const pics2=(pics||[]).filter(Boolean).slice(0,6);const phH=pics2.length?(pics2.length>3?2:1)*31+9:0;
+  const mgrNotes=forMgr?[['Investigation notes',r.notes],['What we changed so it does not happen again',r.fixAct]].filter(x=>x[1]):[];
+  const signH=forMgr?30:12;const mgrH=forMgr?14+mgrNotes.length*4:0;
+  const texts=textsOf(r);const avail=285-signH-phH-mgrH-y-mgrNotes.reduce((a,[,v])=>a+Math.min(4,doc.splitTextToSize(String(v),CW).length)*3.8+5,0);
+  const lineBudget=Math.max(texts.length*2,Math.floor((avail-texts.length*8)/3.9));
+  let left=lineBudget;
+  texts.forEach(([l,v],i)=>{sec(l);doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);let L=doc.splitTextToSize(String(v),CW);const share=Math.max(2,Math.floor(left/(texts.length-i)));if(L.length>share){L=L.slice(0,share);L[share-1]+=' …'}left-=L.length;doc.text(L,M,y+1.5);y+=L.length*3.9+4.5});
+  /* photos */
+  if(pics2.length){sec('Photos ('+pics2.length+')');y+=1;const pw=(CW-8)/3,ph=29;pics2.forEach((d,i)=>{const x=M+(i%3)*(pw+4),yy=y+Math.floor(i/3)*(ph+2);doc.setFillColor(...SOFT);doc.rect(x,yy,pw,ph,'F');try{const pr=doc.getImageProperties(d);const sc=Math.min(pw/pr.width,ph/pr.height);const w=pr.width*sc,h=pr.height*sc;doc.addImage(d,'JPEG',x+(pw-w)/2,yy+(ph-h)/2,w,h)}catch(e){}});y+=(pics2.length>3?2:1)*(ph+2)+4}
+  /* manager follow up */
+  if(forMgr){sec('Manager follow up');doc.setFontSize(8.8);doc.setTextColor(...INK);doc.setFont('helvetica','normal');
+    const line=['Status: '+(STAT[r.status]||'New')+(r.closedAt?' on '+niceD(String(r.closedAt).slice(0,10)):''),r.kind!=='hazard'?'WorkSafe QLD: '+(r.ws==='yes'?'Notified'+(r.wsRef?' ('+r.wsRef+')':''):r.ws==='no'?'Not needed':'Not recorded'):''].filter(Boolean).join('     ');
+    doc.text(line,M,y+1.5);y+=6;
+    for(const[l,v]of mgrNotes){doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(l.toUpperCase(),M,y);doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.8);const L=doc.splitTextToSize(String(v),CW).slice(0,4);doc.text(L,M,y+3.8);y+=L.length*3.8+5}
+    if(!mgrNotes.length){doc.setTextColor(...MUT);doc.text('No follow up notes recorded yet.',M,y);y+=5}}
+  /* sign off */
+  const sy=Math.max(y+2,285-signH+4);
+  if(forMgr){const who=mgrName();const cx=[M,M+CW/3+2,M+2*CW/3+4],w3=CW/3-4;
+    [['PREPARED BY',who.name+(who.role?', '+who.role:'')],['SIGNATURE',''],['DATE',new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})]].forEach(([l,v],i)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(l,cx[i],sy);doc.setDrawColor(...INK);doc.setLineWidth(.3);doc.line(cx[i],sy+9,cx[i]+w3,sy+9);if(v){doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(doc.splitTextToSize(v,w3)[0],cx[i],sy+7.5)}})}
+  doc.setDrawColor(...LINE);doc.line(M,288,W-M,288);doc.setFont('helvetica','normal');doc.setFontSize(6.8);doc.setTextColor(...MUT);
+  doc.text('Confidential. Reported by '+P.name+' on '+(toDate(r.at)?toDate(r.at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):niceD(F.date))+'. Keep incident records for at least 5 years.',M,292);doc.text('Page 1 of 1',W-M,292,{align:'right'});
   if(btn){btn.disabled=false;btn.textContent=old}
-  const name=`${K.long} ${person(r).name||r.name||''} ${F.date||''}.pdf`.replace(/\s+/g,' ');
+  const name=`${ref} ${K.long} ${P.name||r.name||''} ${F.date||''}.pdf`.replace(/\s+/g,' ');
   const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
-  try{await dl.save({filename:name,data:doc.output('blob')});msg={t:'PDF saved. Open it to print.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
+  try{await dl.save({filename:name,data:doc.output('blob')});msg={t:'PDF saved. Attach it to your email to management or print it.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
 }
+function mgrName(){const s=me&&staff[me.staff];const role=s&&s.role?tc(String(s.role).replace(/^PRINCIPLE$/,'Principal')):'';return{name:tc(me&&me.name||'')||'Contract Manager',role:role||'Contract Manager'}}
 async function exportXls(){
   if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const H=['Date','Time','Report','What happened','Reported by','Driver no.','Where','Anyone hurt','Who hurt','Injury','Treatment','Police','Vehicle towed','Risk','Still there','Description','Action taken','Status','WorkSafe','Manager notes','Fix'];
@@ -7538,11 +7570,12 @@ document.addEventListener('click',async e=>{
   if(a==='file'){filing=true;sent=null;kind=null;f=null;photos=[];msg=null;if(!meTried)loadMe();render();window.scrollTo(0,0);return}
   if(a==='unfile'){filing=false;kind=null;f=null;photos=[];msg=null;render();return}
   if(a==='close'){open=null;edit=null;msg=null;render();return}
-  if(a==='pdf'&&open){const r={id:open,...items[open]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el);return}
+  if(a==='pdf'&&open){const r={id:open,...items[open]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el,true);return}
+  if(a==='lpdf'){e.stopPropagation();const r={id:v,...items[v]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el,true);return}
   if(a==='xls'){exportXls();return}
   if(a==='msave'&&open&&edit){edit.notes=($('m_notes')||{}).value||'';edit.fixAct=($('m_fix')||{}).value||'';if($('m_wsref'))edit.wsRef=$('m_wsref').value;
     const up={status:edit.status||'inv',notes:edit.notes,fixAct:edit.fixAct,ws:edit.ws||'',wsRef:edit.ws==='yes'?edit.wsRef||'':''};if(up.status==='closed')up.closedAt=new Date().toISOString();
-    try{await db.doc('reports/'+open).update(up);items[open]={...items[open],...up};msg={t:'Follow up saved.'};pushStat();open=null;edit=null;render()}catch(x){msg={err:true,t:'Could not save just now.'};render()}return}
+    try{await db.doc('reports/'+open).update(up);items[open]={...items[open],...up};msg={t:up.status==='closed'?'Saved and closed. Tap PDF for management to send it on.':'Follow up saved.'};pushStat();edit=null;render()}catch(x){msg={err:true,t:'Could not save just now.'};render()}return}
   if(a==='del'&&open){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     const r=items[open];try{for(const p of (r.photos||[])){try{await db.doc('reportimg/'+p).delete()}catch(x){}}await db.doc('reports/'+open).delete();delete items[open];open=null;edit=null;arm=false;msg={t:'Report deleted.'};pushStat();render()}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'};render()}return}
 });
@@ -7559,7 +7592,7 @@ async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new
 async function start(role){
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
   if(role!=='mgr'){mode='drv';render();loadMe();return}
-  mode='mgr';render();if(!db)return;
+  mode='mgr';render();if(!db)return;loadMe();
   const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-reports')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='rp_q'};
   db.collection('reports').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);items=m;pushStat();if(!typing())rerenderKeep()},()=>{msg={err:true,t:'Could not load reports. Check the app rules have been updated.'};render()});
   db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())rerenderKeep()},()=>{});
@@ -7578,7 +7611,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251359';
+const VERSION='202610251403';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
