@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function myEmail() {
+      return request.auth.token.email.lower();
+    }
+    function isOwner() {
+      return signedIn() && myEmail() in ['jozza721@gmail.com', 'jozza21@gmail.com'];
+    }
+    function accessPath() {
+      return /databases/$(database)/documents/access/$(myEmail());
+    }
+    function hasAccess() {
+      return signedIn() && exists(accessPath());
+    }
+    function isAdmin() {
+      return isOwner() || (hasAccess() && get(accessPath()).data.role == 'admin');
+    }
+    function isMember() {
+      return isAdmin() || hasAccess();
+    }
+    // Only admins can see these. Everything else can be read by anyone on the team list.
+    function adminOnly(col) {
+      return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
+        'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta'];
+    }
+
+    match /access/{email} {
+      allow read: if isAdmin() || (signedIn() && email == myEmail());
+      allow write: if isAdmin();
+    }
+
+    match /{col}/{docId} {
+      allow read: if isAdmin() || (isMember() && !adminOnly(col));
+      allow write: if isAdmin();
+    }
+  }
+}
