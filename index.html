@@ -2669,6 +2669,12 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #mod-staff .chips.grpc button.all{--d:#86AEE0;--ds:#1A2A42}:root[data-theme="dark"] #mod-staff .chips.grpc button[aria-pressed="true"]{color:#0B1320}
 #mod-staff .chips.miss button{border-radius:999px}
 #mod-staff .chips.miss button[aria-pressed="true"]{background:#C8352B;border-color:#C8352B;color:#fff}
+#mod-staff .dm-grp{display:flex;flex-direction:column;gap:8px}
+#mod-staff .dm-grp h2{margin:8px 0 0;display:flex;align-items:center;gap:8px;font:700 .8rem/1 var(--sh-body);letter-spacing:.12em;text-transform:uppercase;color:var(--d)}
+#mod-staff .dm-grp h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--d)}
+#mod-staff .dm-grp h2 span{background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.74rem;letter-spacing:0}
+#mod-staff .dm-grp .tw{box-shadow:inset 0 3px 0 var(--d)}
+@media (min-width:600px){#mod-staff .dm-grp table{table-layout:fixed}#mod-staff .dm-grp th:nth-child(1){width:4%}#mod-staff .dm-grp th:nth-child(2){width:21%}#mod-staff .dm-grp th:nth-child(3){width:10%}#mod-staff .dm-grp th:nth-child(4){width:11%}#mod-staff .dm-grp th.h-mobile{width:16%}#mod-staff .dm-grp th.h-email{width:18%}#mod-staff .dm-grp td{overflow-wrap:anywhere}#mod-staff .dm-grp td.opt{white-space:normal}#mod-staff .dm-grp td.c-name{white-space:normal}}
 #mod-staff .dm-sort{display:flex;align-items:center;gap:8px}
 #mod-staff .dm-sort select{min-height:38px;font:600 15px var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:6px 10px}
 #mod-staff tbody tr .role,#mod-staff tbody tr .role.office,#mod-staff tbody tr .role.relief{background:var(--ds);color:var(--d)}
@@ -4960,13 +4966,13 @@ function render(){
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
       <div class="chips grpc" role="group" aria-label="Group">${FILTERS.map(([k,l])=>`<button type="button" class="${k==='all'?'all':'dg-'+k}" data-dm="filter" data-v="${k}" aria-pressed="${k===filter}">${l}<small>${c[k]}</small></button>`).join('')}</div></div>
     <div class="dm-bar"><span class="lbl">Missing</span><div class="chips miss" role="group" aria-label="Missing details">${MISS.map(([k,l,f])=>{const n=Object.values(people).filter(p=>matchesFilter(p)&&f(p)).length;return `<button type="button" data-dm="miss" data-v="${k}" aria-pressed="${k===miss}">${l}<small>${n}</small></button>`}).join('')}</div>
-      <label class="dm-sort"><span class="lbl">Sort</span><select id="dm_sort" aria-label="Sort by"><option value="name"${sortBy==='name'?' selected':''}>Name</option><option value="run"${sortBy==='run'?' selected':''}>Driver number</option><option value="group"${sortBy==='group'?' selected':''}>Group</option><option value="login"${sortBy==='login'?' selected':''}>Login</option></select></label></div>
+      <label class="dm-sort"><span class="lbl">Sort</span><select id="dm_sort" aria-label="Sort by"><option value="name"${sortBy==='name'?' selected':''}>Name</option><option value="run"${sortBy==='run'?' selected':''}>Driver number</option><option value="login"${sortBy==='login'?' selected':''}>Login</option></select></label></div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
     <div class="dm-bar"><span class="lbl">Show</span><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
-    ${list.length?`<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
-      ${list.map((p,i)=>`<tr class="dg-${dgrp(p.role)}" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
+    ${list.length?DGROUPS.map(([gk,gt])=>({gk,gt,L:list.filter(p=>dgrp(p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<section class="dm-grp dg-${gk}"><h2>${esc(gt)}<span>${L.length}</span></h2><div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([k,l])=>`<th class="h-${k}">${l}</th>`).join('')}</tr></thead><tbody>
+      ${L.map((p,i)=>`<tr class="dg-${dgrp(p.role)}" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
       <td class="c-run num">${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${bayLine(p)?`<span class="sub">${esc(bayLine(p))}</span>`:''}</td>${optCells(p)}</tr>`).join('')}
-    </tbody></table></div>`:`<div class="tw"><div class="empty">${Object.keys(people).length?'Nobody matches those filters.':'No drivers yet. Add the first person with the button above.'}</div></div>`}
+    </tbody></table></div></section>`).join(''):`<div class="tw"><div class="empty">${Object.keys(people).length?'Nobody matches those filters.':'No drivers yet. Add the first person with the button above.'}</div></div>`}
   </div>`;
 }
 function detailHTML(){
@@ -8965,7 +8971,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261230';
+const VERSION='202610261240';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
