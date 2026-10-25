@@ -2697,7 +2697,28 @@ p.ck-alert{color:#5A3C00!important}
 #mod-vchecks tr.grow th span{margin-left:8px;background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.72rem;letter-spacing:0}
 #mod-vchecks tbody tr[data-vc="drv"] td:first-child{box-shadow:inset 4px 0 0 var(--d)}
 </style>
-<div class="sh-app">
+<style id="un-theme">
+/* Uniform orders: navy and orange like the logo */
+#sh-main #mod-uniform .whobox.mine{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--pds-navy);color:#fff;border:0;border-radius:14px;padding:16px;box-shadow:0 6px 20px rgba(15,42,68,.18)}
+#mod-uniform .whobox.mine .av{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--pds-orange);color:#fff;font:700 1.15rem var(--sh-body)}
+#mod-uniform .whobox.mine .wb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+#mod-uniform .whobox.mine .lb{font:700 .7rem/1 var(--sh-body);letter-spacing:.14em;text-transform:uppercase;color:var(--pds-orange)}
+#mod-uniform .whobox.mine .who{font:700 1.3rem/1.2 var(--sh-body);color:#fff}
+#mod-uniform .whobox.mine .sub{margin:0;color:#AEBCCF;font-size:.85rem}
+#mod-uniform .whobox.mine .wc{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#mod-uniform .whobox.mine .lim{background:rgba(255,255,255,.12);color:#fff}
+#mod-uniform .whobox.mine .lim.full{background:var(--pds-orange)}
+#sh-main #mod-uniform .cats button[aria-selected="true"]{background:var(--pds-orange);border-color:var(--pds-orange);color:#fff}
+#sh-main #mod-uniform .prod{border-radius:12px;box-shadow:inset 0 3px 0 var(--pds-orange)}
+#sh-main #mod-uniform .prod h3 span{color:var(--pds-orange)}
+#sh-main #mod-uniform .fit button[aria-pressed="true"]{background:var(--pds-navy);color:#fff}
+#sh-main #mod-uniform .pick .sh-btn.primary{background:var(--pds-orange);border-color:var(--pds-orange);color:#fff}
+#sh-main #mod-uniform .pick .sh-btn.primary:disabled{opacity:.45}
+#sh-main #mod-uniform .lnk{color:var(--pds-orange)}
+#sh-main #mod-uniform .order{border-radius:12px;box-shadow:inset 0 3px 0 var(--pds-navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-uniform .fit button[aria-pressed="true"]{background:#24466D}}
+:root[data-theme="dark"] #sh-main #mod-uniform .fit button[aria-pressed="true"]{background:#24466D}
+</style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
 <div class="sh-mtop"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
@@ -6807,7 +6828,7 @@ function render(){
   ${m}
   ${isMgr()&&staffNames.length&&JSON.stringify((c.names||[]).slice().sort())!==JSON.stringify(staffNames)?`<div class="share"><span>The driver list on the order form doesn’t match your Drivers page.</span><button type="button" class="sh-btn primary" data-un="syncNames">Send driver list to drivers</button></div>`:''}
   ${tabs}
-  <section class="whobox ${who.name?'ok':''}"><span class="n">1</span><div class="wb"><label class="f nm" for="un_name">${isMgr()?'Order for':'Your name'}<select id="un_name"><option value="">${isMgr()?'Pick a driver':'Pick your name'}</option>${names().map(x=>`<option ${who.name===x?'selected':''}>${esc(x)}</option>`).join('')}${who.name&&!names().includes(who.name)?`<option selected>${esc(who.name)}</option>`:''}</select></label>${who.name?'':`<p class="sub">${isMgr()?'Pick the driver first, then add their items.':'Pick your name first, then add your items.'}</p>`}</div><div class="wc"><span class="lim ${n>=c.max?'full':''}">${n} of ${c.max} items</span>${n?`<button type="button" class="sh-btn sm" data-un="goOrder">View order</button><button type="button" class="sh-btn sm danger" data-un="clear">Clear order</button>`:''}</div></section>
+  ${!isMgr()&&myName?`<section class="whobox ok mine"><span class="av" aria-hidden="true">${esc(myName.split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span><div class="wb"><span class="lb">Ordering for</span><b class="who">${esc(myName)}</b><p class="sub">You can only order uniform for yourself.</p></div><div class="wc"><span class="lim ${n>=c.max?'full':''}">${n} of ${c.max} items</span>${n?`<button type="button" class="sh-btn sm" data-un="goOrder">View order</button><button type="button" class="sh-btn sm danger" data-un="clear">Clear order</button>`:''}</div></section>`:`<section class="whobox ${who.name?'ok':''}"><span class="n">1</span><div class="wb"><label class="f nm" for="un_name">${isMgr()?'Order for':'Your name'}<select id="un_name"><option value="">${isMgr()?'Pick a driver':'Pick your name'}</option>${names().map(x=>`<option ${who.name===x?'selected':''}>${esc(x)}</option>`).join('')}${who.name&&!names().includes(who.name)?`<option selected>${esc(who.name)}</option>`:''}</select></label>${who.name?'':`<p class="sub">${isMgr()?'Pick the driver first, then add their items.':'Pick your name first, then add your items.'}</p>`}</div><div class="wc"><span class="lim ${n>=c.max?'full':''}">${n} of ${c.max} items</span>${n?`<button type="button" class="sh-btn sm" data-un="goOrder">View order</button><button type="button" class="sh-btn sm danger" data-un="clear">Clear order</button>`:''}</div></section>`}
   ${(()=>{const cats=CATS.filter(k=>ITEMS.some(i=>i.cat===k&&(isOn(i)||isMgr())));if(!cats.includes(cat))cat=cats[0];
     return `<div class="cats" role="tablist" aria-label="Item type">${cats.map(k=>{const cnt=lines().filter(l=>l.it.cat===k).reduce((a,l)=>a+l.q,0);const hidden=!ITEMS.some(i=>i.cat===k&&isOn(i));return `<button type="button" role="tab" data-un="cat" data-v="${esc(k)}" aria-selected="${k===cat}" class="${hidden?'hid2':''}">${esc(k)}${cnt?` <b>${cnt}</b>`:''}</button>`}).join('')}</div>
     <div class="prods">${ITEMS.filter(i=>i.cat===cat&&(isOn(i)||isMgr())).map(prodHTML).join('')}</div>`})()}
@@ -6974,7 +6995,7 @@ document.addEventListener('click',async e=>{
   if(a==='selNone'){sel.clear();render();return}
   if(a==='bulkDone'||a==='bulkReopen'){const ids=[...sel].filter(id=>orders[id]);const upd=a==='bulkDone'?{status:'completed',completedAt:new Date().toISOString()}:{status:'requested',completedAt:''};msg={t:'Saving…'};render();
     try{for(const id of ids){await db.doc('uniorders/'+id).set(Object.assign((({id:_,...r})=>r)(orders[id]),upd));Object.assign(orders[id],upd)}sel.clear();msg={t:`${ids.length} order${ids.length===1?'':'s'} ${a==='bulkDone'?'marked completed':'moved back to requests'}.`}}catch(x){msg={err:true,t:'Some orders could not be saved. Try again.'}}render();return}
-  if(a==='saveReq'){if(!ready())return;const L=lines();try{await saveOrder(who.name,L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();view='req';msg={t:'Request saved for '+who.name+'.'};who.name='';keep()}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
+  if(a==='saveReq'){if(!ready())return;const L=lines();try{await saveOrder(who.name,L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();view='req';msg={t:'Request saved for '+who.name+'.'};who.name=(!isMgr()&&myName)||'';keep()}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
   if(a==='parse'){parsed=parseOrder($('paste').value);msg=null;render();return}
   if(a==='noPaste'){parsed=null;render();return}
   if(a==='savePaste'){if(!parsed.name){msg={err:true,t:'Pick the driver.'};render();return}try{await saveOrder(parsed.name,parsed.items);msg={t:'Request saved for '+parsed.name+'.'};parsed=null;showPaste=false}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
@@ -6994,7 +7015,7 @@ document.addEventListener('click',async e=>{
     el.disabled=true;msg={t:'Saving and sending to drivers…'};try{await APP.publish({uniform:o})}catch(x){el.disabled=false;msg={err:true,t:'Could not send just now. Try again in a minute.'};render()}return}
 });
 document.addEventListener('change',async e=>{const el=e.target;if(!el.matches||!el.closest||!el.closest('#mod-uniform'))return;
-  if(el.id==='un_name'){who.name=el.value;keep();msg=null;render();return}
+  if(el.id==='un_name'){if(!isMgr()&&myName)return;who.name=el.value;keep();msg=null;render();return}
   if(el.id==='un_pname'&&parsed){parsed.name=el.value;return}
   if(el.dataset.un==='size'){finder[el.dataset.id].size=el.value}
   if(el.dataset.un==='qty'){finder[el.dataset.id].q=el.value}
@@ -7003,7 +7024,14 @@ document.addEventListener('input',e=>{const el=e.target;if(el.id!=='un_cm'||!gui
   $('res').innerHTML=resHTML(c,sg);document.querySelectorAll('#mod-uniform .dlg .hl').forEach(x=>x.classList.remove('hl'));
   if(sg){const i=c.sizes.indexOf(sg.size);document.querySelectorAll('#mod-uniform .dlg thead th')[i+1]?.classList.add('hl');document.querySelectorAll('#mod-uniform .dlg tbody tr').forEach(tr=>tr.querySelectorAll('td')[i]?.classList.add('hl'))}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&guide){guide=null;render()}});
-async function start(role){mode=role==='mgr'?'mgr':'drv';load();render();if(mode!=='mgr')return;
+let myName='';
+async function findMe(){
+  let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}
+  let n=w&&w.name||'';
+  try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));const c=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null;if(c&&c.name)n=c.name}catch(e){}
+  return String(n||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase()).trim();
+}
+async function start(role){mode=role==='mgr'?'mgr':'drv';load();if(mode!=='mgr'){myName=await findMe();if(myName){who.name=myName;try{keep()}catch(e){}}}render();if(mode!=='mgr')return;
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}if(!db){msg={err:true,t:'Could not connect to saved orders. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();staffNames=s.docs.map(d=>{const p=__D(d);return tcase([p.first,p.last].filter(Boolean).join(' '))}).filter(Boolean).sort()}catch(e){}
   db.collection('uniorders').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));orders=o;
@@ -8979,7 +9007,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261300';
+const VERSION='202610261315';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
