@@ -1470,6 +1470,16 @@ body.sh-uv-on{overflow:hidden}
 @media (max-width:700px){#mod-timesheets .daysel{margin-left:0;width:100%}#mod-timesheets .daysel select{flex:1}}
 #mod-timesheets td small.tap{color:#1E8A4C;font-weight:700}#mod-timesheets td small.late{color:#B86E00;font-weight:700}
 #mod-timesheets b.held{color:#B3261E}
+#mod-timesheets .tb input.xp{width:64px}
+#mod-timesheets .tb input.hc{width:84px;margin-top:4px;display:block}
+#mod-timesheets .tb select{min-height:36px!important;padding:4px 6px;border:1px solid var(--sh-line);border-radius:6px;background:var(--sh-surface);color:var(--sh-ink);font:inherit}
+#mod-timesheets .tb select.held{color:#B3261E;font-weight:700;border-color:#E3A29C}
+#mod-timesheets .tb td.dl{white-space:nowrap;text-align:right}
+#mod-timesheets .sh-btn.ghost{border-color:transparent;background:transparent;color:var(--sh-muted);min-height:34px!important;padding:4px 8px!important}
+#mod-timesheets .sh-btn.ghost svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#mod-timesheets .sh-btn.ghost:hover{color:#B3261E}
+#mod-timesheets .sh-btn.danger{background:#B3261E;border-color:#B3261E;color:#fff}
+#mod-timesheets .tb td.dl .sh-btn+.sh-btn{margin-left:6px}
 </style>
 <style id="uniform-css">#mod-uniform .unx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-uniform .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -6499,7 +6509,7 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return 
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
+let delArm=null,lastDel=null,mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
 /* ---------- people ---------- */
 function people(){const out={};for(const[id,p]of Object.entries(staff)){const login=dkey(p.login);out[login||'id:'+id]={id,login,name:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', '),role:String(p.role||'').toUpperCase()}}return out}
 function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).sort();return ds.length?ds[ds.length-1]:TODAY}
@@ -6509,7 +6519,7 @@ function rowsFor(date){
   for(const[l,v]of Object.entries(r)){const k=dkey(l),p=P[k]||{id:'',login:k,name:k,no:''};out.push({date,key:p.id||'L'+k,p,pc:v&&v.pc})}
   for(const[id,c]of Object.entries(clock)){if(!id.startsWith(date+'_')||!c||!c.staff)continue;if(out.some(x=>x.key===c.staff))continue;const p=Object.values(P).find(x=>x.id===c.staff)||{id:c.staff,login:'',name:c.name||c.staff,no:''};out.push({date,key:c.staff,p,pc:null,clocked:true})}
   for(const[id,t]of Object.entries(ts)){if(!id.startsWith(date+'_')||!t||!t.extra)continue;const sid=id.slice(11);if(out.some(x=>x.key===sid))continue;const p=Object.values(P).find(x=>x.id===sid)||{id:sid,login:'',name:t.name||sid,no:''};out.push({date,key:sid,p,pc:null,extra:true})}
-  return out.sort((a,b)=>a.p.name.localeCompare(b.p.name));
+  return out.filter(r=>!(ts[r.date+'_'+r.key]&&ts[r.date+'_'+r.key].removed)).sort((a,b)=>a.p.name.localeCompare(b.p.name));
 }
 const WD=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat']];
 function startFor(key,date){const v=cfg.starts[key];if(!v)return '';if(typeof v==='string')return v;return v[fromIso(date).getDay()]||''}
@@ -6521,7 +6531,8 @@ function eff(row){const o=ts[row.date+'_'+row.key]||{};const c=clock[row.date+'_
   const start=o.start||cs||off,finish=o.finish||cf||'',brk=o.brk!=null&&o.brk!==''?o.brk:(c&&c.brk!=null&&cf?c.brk:(cfg.brk||''));
   const src=(own,ck,late,pre)=>own?'':ck?(late?'Entered later':'Tapped'):(pre?'Preset':'');
   const sS=o.start?'':(c&&c.startEdited&&cs)?'Changed by driver':src(o.start,cs,c&&c.startLate,off),sF=src(o.finish,cf,c&&c.finishLate,'');
-  const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(+brk||0)):null;return{o,c,off,start,finish,brk,hrs,fromOff:sS==='Preset',sS,sF,brkFromClock:!(o.brk!=null&&o.brk!=='')&&!!(c&&c.brk!=null&&cf)}}
+  const yn=v=>v==='yes'?true:v==='no'?false:null;const xp=o.xp!=null&&o.xp!==''?+o.xp:(c&&c.extra!=null?+c.extra:null);const tl=o.tl?yn(o.tl):(c&&c.twoLoads!=null?!!c.twoLoads:null);const hp=o.hp?yn(o.hp):(c&&c.held!=null?!!c.held:null);const hc=o.hc!=null&&o.hc!==''?+o.hc:(c&&c.heldCount?+c.heldCount:null);
+  const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(+brk||0)):null;return{xp,tl,hp,hc,o,c,off,start,finish,brk,hrs,fromOff:sS==='Preset',sS,sF,brkFromClock:!(o.brk!=null&&o.brk!=='')&&!!(c&&c.brk!=null&&cf)}}
 /* ---------- render ---------- */
 function setHTML(){
   const P=Object.values(people()).filter(p=>p.id&&!OFFICE.includes(p.role)).sort((a,b)=>a.name.localeCompare(b.name));
@@ -6541,13 +6552,16 @@ function weekHTML(){
   const daySel=`<label class="daysel" for="ts_day">Day<select id="ts_day">${dd.map((d,i)=>`<option value="${d}" ${d===dsel?'selected':''}>${esc(longD(d).replace(/ \d{4}$/,''))}${cnt[i]?'  ('+cnt[i]+' drivers)':'  (no results)'}</option>`).join('')}</select></label>`;
   const secs=dd.map(d=>{const R=rowsFor(d);if(!R.length)return '';
     return `<section class="card day"><div class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'}</span>${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
-    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Extra</th><th>2 loads</th><th>Held</th><th>Note</th></tr></thead><tbody>
+    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Extra</th><th>2 loads</th><th>Held</th><th>Note</th><th></th></tr></thead><tbody>
     ${R.map(r=>{const e=eff(r);if(e.hrs!=null){tot+=e.hrs}else miss++;seen.add(r.key);const id=r.date+'_'+r.key;
       return `<tr class="${e.hrs==null?'miss':''}"><td><b>${esc(r.p.name)}</b>${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
        <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Preset'?'':'late'}"${e.c&&e.c.startEdited&&e.c.startAt?` title="Tapped at ${esc(bneHM(e.c.startAt))}"`:''}>${e.sS}${e.c&&e.c.startEdited&&e.c.startAt&&e.sS==='Changed by driver'?` (tapped ${esc(bneHM(e.c.startAt))})`:''}</small>`:''}</td>
        <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time">${e.sF?`<small class="${e.sF==='Tapped'?'tap':'late'}">${e.sF}</small>`:(e.c&&e.c.start&&!e.c.finish?'<small class="late">Still on shift</small>':'')}</td>
        <td><input type="number" min="0" step="5" data-f="brk" data-id="${esc(id)}" value="${esc(e.brk)}" class="brk ${e.o.brk==null||e.o.brk===''?'off':''}" aria-label="Break minutes"></td>
-       <td class="r"><b>${fmtH(e.hrs)}</b></td><td>${e.c&&e.c.extra!=null?esc(e.c.extra):''}</td><td>${e.c&&e.c.twoLoads!=null?(e.c.twoLoads?'Yes':'No'):''}</td><td>${e.c&&e.c.held!=null?(e.c.held?`<b class="held">Yes${e.c.heldCount?' ('+esc(e.c.heldCount)+')':''}</b>`:'No'):''}</td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td></tr>`}).join('')}
+       <td class="r"><b>${fmtH(e.hrs)}</b></td><td><input type="number" min="0" class="xp" data-f="xp" data-id="${esc(id)}" value="${e.xp==null?'':esc(e.xp)}" aria-label="Extra parcels"></td>
+       <td><select data-f="tl" data-id="${esc(id)}" aria-label="2 loads"><option value=""></option><option value="yes" ${e.tl===true?'selected':''}>Yes</option><option value="no" ${e.tl===false?'selected':''}>No</option></select></td>
+       <td class="hpc"><select data-f="hp" data-id="${esc(id)}" class="${e.hp?'held':''}" aria-label="Held parcels"><option value=""></option><option value="no" ${e.hp===false?'selected':''}>No</option><option value="yes" ${e.hp===true?'selected':''}>Yes</option></select>${e.hp?`<input type="number" min="0" class="hc" data-f="hc" data-id="${esc(id)}" value="${e.hc==null?'':esc(e.hc)}" placeholder="How many" aria-label="How many held">`:''}</td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td>
+       <td class="dl">${delArm===id?`<button type="button" class="sh-btn sm danger" data-ts="delok" data-v="${esc(id)}">Delete</button><button type="button" class="sh-btn sm" data-ts="delno">Keep</button>`:`<button type="button" class="sh-btn sm ghost" data-ts="del" data-v="${esc(id)}" aria-label="Delete this entry" title="Delete this entry"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>`}</td></tr>`}).join('')}
     </tbody></table></div></section>`});
   const di=dd.indexOf(dsel),day=secs[di]||`<div class="empty">No Driver Results loaded for ${esc(longD(dsel))}, so there is no one to show. Load that day on Driver Results, or pick another day.</div>`;
   const dayStats=(()=>{let m=0;for(const r of rowsFor(dsel))if(eff(r).hrs==null)m++;return m})();
@@ -6560,17 +6574,17 @@ function render(){
   const W=weekHTML();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
    <p class="lead">A daily record of dates worked, start, finish, breaks and hours for every driver, kept for 7 years. Days worked come from Driver Results. Drivers tap Start and Finish shift in the app; those times show here marked Tapped. Anything typed here replaces it.</p>
-   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:''}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button>${W.daySel}<button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div><div class="tile ${W.dayMiss?'warn':'good'}"><span>Missing on this day</span><b>${W.dayMiss}</b></div></div>
    ${W.secs}
-   <p class="hint">Times save as you type. Tapped means the driver tapped Start or Finish shift in the app. Entered later means they typed it in afterwards. Preset is their normal start. Type over any time to change it.</p>
+   <p class="hint">Times save as you type. Tapped means the driver tapped Start or Finish shift in the app. Entered later means they typed it in afterwards. Preset is their normal start. Type over any time or answer to change it. Use the bin to delete an entry.</p>
   </div>`;
 }
 /* ---------- saving ---------- */
 const timers={},pending=new Set();
 function saveTs(id,field,val){
-  const o=JSON.parse(JSON.stringify(ts[id]||{}));if(field==='brk')o.brk=val===''?'':Math.max(0,+val);else o[field]=val;o.updatedAt=new Date().toISOString();ts[id]=o;pending.add(id);
+  const o=JSON.parse(JSON.stringify(ts[id]||{}));if(field==='brk'||field==='xp'||field==='hc')o[field]=val===''?'':Math.max(0,+val);else o[field]=val;o.updatedAt=new Date().toISOString();ts[id]=o;pending.add(id);
   clearTimeout(timers[id]);timers[id]=setTimeout(async()=>{try{await db.doc('timesheets/'+id).set(ts[id]);pending.delete(id)}catch(e){pending.delete(id);msg={err:true,t:'Could not save a time just now. Check your connection.'};render()}},500);
 }
 let cfgTimer=null,cfgTimerOn=false;
@@ -6580,7 +6594,7 @@ function exportRange(from,to,name){
   if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
   const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
   const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
-  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.c&&e.c.extra!=null?+e.c.extra:'',e.c&&e.c.twoLoads!=null?(e.c.twoLoads?'Yes':'No'):'',e.c&&e.c.held!=null?(e.c.held?'Yes'+(e.c.heldCount?' ('+e.c.heldCount+')':''):'No'):'',e.o.note||'',r.pc??''])}
+  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'',r.pc??''])}
   if(aoa.length===1){msg={err:true,t:'No days worked in that period yet.'};render();return}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,5,26,10,12,7,7,10,7,8,7,10,30,8].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Timesheets');
@@ -6597,9 +6611,15 @@ document.addEventListener('click',e=>{
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
   if(a==='xy'){const d=fromIso(wk),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;exportRange(y+'-07-01',(y+1)+'-06-30','1161 Timesheets FY'+y+'-'+String(y+1).slice(2)+'.xlsx');return}
   if(a==='copy'){const id=el.dataset.v,cur=cfg.starts[id];const mon=typeof cur==='string'?cur:(cur&&cur[1])||'';if(!mon){msg={err:true,t:'Fill in Monday first, then tap Same all week.'};render();return}cfg.starts={...cfg.starts,[id]:Object.fromEntries(WD.map(([n])=>[n,mon]))};saveCfg();render();return}
+  if(a==='del'){delArm=el.dataset.v;render();return}
+  if(a==='delno'){delArm=null;render();return}
+  if(a==='delok'){const id=el.dataset.v;delArm=null;const c=clock[id]?JSON.parse(JSON.stringify(clock[id])):null,o=ts[id]?JSON.parse(JSON.stringify(ts[id])):null;lastDel={id,c,o};
+    const fromResults=!!(days[id.slice(0,10)]&&Object.values(people()).some(p=>p.id===id.slice(11)));
+    (async()=>{try{if(c)await db.doc('clock/'+id).delete();delete clock[id];ts[id]={removed:true,removedAt:new Date().toISOString()};await db.doc('timesheets/'+id).set(ts[id]);msg={t:'Entry deleted.',undo:true}}catch(x){msg={err:true,t:'Could not delete just now.'}}render()})();return}
+  if(a==='undo'){const L=lastDel;lastDel=null;msg=null;if(!L)return;(async()=>{try{if(L.c){await db.doc('clock/'+L.id).set(L.c);clock[L.id]=L.c}if(L.o){await db.doc('timesheets/'+L.id).set(L.o);ts[L.id]=L.o}else{await db.doc('timesheets/'+L.id).delete();delete ts[L.id]}msg={t:'Entry restored.'}}catch(x){msg={err:true,t:'Could not restore it.'}}render()})();return}
   if(a==='addp'){addFor=el.dataset.v;render();return}
   if(a==='addno'){addFor=null;render();return}
-  if(a==='addok'){const d=el.dataset.v,pid=($('addsel')||{}).value;if(!pid)return;const p=Object.values(people()).find(x=>x.id===pid);const id=d+'_'+pid;ts[id]={...(ts[id]||{}),extra:true,name:p?p.name:pid};db.doc('timesheets/'+id).set(ts[id]).catch(()=>{});addFor=null;render();return}
+  if(a==='addok'){const d=el.dataset.v,pid=($('addsel')||{}).value;if(!pid)return;const p=Object.values(people()).find(x=>x.id===pid);const id=d+'_'+pid;ts[id]={...(ts[id]||{}),extra:true,removed:false,name:p?p.name:pid};db.doc('timesheets/'+id).set(ts[id]).catch(()=>{});addFor=null;render();return}
 });
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('set')&&e.target.closest('#mod-timesheets'))showSet=e.target.open},true);
 document.addEventListener('change',e=>{
@@ -6607,7 +6627,7 @@ document.addEventListener('change',e=>{
   if(t.dataset.start!=null){const id=t.dataset.start,cur=cfg.starts[id];const o=typeof cur==='string'?Object.fromEntries(WD.map(([n])=>[n,cur])):{...(cur||{})};o[t.dataset.dow]=t.value;cfg.starts={...cfg.starts,[id]:o};saveCfg();render();return}
   if(t.id==='ts_day'){dsel=t.value;dselUser=true;addFor=null;render();return}
   if(t.id==='ts_brk'){cfg.brk=t.value;saveCfg();render();return}
-  if(t.dataset.f&&t.dataset.id){saveTs(t.dataset.id,t.dataset.f,t.value);if(t.dataset.f!=='note')render()}
+  if(t.dataset.f&&t.dataset.id){saveTs(t.dataset.id,t.dataset.f,t.value);if(!['note','xp','hc','brk'].includes(t.dataset.f))render();else setTimeout(()=>{if(!typing())render()},0)}
 });
 document.addEventListener('input',e=>{if(e.target.id==='ts_q'){q=e.target.value;const pos=e.target.selectionStart;render();const n=$('q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}});
 const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-timesheets')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)};
@@ -6769,7 +6789,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251146';
+const VERSION='202610251150';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
