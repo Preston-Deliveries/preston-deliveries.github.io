@@ -6682,7 +6682,7 @@ document.addEventListener('click',e=>{
   if(a==='delno'){delArm=null;render();return}
   if(a==='delok'){const id=el.dataset.v;delArm=null;const c=clock[id]?JSON.parse(JSON.stringify(clock[id])):null,o=ts[id]?JSON.parse(JSON.stringify(ts[id])):null;lastDel={id,c,o};
     const fromResults=!!(days[id.slice(0,10)]&&Object.values(people()).some(p=>p.id===id.slice(11)));
-    (async()=>{try{if(c)await db.doc('clock/'+id).delete();delete clock[id];ts[id]={removed:true,removedAt:new Date().toISOString()};await db.doc('timesheets/'+id).set(ts[id]);msg={t:'Entry deleted.',undo:true}}catch(x){msg={err:true,t:'Could not delete just now.'}}render()})();return}
+    (async()=>{try{await db.doc('clock/'+id).delete();delete clock[id];ts[id]={removed:true,removedAt:new Date().toISOString()};await db.doc('timesheets/'+id).set(ts[id]);msg={t:'Entry deleted.',undo:true}}catch(x){console.warn(x);msg={err:true,t:'Could not delete just now ('+((x&&(x.code||x.message))||'unknown')+').'}}render()})();return}
   if(a==='undo'){const L=lastDel;lastDel=null;msg=null;if(!L)return;(async()=>{try{if(L.c){await db.doc('clock/'+L.id).set(L.c);clock[L.id]=L.c}if(L.o){await db.doc('timesheets/'+L.id).set(L.o);ts[L.id]=L.o}else{await db.doc('timesheets/'+L.id).delete();delete ts[L.id]}msg={t:'Entry restored.'}}catch(x){msg={err:true,t:'Could not restore it.'}}render()})();return}
   if(a==='addp'){addFor=el.dataset.v;render();return}
   if(a==='addno'){addFor=null;render();return}
@@ -6787,7 +6787,7 @@ function html(){
     <p class="ck-sum">${esc(nice(T.start))} to ${esc(nice(T.finish))}${T.brk?`, ${T.brk} min break`:', no break'}${w>0?` · <b>${hrs(w)}</b>`:''}</p>
     ${extrasLine(T)}
     ${T.held?'<p class="ck-alert">You held parcels in your van. Make sure your supervisor or manager knows.</p>':''}
-    <p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>${m}</section>`;
+    ${me.role==='admin'?`<button type="button" class="ck-link" data-ck="clear">Clear today's entry (admin)</button>`:`<p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>`}${m}</section>`;
 }
 const extrasLine=r=>(r.extra!=null||r.twoLoads!=null||r.held!=null)?`<p class="ck-x">${r.held!=null?`Held parcels: <b>${r.held?'Yes'+(r.heldCount?' ('+r.heldCount+')':''):'No'}</b> · `:''}${r.extra!=null?`Extra parcels: <b>${+r.extra||0}</b> · `:''}${r.twoLoads!=null?`2 loads: <b>${r.twoLoads?'Yes':'No'}</b>`:''}</p>`:'';
 function yn(k,label){const v=ui[k];return `<p class="ck-q">${label}</p><div class="ck-chips two" role="group" aria-label="${esc(label)}"><button type="button" data-ck="yn" data-k="${k}" data-v="1" aria-pressed="${v===true}">Yes</button><button type="button" data-ck="yn" data-k="${k}" data-v="0" aria-pressed="${v===false}">No</button></div>`}
@@ -6822,6 +6822,8 @@ document.addEventListener('click',async e=>{
   if(a==='yn'){ui[el.dataset.k]=el.dataset.v==='1';render();return}
   if(a==='step'){const k=el.dataset.k;ui[k]=Math.max(0,(parseInt(ui[k],10)||0)+(+el.dataset.v));render();return}
   if(a==='edit'){ui={edit:true};msg=null;render();return}
+  if(a==='clear'){if(me.role!=='admin')return;if(!confirm('Clear your entry for today? You can start again after.'))return;
+    busy=true;render();try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);msg={t:'Cleared. You can start again.'}}catch(e){console.warn(e);msg={err:true,t:'Could not clear it: '+((e&&(e.code||e.message))||'unknown')}}busy=false;render();return}
   if(a==='saveedit'){const t=(document.getElementById('ck-et')||{}).value;if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const f={start:t,startEdited:true,updatedAt:new Date().toISOString()};await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Start time changed to '+nice(t)+'.');return}
   if(a==='late'){ui={late:true};msg=null;render();return}
@@ -6859,7 +6861,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251203';
+const VERSION='202610251206';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
