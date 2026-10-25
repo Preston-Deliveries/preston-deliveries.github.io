@@ -1909,7 +1909,9 @@ body.sh-uv-on{overflow:hidden}
   .sh-moregrp{display:contents}
   .sh-links button.tab{flex:1 1 0;min-width:0}
   .sh-links button.more svg{fill:currentColor;stroke:none}
-  .sh-links button.tab .sm{font-size:.74rem}
+  .sh-links button.tab .sm{font-size:.82rem;font-weight:700}
+  .sh-side .sh-links button.tab{padding:10px 2px 8px;gap:5px}
+  .sh-side .sh-links button.tab svg{width:28px;height:28px}
 }
 #sh-more{position:fixed;inset:0;z-index:1500}
 #sh-more .sh-more-bg{position:absolute;inset:0;background:rgba(10,15,25,.45)}
@@ -2201,13 +2203,13 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
 function visible(){return SECS.filter(s=>!MGR_ONLY.includes(s)||role==='mgr')}
-function tabSecs(){return role==='mgr'?['home','sort','runs','results']:['home','sort','runs','updates']}
+function tabSecs(){return ['home','updates','results','survey','leave']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
   document.body.appendChild(w);document.body.classList.add('sh-more-on');}
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
-function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${esc({home:'Home',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp sh-moregrp"><button type="button" class="tab more" data-sh="more" ${T.includes(cur)?'':'aria-current="page"'} aria-haspopup="dialog"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span class="sm">More</span></button></div>`}
+function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${esc({home:'Home',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
@@ -6569,7 +6571,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251117';
+const VERSION='202610251120';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
