@@ -4903,10 +4903,10 @@ async function signSheet(btn,bid){
   let people=[];
   try{const s=await db.collection('staff').get();people=s.docs.map(d=>({...__D(d),_id:d.id}))}catch(e){people=[]}
   const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
-  const ORDER=['4214','4215','4217','4218','XL','XL RELIEF','RELIEF','SUPERVISOR'];
+  const ORDER=['4214','4215','4217','4218','XL','XL RELIEF','RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
   const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,c)=>a+c.toUpperCase());
   const dn=p=>parseInt(String((p.runs||[])[0]||'').replace(/\D/g,''),10)||999;
-  people=people.filter(p=>!OUT.includes(String(p.role||'').toUpperCase())).sort((a,c)=>{const ra=ORDER.indexOf(String(a.role).toUpperCase()),rc=ORDER.indexOf(String(c.role).toUpperCase());return (ra<0?99:ra)-(rc<0?99:rc)||dn(a)-dn(c)||tc(a.first+' '+a.last).localeCompare(tc(c.first+' '+c.last))});
+  people=people.sort((a,c)=>{const ra=ORDER.indexOf(String(a.role).toUpperCase()),rc=ORDER.indexOf(String(c.role).toUpperCase());return (ra<0?99:ra)-(rc<0?99:rc)||dn(a)-dn(c)||tc(a.first+' '+a.last).localeCompare(tc(c.first+' '+c.last))});
   const SG={};for(const x of sigsFor(b.id))SG[x.staff]=x;const sgOf=[];const shortD=v=>{const d=new Date(v);return isNaN(d)?'':d.getDate()+'/'+(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)};
   const rows=people.map((p,i)=>{const x=SG[p._id];sgOf.push(x||null);return[String(i+1),tc([p.first,p.last].filter(Boolean).join(' ')),'',x?shortD(x.signedAt):'']});
   if(rows.length%2)rows.push([String(rows.length+1),'','','']);
@@ -4974,7 +4974,7 @@ async function start(role){
   if(!db){msg={err:true,t:'Team briefs only open inside Claude while you are signed in.'};render();return}
   try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
   if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
-    db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).filter(p=>!OUT.includes(String(p.role||'').toUpperCase())).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
+    db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
   db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
     if(busy||creating)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-briefs .card'))return;render()},()=>{msg={err:true,t:'Could not load team briefs just now. Reload the page.'};render()});
 }
@@ -6956,7 +6956,7 @@ window.CLOCK={mount,whoami};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251224';
+const VERSION='202610251227';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
