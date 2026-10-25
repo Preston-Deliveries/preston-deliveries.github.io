@@ -2689,6 +2689,14 @@ p.ck-alert{color:#5A3C00!important}
 @media (min-width:600px){#mod-staff tbody tr td:first-child{box-shadow:inset 4px 0 0 var(--d)}}
 @media (max-width:599.98px){#mod-staff tbody tr{box-shadow:inset 4px 0 0 var(--d)}#mod-staff tbody tr:hover td{background:transparent}#mod-staff td.c-name{white-space:normal}}
 </style>
+<style id="vc-groups">
+#mod-vchecks .dg-office{--d:#C2410C;--ds:#FCE6DA}#mod-vchecks .dg-sup{--d:#6D3FC7;--ds:#ECE4FA}#mod-vchecks .dg-4214{--d:#1D5FD1;--ds:#E0EAFB}#mod-vchecks .dg-4215{--d:#0B7A6E;--ds:#D8F0EC}#mod-vchecks .dg-4217{--d:#B86E00;--ds:#FDEFD6}#mod-vchecks .dg-4218{--d:#C2185B;--ds:#FBE1EC}#mod-vchecks .dg-xl{--d:#3949AB;--ds:#E3E6F8}#mod-vchecks .dg-relief{--d:#14804A;--ds:#DDF2E5}#mod-vchecks .dg-other{--d:#5A6576;--ds:#E8ECF1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-vchecks .dg-office{--d:#F4936A;--ds:#3D2116}:root:not([data-theme="light"]) #mod-vchecks .dg-sup{--d:#B596F2;--ds:#2C2145}:root:not([data-theme="light"]) #mod-vchecks .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root:not([data-theme="light"]) #mod-vchecks .dg-4215{--d:#4FD1BF;--ds:#12332F}:root:not([data-theme="light"]) #mod-vchecks .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root:not([data-theme="light"]) #mod-vchecks .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root:not([data-theme="light"]) #mod-vchecks .dg-xl{--d:#9FA8F0;--ds:#22264A}:root:not([data-theme="light"]) #mod-vchecks .dg-relief{--d:#5CCB8E;--ds:#14321F}:root:not([data-theme="light"]) #mod-vchecks .dg-other{--d:#AEB8C6;--ds:#252E3B}}
+:root[data-theme="dark"] #mod-vchecks .dg-office{--d:#F4936A;--ds:#3D2116}:root[data-theme="dark"] #mod-vchecks .dg-sup{--d:#B596F2;--ds:#2C2145}:root[data-theme="dark"] #mod-vchecks .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root[data-theme="dark"] #mod-vchecks .dg-4215{--d:#4FD1BF;--ds:#12332F}:root[data-theme="dark"] #mod-vchecks .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root[data-theme="dark"] #mod-vchecks .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root[data-theme="dark"] #mod-vchecks .dg-xl{--d:#9FA8F0;--ds:#22264A}:root[data-theme="dark"] #mod-vchecks .dg-relief{--d:#5CCB8E;--ds:#14321F}:root[data-theme="dark"] #mod-vchecks .dg-other{--d:#AEB8C6;--ds:#252E3B}
+#mod-vchecks tr.grow th{text-align:left;padding:14px 12px 8px;background:var(--sh-sunk);border-bottom:1px solid var(--sh-line);font:700 .78rem/1 var(--sh-body);letter-spacing:.12em;text-transform:uppercase;color:var(--d);box-shadow:inset 4px 0 0 var(--d)}
+#mod-vchecks tr.grow th span{margin-left:8px;background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.72rem;letter-spacing:0}
+#mod-vchecks tbody tr[data-vc="drv"] td:first-child{box-shadow:inset 4px 0 0 var(--d)}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -7520,6 +7528,8 @@ const fails=r=>ITEMS.filter(([k])=>r.items&&r.items[k]==='fix');
 function badge(o){const v=OUT[o];return v?`<span class="ob ${v[1]}">${esc(v[0])}</span>`:''}
 
 /* ---------- views ---------- */
+const VGROUPS=[['4214','Drivers 4214'],['4215','Drivers 4215'],['4217','Drivers 4217'],['4218','Drivers 4218'],['xl','XL drivers'],['relief','Relief drivers'],['office','Office and management'],['sup','Supervisors'],['other','Others']];
+const vgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return VGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 function statusHTML(){
   const all=checks(),t=q.trim().toLowerCase();
   const rows=drivers().map(p=>{const mine=all.filter(r=>r.driverId===p.id||(!r.driverId&&r.driver===p.name));const last=mine[0];const age=last?daysBetween(last.date,TODAY):null;return{p,last,age,n:mine.length,due:last?every-age:null}})
@@ -7531,8 +7541,8 @@ function statusHTML(){
   return `<div class="tiles"><div class="tile bad"><span>Failed, do not drive</span><b>${cnt.fail}</b></div><div class="tile warn"><span>Fix needed</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none"><span>No check in 4 months</span><b>${cnt.never}</b></div><div class="tile good"><span>Up to date</span><b>${cnt.ok}</b></div></div>
   <div class="bar"><input type="search" id="vc_q" placeholder="Search driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts">Sort<select id="vc_sorts">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every">Check every<select id="vc_every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>${n} days</option>`).join('')}</select></label></div>
   <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
-  ${rows.map(({p,last,due})=>`<tr data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span></td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
-   <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
+  ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span></td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
+   <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
   </tbody></table></div><p class="hint">Tap a driver to see their checks or add a new one. Office and supervisor roles are left out of this list.</p>`;
 }
 let olderBusy=false;
@@ -8969,7 +8979,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261250';
+const VERSION='202610261300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
