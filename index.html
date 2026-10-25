@@ -7526,8 +7526,8 @@ async function makePdf(r,pics,btn,forMgr){
     if(!mgrNotes.length){doc.setTextColor(...MUT);doc.text('No follow up notes recorded yet.',M,y);y+=5}}
   /* sign off */
   const sy=Math.max(y+2,285-signH+4);
-  if(forMgr){const who=mgrName();const cx=[M,M+CW/3+2,M+2*CW/3+4],w3=CW/3-4;
-    [['PREPARED BY',who.name+(who.role?', '+who.role:'')],['SIGNATURE',''],['DATE',new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})]].forEach(([l,v],i)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(l,cx[i],sy);doc.setDrawColor(...INK);doc.setLineWidth(.3);doc.line(cx[i],sy+9,cx[i]+w3,sy+9);if(v){doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(doc.splitTextToSize(v,w3)[0],cx[i],sy+7.5)}})}
+  if(forMgr){const who=mgrName();const cx=[M,M+CW/2+4],w3=CW/2-4;
+    [['PREPARED BY',who.name+(who.role?', '+who.role:'')],['DATE',new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'})]].forEach(([l,v],i)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(l,cx[i],sy);doc.setDrawColor(...INK);doc.setLineWidth(.3);doc.line(cx[i],sy+9,cx[i]+w3,sy+9);if(v){doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(doc.splitTextToSize(v,w3)[0],cx[i],sy+7.5)}})}
   doc.setDrawColor(...LINE);doc.line(M,288,W-M,288);doc.setFont('helvetica','normal');doc.setFontSize(6.8);doc.setTextColor(...MUT);
   doc.text('Confidential. Reported by '+P.name+' on '+(toDate(r.at)?toDate(r.at).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):niceD(F.date))+'. Keep incident records for at least 5 years.',M,292);doc.text('Page 1 of 1',W-M,292,{align:'right'});
   if(btn){btn.disabled=false;btn.textContent=old}
