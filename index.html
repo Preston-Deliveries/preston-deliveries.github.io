@@ -2738,6 +2738,21 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .row .ph .tel.ico svg{display:block;width:20px;height:20px;fill:#fff}
 #sh-main #mod-directory .row .ph .wa{width:42px;height:42px}
 #sh-main #mod-directory .row .ph{gap:10px}
+</style><style id="theme-all">
+/* One colour scheme everywhere: each page uses its section colour (blue on the road, amber news and guides, purple performance, green team, orange admin, teal overview) */
+#sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){background:transparent!important;color:var(--g)!important;border-bottom-color:var(--g)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}}
+:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}
+#sh-main .sh-sec.pg .tile:not(.bad):not(.warn):not(.good):not(.none){box-shadow:inset 0 3px 0 var(--g)}
+#sh-main .sh-sec.pg .tile:not(.bad):not(.warn):not(.good):not(.none)>b{color:var(--g)}
+#sh-main .sh-sec.pg .card:not(.ckk){box-shadow:inset 0 3px 0 var(--g)}
+#sh-main .sh-sec.pg :is(.card,section,div)>h2:first-child{scroll-margin-top:12px}
+#sh-main .sh-sec.pg thead th{color:var(--g)}
+#sh-main .sh-sec.pg .step{background:var(--g)!important;color:#fff!important}
+#sh-main .sh-sec.pg .lnk{color:var(--g)}
+#sh-main .sh-sec.pg input:focus-visible,#sh-main .sh-sec.pg select:focus-visible,#sh-main .sh-sec.pg textarea:focus-visible{outline:2px solid var(--g);outline-offset:1px}
+#sh-main .sh-sec.pg .empty{border-top:3px solid var(--gs)}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -2990,6 +3005,7 @@ try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e
 SNAP.updated=SNAP.updated||{};
 const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
+setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
 const NAMES={home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
@@ -9029,7 +9045,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261345';
+const VERSION='202610261400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
