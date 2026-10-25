@@ -27,7 +27,7 @@ service cloud.firestore {
     function adminOnly(col) {
       return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg'];
     }
 
     function myStaff() {
@@ -70,6 +70,24 @@ service cloud.firestore {
         && request.resource.data.status == 'new'
         && request.resource.data.at == request.time
         && request.resource.data.text is string && request.resource.data.text.size() <= 4000);
+    }
+    // Incident, vehicle accident and safety hazard reports: anyone on the team can send their own; only admins can read, change or delete
+    match /reports/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && request.resource.data.keys().hasOnly(['kind', 'staff', 'name', 'run', 'f', 'photos', 'serious', 'status', 'at'])
+        && request.resource.data.kind in ['incident', 'vehicle', 'hazard']
+        && request.resource.data.status == 'new'
+        && request.resource.data.at == request.time);
+    }
+    match /reportimg/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && request.resource.data.keys().hasOnly(['staff', 'img', 'at'])
+        && request.resource.data.at == request.time
+        && request.resource.data.img is string && request.resource.data.img.size() < 900000);
     }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());

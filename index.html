@@ -1481,6 +1481,91 @@ body.sh-uv-on{overflow:hidden}
 #mod-feedback .acts a.sh-btn{text-decoration:none}
 #mod-feedback .empty{padding:28px 16px;text-align:center;color:var(--sh-muted);background:var(--sh-surface);border:1px dashed var(--sh-line);border-radius:8px}
 </style>
+<style id="reports-css">#mod-reports .rpx{max-width:920px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+#mod-reports .lead{margin:0;color:var(--sh-muted);line-height:1.5}
+#mod-reports .hint{margin:0;color:var(--sh-muted);font-size:.86rem}
+#mod-reports .msg{margin:0;font-weight:600;color:var(--sh-accent)}#mod-reports .msg.err{color:#B3261E}
+#mod-reports .back{align-self:flex-start}
+#mod-reports .sos{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:#FDECEA;border:1px solid #F3B8B2;color:#7A1C14;border-radius:8px;padding:12px 14px;line-height:1.4}
+#mod-reports .sos .sh-btn{margin-left:auto}
+#mod-reports .sos.sm{padding:8px 12px;font-size:.92rem}
+#mod-reports .sh-btn.danger{background:#B3261E;border-color:#B3261E;color:#fff}
+#mod-reports .kinds{display:grid;gap:12px}
+#mod-reports .kind{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:8px solid #C8352B;border-radius:8px;padding:18px 18px;cursor:pointer;font:inherit;color:var(--sh-ink)}
+#mod-reports .kind b{font-size:1.2rem}
+#mod-reports .kind span{color:var(--sh-muted);line-height:1.4}
+#mod-reports .kind.veh{border-left-color:#2F6FDB}#mod-reports .kind.haz{border-left-color:#D9622B}
+#mod-reports .kind:hover{border-color:var(--sh-accent)}
+#mod-reports .card{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+#mod-reports .card h2{margin:0;font-family:var(--sh-display);font-size:1.5rem}
+#mod-reports .form{border-top:6px solid #C8352B}#mod-reports .form.veh{border-top-color:#2F6FDB}#mod-reports .form.haz{border-top-color:#D9622B}
+#mod-reports .q{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--sh-line);padding-top:12px}
+#mod-reports .q h3{margin:0;font-size:1.04rem;display:flex;align-items:center;gap:8px}
+#mod-reports .qn{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--sh-accent);color:var(--sh-accent-ink);font-size:.8rem}
+#mod-reports .req{font-style:normal;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9a4a12}
+#mod-reports .lb{font-size:.9rem;font-weight:600;color:var(--sh-ink);margin-top:4px}
+#mod-reports .sub{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--sh-bg,#F3F5F8);border-radius:8px}
+#mod-reports .chips{display:flex;flex-wrap:wrap;gap:8px}
+#mod-reports .chip{font:600 .95rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1.5px solid var(--sh-line);border-radius:6px;padding:9px 14px;min-height:42px;cursor:pointer;text-align:left}
+#mod-reports .chip.on{background:var(--sh-accent);border-color:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-reports .f{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+#mod-reports .f span{font-size:.86rem;font-weight:600;color:var(--sh-muted)}
+#mod-reports .f input,#mod-reports .f textarea{font:500 1rem/1.4 var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1.5px solid var(--sh-line);border-radius:8px;padding:10px 12px;min-width:0;width:100%;box-sizing:border-box}
+#mod-reports .f textarea{resize:vertical}
+#mod-reports .row2{display:flex;gap:10px;flex-wrap:wrap}#mod-reports .row2 .f{flex:1 1 180px}
+#mod-reports .warnbox{margin:0;background:#FFF4E0;border:1px solid #F0C27A;color:#6B3A00;border-radius:8px;padding:10px 12px;line-height:1.45}
+#mod-reports .warnbox a{color:inherit;font-weight:700}
+#mod-reports .steps{background:#EEF4FD;border:1px solid #C9DAF5;border-radius:8px;padding:10px 14px}
+#mod-reports .steps summary{font-weight:700;cursor:pointer}
+#mod-reports .steps ol{margin:8px 0 0;padding-left:1.2em;line-height:1.5}
+#mod-reports .phs{display:flex;flex-wrap:wrap;gap:10px}
+#mod-reports .ph{position:relative;width:104px;height:104px;border-radius:8px;overflow:hidden;border:1px solid var(--sh-line);background:#eef1f5;display:grid;place-items:center;font-size:.75rem;color:var(--sh-muted)}
+#mod-reports .ph img{width:100%;height:100%;object-fit:cover}
+#mod-reports .phs.big .ph{width:180px;height:180px}
+#mod-reports .ph .x{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:1.1rem;cursor:pointer}
+#mod-reports .addph{width:104px;height:104px;border:2px dashed var(--sh-line);border-radius:8px;display:grid;place-items:center;cursor:pointer;font-weight:600;color:var(--sh-accent);text-align:center}
+#mod-reports .big{min-height:52px;font-size:1.05rem;padding:12px 24px;align-self:flex-start}
+#mod-reports .big[disabled]{opacity:.5;cursor:not-allowed}
+#mod-reports .sent{border-left:5px solid #1E8A4C}#mod-reports .sent p{margin:0;color:var(--sh-muted)}
+#mod-reports .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}#mod-reports .acts .sp,#mod-reports .dh .sp{flex:1}
+#mod-reports .acts a.sh-btn{text-decoration:none}
+#mod-reports .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+#mod-reports .tile{background:var(--sh-surface);border:1px solid var(--sh-line);border-top:4px solid var(--sh-line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column}
+#mod-reports .tile span{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-reports .tile b{font-family:var(--sh-display);font-size:1.8rem}
+#mod-reports .tile.warn{border-top-color:#D98B00}#mod-reports .tile.inc{border-top-color:#C8352B}#mod-reports .tile.veh{border-top-color:#2F6FDB}#mod-reports .tile.haz{border-top-color:#D9622B}
+#mod-reports .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#mod-reports .tabs{display:inline-flex;border:1px solid var(--sh-line);border-radius:8px;overflow:hidden;background:var(--sh-surface)}
+#mod-reports .tabs button{border:0;background:transparent;color:var(--sh-ink);font:600 .95rem var(--sh-body);padding:9px 14px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+#mod-reports .tabs button[aria-pressed="true"]{background:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-reports .tabs .n{font-size:.78rem;opacity:.8}
+#mod-reports .mini{display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-reports .mini select{font:600 .95rem var(--sh-body);letter-spacing:0;text-transform:none;color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:8px 10px}
+#mod-reports #rp_q{flex:1 1 200px;min-width:0;font:500 1rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px 12px}
+#mod-reports .list{display:flex;flex-direction:column;gap:8px}
+#mod-reports .ri{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:6px solid #C8352B;border-radius:8px;padding:12px 14px;cursor:pointer;font:inherit;color:var(--sh-ink)}
+#mod-reports .ri.veh{border-left-color:#2F6FDB}#mod-reports .ri.haz{border-left-color:#D9622B}#mod-reports .ri.st-closed{opacity:.7}
+#mod-reports .ri .k,#mod-reports .det .k{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sh-muted);min-width:110px;padding-top:3px}
+#mod-reports .ri .m{display:flex;flex-direction:column;gap:3px;min-width:0}
+#mod-reports .ri small{color:var(--sh-muted)}
+#mod-reports .fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px}
+#mod-reports .fl i{font-style:normal;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:#E6EAF0;color:#2B3A52}
+#mod-reports .fl i.nw{background:var(--sh-accent);color:var(--sh-accent-ink)}#mod-reports .fl i.bad{background:#FDECEA;color:#9B1C12}#mod-reports .fl i.warn{background:#FCEBD2;color:#8A4B00}
+#mod-reports .det{border-top:6px solid #C8352B}#mod-reports .det.veh{border-top-color:#2F6FDB}#mod-reports .det.haz{border-top-color:#D9622B}
+#mod-reports .dh{display:flex;align-items:center;gap:10px}
+#mod-reports .flag{margin:0;font-weight:700;border-radius:8px;padding:6px 10px}#mod-reports .flag.bad{background:#FDECEA;color:#9B1C12}#mod-reports .flag.warn{background:#FCEBD2;color:#8A4B00}
+#mod-reports .facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px 18px;margin:0}
+#mod-reports .facts dt{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-reports .facts dd{margin:2px 0 0;font-weight:600}
+#mod-reports .note{border-top:1px solid var(--sh-line);padding-top:10px}
+#mod-reports .note p{margin:4px 0 0;line-height:1.5}
+#mod-reports .mgr{border-left:5px solid var(--sh-accent)}
+#mod-reports .mgr h3{margin:0}
+#mod-reports .empty{padding:28px 16px;text-align:center;color:var(--sh-muted);background:var(--sh-surface);border:1px dashed var(--sh-line);border-radius:8px}
+.sh-report{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;margin:0 0 12px;background:#FDECEA;border:1px solid #F3B8B2;color:#7A1C14;border-radius:8px;padding:12px 14px;font:600 1rem var(--sh-body,inherit);cursor:pointer;text-align:left}
+.sh-report svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sh-report span{flex:1}.sh-report b{font-size:1.2rem}
+</style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
 #mod-timesheets h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -2285,6 +2370,7 @@ p.ck-alert{color:#5A3C00!important}
 <section class="sh-sec" id="mod-summary" hidden><div id="sm_root"></div></section>
 <section class="sh-sec" id="mod-vchecks" hidden><div id="vc_root"></div></section>
 <section class="sh-sec" id="mod-feedback" hidden><div id="fb_root"></div></section>
+<section class="sh-sec" id="mod-reports" hidden><div id="rp_root"></div></section>
 <section class="sh-sec" id="mod-timesheets" hidden><div id="ts_root"></div></section>
 <section class="sh-sec" id="mod-uniform" hidden><div id="un_root"></div></section>
 <section class="sh-sec" id="mod-updates" hidden><div id="nt_root"></div></section>
@@ -2313,13 +2399,14 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
-const NAMES={home:'Home',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
-const MOD={home:'mod-home',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
+const NAMES={home:'Home',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const MOD={home:'mod-home',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
+ reports:'<svg viewBox="0 0 24 24"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>',
  feedback:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
  sort:'<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/><path d="M8 10.5h5"/></svg>',
@@ -2343,8 +2430,8 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
+ mgr:{reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ drv:{reports:'Report an incident, a vehicle accident or a safety hazard. Only managers can read it.',feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -2478,11 +2565,12 @@ function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
+  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
     <div id="sh-clock"></div>
+    <button type="button" class="sh-report" data-nav="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg><span>Something happened? Report an incident, accident or hazard</span><b aria-hidden="true">›</b></button>
     ${tiles}
     <p class="sh-hello"><span style="color:var(--sh-muted);font-size:.9rem">${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
     if(window.CLOCK)window.CLOCK.mount();
@@ -2492,6 +2580,7 @@ function renderHome(){
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
   <div id="sh-clock"></div>
+    <button type="button" class="sh-report" data-nav="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg><span>Something happened? Report an incident, accident or hazard</span><b aria-hidden="true">›</b></button>
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
@@ -7156,6 +7245,318 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 })();
 
 </script>
+<script type="text/x-mod" data-mod="reports">
+(()=>{
+/* Reports: Incident, Vehicle Accident and Safety Hazard. Drivers send; only managers can read. */
+const $=id=>document.getElementById('rp_'+id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const pad=n=>String(n).padStart(2,'0');
+const isoD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const nowT=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())};
+const fromIso=s=>{const[a,b,c]=String(s).split('-').map(Number);return new Date(a,b-1,c)};
+const niceD=s=>{if(!s)return '';const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()};
+const niceT=t=>{if(!t)return '';const[h,m]=t.split(':').map(Number);return (h%12||12)+':'+pad(m)+(h<12?' am':' pm')};
+const toDate=v=>{if(!v)return null;if(typeof v==='string'||typeof v==='number')return new Date(v);if(v.toDate)return v.toDate();if(v.seconds!=null)return new Date(v.seconds*1000);return null};
+
+const KINDS={
+ incident:{t:'Incident',long:'Incident Report',d:'Something with a customer or member of the public, a dog, an injury, damage to property, or theft.',c:'inc'},
+ vehicle:{t:'Vehicle accident',long:'Vehicle Accident Report',d:'A crash or bump, damage to the van or another vehicle, or someone hit.',c:'veh'},
+ hazard:{t:'Safety hazard',long:'Safety Hazard Report',d:'Something unsafe at the depot, on the road or at a delivery address, before anyone gets hurt.',c:'haz'}};
+const INC_TYPES=['Customer abuse or threats','Physical assault','Dog attack or dog rushed me','I was injured','Someone else was injured','Damage to customer property','Theft or suspicious activity','Dispute about a delivery','Near miss','Something else'];
+const VEH_TYPES=['I hit another vehicle','Another vehicle hit me','Hit while parked','Hit an object or property','While reversing','Pedestrian or cyclist involved','Damage found on the van','Something else'];
+const HAZ_TYPES=['Slip or trip','Heavy or awkward parcel','Vehicles or forklifts moving','Broken equipment (trolley, cage, roller door)','Poor lighting','Dog at an address','Aggressive person at an address','Leaking or damaged parcel','Heat or weather','Electrical','Road or access problem','Something else'];
+const HAZ_WHERE=['Depot','Delivery address','Road or route','Parcel locker','Somewhere else'];
+const INC_WHERE=['Delivery address','Depot','On the road','Parcel locker','Somewhere else'];
+const WHO_HURT=['Me','A customer or the public','Another driver or worker'];
+const INJ=['Bite','Cut or graze','Bruise or sprain','Back or lifting strain','Burn','Head knock','Other'];
+const TREAT=['No treatment','First aid only','Doctor or medical centre','Hospital or ambulance'];
+const COND=['Dry','Wet','Dark','Heavy traffic','Roadworks'];
+const RISK=[['high','Could hurt someone today'],['med','Could hurt someone soon'],['low','Minor']];
+const STILL=['Still there','I made it safe','It is gone now'];
+const TOLD=['Supervisor','Manager','Australia Post facility','Police','Nobody yet'];
+const STAT={new:'New',inv:'Investigating',closed:'Closed'};
+const MAXPH=6;
+
+let mode='wait',db=null,items={},staff={},me=null,meTried=false,msg=null,busy=false;
+let kind=null,f=null,photos=[],sent=null;
+let tab='open',kf='all',q='',open=null,imgs={},arm=false,edit=null,filing=false;
+
+function blank(k){return{kind:k,date:isoD(new Date()),time:nowT(),whereType:'',where:'',type:'',desc:'',action:'',witness:'',told:[],
+  hurt:null,who:'',inj:'',part:'',treat:'',police:null,policeRef:'',
+  other:{name:'',phone:'',address:'',licence:'',rego:'',make:'',insurer:'',owner:''},rego:(me&&me.rego)||'',odo:'',drivable:null,towed:null,cond:[],ourDamage:'',theirDamage:'',
+  person:{name:'',phone:'',address:''},risk:'',still:'',fix:''}}
+
+/* ---------- small form helpers ---------- */
+const chips=(name,list,val,multi)=>`<div class="chips" role="group">${list.map(x=>{const v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;const on=multi?(val||[]).includes(v):val===v;return `<button type="button" class="chip ${on?'on':''}" data-rp="${multi?'mchip':'chip'}" data-k="${name}" data-v="${esc(v)}" aria-pressed="${on}">${esc(l)}</button>`}).join('')}</div>`;
+const yn=(name,val,yes='Yes',no='No')=>`<div class="chips" role="group"><button type="button" class="chip ${val===true?'on':''}" data-rp="yn" data-k="${name}" data-v="1" aria-pressed="${val===true}">${yes}</button><button type="button" class="chip ${val===false?'on':''}" data-rp="yn" data-k="${name}" data-v="0" aria-pressed="${val===false}">${no}</button></div>`;
+const inp=(name,label,val,ph='',type='text',extra='')=>`<label class="f"><span>${label}</span><input type="${type}" data-rf="${name}" value="${esc(val)}" placeholder="${esc(ph)}" ${extra}></label>`;
+const area=(name,label,val,ph='',rows=4)=>`<label class="f"><span>${label}</span><textarea data-rf="${name}" rows="${rows}" placeholder="${esc(ph)}">${esc(val)}</textarea></label>`;
+const getP=(o,path)=>path.split('.').reduce((a,k)=>a==null?a:a[k],o);
+const setP=(o,path,v)=>{const ks=path.split('.');let a=o;for(let i=0;i<ks.length-1;i++)a=a[ks[i]];a[ks[ks.length-1]]=v};
+const Q=(n,t,body,req)=>`<section class="q"><h3><span class="qn">${n}</span>${t}${req?' <i class="req">needed</i>':''}</h3>${body}</section>`;
+
+/* ---------- driver: choose and fill a report ---------- */
+function chooseHTML(){
+  return `${mode==='mgr'?'<button type="button" class="sh-btn back" data-rp="unfile">‹ All reports</button>':''}<div class="sos"><b>Emergency? Call 000 first.</b> Then call your supervisor. Fill this in once everyone is safe.<a class="sh-btn danger" href="tel:000">Call 000</a></div>
+  <p class="lead">Pick the report that fits. Only managers can read it. Photos help a lot.</p>
+  <div class="kinds">${Object.entries(KINDS).map(([k,o])=>`<button type="button" class="kind ${o.c}" data-rp="kind" data-v="${k}"><b>${o.long}</b><span>${o.d}</span></button>`).join('')}</div>`;
+}
+function vehChecklist(){return `<details class="steps" open><summary>At the scene: what to do</summary><ol>
+  <li>Stop, turn on your hazard lights and move somewhere safe if you can.</li>
+  <li>If anyone is hurt or trapped, call <b>000</b>.</li>
+  <li>Swap details with the other driver: rego, their name and address, and the owner’s name and address if it is not theirs.</li>
+  <li>Take photos of both vehicles, number plates, the scene and their licence.</li>
+  <li>Do not say the crash was your fault. Just swap details.</li>
+  <li>Call Police on <b>131 444</b> if the other driver leaves without swapping details, seems drunk or drugged, or police are needed for traffic.</li>
+  <li>If a vehicle is towed, report the crash to police afterwards and write the police number below.</li>
+  <li>Call your supervisor.</li></ol></details>`}
+function hurtBlock(n){return Q(n,'Was anyone hurt?',yn('hurt',f.hurt)+(f.hurt?`<div class="sub">
+   <span class="lb">Who was hurt?</span>${chips('who',WHO_HURT,f.who)}
+   <span class="lb">What kind of injury?</span>${chips('inj',INJ,f.inj)}
+   ${inp('part','Which part of the body?',f.part,'e.g. right hand')}
+   <span class="lb">Treatment</span>${chips('treat',TREAT,f.treat)}
+   ${['Doctor or medical centre','Hospital or ambulance'].includes(f.treat)?'<p class="warnbox">Call the manager now. Serious injuries must be reported to WorkSafe Queensland straight away.</p>':''}</div>`:''),true)}
+function formHTML(){
+  const K=KINDS[kind];let n=0;const N=()=>++n;
+  let h=`<button type="button" class="sh-btn back" data-rp="back">‹ Back</button><section class="card form ${K.c}"><h2>${K.long}</h2>
+   <div class="sos sm"><b>Emergency? Call 000 first.</b><a class="sh-btn danger sm" href="tel:000">Call 000</a></div>`;
+  if(kind==='vehicle')h+=vehChecklist();
+  h+=Q(N(),'When did it happen?',`<div class="row2">${inp('date','Date',f.date,'','date',`max="${isoD(new Date())}"`)}${inp('time','Time',f.time,'','time')}</div>`,true);
+  if(kind==='incident'){
+    h+=Q(N(),'What happened?',chips('type',INC_TYPES,f.type),true);
+    h+=Q(N(),'Where?',chips('whereType',INC_WHERE,f.whereType)+inp('where','Address or place',f.where,'e.g. 12 Smith St Southport'),true);
+    h+=hurtBlock(N());
+    h+=Q(N(),'Person involved (if you know)',`<div class="row2">${inp('person.name','Name',f.person.name)}${inp('person.phone','Phone',f.person.phone,'','tel')}</div>${inp('person.address','Address',f.person.address)}`);
+    h+=Q(N(),'Were the police called?',yn('police',f.police)+(f.police?inp('policeRef','Police event number (if you have it)',f.policeRef,'e.g. QP2610…'):''),true);
+  }
+  if(kind==='vehicle'){
+    h+=Q(N(),'What happened?',chips('type',VEH_TYPES,f.type),true);
+    h+=Q(N(),'Where?',inp('where','Street and suburb',f.where,'e.g. Corner of Ferry Rd and Bundall Rd, Southport'),true);
+    h+=Q(N(),'Your van',`<div class="row2">${inp('rego','Rego',f.rego)}${inp('odo','Odometer (km)',f.odo,'','number','inputmode="numeric"')}</div>
+      <span class="lb">Can the van still be driven?</span>${yn('drivable',f.drivable)}<span class="lb">Was any vehicle towed?</span>${yn('towed',f.towed)}`,true);
+    h+=hurtBlock(N());
+    h+=Q(N(),'Other driver and vehicle',`<p class="hint">Leave empty if no one else was involved.</p><div class="row2">${inp('other.name','Driver’s name',f.other.name)}${inp('other.phone','Phone',f.other.phone,'','tel')}</div>
+      ${inp('other.address','Driver’s address',f.other.address)}
+      <div class="row2">${inp('other.rego','Rego',f.other.rego)}${inp('other.make','Make and model',f.other.make)}</div>
+      <div class="row2">${inp('other.licence','Licence number and state',f.other.licence)}${inp('other.insurer','Insurer',f.other.insurer)}</div>
+      ${inp('other.owner','Owner’s name and address (if not the driver)',f.other.owner)}`);
+    h+=Q(N(),'Damage',`${area('ourDamage','Damage to our van',f.ourDamage,'e.g. dent in back left door',2)}${area('theirDamage','Damage to the other vehicle or property',f.theirDamage,'',2)}`);
+    h+=Q(N(),'Road and weather',chips('cond',COND,f.cond,true));
+    h+=Q(N(),'Police',`<span class="lb">Did police attend, or did you report it?</span>${yn('police',f.police)}${f.police?inp('policeRef','Police event number',f.policeRef):''}${f.towed&&f.police===false?'<p class="warnbox">A vehicle was towed, so the crash must be reported to police. Report it online or call 131 444, then add the number here.</p>':''}`,true);
+  }
+  if(kind==='hazard'){
+    h+=Q(N(),'What is the hazard?',chips('type',HAZ_TYPES,f.type),true);
+    h+=Q(N(),'Where is it?',chips('whereType',HAZ_WHERE,f.whereType)+inp('where','Exact spot',f.where,kind==='hazard'?'e.g. Dock 3 roller door, or 8 Hill St Ashmore':''),true);
+    h+=Q(N(),'How serious is it?',chips('risk',RISK,f.risk),true);
+    h+=Q(N(),'Is it still there?',chips('still',STILL,f.still),true);
+    h+=Q(N(),'How could it be fixed?',area('fix','Your idea',f.fix,'',2));
+  }
+  h+=Q(N(),kind==='hazard'?'Describe the hazard':'Tell us what happened',area('desc','In your own words',f.desc,'What happened, step by step',5),true);
+  h+=Q(N(),'What did you do after?',area('action','For example first aid, made the area safe, moved the van',f.action,'',2));
+  if(kind!=='hazard')h+=Q(N(),'Witnesses',area('witness','Names and phone numbers of anyone who saw it',f.witness,'',2));
+  h+=Q(N(),'Who have you told?',chips('told',TOLD,f.told,true));
+  h+=Q(N(),'Photos',`<p class="hint">${kind==='vehicle'?'Both vehicles, number plates, the scene, and the other driver’s licence.':kind==='hazard'?'The hazard and where it is.':'Injuries, damage, the place, or the dog.'} Up to ${MAXPH}.</p>
+    <div class="phs">${photos.map((p,i)=>`<div class="ph"><img src="${p}" alt="Photo ${i+1}"><button type="button" class="x" data-rp="rmph" data-v="${i}" aria-label="Remove photo ${i+1}">×</button></div>`).join('')}
+    ${photos.length<MAXPH?`<label class="addph"><input type="file" accept="image/*" multiple id="rp_file" hidden><span>+ Add photo</span></label>`:''}</div>`);
+  const miss=missing();
+  h+=`${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   <button type="button" class="sh-btn primary big" data-rp="send" ${miss.length||busy?'disabled':''}>${busy?'Sending…':'Send report'}</button>
+   ${miss.length?`<p class="hint">Still needed: ${esc(miss.join(', '))}.</p>`:''}</section>`;
+  return h;
+}
+function missing(){const m=[];if(!f.date)m.push('date');if(!f.type)m.push('what happened');if(!f.where&&!f.whereType)m.push('where');
+  if(kind!=='hazard'&&f.hurt===null)m.push('was anyone hurt');if(f.hurt&&!f.treat)m.push('treatment');
+  if(kind==='incident'&&f.police===null)m.push('police');if(kind==='vehicle'&&!String(f.rego||'').trim())m.push('van rego');if(kind==='vehicle'&&(f.drivable===null||f.towed===null||f.police===null))m.push('van and police questions');
+  if(kind==='hazard'&&(!f.risk||!f.still))m.push('how serious and is it still there');if(f.desc.trim().length<5)m.push('description');return m}
+function sentHTML(){return `<section class="card sent"><h2>Report sent${sent.first?', thanks '+esc(sent.first):''}.</h2><p>The managers have it. Keep a copy for yourself if you like, for example for insurance.</p>
+  <div class="acts"><button type="button" class="sh-btn" data-rp="mycopy">Download my copy (PDF)</button><button type="button" class="sh-btn primary" data-rp="again">Done</button></div>
+  ${sent.serious?'<p class="warnbox">Someone needed a doctor or hospital. Call the manager now if you have not already.</p>':''}</section>`}
+function driverHTML(){
+  if(sent)return sentHTML();
+  if(!meTried)return '<div class="empty">Opening…</div>';
+  if(!me)return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so reports cannot be sent. Ask the manager to check your email on the Drivers page.</div>';
+  return kind?formHTML():chooseHTML();
+}
+function clean(){const o=JSON.parse(JSON.stringify(f));
+  if(!o.hurt){o.who='';o.inj='';o.part='';o.treat=''}if(!o.police)o.policeRef='';
+  const keep={incident:['person'],vehicle:['other','rego','odo','drivable','towed','cond','ourDamage','theirDamage'],hazard:['risk','still','fix']};
+  for(const k of ['person','other','rego','odo','drivable','towed','cond','ourDamage','theirDamage','risk','still','fix'])if(!keep[kind].includes(k))delete o[k];
+  if(kind==='hazard'){delete o.hurt;delete o.who;delete o.inj;delete o.part;delete o.treat;delete o.police;delete o.policeRef;delete o.witness}
+  delete o.kind;return o}
+async function send(){
+  if(busy||!db||!me||missing().length)return;busy=true;msg=null;render();
+  const id=f.date+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'_'+me.staff;const ph=[];
+  try{
+    for(let i=0;i<photos.length;i++){const pid=id+'_p'+i+'_'+me.staff;await db.doc('reportimg/'+pid).set({staff:me.staff,img:photos[i],at:db.serverTime?db.serverTime():new Date().toISOString()});ph.push(pid)}
+    const serious=['Doctor or medical centre','Hospital or ambulance'].includes(f.treat);
+    const data={kind,staff:me.staff,name:me.name||'',run:me.run||'',f:clean(),photos:ph,serious,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()};
+    await db.doc('reports/'+id).set(data);
+    sent={first:tc(String(me.name||'').split(' ')[0]),serious,copy:{...data,id,f:{...clean(),kind},at:new Date().toISOString()},imgs:photos.slice()};
+    busy=false;kind=null;f=null;photos=[];render();window.scrollTo(0,0);
+  }catch(e){busy=false;msg={err:true,t:'Could not send just now. Check your connection and try again. Nothing you typed has been lost.'};render()}
+}
+function shrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=1280;let w=im.width,h=im.height;const s=Math.min(1,M/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);
+  const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);let q=.72,d=c.toDataURL('image/jpeg',q);while(d.length>700000&&q>.3){q-=.12;d=c.toDataURL('image/jpeg',q)}res(d)};im.onerror=()=>res(null);im.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(file)})}
+
+/* ---------- manager ---------- */
+function person(r){const p=staff[r.staff]||{};return{name:tc([p.first,p.last].filter(Boolean).join(' '))||tc(r.name)||'Unknown',mobile:String(p.mobile||'').replace(/[^\d+]/g,''),no:(p.runs||[]).filter(Boolean).join(', '),rego:p.rego||'',van:p.van||''}}
+function list(){return Object.entries(items).map(([id,r])=>({id,...r,_t:(r.f&&r.f.date||'')+' '+(r.f&&r.f.time||'')})).sort((a,b)=>b._t.localeCompare(a._t)||b.id.localeCompare(a.id))}
+function flags(r){const out=[];const F=r.f||{};
+  if(r.serious)out.push(['bad','Serious injury: WorkSafe QLD']);
+  if(r.kind==='vehicle'&&F.towed&&!F.policeRef)out.push(['warn','Towed: police report needed']);
+  if(r.kind==='hazard'&&F.risk==='high'&&F.still==='Still there')out.push(['bad','High risk, still there']);
+  if(F.hurt)out.push(['warn','Someone hurt']);return out}
+function mgrListHTML(){
+  const L=list();const t=q.trim().toLowerCase();
+  const cnt=k=>L.filter(r=>k==='open'?r.status!=='closed':k==='new'?r.status==='new':true).length;
+  const show=L.filter(r=>(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))&&(kf==='all'||r.kind===kf)&&(!t||[person(r).name,r.f&&r.f.where,r.f&&r.f.type,r.f&&r.f.desc,KINDS[r.kind].t].join(' ').toLowerCase().includes(t)));
+  const yr=new Date().getFullYear()+'';const Y=L.filter(r=>(r.f&&r.f.date||'').startsWith(yr));
+  return `<div class="tiles"><div class="tile ${cnt('new')?'warn':''}"><span>New</span><b>${cnt('new')}</b></div><div class="tile"><span>Open</span><b>${cnt('open')}</b></div>
+   ${Object.entries(KINDS).map(([k,o])=>`<div class="tile ${o.c}"><span>${o.t}s this year</span><b>${Y.filter(r=>r.kind===k).length}</b></div>`).join('')}</div>
+   <div class="bar"><div class="tabs" role="group">${[['new','New'],['open','Open'],['all','All']].map(([k,l])=>`<button type="button" data-rp="tab" data-v="${k}" aria-pressed="${tab===k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
+   <label class="mini">Type<select id="rp_kf"><option value="all">All reports</option>${Object.entries(KINDS).map(([k,o])=>`<option value="${k}" ${kf===k?'selected':''}>${o.t}</option>`).join('')}</select></label>
+   <input type="search" id="rp_q" placeholder="Search name, place or words" value="${esc(q)}" autocomplete="off" aria-label="Search">
+   <button type="button" class="sh-btn" data-rp="xls">Download register (Excel)</button><button type="button" class="sh-btn primary" data-rp="file">+ New report</button></div>
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${show.length?`<div class="list">${show.map(r=>{const p=person(r),F=r.f||{};return `<button type="button" class="ri ${KINDS[r.kind].c} st-${r.status}" data-rp="open" data-v="${esc(r.id)}">
+     <span class="k">${esc(KINDS[r.kind].t)}</span><span class="m"><b>${esc(F.type||'')}</b><small>${esc(p.name)} · ${esc(niceD(F.date))}${F.time?' '+esc(niceT(F.time)):''}${F.where||F.whereType?' · '+esc(F.where||F.whereType):''}</small>
+     <span class="fl">${r.status==='new'?'<i class="nw">New</i>':`<i class="stt">${esc(STAT[r.status]||'')}</i>`}${flags(r).map(([c,l])=>`<i class="${c}">${esc(l)}</i>`).join('')}${(r.photos||[]).length?`<i class="pc">${r.photos.length} photo${r.photos.length===1?'':'s'}</i>`:''}</span></span></button>`}).join('')}</div>`
+   :`<div class="empty">${L.length?'No reports here. Try another tab or type.':'No reports yet. When a driver sends an incident, vehicle accident or safety hazard report, it shows up here.'}</div>`}
+   <p class="hint">Keep incident records for at least 5 years. The Excel register and the backup on Home both include them.</p>`;
+}
+const row=(l,v)=>v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length)?'':`<div><dt>${esc(l)}</dt><dd>${esc(Array.isArray(v)?v.join(', '):v===true?'Yes':v===false?'No':v)}</dd></div>`;
+function factsOf(r){const F=r.f||{},p=person(r);const R=[['Reported by',p.name+(p.no?' ('+p.no+')':'')],['Date',niceD(F.date)+(F.time?' at '+niceT(F.time):'')],['What happened',F.type],['Where',[F.whereType,F.where].filter(Boolean).join(': ')]];
+  if(r.kind==='vehicle')R.push(['Our van',[F.rego,tc(p.van)].filter(Boolean).join(' ')],['Odometer',F.odo?F.odo+' km':''],['Van drivable',F.drivable],['Vehicle towed',F.towed],['Road and weather',F.cond]);
+  if(r.kind!=='hazard'){R.push(['Anyone hurt',F.hurt]);if(F.hurt)R.push(['Who was hurt',F.who],['Injury',[F.inj,F.part].filter(Boolean).join(', ')],['Treatment',F.treat]);R.push(['Police',F.police===true?'Yes'+(F.policeRef?', event '+F.policeRef:''):F.police===false?'No':''])}
+  if(r.kind==='hazard')R.push(['How serious',(RISK.find(x=>x[0]===F.risk)||['',''])[1]],['Still there',F.still]);
+  R.push(['Who they told',F.told]);return R}
+function otherOf(r){const F=r.f||{};if(r.kind==='vehicle'){const o=F.other||{};return [['Driver',o.name],['Phone',o.phone],['Address',o.address],['Licence',o.licence],['Rego',o.rego],['Make and model',o.make],['Insurer',o.insurer],['Owner',o.owner]].filter(x=>x[1])}
+  if(r.kind==='incident'){const o=F.person||{};return [['Name',o.name],['Phone',o.phone],['Address',o.address]].filter(x=>x[1])}return []}
+function textsOf(r){const F=r.f||{};return [[r.kind==='hazard'?'The hazard':'What happened',F.desc],['Damage to our van',F.ourDamage],['Damage to other vehicle or property',F.theirDamage],['What they did after',F.action],['Idea to fix it',F.fix],['Witnesses',F.witness]].filter(x=>x[1])}
+function detailHTML(r){
+  const p=person(r),F=r.f||{},K=KINDS[r.kind];const E=edit||{status:r.status,notes:r.notes||'',fixAct:r.fixAct||'',ws:r.ws||'',wsRef:r.wsRef||''};edit=E;
+  const oth=otherOf(r);
+  return `<button type="button" class="sh-btn back" data-rp="close">‹ All reports</button>
+  <section class="card det ${K.c}"><div class="dh"><span class="k">${esc(K.long)}</span><span class="sp"></span><button type="button" class="sh-btn" data-rp="pdf">Print (PDF)</button></div>
+   <h2>${esc(F.type||K.t)}</h2>
+   ${flags(r).map(([c,l])=>`<p class="flag ${c}">${esc(l)}</p>`).join('')}
+   ${r.serious?`<div class="warnbox"><b>This may be a notifiable incident.</b> If the injury needed a doctor or hospital, WorkSafe Queensland must be told straight away on <a href="tel:1300362128">1300 362 128</a>. Leave the site as it is unless it is unsafe, until they say otherwise. Keep this record for at least 5 years.</div>`:''}
+   <dl class="facts">${factsOf(r).map(([l,v])=>row(l,v)).join('')}</dl>
+   ${textsOf(r).map(([l,v])=>`<div class="note"><b>${esc(l)}</b><p>${esc(v).replace(/\n/g,'<br>')}</p></div>`).join('')}
+   ${oth.length?`<div class="note"><b>${r.kind==='vehicle'?'Other driver and vehicle':'Person involved'}</b><dl class="facts">${oth.map(([l,v])=>row(l,v)).join('')}</dl></div>`:''}
+   ${(r.photos||[]).length?`<div class="phs big">${r.photos.map((pid,i)=>imgs[pid]?`<a href="${imgs[pid]}" target="_blank" rel="noopener" class="ph"><img src="${imgs[pid]}" alt="Photo ${i+1}"></a>`:`<div class="ph load">Loading photo…</div>`).join('')}</div>`:''}
+   <div class="acts">${p.mobile?`<a class="sh-btn" href="tel:${esc(p.mobile)}">Call ${esc(p.name.split(' ')[0])}</a>`:''}</div>
+  </section>
+  <section class="card mgr"><h3>Follow up (managers only)</h3>
+   <span class="lb">Status</span>${chips('m_status',[['new','New'],['inv','Investigating'],['closed','Closed']],E.status)}
+   <label class="f"><span>Notes</span><textarea id="rp_m_notes" rows="3" placeholder="Calls made, what was found, who was told">${esc(E.notes)}</textarea></label>
+   <label class="f"><span>What we changed so it does not happen again</span><textarea id="rp_m_fix" rows="2">${esc(E.fixAct)}</textarea></label>
+   ${r.kind!=='hazard'?`<span class="lb">Reported to WorkSafe QLD?</span>${chips('m_ws',[['no','Not needed'],['yes','Yes, notified']],E.ws)}${E.ws==='yes'?`<label class="f"><span>WorkSafe reference</span><input id="rp_m_wsref" value="${esc(E.wsRef)}"></label>`:''}`:''}
+   <div class="acts"><button type="button" class="sh-btn primary" data-rp="msave">Save follow up</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-rp="del">${arm?'Tap again to delete':'Delete report'}</button></div>
+  </section>`;
+}
+async function loadImgs(r){for(const pid of (r.photos||[])){if(imgs[pid])continue;try{const s=await db.doc('reportimg/'+pid).get();imgs[pid]=s.exists?__D(s).img:'';}catch(e){imgs[pid]=''}if(open===r.id)render()}}
+function pushStat(){if(mode!=='mgr'||!window.APP||!APP.stat)return;const n=list().filter(r=>r.status==='new').length;APP.stat('reports',n?n+' new':'')}
+
+/* ---------- PDF (one page) ---------- */
+function loadScript(src){return new Promise((ok,no)=>{if(window.jspdf){ok();return}const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
+async function makePdf(r,pics,btn){
+  const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making PDF…'}
+  try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')}catch(e){if(btn){btn.disabled=false;btn.textContent=old}msg={err:true,t:'The PDF maker did not load. Check your connection.'};render();return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=12,INK=[20,32,29],MUT=[86,101,95],LINE=[200,206,212];const F=r.f||{},K=KINDS[r.kind];
+  doc.setFillColor(19,33,58);doc.rect(0,0,W,20,'F');doc.setFillColor(...(r.kind==='vehicle'?[47,111,219]:r.kind==='hazard'?[217,98,43]:[200,53,43]));doc.rect(0,20,W,1.4,'F');
+  doc.setTextColor(233,177,10);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text('PRESTON DELIVERY SERVICE  ·  CONTRACT 1161',M,7.5);
+  doc.setTextColor(255);doc.setFontSize(15);doc.text(K.long,M,15.5);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text('Ref '+String(r.id||'').split('_').slice(0,2).join('-'),W-M,15.5,{align:'right'});
+  let y=27;const bottom=285;
+  const facts=factsOf(r).filter(([,v])=>!(v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length))).map(([l,v])=>[l,Array.isArray(v)?v.join(', '):v===true?'Yes':v===false?'No':String(v)]);
+  const cw=(W-2*M-6)/2;doc.setFontSize(8.5);
+  for(let i=0;i<facts.length;i+=2){let h=0;for(let j=0;j<2;j++){const it=facts[i+j];if(!it)continue;const x=M+j*(cw+6);doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(6.8);doc.text(it[0].toUpperCase(),x,y);
+    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);const L=doc.splitTextToSize(it[1],cw).slice(0,2);doc.text(L,x,y+4);h=Math.max(h,4+L.length*3.8)}y+=h+2.2}
+  const oth=otherOf(r);if(oth.length){doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=4.5;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text((r.kind==='vehicle'?'OTHER DRIVER AND VEHICLE':'PERSON INVOLVED'),M,y);y+=4;
+    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.5);const txt=oth.map(([l,v])=>l+': '+v).join('   ·   ');const L=doc.splitTextToSize(txt,W-2*M).slice(0,4);doc.text(L,M,y);y+=L.length*3.7+2}
+  const pics2=(pics||[]).filter(Boolean);const photoH=pics2.length?(pics2.length>3?2:1)*36+6:0;const sign=22;
+  const texts=textsOf(r);const avail=bottom-sign-photoH-y;const per=texts.length?avail/texts.length:0;
+  for(const[l,v]of texts){doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=4.5;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(l.toUpperCase(),M,y);y+=4;
+    doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(9);const maxL=Math.max(2,Math.floor((per-9)/3.9));let L=doc.splitTextToSize(String(v),W-2*M);if(L.length>maxL){L=L.slice(0,maxL);L[maxL-1]+=' …'}doc.text(L,M,y);y+=L.length*3.9+2}
+  if(pics2.length){y+=2;const n=pics2.length,pw=(W-2*M-2*4)/3,ph=34;pics2.slice(0,6).forEach((d,i)=>{const x=M+(i%3)*(pw+4),yy=y+Math.floor(i/3)*(ph+2);try{const pr=doc.getImageProperties(d);const s=Math.min(pw/pr.width,ph/pr.height);const w=pr.width*s,h=pr.height*s;doc.addImage(d,'JPEG',x+(pw-w)/2,yy+(ph-h)/2,w,h)}catch(e){}});y+=(n>3?2:1)*(ph+2)+2}
+  y=Math.max(y,bottom-sign);doc.setDrawColor(...LINE);doc.line(M,y,W-M,y);y+=5;
+  const half=(W-2*M-8)/2;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('STATUS',M,y);doc.text('MANAGER NOTES',M+half+8,y);
+  doc.setTextColor(...INK);doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text((STAT[r.status]||'New')+(r.ws==='yes'?' · WorkSafe notified'+(r.wsRef?' ('+r.wsRef+')':''):''),M,y+4.2);
+  doc.text(doc.splitTextToSize(r.notes||'',half).slice(0,3),M+half+8,y+4.2);
+  doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text('Printed '+new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})+'. Keep incident records for at least 5 years.',M,292);
+  if(btn){btn.disabled=false;btn.textContent=old}
+  const name=`${K.long} ${person(r).name||r.name||''} ${F.date||''}.pdf`.replace(/\s+/g,' ');
+  const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
+  try{await dl.save({filename:name,data:doc.output('blob')});msg={t:'PDF saved. Open it to print.'};render()}catch(e){if(!e||e.code!=='declined'){msg={err:true,t:'Could not save the PDF.'};render()}}
+}
+async function exportXls(){
+  if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
+  const H=['Date','Time','Report','What happened','Reported by','Driver no.','Where','Anyone hurt','Who hurt','Injury','Treatment','Police','Vehicle towed','Risk','Still there','Description','Action taken','Status','WorkSafe','Manager notes','Fix'];
+  const aoa=[H];for(const r of list().slice().reverse()){const F=r.f||{},p=person(r);aoa.push([F.date,F.time,KINDS[r.kind].t,F.type,p.name,p.no,[F.whereType,F.where].filter(Boolean).join(': '),F.hurt==null?'':F.hurt?'Yes':'No',F.who||'',[F.inj,F.part].filter(Boolean).join(', '),F.treat||'',F.police==null?'':F.police?'Yes'+(F.policeRef?' '+F.policeRef:''):'No',F.towed==null?'':F.towed?'Yes':'No',(RISK.find(x=>x[0]===F.risk)||['',''])[1],F.still||'',F.desc||'',F.action||'',STAT[r.status]||'',r.ws==='yes'?'Notified '+(r.wsRef||''):'',r.notes||'',r.fixAct||''])}
+  const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,7,15,26,20,8,30,8,14,18,18,14,8,18,12,50,30,12,16,30,30].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Reports');
+  const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);if(!dl)return;
+  try{await dl.save({filename:'1161 Incident and hazard register '+isoD(new Date())+'.xlsx',data:new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})});msg={t:'Register saved.'};render()}catch(e){}
+}
+
+/* ---------- render and events ---------- */
+function render(){
+  const box=$('root');if(!box)return;
+  if(mode==='wait'){box.innerHTML='<div class="rpx"><div class="empty">Opening…</div></div>';return}
+  let h;if(mode==='mgr'&&filing)h=driverHTML();else if(mode==='mgr'){const r=open&&items[open]?{id:open,...items[open]}:null;h=r?detailHTML(r):mgrListHTML()}else h=driverHTML();
+  box.innerHTML=`<div class="rpx">${h}</div>`;
+}
+function rerenderKeep(){const a=document.activeElement;const key=a&&(a.dataset&&a.dataset.rf||a.id);const pos=a&&a.selectionStart;render();if(!key)return;const n=document.querySelector(`#mod-reports [data-rf="${key}"]`)||document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-rp]');const sec=document.getElementById('mod-reports');if(!el||!sec||!sec.contains(el))return;
+  const a=el.dataset.rp,v=el.dataset.v,k=el.dataset.k;if(a!=='del')arm=false;
+  if(a==='kind'){kind=v;f=blank(v);photos=[];msg=null;render();window.scrollTo(0,0);return}
+  if(a==='back'){kind=null;f=null;photos=[];msg=null;render();return}
+  if(a==='chip'){if(k.startsWith('m_')){const map={m_status:'status',m_ws:'ws'};edit[map[k]]=v;render();return}setP(f,k,getP(f,k)===v?'':v);render();return}
+  if(a==='mchip'){const arr=getP(f,k)||[];setP(f,k,arr.includes(v)?arr.filter(x=>x!==v):arr.concat(v));render();return}
+  if(a==='yn'){setP(f,k,v==='1');render();return}
+  if(a==='rmph'){photos.splice(+v,1);render();return}
+  if(a==='send'){send();return}
+  if(a==='again'){sent=null;filing=false;render();return}
+  if(a==='mycopy'&&sent){makePdf(sent.copy,sent.imgs,el);return}
+  if(a==='tab'){tab=v;render();return}
+  if(a==='open'){open=v;edit=null;msg=null;const r=items[v];if(r&&r.status==='new'){items[v]={...r,status:'inv'};pushStat();db.doc('reports/'+v).update({status:'inv'}).catch(()=>{})}render();window.scrollTo(0,0);if(items[v])loadImgs({id:v,...items[v]});return}
+  if(a==='file'){filing=true;sent=null;kind=null;f=null;photos=[];msg=null;if(!meTried)loadMe();render();window.scrollTo(0,0);return}
+  if(a==='unfile'){filing=false;kind=null;f=null;photos=[];msg=null;render();return}
+  if(a==='close'){open=null;edit=null;msg=null;render();return}
+  if(a==='pdf'&&open){const r={id:open,...items[open]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el);return}
+  if(a==='xls'){exportXls();return}
+  if(a==='msave'&&open&&edit){edit.notes=($('m_notes')||{}).value||'';edit.fixAct=($('m_fix')||{}).value||'';if($('m_wsref'))edit.wsRef=$('m_wsref').value;
+    const up={status:edit.status||'inv',notes:edit.notes,fixAct:edit.fixAct,ws:edit.ws||'',wsRef:edit.ws==='yes'?edit.wsRef||'':''};if(up.status==='closed')up.closedAt=new Date().toISOString();
+    try{await db.doc('reports/'+open).update(up);items[open]={...items[open],...up};msg={t:'Follow up saved.'};pushStat();open=null;edit=null;render()}catch(x){msg={err:true,t:'Could not save just now.'};render()}return}
+  if(a==='del'&&open){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
+    const r=items[open];try{for(const p of (r.photos||[])){try{await db.doc('reportimg/'+p).delete()}catch(x){}}await db.doc('reports/'+open).delete();delete items[open];open=null;edit=null;arm=false;msg={t:'Report deleted.'};pushStat();render()}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'};render()}return}
+});
+document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#mod-reports'))return;
+  if(t.dataset.rf&&f){const before=missing().length;setP(f,t.dataset.rf,t.value);if(missing().length!==before)rerenderKeep();return}
+  if(t.id==='rp_q'){q=t.value;rerenderKeep()}});
+document.addEventListener('change',async e=>{const t=e.target;if(!t.closest||!t.closest('#mod-reports'))return;
+  if(t.id==='rp_kf'){kf=t.value;render();return}
+  if(t.id==='rp_file'&&t.files){const fs=[...t.files].slice(0,MAXPH-photos.length);msg={t:'Adding photos…'};render();for(const fl of fs){const d=await shrink(fl);if(d)photos.push(d)}msg=null;render()}});
+
+async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new Promise(r=>setTimeout(r,150));tries++}
+  me=window.CLOCK?await window.CLOCK.whoami():null;
+  if(me&&db){try{const s=await db.doc('staff/'+me.staff).get();if(s.exists){const p=__D(s);me={...me,rego:p.rego||'',run:(p.runs||[]).filter(Boolean).join(', ')}}}catch(x){}}}catch(x){me=null}meTried=true;render()}
+async function start(role){
+  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  if(role!=='mgr'){mode='drv';render();loadMe();return}
+  mode='mgr';render();if(!db)return;
+  const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-reports')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='rp_q'};
+  db.collection('reports').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);items=m;pushStat();if(!typing())rerenderKeep()},()=>{msg={err:true,t:'Could not load reports. Check the app rules have been updated.'};render()});
+  db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())rerenderKeep()},()=>{});
+}
+render();
+window.addEventListener('app:role',e=>start(e.detail));
+if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
+})();
+
+</script>
 
 <script data-web>
 /* Contract 1161 web app: sign in, connect to Firebase, then start the app.
@@ -7164,7 +7565,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251341';
+const VERSION='202610251353';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -7243,8 +7644,8 @@ window.__history=function(from,cols){
   return Promise.all(jobs)};
 window.__historyFrom=c=>WIN[c]?hist(c).from:'';
 /* ---------- backup: all the setup data, plus records added since the last backup ---------- */
-const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared'];
-const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks'];
+const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports'];
+const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks','reportimg'];
 window.__backup=async function(onStep){
   let last='';try{const m=await fs.doc('meta/backup').get();if(m.exists)last=m.data().upTo||''}catch(e){}
   const from=last?isoAgo(Math.max(0,Math.round((Date.now()-new Date(last+'T00:00:00').getTime())/864e5)+14)):'';
