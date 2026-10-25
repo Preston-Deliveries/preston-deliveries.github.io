@@ -25,9 +25,9 @@ service cloud.firestore {
     }
     // Only admins can see these. Everything else can be read by anyone on the team list.
     function adminOnly(col) {
-      return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
+      return col in ['staff', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg', 'invcfg', 'invlog'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg', 'invcfg', 'invlog', 'invme'];
     }
 
     function myStaff() {
@@ -88,6 +88,32 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['staff', 'img', 'at'])
         && request.resource.data.at == request.time
         && request.resource.data.img is string && request.resource.data.img.size() < 900000);
+    }
+    // Driver invoices. Each driver can read only their own records; the office sets rates; drivers enter their own ABN and bank details
+    match /timesheets/{id} {
+      allow read: if isAdmin() || (hasAccess() && id.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}_' + myStaff()));
+      allow write: if isAdmin();
+    }
+    match /invcfg/{id} {
+      allow read: if isAdmin() || (hasAccess() && id == myStaff());
+      allow write: if isAdmin();
+    }
+    match /invme/{id} {
+      allow read: if isAdmin() || (hasAccess() && id == myStaff());
+      allow write: if isAdmin() || (hasAccess() && id == myStaff()
+        && request.resource.data.keys().hasOnly(['abn', 'address', 'phone', 'email', 'acct', 'bsb', 'acctNo', 'gst', 'at']));
+    }
+    match /invlog/{id} {
+      allow read: if isAdmin() || (hasAccess() && resource.data.sid == myStaff());
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.sid == myStaff()
+        && id == myStaff() + '_' + request.resource.data.from
+        && request.resource.data.status == 'submitted');
+      allow update: if isAdmin() || (hasAccess()
+        && resource.data.sid == myStaff() && resource.data.status == 'submitted'
+        && request.resource.data.sid == myStaff()
+        && request.resource.data.status == 'submitted');
+      allow delete: if isAdmin();
     }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());

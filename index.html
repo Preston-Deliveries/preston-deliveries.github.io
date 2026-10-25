@@ -1256,6 +1256,21 @@ body.sh-uv-on{overflow:hidden}
 #mod-invoices .im .st{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:6px;background:#E6EAF0;color:#2B3A52;white-space:nowrap}
 #mod-invoices .im .st-checked{background:#E3EEFB;color:#1D4E9A}#mod-invoices .im .st-paid{background:#E6F4EC;color:#14532D}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im .st{background:#24324A;color:#C9D6EA}:root:not([data-theme="light"]) #mod-invoices .im .st-checked{background:#17304F;color:#A9CBF5}:root:not([data-theme="light"]) #mod-invoices .im .st-paid{background:#12301F;color:#BFF0D0}}
+#im_toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);max-width:min(92vw,520px);background:#13213A;color:#fff;padding:12px 16px;border-radius:8px;font:600 .95rem var(--sh-body,system-ui);box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999;text-align:center}
+#im_toast.show{opacity:1;transform:translate(-50%,0)}
+#im_toast.err{background:#B3261E}
+#mod-invoices .im .ro{margin:0;grid-column:1/-1;font-size:.92rem;color:var(--sh-ink)}
+#mod-invoices .im .old{display:block;font-size:.76rem;margin-bottom:4px;width:100%;text-align:right}
+@media (max-width:640px){
+#mod-invoices .im{padding:14px 12px}
+#mod-invoices .im table{font-size:.84rem}
+#mod-invoices .im th{padding:7px 5px;font-size:.62rem}
+#mod-invoices .im td{padding:4px 5px}
+#mod-invoices .im td input{width:54px;padding:5px 4px;font-size:.88rem}
+#mod-invoices .im .swap{width:26px;height:28px}
+#mod-invoices .im .tick span{width:24px;height:24px}
+#mod-invoices .im .sum{min-width:0;width:100%}
+}
 </style>
 <style id="directory-css">#mod-directory .dyx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-directory h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -2535,7 +2550,7 @@ try{if(window.parent!==window&&window.parent.__uvSave)window.__UVDL=window.__DLS
 window.__uvSubs=[];
 window.__uvDb=async()=>{const d=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!d)return null;
   const sub=(q,f,e)=>{const u=q.onSnapshot(x=>{try{f(x)}catch(_){}},x=>{try{e&&e(x)}catch(_){}});window.__uvSubs.push(u);return u};
-  return {serverTime:d.serverTime?()=>d.serverTime():undefined,collection:p=>({onSnapshot:(f,e)=>sub(d.collection(p),f,e),get:()=>d.collection(p).get()}),doc:p=>({get:()=>d.doc(p).get(),set:x=>d.doc(p).set(x),update:x=>d.doc(p).update(x),delete:()=>d.doc(p).delete(),onSnapshot:(f,e)=>sub(d.doc(p),f,e)})}};
+  return {serverTime:d.serverTime?()=>d.serverTime():undefined,collection:p=>({onSnapshot:(f,e)=>sub(d.collection(p),f,e),get:()=>d.collection(p).get(),range:(lo,hi)=>d.collection(p).range?d.collection(p).range(lo,hi):d.collection(p).get(),where:(f,o,v)=>{const q=d.collection(p).where(f,o,v);return{get:()=>q.get(),onSnapshot:(f2,e)=>sub(q,f2,e)}}}),doc:p=>({get:()=>d.doc(p).get(),set:x=>d.doc(p).set(x),update:x=>d.doc(p).update(x),delete:()=>d.doc(p).delete(),onSnapshot:(f,e)=>sub(d.doc(p),f,e)})}};
 window.__getDb=async()=>{try{if(window.parent!==window&&window.parent.__uvDb)return await window.parent.__uvDb()}catch(e){}return window.claude&&window.claude.use?await window.claude.use('db'):null};
 window.__uvSave=async(filename,d)=>{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(!dl)throw {code:'unavailable',message:'Downloads are not available here.'};
   const data=typeof d==='string'?d:new Blob([new Uint8Array(d).slice()]);return await dl.save({filename,data})};
@@ -5639,7 +5654,9 @@ function render(){
   if(mode==='wait'){box.innerHTML='';return}
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
-  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  const tabs=!isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
+  if(isMgr()&&ivtab==='mine')ivtab='make';
   if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(window.INVMAKE)window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
   const due=c.due?`<b>Next invoice due ${esc(nice(c.due))}.</b> `:'';
   box.innerHTML=`<div class="ivx">${tabs}
@@ -7415,20 +7432,42 @@ const ANCHOR='2026-10-05';
 function period(k){const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);const n=Math.floor(d/28)+k;const s=add(ANCHOR,n*28);return[s,add(s,25)]}
 const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,abn:'',address:'',phone:'',email:'',acct:'',bsb:'',acctNo:''};
 
-let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={};
+let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
+const RATEK=['gst','hourly','r1','r2','rx','rh'],MEK=['abn','address','phone','email','acct','bsb','acctNo'];
 let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false,ticks={};
 const P=()=>staff[sid]||{};
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
-async function init(){
-  if(ready)return;ready=true;
+async function init(r){
+  if(ready)return;ready=true;role=r==='drv'?'drv':'mgr';
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}if(!db)return;
-  const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
-  coll('staff',m=>staff=m);coll('days',m=>{const o={};for(const[k,v]of Object.entries(m))if(v&&v.rows)o[v.date||k]=v;days=o});
-  coll('clock',m=>clock=m);coll('timesheets',m=>ts=m);coll('invlog',m=>logs=m);coll('invcfg',m=>cfgs=m);
   const[a,b]=period(-1);from=a;to=b;
+  if(role==='mgr'){
+    const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
+    coll('staff',m=>staff=m);coll('days',m=>{const o={};for(const[k,v]of Object.entries(m))if(v&&v.rows)o[v.date||k]=v;days=o});
+    coll('clock',m=>clock=m);coll('timesheets',m=>ts=m);coll('invlog',m=>logs=m);coll('invcfg',m=>cfgs=m);coll('invme',m=>mes=m);
+    return}
+  /* a driver: only their own records */
+  let me=null;try{let t=0;while(!window.CLOCK&&t<40){await new Promise(r=>setTimeout(r,150));t++}me=window.CLOCK?await window.CLOCK.whoami():null}catch(e){}
+  if(!me||!me.staff){sid='';return}
+  sid=me.staff;let wm={};try{wm=window.__webMe||(window.parent!==window&&window.parent.__webMe)||{}}catch(e){}
+  const p={first:me.name||wm.name||'',login:String(wm.login||'').toUpperCase(),runs:[wm.run||''],email:wm.email||''};
+  if(!p.login){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.login=String(d.login||'').toUpperCase();p.runs=d.runs||[];p.mobile=d.mobile||'';p.first=d.first;p.last=d.last}}catch(e){}}
+  staff[sid]=p;
+  try{const s2=await db.doc('invcfg/'+sid).get();if(s2.exists)cfgs[sid]=__D(s2)}catch(e){}
+  try{const s2=await db.doc('invme/'+sid).get();if(s2.exists)mes[sid]=__D(s2)}catch(e){}
+  try{db.collection('invlog').where('sid','==',sid).onSnapshot(s2=>{const m={};for(const d of s2.docs)m[d.id]=__D(d);logs=m;paint()},()=>{})}catch(e){}
+  cfg=mergeCfg(sid);invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();
 }
-function need(){if(from&&window.needHist)window.needHist(from,['days','clock','timesheets'])}
+function mergeCfg(id){const p=staff[id]||{},ic=cfgs[id]||{},im=mes[id]||{};const c={...DEFC,phone:p.mobile||'',email:p.email||''};
+  for(const k of MEK){const v=im[k]!==undefined&&im[k]!==''?im[k]:ic[k];if(v!==undefined&&v!=='')c[k]=v}
+  for(const k of RATEK)if(ic[k]!==undefined&&ic[k]!=='')c[k]=ic[k];
+  if(ic.gst===undefined&&im.gst!==undefined)c.gst=im.gst;return c}
+async function loadDrv(){if(role!=='drv'||!sid||!from||!to||to<from)return;const key=from+to;if(drvKey===key)return;drvKey=key;
+  try{const c=db.collection('days');const q=c.range?await c.range(from,add(to,1)):await c.get();for(const d of q.docs){const v=__D(d);if(v&&v.rows)days[v.date||d.id]=v}}catch(e){}
+  const ds=[];for(let d=from;d<=to;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
+  await Promise.all(ds.map(async d=>{try{const x=await db.doc('clock/'+d+'_'+sid).get();if(x.exists)clock[d+'_'+sid]=__D(x)}catch(e){}try{const x=await db.doc('timesheets/'+d+'_'+sid).get();if(x.exists)ts[d+'_'+sid]=__D(x)}catch(e){}}));paint()}
+function need(){if(role==='drv'){loadDrv();return}if(from&&window.needHist)window.needHist(from,['days','clock','timesheets'])}
 
 /* ---------- work out each day ---------- */
 const mins=t=>{if(!t)return null;const[h,m]=String(t).split(':').map(Number);return isNaN(h)?null:h*60+(m||0)};
@@ -7451,7 +7490,8 @@ function rows(){
     if(auto){if(cfg.hourly){a.hr=auto.hrs??''}else{if(auto.pc!=null){if(auto.tl)a.l2=auto.pc;else a.l1=auto.pc}}if(auto.xp)a.xp=auto.xp}
     const v={...a,...(ov[d]||{})};
     if(w===6&&!auto&&!ov[d])continue;
-    out.push({d,wk,di,auto,v,edited:!!ov[d],note:auto&&!cfg.hourly&&auto.pc==null&&auto.worked?'No parcel count. Load Driver Results for this day.':''})}
+    if(role==='drv'&&!auto&&!ov[d])continue;
+    out.push({d,wk,di,auto,v,edited:!!ov[d],note:auto&&!cfg.hourly&&auto.pc==null&&auto.worked?(role==='drv'?'No parcel count yet. Type it in.':'No parcel count. Load Driver Results for this day.'):''})}
   return out}
 function totals(R){const t={l1:0,l2:0,xp:0,hr:0};for(const r of R)for(const k in t)t[k]+=num(r.v[k]);
   const sub=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh;const gst=cfg.gst?Math.round(sub*10)/100:0;return{...t,sub:Math.round(sub*100)/100,gst,total:Math.round((sub+gst)*100)/100}}
@@ -7463,37 +7503,38 @@ function html(){
   if(!db)return '<div class="empty">Could not connect to the saved data. Reload the page.</div>';
   const people=Object.entries(staff).map(([id,p])=>({id,n:nameOf(p),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
   const[cs,ce]=period(0),[ls,le]=period(-1);
-  let h=`<section class="card im"><h2>Make an invoice</h2><p class="sub">Pick the driver and the dates. Parcels come from Driver Results, 2 loads and extra parcels from Clock In and Timesheets. Check it, change anything, then download.</p>
-   <div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>
+  if(role==='drv'&&!sid)return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so you cannot make an invoice here. Ask the office to check your email on the Drivers page.</div>';
+  let h=(role==='drv'?`<section class="card im"><h2>Make my invoice</h2><p class="sub">Pick the dates. Your parcels come from Driver Results, and your loads and extra parcels from what you answered when you clocked out. Check every day, then submit it to the office.</p>`:`<section class="card im"><h2>Make an invoice</h2><p class="sub">Pick the driver and the dates. Parcels come from Driver Results, 2 loads and extra parcels from Clock In and Timesheets. Check it, change anything, then download.</p>`)+`
+   ${role==='drv'?'':`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`}
    <div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label>
     <div class="quick"><button type="button" class="sh-btn sm" data-im="per" data-v="-1">Last pay period<small>${esc(short(ls))} to ${esc(short(le))}</small></button><button type="button" class="sh-btn sm" data-im="per" data-v="0">This pay period<small>${esc(short(cs))} to ${esc(short(ce))}</small></button></div></div>`;
   if(from&&to&&(fromIso(to)-fromIso(monday(from)))/864e5>27)h+=`<p class="warn">The invoice template holds 4 weeks. Pick 4 weeks or less.</p>`;
   if(!sid)return h+'</section>';
   const p=P(),R=rows(),T=totals(R),last=lastLog();
   h+=`<div class="row"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
-     <p class="sub last">${last?`Last invoice: number ${esc(last.no)}, ${esc(nice(last.from))} to ${esc(nice(last.to))}, ${money(last.total)}.`:'No invoices made in the app for this driver yet.'}</p></div>
-   <details class="cfg" ${showCfg?'open':''}><summary>${esc(nameOf(p))}’s invoice details <small>${cfg.gst?'GST registered':'Not GST registered'} · ${cfg.hourly?'Paid by the hour, '+money(cfg.rh):'Per parcel, '+money(cfg.r1)+' and '+money(cfg.r2)} ${cfg.abn?'· ABN '+esc(cfg.abn):'· No ABN saved'}</small></summary>
+     <p class="sub last">${last?`Last invoice: number ${esc(last.no)}, ${esc(nice(last.from))} to ${esc(nice(last.to))}, ${money(last.total)}.`:(role==='drv'?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p></div>
+   <details class="cfg" ${showCfg?'open':''}><summary>${role==='drv'?'My invoice details':esc(nameOf(p))+'’s invoice details'} <small>${cfg.gst?'GST registered':'Not GST registered'} · ${cfg.hourly?'Paid by the hour, '+money(cfg.rh):'Per parcel, '+money(cfg.r1)+' and '+money(cfg.r2)} ${cfg.abn?'· ABN '+esc(cfg.abn):'· No ABN saved'}</small></summary>
     <div class="grid">
-     <div class="seg2"><span>GST</span><button type="button" data-im="c" data-k="gst" data-v="1" aria-pressed="${cfg.gst}">Registered</button><button type="button" data-im="c" data-k="gst" data-v="0" aria-pressed="${!cfg.gst}">Not registered</button></div>
-     <div class="seg2"><span>Paid</span><button type="button" data-im="c" data-k="hourly" data-v="0" aria-pressed="${!cfg.hourly}">Per parcel</button><button type="button" data-im="c" data-k="hourly" data-v="1" aria-pressed="${cfg.hourly}">By the hour</button></div>
-     ${[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel rate ($)'],['rh','Hourly rate ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
+     ${role==='drv'&&cfgs[sid]&&cfgs[sid].gst!==undefined?`<p class="ro">GST: <b>${cfg.gst?'Registered':'Not registered'}</b>. Set by the office.</p>`:`<div class="seg2"><span>GST</span><button type="button" data-im="c" data-k="gst" data-v="1" aria-pressed="${cfg.gst}">Registered</button><button type="button" data-im="c" data-k="gst" data-v="0" aria-pressed="${!cfg.gst}">Not registered</button></div>`}
+     ${role==='drv'?`<p class="ro">Your rates, set by the office: ${cfg.hourly?money(cfg.rh)+' an hour':money(cfg.r1)+' a parcel (1 load), '+money(cfg.r2)+' a parcel (2 loads), '+money(cfg.rx)+' an extra parcel'}.</p>`:`<div class="seg2"><span>Paid</span><button type="button" data-im="c" data-k="hourly" data-v="0" aria-pressed="${!cfg.hourly}">Per parcel</button><button type="button" data-im="c" data-k="hourly" data-v="1" aria-pressed="${cfg.hourly}">By the hour</button></div>
+     ${[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel rate ($)'],['rh','Hourly rate ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}`}
      ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
-    </div><div class="acts"><button type="button" class="sh-btn primary" data-im="savecfg">Save details for next time</button><span class="sub">Only managers can see these.</span></div></details>`;
+    </div><div class="acts"><button type="button" class="sh-btn primary" data-im="savecfg">${role==='drv'?'Save my details':'Save details for next time'}</button><span class="sub">${role==='drv'?'Only you and the office can see these.':'Only managers and this driver can see these.'}</span></div></details>`;
   const showHr=cfg.hourly||R.some(r=>num(r.v.hr));const fmtH=x=>x==null?'':Math.floor(x)+'h '+String(Math.round((x%1)*60)).padStart(2,'0')+'m';
   const needTick=R.filter(r=>num(r.v.l1)||num(r.v.l2)),ticked=needTick.filter(r=>ticks[r.d]).length,allTicked=ticked===needTick.length;
   let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;
   h+=`<div class="tickbar ${allTicked?'ok':''}"><span><b>${ticked} of ${needTick.length}</b> days checked. Tick each day once you have checked the parcels are in the right column: 1 load or 2 loads.</span>${needTick.length&&!allTicked?'<button type="button" class="sh-btn sm" data-im="tickall">Tick all</button>':''}</div>
-   <div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th><th class="c">Checked</th></tr></thead><tbody>`;
+   <div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="c">Checked</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th></tr></thead><tbody>`;
   let wk=-1;const nc=showHr?9:8;
   for(const r of R){if(r.wk!==wk){wk=r.wk;h+=`<tr class="wk"><td colspan="${nc}">Week ${wk+1}${wk>3?' (outside the 4 week template)':''}</td></tr>`}
     const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;const hasP=num(r.v.l1)||num(r.v.l2);
     const said=r.auto&&r.auto.worked?(r.auto.tlSet?`Driver said ${r.auto.tl?'2 loads':'1 load'}`:'Driver did not answer loads'):'';
     const inp=k=>`<td class="r"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`;
     h+=`<tr class="${r.edited?'ed':''} ${r.auto?'':'none'} ${ticks[r.d]?'tk':''}"><td><b>${esc(short(r.d))}</b>${said?`<small class="sd ${r.auto.tlSet?'':'q'}">${said}</small>`:''}${r.note?`<small class="nt">${esc(r.note)}</small>`:''}${r.edited?`<button type="button" class="lk" data-im="undo" data-v="${r.d}">Undo change</button>`:''}</td>
-     ${inp('l1')}<td class="c">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
+     <td class="c">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td>${inp('l1')}<td class="c">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
      <td class="r">${dt?money(dt):''}</td><td class="r wk2">${r.auto&&r.auto.hrs?fmtH(r.auto.hrs):''}</td>
-     <td class="c">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td></tr>`}
-  h+=`</tbody><tfoot><tr><td>Totals</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td><td class="c">${ticked}/${needTick.length}</td></tr></tfoot></table></div>
+</tr>`}
+  h+=`</tbody><tfoot><tr><td>Totals</td><td class="c">${ticked}/${needTick.length}</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td></tr></tfoot></table></div>
    <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div><div class="wh"><span>Hours worked (for your info)</span><b>${worked?fmtH(worked):'None recorded'}</b></div></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${logs[logId(sid,from)]?`<p class="subd">Already submitted for this pay period on ${esc(nice(String(logs[logId(sid,from)].submittedAt||logs[logId(sid,from)].at||'').slice(0,10)))} (${esc(STAT[logs[logId(sid,from)].status]||'Submitted')}). Submitting again replaces it.</p>`:''}
@@ -7501,9 +7542,12 @@ function html(){
     <span class="sub">${allTicked?'Rows in grey had no work recorded. Type over any number to change it.':'Tick every day with parcels to unlock Submit.'}</span></div></section>`;
   return h;
 }
-function paint(){const box=document.getElementById('im_root');if(!box)return;const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
-  box.innerHTML=view==='list'?listHTML():html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
-function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[id]||{})};invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();showCfg=!cfgs[id];need();paint()}
+let lastToast=null;
+function toast(){if(!msg||msg===lastToast)return;lastToast=msg;let t=document.getElementById('im_toast');if(!t){t=document.createElement('div');t.id='im_toast';t.setAttribute('role','status');document.body.appendChild(t)}
+  t.textContent=msg.t;t.className=msg.err?'err show':'show';clearTimeout(t._h);t._h=setTimeout(()=>{t.className=t.className.replace(' show','')},4500)}
+function paint(){toast();const box=document.getElementById('im_root');if(!box)return;const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
+  box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
+function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg=mergeCfg(id);invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();showCfg=!cfgs[id]&&!mes[id];need();paint()}
 
 /* ---------- files ---------- */
 function loadScript(src,test){return new Promise((ok,no)=>{if(test())return ok();const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
@@ -7603,14 +7647,18 @@ function drawCover(doc,cv){
 const STAT={submitted:'Submitted',checked:'Checked',paid:'Paid'};
 
 /* ---------- submit and download from the maker ---------- */
+async function saveCfg(){const me2={};for(const k of MEK)me2[k]=cfg[k]||'';me2.at=new Date().toISOString();
+  if(role==='drv'){if(!(cfgs[sid]&&cfgs[sid].gst!==undefined))me2.gst=!!cfg.gst;await db.doc('invme/'+sid).set(me2);mes[sid]=me2;return}
+  const rc={};for(const k of RATEK)rc[k]=cfg[k];await db.doc('invcfg/'+sid).set(rc);cfgs[sid]=rc;await db.doc('invme/'+sid).set(me2);mes[sid]=me2}
 async function submit(){
   const inv=snap();if(!inv.rows.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
   if(!invNo.trim()){msg={err:true,t:'Add an invoice number first.'};paint();return}
   busy=true;msg={t:'Submitting…'};paint();
   const id=logId(sid,from);const prev=logs[id];
-  try{const by=(window.__webMe&&window.__webMe.email)||'';await db.doc('invlog/'+id).set({...inv,total:inv.T.total,status:prev&&prev.status==='paid'?'paid':'submitted',submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()});
-    if(!cfgs[sid]||JSON.stringify(cfgs[sid])!==JSON.stringify(cfg)){try{await db.doc('invcfg/'+sid).set({...cfg});cfgs[sid]={...cfg}}catch(x){}}
-    msg={t:(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
+  if(role==='drv'&&prev&&prev.status&&prev.status!=='submitted'){busy=false;msg={err:true,t:'The office has already '+(prev.status==='paid'?'paid':'checked')+' this invoice. Call the office if something needs changing.'};paint();return}
+  try{const by=(window.__webMe&&window.__webMe.email)||'';await db.doc('invlog/'+id).set({...inv,total:inv.T.total,status:role==='drv'?'submitted':(prev&&prev.status==='paid'?'paid':'submitted'),submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()});
+    try{await saveCfg()}catch(x){}
+    msg={t:role==='drv'?(prev?'Invoice updated and sent to the office.':'Invoice submitted to the office. Thank you.'):(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
   catch(e){msg={err:true,t:'Could not submit just now. Check your connection and try again.'}}
   busy=false;paint()}
 async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making…'}
@@ -7622,6 +7670,13 @@ async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.
 let view='make',lper='',lf='all';
 function periods(){const set=new Set(Object.values(logs).map(x=>x.from).filter(Boolean));const[a]=period(0),[b]=period(-1);set.add(a);set.add(b);return[...set].sort().reverse()}
 function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:nameOf(p),login:p.login,role:String(p.role||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.name&&(x.login||Object.values(logs).some(l=>l.sid===x.id))&&!['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR'].includes(x.role)).sort((a,b)=>a.name.localeCompare(b.name))}
+function myListHTML(){
+  const L=Object.entries(logs).map(([id,x])=>({id,...x})).sort((a,b)=>String(b.from).localeCompare(String(a.from)));
+  return `<section class="card im"><h2>My invoices</h2>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Pay period</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(v=>`<tr><td><b>${esc(nice(v.from))}</b> to ${esc(nice(v.to))}</td><td>No. ${esc(v.no)}<small>Sent ${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small></td><td class="r">${money(v.T?v.T.total:v.total)}</td><td><span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span></td>
+     <td class="acts2">${v.rows&&v.T?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
+   :'<div class="empty">You have not submitted an invoice in the app yet.</div>'}
+   <p class="sub">Once the office has checked your invoice it can no longer be changed here. Call the office if something is wrong.</p></section>`}
 function listHTML(){
   const P2=periods();if(!lper||!P2.includes(lper)){const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from===f));lper=withLogs[0]||period(-1)[0]}
   const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x}));const byS={};for(const x of L)byS[x.sid]=x;
@@ -7642,7 +7697,7 @@ function listHTML(){
      <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
      <td class="r">${v?money(v.T?v.T.total:v.total):''}</td>
      <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>`:''}</td>
-     <td class="acts2">${v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
+     <td class="acts2">${v&&!(v.rows&&v.T)?`<span class="sub old">Made before invoices were saved in full.</span><button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make again</button>`:v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
        ${v.status==='submitted'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Mark checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Mark paid</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo paid</button>`}`
        :`<button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make invoice</button>`}</td></tr>`}).join('')||'<tr><td colspan="5" class="sub">Nobody here.</td></tr>'}
    </tbody></table></div>
@@ -7660,14 +7715,14 @@ function exportSum(){if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsh
   const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});save(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Invoice summary ${lper} to ${add(lper,25)}.xlsx`).then(()=>{msg={t:'Summary saved.'};paint()}).catch(()=>{})}
 function openLog(id){const x=logs[id];if(!x)return;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;const p=staff[sid]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[sid]||{}),...(x.cfg||{})};
   ov={};ticks={};for(const r of x.rows||[]){ov[r.d]={l1:r.l1||'',l2:r.l2||'',xp:r.xp||'',hr:r.hr||''};ticks[r.d]=true}showCfg=false;msg={t:'Opened the submitted invoice. Change anything, then submit again to replace it.'};need();setView('make')}
-function setView(v){view=v;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?'sub':'make');else paint()}
+function setView(v){view=v;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?(role==='drv'?'mine':'sub'):'make');else paint()}
 
 /* ---------- events ---------- */
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]');if(!inMe(el))return;const a=el.dataset.im,v=el.dataset.v;
   if(a==='per'){[from,to]=period(+v);ov={};ticks={};need();msg=null;paint();return}
   if(a==='c'){cfg[el.dataset.k]=v==='1';ov={};paint();return}
-  if(a==='savecfg'){try{await db.doc('invcfg/'+sid).set({...cfg});cfgs[sid]={...cfg};msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
+  if(a==='savecfg'){try{await saveCfg();msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
   if(a==='undo'){delete ov[v];delete ticks[v];paint();return}
   if(a==='swap'){const r=rows().find(x=>x.d===v);if(r){ov[v]={...r.v,l1:r.v.l2,l2:r.v.l1};ticks[v]=true}paint();return}
   if(a==='tickall'){for(const r of rows())if(num(r.v.l1)||num(r.v.l2))ticks[r.d]=true;paint();return}
@@ -7696,7 +7751,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;const cur=rows().find(r=>r.d===d);const base=cur?{...cur.v}:{l1:'',l2:'',xp:'',hr:''};ov[d]={...base,...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('cfg')&&inMe(e.target))showCfg=e.target.open},true);
 
-window.INVMAKE={async mount(v){view=v||'make';await init();need();paint()}};
+window.INVMAKE={async mount(v,r){view=v||'make';await init(r);if(role==='drv'&&sid&&!cfg){cfg=mergeCfg(sid)}need();paint()}};
 })();
 
 </script>
@@ -8056,7 +8111,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251747';
+const VERSION='202610251800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -8106,6 +8161,7 @@ const db={
   collection(p){const c=fs.collection(p);return{
     path:p,
     async get(){if(WIN[p]){const h=hist(p);const q=await winQ(p,h.since).get();const docs=q.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}}return qSnap(await c.get())},
+    where(f,op,v){const q=c.where(f,op,v);return{get:async()=>qSnap(await q.get()),onSnapshot(cb,err){const u=q.onSnapshot(x=>cb(qSnap(x)),e=>{if(err)err(e)});subs.add(u);return u}}},
     async range(lo,hi){const f=firebase.firestore.FieldPath.documentId();let q=c;if(lo)q=q.where(f,'>=',lo);if(hi)q=q.where(f,'<',hi);return qSnap(await q.get())},
     onSnapshot(cb,err){if(WIN[p])return winListen(p,cb,err);const u=c.onSnapshot(q=>cb(qSnap(q)),e=>{if(err)err(e)});subs.add(u);return u},
     doc(id){return db.doc(p+'/'+id)}
@@ -8135,7 +8191,7 @@ window.__history=function(from,cols){
   return Promise.all(jobs)};
 window.__historyFrom=c=>WIN[c]?hist(c).from:'';
 /* ---------- backup: all the setup data, plus records added since the last backup ---------- */
-const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog'];
+const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
 const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks','reportimg'];
 window.__backup=async function(onStep){
   let last='';try{const m=await fs.doc('meta/backup').get();if(m.exists)last=m.data().upTo||''}catch(e){}
@@ -8224,11 +8280,11 @@ let syncT=null;
 async function syncAccess(){
   try{
     const st=await fs.collection('staff').get();const want={};
-    st.docs.forEach(d=>{const p=DEC(d.data())||{};const e=String(p.email||'').trim().toLowerCase();if(okMail(e))want[e]={role:'driver',name:[p.first,p.last].filter(Boolean).join(' '),staff:d.id}});
+    st.docs.forEach(d=>{const p=DEC(d.data())||{};const e=String(p.email||'').trim().toLowerCase();if(okMail(e))want[e]={role:'driver',name:[p.first,p.last].filter(Boolean).join(' '),staff:d.id,login:String(p.login||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')}});
     const ac=await fs.collection('access').get();const have={};ac.docs.forEach(d=>have[d.id]=d.data());
     let b=fs.batch(),n=0;
     const flush=async()=>{if(n){await b.commit();b=fs.batch();n=0}};
-    for(const e in want){const h=have[e];if(h&&h.role==='admin')continue;if(!h||h.name!==want[e].name||h.staff!==want[e].staff){b.set(fs.doc('access/'+e),want[e]);n++;if(n>=400)await flush()}}
+    for(const e in want){const h=have[e];if(h&&h.role==='admin')continue;if(!h||h.name!==want[e].name||h.staff!==want[e].staff||h.login!==want[e].login||h.run!==want[e].run){b.set(fs.doc('access/'+e),want[e]);n++;if(n>=400)await flush()}}
     for(const e in have){if(have[e].role==='driver'&&!want[e]){b.delete(fs.doc('access/'+e));n++;if(n>=400)await flush()}}
     await flush();
   }catch(e){console.warn('access sync',e)}
@@ -8351,7 +8407,7 @@ async function boot(){
   loading();
   ROLE=null;
   if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,emails:OWNERS.slice(),staff:'',name:'',role:'admin'}}
-  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE}}}catch(e){console.warn(e)}}
+  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE,login:d.login||'',run:d.run||''}}}catch(e){console.warn(e)}}
   if(!ROLE){deniedScreen();return}
   if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await fs.doc('meta/imported').get();if(!m.exists){importScreen();return}}catch(e){}}
   loading();
