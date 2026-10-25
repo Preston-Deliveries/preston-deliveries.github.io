@@ -2617,6 +2617,29 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .tel:active{filter:brightness(.92)}
 #sh-main #mod-directory .na{font-size:.82rem}
 #sh-main #mod-directory .srch input{border-radius:10px}
+</style><style id="ts-check">
+#sh-main #mod-timesheets .tsx>.ckk{order:-1}
+#mod-timesheets .ckk{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:12px}
+#mod-timesheets .ckh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px}
+#mod-timesheets .ckh h2{margin:0;font:700 1.15rem var(--sh-body)}
+#mod-timesheets .ckd{display:flex;align-items:center;gap:8px}
+#mod-timesheets .ckd b{font-weight:700;min-width:9.5rem;text-align:center}
+#mod-timesheets .ckg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:899.98px){#mod-timesheets .ckg{grid-template-columns:minmax(0,1fr)}}
+#mod-timesheets .ckc{border:1px solid var(--sh-line);border-radius:10px;padding:12px;background:var(--sh-sunk);box-shadow:inset 0 3px 0 var(--k);display:flex;flex-direction:column;gap:8px;min-width:0}
+#mod-timesheets .ckc.bad{--k:#C8352B;--ks:#FBE5E3;--kt:#B3261E}#mod-timesheets .ckc.warn{--k:#D98B00;--ks:#FDF1DC;--kt:#A35F00}#mod-timesheets .ckc.good{--k:#1E8A4C;--ks:#E3F4EA;--kt:#14804A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-timesheets .ckc.bad{--ks:#3D1C1E;--kt:#FF8A8E}:root:not([data-theme="light"]) #mod-timesheets .ckc.warn{--ks:#3A2C10;--kt:#F2B24A}:root:not([data-theme="light"]) #mod-timesheets .ckc.good{--ks:#14321F;--kt:#5CCB8E}}
+:root[data-theme="dark"] #mod-timesheets .ckc.bad{--ks:#3D1C1E;--kt:#FF8A8E}:root[data-theme="dark"] #mod-timesheets .ckc.warn{--ks:#3A2C10;--kt:#F2B24A}:root[data-theme="dark"] #mod-timesheets .ckc.good{--ks:#14321F;--kt:#5CCB8E}
+#mod-timesheets .ckc h3{margin:0;display:flex;align-items:center;gap:8px;font:700 .95rem var(--sh-body);color:var(--kt)}
+#mod-timesheets .ckc h3 span{margin-left:auto;background:var(--k);color:#fff;border-radius:999px;min-width:26px;padding:2px 8px;text-align:center;font-size:.85rem}
+#mod-timesheets .ckl{display:flex;flex-wrap:wrap;gap:6px;max-height:260px;overflow:auto}
+#mod-timesheets .ckp{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;border:1px solid transparent;background:var(--ks);color:var(--sh-ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:.9rem;cursor:pointer;text-align:left}
+#mod-timesheets .ckp:hover{border-color:var(--k)}
+#mod-timesheets .ckp small{color:var(--sh-muted);font-size:.78rem}
+#mod-timesheets .ckp em{font-style:normal;font-weight:700;font-size:.78rem;color:var(--kt)}
+#mod-timesheets .ckc .none{margin:0;font-size:.85rem;color:var(--sh-muted)}
+#mod-timesheets .ckn{margin:0;font-size:.82rem;color:var(--sh-muted)}
+#mod-timesheets .ckold{background:var(--sh-surface)}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -7608,7 +7631,7 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return 
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let delArm=null,lastDel=null,openWk={},sq='',person=null,per='month',mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
+let leave={},ckDay=null,delArm=null,lastDel=null,openWk={},sq='',person=null,per='month',mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
 /* ---------- people ---------- */
 function people(){const out={};for(const[id,p]of Object.entries(staff)){const login=dkey(p.login);out[login||'id:'+id]={id,login,name:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', '),role:String(p.role||'').toUpperCase()}}return out}
 function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).sort();return ds.length?ds[ds.length-1]:TODAY}
@@ -7688,6 +7711,46 @@ function searchHTML(){
   ${L.length?`<div class="sug" role="listbox">${L.map(p=>`<button type="button" role="option" data-ts="pick" data-v="${esc(p.id)}"><b>${esc(p.name)}</b><small>${esc([p.no,p.login].filter(Boolean).join(' · '))}</small></button>`).join('')}</div>`:(t&&!person?'<div class="sug"><span class="none">No driver matches that.</span></div>':'')}</div>`;
 }
 const TSC=['clock','timesheets','days'];
+/* ---------- who hasn't clocked in or out ---------- */
+const nowDay=()=>{try{const o={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()))o[x.type]=x.value;return o.year+'-'+o.month+'-'+o.day}catch(e){return iso(new Date())}};
+function checkData(d){
+  const P=Object.values(people()).filter(p=>p.id&&!OFFICE.includes(p.role));
+  const off=new Set();for(const b of Object.values(leave))if((b.days||[]).includes(d))off.add(dkey(b.name));
+  const res=new Set(Object.keys((days[d]&&days[d].rows)||{}).map(dkey));
+  const dow=fromIso(d).getDay(),wkday=dow>=1&&dow<=5;
+  const not=[],on=[],done=[],lv=[];
+  for(const p of P){const id=d+'_'+p.id,c=clock[id],o=ts[id]||{};if(o.removed&&!(c&&String(c.updatedAt||'')>String(o.removedAt||'')))continue;
+    const st=o.start||(c&&c.start),fi=o.finish||(c&&c.finish);
+    if(st){(fi?done:on).push({p,st});continue}
+    const expected=res.has(p.login)||(wkday&&p.no&&!p.role.includes('RELIEF'));
+    if(!expected)continue;
+    (off.has(dkey(p.name))?lv:not).push({p})}
+  const by=(a,b)=>a.p.name.localeCompare(b.p.name);[not,on,done,lv].forEach(a=>a.sort(by));
+  return{not,on,done,lv};
+}
+function openEarlier(today){
+  const out=[];const from=add(today,-7);
+  for(const[id,c]of Object.entries(clock)){if(!c||!c.start||!c.date||c.date>=today||c.date<from)continue;const o=ts[id]||{};if(c.finish||o.finish||o.removed)continue;const p=Object.values(people()).find(x=>x.id===c.staff)||{id:c.staff,name:c.name||c.staff,no:''};out.push({p,d:c.date,st:c.start})}
+  return out.sort((a,b)=>b.d.localeCompare(a.d)||a.p.name.localeCompare(b.p.name));
+}
+const nice12=t=>{const m=toMin(t);if(m==null)return t||'';let h=Math.floor(m/60);const mm=m%60,ap=h<12?'am':'pm';h=h%12||12;return h+(mm?':'+pad(mm):'')+ap};
+function checkStat(){if(!window.APP||!APP.stat)return;const T=nowDay(),c=checkData(T);const parts=[];if(c.not.length)parts.push(c.not.length+' not clocked in');if(c.on.length)parts.push(c.on.length+' still on shift');const o=openEarlier(T).length;if(o)parts.push(o+' didn’t clock out');APP.stat('timesheets',parts.length?'Today: '+parts.join(', '):(c.done.length?'Today: everyone has clocked out':''))}
+function checkHTML(){
+  const T=nowDay();const d=ckDay||T;const c=checkData(d);const past=d<T;
+  const chip=(x,extra)=>`<button type="button" class="ckp" data-ts="pick" data-v="${esc(x.p.id)}"><b>${esc(x.p.name)}</b>${x.p.no?`<small>${esc(x.p.no)}</small>`:''}${extra?`<em>${esc(extra)}</em>`:''}</button>`;
+  const col=(cls,title,L,extra,empty)=>`<div class="ckc ${cls}"><h3>${title}<span>${L.length}</span></h3>${L.length?`<div class="ckl">${L.map(x=>chip(x,extra&&extra(x))).join('')}</div>`:`<p class="none">${empty}</p>`}</div>`;
+  const oe=openEarlier(T);
+  const lab=d===T?'Today, '+longD(d).replace(/ \d{4}$/,''):longD(d).replace(/ \d{4}$/,'');
+  return `<section class="card ckk"><div class="ckh"><h2>Clock in check</h2><div class="ckd"><button type="button" class="sh-btn sm" data-ts="ckprev" aria-label="Day before">‹</button><b>${esc(lab)}</b><button type="button" class="sh-btn sm" data-ts="cknext" aria-label="Next day" ${d>=T?'disabled':''}>›</button>${d!==T?'<button type="button" class="sh-btn sm" data-ts="cktoday">Today</button>':''}</div></div>
+   <div class="ckg">
+    ${col('bad','Not clocked in',c.not,null,'Everyone expected has clocked in.')}
+    ${col('warn',past?'Didn’t clock out':'Still clocked in',c.on,x=>'In '+nice12(x.st),past?'No one left a shift open.':'No one is on shift.')}
+    ${col('good','Clocked out',c.done,null,'No finished shifts yet.')}
+   </div>
+   ${c.lv.length?`<p class="ckn"><b>On leave:</b> ${c.lv.map(x=>esc(x.p.name)).join(', ')}</p>`:''}
+   ${oe.length&&d===T?`<div class="ckc warn ckold"><h3>Didn’t clock out on an earlier day<span>${oe.length}</span></h3><div class="ckl">${oe.map(x=>chip(x,longD(x.d).replace(/ \d{4}$/,'')+', in '+nice12(x.st))).join('')}</div></div>`:''}
+   <p class="ckn">Expected each weekday: drivers with a run on the Drivers page, plus anyone in that day’s results. Relief drivers only show once they clock in or are in the results. Tap a name to open their timesheet and fix a time.</p></section>`;
+}
 function render(){
   const box=document.getElementById('ts_root');if(!box)return;
   if(mode!=='mgr'){box.innerHTML='<div class="tsx"><div class="empty">Loading…</div></div>';return}
@@ -7695,10 +7758,11 @@ function render(){
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:'';
   if(mode==='mgr'&&window.needHist){if(person)window.needHist(periodRange()[0],TSC);else if(wk)window.needHist(monday(wk),TSC)}
   if(person){box.innerHTML=`<div class="tsx">${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
-  const W=weekHTML();
+  const W=weekHTML();checkStat();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
    ${searchHTML()}
    ${m}
+   ${checkHTML()}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
    ${W.secs}
@@ -7758,6 +7822,9 @@ document.addEventListener('click',e=>{
   if(a==='pclear'){person=null;sq='';render();return}
   if(a==='px'){const p=Object.values(people()).find(x=>x.id===person)||{name:person};const [f,t2]=periodRange();exportRange(f,t2,'Timesheet '+p.name+' '+((PER.find(x=>x[0]===per)||['',''])[1])+'.xlsx',person);return}
   if(a==='pp'){personPdf(el);return}
+  if(a==='ckprev'){ckDay=add(ckDay||nowDay(),-1);render();return}
+  if(a==='cknext'){const n=add(ckDay||nowDay(),1);ckDay=n>=nowDay()?null:n;render();return}
+  if(a==='cktoday'){ckDay=null;render();return}
   if(a==='prev'||a==='next'){wk=add(monday(wk),a==='prev'?-7:7);dsel=null;dselUser=false;render();return}
   if(a==='latest'){wk=latest();dsel=null;dselUser=false;render();return}
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
@@ -7791,6 +7858,8 @@ async function start(role){
   db.collection('clock').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);clock=m;if(!typing())render()},()=>{});
   db.collection('days').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v&&v.date)m[v.date]=v}days=m;if(!typing())render()},()=>{});
   db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())render()},()=>{});
+  db.collection('leave').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);leave=m;if(!typing())render()},()=>{});
+  setInterval(()=>{if(!typing())checkStat()},60000);
 }
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -8781,7 +8850,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261130';
+const VERSION='202610261145';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
