@@ -999,6 +999,23 @@ body.sh-uv-on{overflow:hidden}
 #mod-briefs .mon[open]>summary::before{transform:rotate(90deg)}
 #mod-briefs .mon .ml{font-family:var(--sh-display);font-size:1.35rem;font-weight:700;color:var(--sh-ink)}
 #mod-briefs .mon .mc{color:var(--sh-muted);font-size:.86rem;font-weight:600}
+#mod-briefs .sign{margin-top:18px;border:1px solid var(--sh-line);border-radius:8px;padding:16px;background:var(--sh-sunk);display:flex;flex-direction:column;gap:10px}
+#mod-briefs .sign h3{margin:0;font-size:1.15rem}
+#mod-briefs .sign.done{background:#EAF6EE;border-color:#9FD3B3}
+#mod-briefs .sign .agree{display:flex;gap:10px;align-items:flex-start;font-weight:600;font-size:1rem}
+#mod-briefs .sign .agree input{width:24px;height:24px;flex:none;margin-top:1px}
+#mod-briefs .padwrap{position:relative;background:#fff;border:2px dashed #9AA6B5;border-radius:8px}
+#mod-briefs .padwrap canvas{display:block;width:100%;height:auto;aspect-ratio:3/1;touch-action:none;cursor:crosshair}
+#mod-briefs .padhint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#9AA6B5;font-size:1.2rem;pointer-events:none}
+#mod-briefs .signrow{display:flex;gap:10px}#mod-briefs .signrow .big{flex:1;min-height:48px!important;font-size:1.05rem!important}
+#mod-briefs .sigimg{max-width:300px;width:100%;background:#fff;border:1px solid var(--sh-line);border-radius:8px}
+#mod-briefs .sigl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+#mod-briefs .sigr{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+#mod-briefs .sigr span{font-size:.82rem;color:var(--sh-muted)}#mod-briefs .sigr img{width:100%;max-height:60px;object-fit:contain;background:#fff}
+#mod-briefs .ns summary{cursor:pointer;font-weight:600}
+#mod-briefs .sgd{background:#1E8A4C;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
+#mod-briefs .tosign{background:#D98B00;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
+#mod-briefs .cntsig{background:var(--sh-accent-soft);color:var(--sh-accent);font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 </style>
 <style id="leave-css">#mod-leave{--lv-open-bg:#E6F5EB;--lv-open-bd:#1E8A4C;--lv-open-ink:#0F5530;--lv-one-bg:#FFF1D6;--lv-one-bd:#C77A00;--lv-one-ink:#6E4200;--lv-full-bg:#FCE3E0;--lv-full-bd:#C8352B;--lv-full-ink:#8A1C14;--lv-bo1:#E6EAE8;--lv-bo2:#F3F5F4;--lv-bo-ink:#45524D;--lv-chip:#FFFFFF;--lv-chip-ink:#14201D;--lv-chip-bd:rgba(20,32,29,.22)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-leave{--lv-open-bg:#123222;--lv-open-bd:#3DBE74;--lv-open-ink:#9BE8BA;--lv-one-bg:#36290E;--lv-one-bd:#E8A63A;--lv-one-ink:#FFD58A;--lv-full-bg:#3A181B;--lv-full-bd:#EE6A5E;--lv-full-ink:#FFB3AA;--lv-bo1:#1F2725;--lv-bo2:#283230;--lv-bo-ink:#B9C6C1;--lv-chip:#0E1412;--lv-chip-ink:#F2F7F5;--lv-chip-bd:rgba(255,255,255,.22)}}
@@ -4655,7 +4672,7 @@ const MON=['January','February','March','April','May','June','July','August','Se
 const fmt=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${+m[3]} ${MON[+m[2]-1]} ${m[1]}`:(iso||'')};
 const fmtShort=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${+m[3]} ${MON[+m[2]-1].slice(0,3)}`:''};
 let docDate='',docFacility='';
-let mode='wait', db=null, briefs={}, openId=null, creating=false, armDel=false, msg=null, busy=null, pageCache={}, zoomSrc=null;
+let sigs={},me=null,pad={strokes:[],agree:false,busy:false,err:''},mode='wait', db=null, briefs={}, openId=null, creating=false, armDel=false, msg=null, busy=null, pageCache={}, zoomSrc=null;
 const isMgr=()=>mode==='mgr';
 const monOpen={};
 function months(v){const out=[],by={};v.forEach((b,i)=>{const m=/^(\d{4})-(\d{2})/.exec(b.date||'');const key=m?m[1]+'-'+m[2]:'none';if(!by[key]){by[key]={key,label:m?`${MON[+m[2]-1]} ${m[1]}`:'No date',items:[]};out.push(by[key])}by[key].items.push({b,i})});return out}
@@ -4693,11 +4710,51 @@ function hydrate(root){
   });
 }
 /* ---------- render ---------- */
+const sigId=(bid,sid)=>bid+'_'+sid;
+const mySig=bid=>me&&sigs[sigId(bid,me.staff)];
+const sigsFor=bid=>Object.values(sigs).filter(x=>x&&x.brief===bid).sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+const when=v=>{const d=new Date(v);return isNaN(d)?'':d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' at '+d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})};
+function signHTML(b){
+  if(!me)return '';
+  const s=mySig(b.id);
+  if(s)return `<section class="sign done"><h3>Signed ✓</h3><p>You confirmed you read and understood this brief on <b>${esc(when(s.signedAt))}</b>.</p>${s.sig?`<img class="sigimg" src="${s.sig}" alt="Your signature">`:''}</section>`;
+  return `<section class="sign"><h3>Sign this brief</h3>
+    <label class="agree"><input type="checkbox" id="tb_agree" ${pad.agree?'checked':''}> I have read and understood this team brief and its attachments.</label>
+    <p class="sub">Sign with your finger in the box below.</p>
+    <div class="padwrap"><canvas id="tb_pad" width="900" height="300" aria-label="Signature pad"></canvas><span class="padhint">${pad.strokes.length?'':'Sign here'}</span></div>
+    <div class="signrow"><button type="button" class="sh-btn" data-tb="padclear">Clear</button><button type="button" class="sh-btn primary big" data-tb="sign" ${pad.busy?'disabled':''}>Sign and submit</button></div>
+    ${pad.err?`<p class="msg err" role="status">${esc(pad.err)}</p>`:''}</section>`;
+}
+function signedHTML(b){
+  const L=sigsFor(b.id);
+  return `<section class="sign mgrs"><h3>Signed by ${L.length} ${L.length===1?'person':'people'}</h3>${L.length?`<div class="sigl">${L.map(x=>`<div class="sigr"><b>${esc(x.name||x.staff)}</b><span>${esc(when(x.signedAt))}</span>${x.sig?`<img src="${x.sig}" alt="Signature of ${esc(x.name||'')}">`:''}</div>`).join('')}</div>`:'<p class="sub">No one has signed this brief yet.</p>'}
+   ${notSigned.length?`<details class="ns"><summary>Not signed yet (${notSigned.length})</summary><p>${notSigned.filter(n=>!L.some(x=>x.staff===n.id)).map(n=>esc(n.name)).join(', ')}</p></details>`:''}</section>`;
+}
+let notSigned=[];
+function drawPad(){const cv=document.getElementById('tb_pad');if(!cv)return;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.lineWidth=5;g.lineCap='round';g.lineJoin='round';g.strokeStyle='#111A27';
+  for(const st of pad.strokes){g.beginPath();st.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));if(st.length===1)g.lineTo(st[0][0]+.1,st[0][1]);g.stroke()}}
+function wirePad(){const cv=document.getElementById('tb_pad');if(!cv||cv._w)return;cv._w=1;drawPad();let cur=null;
+  const pt=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+  cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);cur=[pt(e)];pad.strokes.push(cur);pad.err='';const h=cv.parentNode.querySelector('.padhint');if(h)h.textContent='';drawPad()});
+  cv.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();cur.push(pt(e));drawPad()});
+  const end=()=>{cur=null};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  cv.style.touchAction='none';}
+async function submitSig(b){
+  if(!pad.agree){pad.err='Tick the box to confirm you have read and understood it.';render();return}
+  const ink=pad.strokes.reduce((n,s)=>n+s.length,0);if(ink<8){pad.err='Please sign in the box.';render();return}
+  const cv=document.getElementById('tb_pad');const out=document.createElement('canvas');out.width=450;out.height=150;const g=out.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,450,150);g.drawImage(cv,0,0,450,150);
+  const data={brief:b.id,staff:me.staff,name:me.name||'',agreed:true,sig:out.toDataURL('image/png'),signedAt:db.serverTime?db.serverTime():new Date().toISOString()};
+  pad.busy=true;render();
+  try{await db.doc('briefsigs/'+sigId(b.id,me.staff)).set(data);sigs[sigId(b.id,me.staff)]={...data,signedAt:new Date().toISOString()};pad={strokes:[],agree:false,busy:false,err:''};}
+  catch(e){console.warn(e);pad.busy=false;pad.err='Could not save your signature. Check your signal and try again.'}
+  render();
+}
+async function loadMine(){if(!me||!db||isMgr())return;for(const b of visible()){const id=sigId(b.id,me.staff);if(id in sigs)continue;try{const d=await db.doc('briefsigs/'+id).get();if(d.exists)sigs[id]=__D(d);else sigs[id]=null}catch(e){}}render()}
 function render(){
   const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='<div class="tbx"><div class="empty">Opening team briefs</div></div>';return}
   if(creating&&isMgr()){box.innerHTML=newHTML();return}
-  if(openId){box.innerHTML=briefHTML(briefs[openId]);hydrate(box);return}
+  if(openId){const a=document.activeElement;if(pad.strokes.length&&document.getElementById('tb_pad')&&!pad.busy&&!pad.err&&!pad._force)return;box.innerHTML=briefHTML(briefs[openId]);hydrate(box);wirePad();return}
   const v=visible();
   box.innerHTML=`<div class="tbx">
     <div class="head"><h1>Team briefs</h1><span class="cnt">${v.length} brief${v.length===1?'':'s'}</span>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-tb="new">+ New team brief</button></div>`:''}</div>
@@ -4705,7 +4762,7 @@ function render(){
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
     ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>`<div class="row"><button type="button" class="item" data-tb="open" data-v="${esc(b.id)}">
       <span class="date"><b>${esc(fmtShort(b.date))}</b><small>${esc(String(b.date||'').slice(0,4))}</small></span>
-      <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
+      <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}${!isMgr()&&me?(mySig(b.id)?' <span class="sgd">Signed ✓</span>':' <span class="tosign">Please sign</span>'):''}${isMgr()?` <span class="cntsig">${sigsFor(b.id).length} signed</span>`:''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
       <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button>`:''}</div>`).join('')}</div></details>`).join('')
       :`<div class="empty">${isMgr()?'No team briefs yet. Add the first one with the button above.':'No team brief has been posted yet.'}</div>`}
   </div>`;
@@ -4725,6 +4782,7 @@ function briefHTML(b){
       <button type="button" class="sh-btn ${b.shown?'':'primary'}" data-tb="toggle">${b.shown?'Hide from drivers':'Show to drivers'}</button>
       <span class="sp"></span><button type="button" class="sh-btn danger ${armDel?'arm':''}" data-tb="del">${armDel?'Tap again to delete':'Delete brief'}</button></div>
       ${busy?`<p class="msg" role="status">${esc(busy)}</p>`:''}`:''}
+    ${isMgr()?signedHTML(b):''}${signHTML(b)}
    </article>
    ${zoomSrc?`<div class="zoom" data-tb="unzoom" role="dialog" aria-label="Page"><span class="hint">Tap the page to make it bigger</span><img src="${zoomSrc}" alt="Page" data-tb="bigger"><button type="button" class="sh-btn" data-tb="unzoom">Close</button></div>`:''}
   </div>`;
@@ -4843,13 +4901,14 @@ async function signSheet(btn,bid){
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){return done({err:true,t:'The PDF maker did not load. Check your connection and try again.'})}
   let people=[];
-  try{const s=await db.collection('staff').get();people=s.docs.map(d=>__D(d))}catch(e){people=[]}
+  try{const s=await db.collection('staff').get();people=s.docs.map(d=>({...__D(d),_id:d.id}))}catch(e){people=[]}
   const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
   const ORDER=['4214','4215','4217','4218','XL','XL RELIEF','RELIEF','SUPERVISOR'];
   const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,c)=>a+c.toUpperCase());
   const dn=p=>parseInt(String((p.runs||[])[0]||'').replace(/\D/g,''),10)||999;
   people=people.filter(p=>!OUT.includes(String(p.role||'').toUpperCase())).sort((a,c)=>{const ra=ORDER.indexOf(String(a.role).toUpperCase()),rc=ORDER.indexOf(String(c.role).toUpperCase());return (ra<0?99:ra)-(rc<0?99:rc)||dn(a)-dn(c)||tc(a.first+' '+a.last).localeCompare(tc(c.first+' '+c.last))});
-  const rows=people.map((p,i)=>[String(i+1),tc([p.first,p.last].filter(Boolean).join(' ')),'','']);
+  const SG={};for(const x of sigsFor(b.id))SG[x.staff]=x;const sgOf=[];const shortD=v=>{const d=new Date(v);return isNaN(d)?'':d.getDate()+'/'+(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)};
+  const rows=people.map((p,i)=>{const x=SG[p._id];sgOf.push(x||null);return[String(i+1),tc([p.first,p.last].filter(Boolean).join(' ')),'',x?shortD(x.signedAt):'']});
   if(rows.length%2)rows.push([String(rows.length+1),'','','']);
   rows.push([String(rows.length+1),'','',''],[String(rows.length+2),'','','']);
   const {jsPDF}=window.jspdf;
@@ -4873,7 +4932,7 @@ async function signSheet(btn,bid){
     const half2=Math.ceil(rows.length/2),parts=[rows.slice(0,half2),rows.slice(half2)];
     const tw=(W-16-4)/2;
     parts.forEach((part,pi)=>{
-      doc.autoTable({head:[['#','NAME','SIGNATURE','DATE']],body:part,startY:y,margin:{top:y,left:8+pi*(tw+4),right:W-(8+pi*(tw+4)+tw),bottom:10},tableWidth:tw,theme:'grid',rowPageBreak:'avoid',
+      const off=pi?half2:0;doc.autoTable({head:[['#','NAME','SIGNATURE','DATE']],body:part,didDrawCell:d=>{if(d.section!=='body'||d.column.index!==2)return;const x=sgOf[off+d.row.index];if(!x||!x.sig)return;const h=d.cell.height-1,w=Math.min(d.cell.width-1,h*3);try{d.doc.addImage(x.sig,'PNG',d.cell.x+.5,d.cell.y+.5,w,h)}catch(e){}},startY:y,margin:{top:y,left:8+pi*(tw+4),right:W-(8+pi*(tw+4)+tw),bottom:10},tableWidth:tw,theme:'grid',rowPageBreak:'avoid',
         styles:{font:'helvetica',fontSize:7.4,textColor:INK,lineColor:LINE,lineWidth:.2,minCellHeight:rowH,valign:'middle',cellPadding:{left:1.4,right:1.4,top:.4,bottom:.4},overflow:'ellipsize'},
         headStyles:{fillColor:[238,242,240],textColor:MUT,fontStyle:'bold',fontSize:6.6,minCellHeight:5},
         columnStyles:{0:{cellWidth:6,halign:'right',textColor:MUT},1:{cellWidth:40,fontStyle:'bold',overflow:'linebreak',fontSize:6.9},2:{cellWidth:'auto'},3:{cellWidth:15}}});
@@ -4896,7 +4955,9 @@ document.addEventListener('click',async e=>{
   if(a==='cancel'){if(busy)return;creating=false;msg=null;render();return}
   if(a==='create'){if(!busy)create();return}
   if(a==='open'){openId=el.dataset.v;msg=null;render();window.scrollTo(0,0);return}
-  if(a==='back'){openId=null;msg=null;zoomSrc=null;render();return}
+  if(a==='padclear'){pad.strokes=[];pad.err='';pad._force=1;render();pad._force=0;return}
+  if(a==='sign'){pad._force=1;await submitSig(briefs[openId]);pad._force=0;return}
+  if(a==='back'){pad={strokes:[],agree:false,busy:false,err:''};openId=null;msg=null;zoomSrc=null;render();return}
   if(a==='zoom'){const im=el.querySelector('img');if(im&&im.src){zoomSrc=im.src;render()}return}
   if(a==='bigger'){el.classList.toggle('big');return}
   if(a==='unzoom'){if(e.target.tagName==='IMG')return;zoomSrc=null;render();return}
@@ -4905,13 +4966,16 @@ document.addEventListener('click',async e=>{
   if(a==='del'){delBrief();return}
   if(a==='sheet'){signSheet(el,el.dataset.v);return}
 });
-document.addEventListener('change',e=>{if(e.target.id==='tb_more'&&e.target.files.length)addMore([...e.target.files])});
+document.addEventListener('change',e=>{if(e.target.id==='tb_agree'){pad.agree=e.target.checked;return}if(e.target.id==='tb_more'&&e.target.files.length)addMore([...e.target.files])});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&zoomSrc){zoomSrc=null;render()}});
 async function start(role){
   try{db=await window.__getDb()}catch(e){db=null}
   mode=role==='mgr'?'mgr':'drv';
   if(!db){msg={err:true,t:'Team briefs only open inside Claude while you are signed in.'};render();return}
-  db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();
+  try{me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
+  if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
+    db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).filter(p=>!OUT.includes(String(p.role||'').toUpperCase())).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
+  db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
     if(busy||creating)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-briefs .card'))return;render()},()=>{msg={err:true,t:'Could not load team briefs just now. Reload the page.'};render()});
 }
 render();
@@ -6840,7 +6904,7 @@ function histHTML(){
   return `<section class="ck-hist"><h2>Your last 7 days</h2>${rows.length?`<div class="ck-tab">${rows.map(r=>{const w=r.finish?toMin(r.finish)-toMin(r.start)-(+r.brk||0):null;return `<div class="ck-r"><b>${esc(longDay(r.date))}</b><span>${esc(nice(r.start))} to ${r.finish?esc(nice(r.finish)):'<i>not finished</i>'}${r.finish?` · ${r.brk?r.brk+' min break':'no break'}`:''}${r.extra?` · ${r.extra} extra`:''}${r.twoLoads?' · 2 loads':''}${r.held?' · held parcels':''}</span><em>${w!=null&&w>0?hrs(w):''}</em></div>`}).join('')}<div class="ck-r tot"><b>Total</b><span></span><em>${hrs(tot)}</em></div></div>`:'<p class="ck-none">No shifts recorded yet.</p>'}</section>`;
 }
 function render(){const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
-async function mount(){render();if(!loaded&&!busy){busy=true;await load();busy=false}render()}
+async function mount(){render();if(!loaded&&!busy){busy=true;if(!loadP)loadP=load();await loadP;loadP=null;busy=false}render()}
 
 async function save(fn,okMsg){busy=true;msg=null;render();try{await fn();msg=okMsg?{t:okMsg}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
 const base=()=>({staff:me.staff,name:me.name||'',date:today});
@@ -6878,7 +6942,9 @@ document.addEventListener('click',async e=>{
 });
 document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){loaded=false;mount()}});
-window.CLOCK={mount};
+let loadP=null;
+async function whoami(){if(!loaded){if(!loadP)loadP=load();await loadP}return me&&me.staff?me:null}
+window.CLOCK={mount,whoami};
 })();
 
 </script>
@@ -6890,7 +6956,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251214';
+const VERSION='202610251220';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();

@@ -27,7 +27,7 @@ service cloud.firestore {
     function adminOnly(col) {
       return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs'];
     }
 
     function myStaff() {
@@ -49,6 +49,17 @@ service cloud.firestore {
           || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
              && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time))));
       allow delete: if isAdmin();
+    }
+    // Team brief sign off: each person signs once for themselves; only admins change or remove
+    match /briefsigs/{id} {
+      allow read: if isAdmin() || (hasAccess() && (resource == null || resource.data.staff == myStaff()));
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && id == request.resource.data.brief + '_' + myStaff()
+        && request.resource.data.keys().hasOnly(['brief', 'staff', 'name', 'agreed', 'sig', 'signedAt'])
+        && request.resource.data.signedAt == request.time
+        && request.resource.data.sig is string && request.resource.data.sig.size() < 300000);
+      allow update, delete: if isAdmin();
     }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());
