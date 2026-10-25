@@ -2173,6 +2173,8 @@ body.sh-uv-on{overflow:hidden}
 #sh-main h1.sh-dup{display:none!important}
 #sh-main :is(.head,.dm-head):has(>h1.sh-dup)+.lead,#sh-main #mod-survey header:has(h1.sh-dup),#sh-main #mod-results header.top:has(h1.sh-dup)>div:first-child,#sh-main #mod-guide .home-head,#sh-main #mod-guide .bar .brand{display:none!important}
 #sh-main :is(.head,.dm-head):has(>h1.sh-dup):not(:has(>:not(h1))){display:none}
+/* a heading row left with nothing showing takes no space */
+#sh-main :is(.head,.dm-head):not(:has(>:not(h1.sh-dup,[hidden]))){display:none!important}
 
 /* Tools row under the band: buttons on the left, count on the right */
 #sh-main :is(.head,.dm-head):has(>h1.sh-dup) .act{order:1;margin-left:0}
@@ -8736,7 +8738,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261035';
+const VERSION='202610261045';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
