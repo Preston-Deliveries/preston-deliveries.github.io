@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="1161">
+<meta name="apple-mobile-web-app-title" content="PDS">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F2F4F7;color:#111A27}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 body:not(.web-ready) .sh-app{display:none}
@@ -41,6 +41,8 @@ body:not(.web-ready) .sh-app{display:none}
 #web-gate .wg-load{text-align:center;color:#5A6576;margin:12px 0 4px}
 #web-gate .wg-spin{width:34px;height:34px;margin:10px auto 0;border:4px solid #E3EAF3;border-top-color:#1B3F6B;border-radius:50%;animation:wgspin .9s linear infinite}
 @keyframes wgspin{to{transform:rotate(360deg)}}
+#web-off{position:fixed;left:0;right:0;bottom:0;z-index:2500;padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px));background:#5A3200;color:#FFE2B0;font:600 .88rem "Barlow",system-ui,sans-serif;text-align:center}
+#web-off[hidden]{display:none}
 .web-out{background:none;border:1px solid rgba(255,255,255,.22);color:#C8D1DE;border-radius:6px;font:600 .78rem "Barlow",system-ui,sans-serif;padding:5px 10px;cursor:pointer}
 .sh-side .web-out{margin:8px 8px 0;align-self:flex-start}
 .sh-mtop .web-out{margin-left:auto}
@@ -1013,6 +1015,8 @@ body.sh-uv-on{overflow:hidden}
 #mod-briefs .sigr{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
 #mod-briefs .sigr span{font-size:.82rem;color:var(--sh-muted)}#mod-briefs .sigr img{width:100%;max-height:60px;object-fit:contain;background:#fff}
 #mod-briefs .ns summary{cursor:pointer;font-weight:600}
+#mod-briefs .remind{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
+#mod-briefs .remind span{font-size:.86rem;color:var(--sh-muted);flex:1;min-width:200px}
 #mod-briefs .sgd{background:#1E8A4C;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .tosign{background:#D98B00;color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
 #mod-briefs .cntsig{background:var(--sh-accent-soft);color:var(--sh-accent);font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle}
@@ -1213,6 +1217,11 @@ body.sh-uv-on{overflow:hidden}
 #mod-invoices .im td input{width:84px;text-align:right;padding:6px 8px;font-size:.95rem}
 #mod-invoices .im tr.wk td{background:var(--sh-sunk);font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted);padding:6px 10px}
 #mod-invoices .im tr.none td{opacity:.55}
+#mod-invoices .im tr.chk td{background:#FFF6CC}
+#mod-invoices .im tr.chk .why{display:block;margin-top:4px;color:#6B4E00;font-weight:600;white-space:normal;max-width:280px}
+#mod-invoices .im .chknote{margin:0 0 10px;padding:9px 12px;border-radius:6px;background:#FFF6CC;border:1px solid #E8C547;color:#5A4200;font-size:.9rem}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .im tr.chk td,:root:not([data-theme="light"]) #mod-invoices .im .chknote{background:#3A3210;color:#FFE9A8;border-color:#7A6514}:root:not([data-theme="light"]) #mod-invoices .im tr.chk .why{color:#FFE9A8}}
+:root[data-theme="dark"] #mod-invoices .im tr.chk td,:root[data-theme="dark"] #mod-invoices .im .chknote{background:#3A3210;color:#FFE9A8;border-color:#7A6514}:root[data-theme="dark"] #mod-invoices .im tr.chk .why{color:#FFE9A8}
 #mod-invoices .im tr.ed td:first-child{box-shadow:inset 3px 0 0 var(--sh-accent)}
 #mod-invoices .im small.nt{display:block;color:#B4570C;font-size:.76rem}
 #mod-invoices .im .lk{display:block;border:0;background:none;padding:0;color:var(--sh-accent);font:600 .76rem var(--sh-body);cursor:pointer;text-decoration:underline}
@@ -5088,7 +5097,7 @@ function signHTML(b){
 function signedHTML(b){
   const L=sigsFor(b.id);
   return `<section class="sign mgrs"><h3>Signed by ${L.length} ${L.length===1?'person':'people'}</h3>${L.length?`<div class="sigl">${L.map(x=>`<div class="sigr"><b>${esc(x.name||x.staff)}</b><span>${esc(when(x.signedAt))}</span>${x.sig?`<img src="${x.sig}" alt="Signature of ${esc(x.name||'')}">`:''}</div>`).join('')}</div>`:'<p class="sub">No one has signed this brief yet.</p>'}
-   ${notSigned.length?`<details class="ns"><summary>Not signed yet (${notSigned.length})</summary><p>${notSigned.filter(n=>!L.some(x=>x.staff===n.id)).map(n=>esc(n.name)).join(', ')}</p></details>`:''}</section>`;
+   ${(()=>{const ns=notSigned.filter(n=>!L.some(x=>x.staff===n.id));return ns.length?`<details class="ns"><summary>Not signed yet (${ns.length})</summary><p>${ns.map(n=>esc(n.name)).join(', ')}</p></details><div class="remind"><button type="button" class="sh-btn" data-tb="remind" data-v="${esc(b.id)}">Remind on WhatsApp</button><span>Opens WhatsApp with the names of everyone who hasn't signed. Pick the group, then tap send.</span></div>`:(notSigned.length?'<p class="sub">Everyone has signed this brief.</p>':'')})()}</section>`;
 }
 let notSigned=[];
 function drawPad(){const cv=document.getElementById('tb_pad');if(!cv)return;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);g.lineWidth=5;g.lineCap='round';g.lineJoin='round';g.strokeStyle='#111A27';
@@ -5327,6 +5336,9 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-tb]');if(!el||!document.getElementById('mod-briefs').contains(el))return;
   const a=el.dataset.tb;if(a!=='del')armDel=false;
   if(a==='older'){if(olderBusy)return;olderBusy=true;render();window.needHist('',isMgr()?['briefs','briefsigs']:['briefs']).then(()=>{olderBusy=false;render()});return}
+  if(a==='remind'){const b=briefs[el.dataset.v];if(!b)return;const L=sigsFor(b.id);const ns=notSigned.filter(n=>!L.some(x=>x.staff===n.id)).map(n=>n.name);if(!ns.length)return;
+    const t='Reminder: please read and sign the team brief'+(b.title?' "'+b.title+'"':'')+' in the PDS app.\n\nNot signed yet:\n'+ns.join('\n')+'\n\n'+location.origin+location.pathname+'#briefs';
+    window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank','noopener');return}
   if(a==='new'){creating=true;msg=null;render();window.scrollTo(0,0);return}
   if(a==='cancel'){if(busy)return;creating=false;msg=null;render();return}
   if(a==='create'){if(!busy)create();return}
@@ -5351,7 +5363,7 @@ async function start(role){
   try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
   if(mode==='mgr')setTimeout(tidyOld,8000);
   if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
-    db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
+    db.collection('staff').get().then(st=>{const OUT=['ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).filter(p=>!OUT.includes(String(p.role||'').toUpperCase().trim())).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
   db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
     if(busy||creating)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-briefs .card'))return;render()},()=>{msg={err:true,t:'Could not load team briefs just now. Reload the page.'};render()});
 }
@@ -7298,7 +7310,11 @@ function histHTML(){
 function render(){const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
 async function mount(){render();if(!loaded&&!busy){busy=true;if(!loadP)loadP=load();await loadP;loadP=null;busy=false}render()}
 
-async function save(fn,okMsg){busy=true;msg=null;render();try{await fn();msg=okMsg?{t:okMsg}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
+/* No signal: times are saved on the phone and sent when the signal comes back. Tapped times then count as typed, because Google's clock can only stamp them once they arrive. */
+let OFF=false;
+async function online(){if(navigator.onLine===false)return false;try{const ac=new AbortController();const t=setTimeout(()=>ac.abort(),3500);await fetch('https://firestore.googleapis.com/?ping='+Date.now(),{mode:'no-cors',cache:'no-store',signal:ac.signal});clearTimeout(t);return true}catch(e){return false}}
+const put=p=>{if(!OFF)return p;p.catch(e=>console.warn(e));return Promise.resolve()};
+async function save(fn,okMsg){busy=true;msg=null;render();OFF=!(await online());try{await fn();msg=okMsg?{t:okMsg+(OFF?' No signal right now, so it is saved on this phone and will send by itself when you have signal.':'')}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
 const base=()=>({staff:me.staff,name:me.name||'',date:today});
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-ck]');if(!el||!((box()&&box().contains(el))||(page()&&page().contains(el))))return;
@@ -7310,27 +7326,27 @@ document.addEventListener('click',async e=>{
   if(a==='clear'){if(me.role!=='admin')return;if(!confirm('Clear your entry for today? You can start again after.'))return;
     busy=true;render();try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);msg={t:'Cleared. You can start again.'}}catch(e){console.warn(e);msg={err:true,t:'Could not clear it: '+((e&&(e.code||e.message))||'unknown')}}busy=false;render();return}
   if(a==='saveedit'){const t=(document.getElementById('ck-et')||{}).value;if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
-    const f={start:t,startEdited:true,updatedAt:new Date().toISOString()};await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Start time changed to '+nice(t)+'.');return}
+    const f={start:t,startEdited:true,updatedAt:new Date().toISOString()};await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f}},'Start time changed to '+nice(t)+'.');return}
   if(a==='late'){ui={late:true};msg=null;render();return}
   if(a==='cancel'){ui={};msg=null;render();return}
   if(a==='fin'){ui={fin:true};msg=null;render();return}
   if(a==='finlate'){ui={fin:true,late:true};msg=null;render();return}
-  if(a==='start'){const now=new Date();const d={...base(),start:hmOf(now),startAt:db.serverTime?db.serverTime():now.toISOString(),startLate:false,updatedAt:now.toISOString()};
-    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).set(d);T={...d,startAt:now.toISOString()}},'Shift started at '+nice(d.start)+'. Have a good run.');return}
+  if(a==='start'){const now=new Date();const d0={...base(),start:hmOf(now),startAt:db.serverTime?db.serverTime():now.toISOString(),startLate:false,updatedAt:now.toISOString()};
+    await save(async()=>{const d=OFF?{...base(),start:hmOf(now),startLate:true,updatedAt:now.toISOString()}:d0;await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=OFF?d:{...d,startAt:now.toISOString()}},'Shift started at '+nice(d0.start)+'. Have a good run.');return}
   if(a==='latestart'){const t=(document.getElementById('ck-st')||{}).value;if(!t){msg={err:true,t:'Pick the time you started.'};render();return}
     if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const d={...base(),start:t,startLate:true,updatedAt:new Date().toISOString()};
-    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).set(d);T=d},'Start time saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=d},'Start time saved.');return}
   if(a==='finish'){if(!answered(''))return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,...endData(''),updatedAt:now.toISOString()};
-    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Shift finished. Thanks!');return}
+    await save(async()=>{const g=OFF?(({finishAt,...r})=>({...r,finishLate:true}))(f):f;await put(db.doc('clock/'+today+'_'+me.staff).update(g));T={...T,...g}},'Shift finished. Thanks!');return}
   if(a==='latefin'){const t=(document.getElementById('ck-ft')||{}).value;if(!t||!answered('')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(T.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData(''),updatedAt:new Date().toISOString()};
-    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Finish time saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f}},'Finish time saved.');return}
   if(a==='yfin'){const t=(document.getElementById('ck-yt')||{}).value;if(!t||!answered('y')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(Y.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData('y'),updatedAt:new Date().toISOString()};
-    await save(async()=>{await db.doc('clock/'+yday+'_'+me.staff).update(f);Y={...Y,...f}},'Thanks, yesterday is saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+yday+'_'+me.staff).update(f));Y={...Y,...f}},'Thanks, yesterday is saved.');return}
 });
 document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){loaded=false;mount()}});
@@ -7720,6 +7736,24 @@ function myListHTML(){
      <td class="acts2">${v.rows&&v.T?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
    :'<div class="empty">You have not submitted an invoice in the app yet.</div>'}
    <p class="sub">Once the office has checked your invoice it can no longer be changed here. Call the office if something is wrong.</p></section>`}
+/* Check a submitted invoice against the office rates and the day records. Anything that doesn't line up is shown in yellow. */
+let histFor='';
+function checkInv(x){
+  const out=[];if(!x||!x.rows||!x.T)return out;
+  const oc=mergeCfg(x.sid),xc=x.cfg||{};
+  if(['r1','r2','rx','rh'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001)||!!xc.gst!==!!oc.gst||!!xc.hourly!==!!oc.hourly)out.push('rates are different from the rates set for this driver');
+  const t={l1:0,l2:0,xp:0,hr:0};for(const r of x.rows)for(const k in t)t[k]+=num(r[k]);
+  const sub=Math.round((t.l1*oc.r1+t.l2*oc.r2+t.xp*oc.rx+t.hr*oc.rh)*100)/100,gst=oc.gst?Math.round(sub*10)/100:0,tot=Math.round((sub+gst)*100)/100;
+  if(Math.abs(num(x.T.total)-tot)>0.01)out.push('at the set rates the total would be '+money(tot));
+  const keep=sid,ds=[];sid=x.sid;
+  try{for(const r of x.rows){const a=dayData(r.d);if(!a)continue;let off=false;
+    if(oc.hourly){if(a.hrs!=null&&Math.abs(num(r.hr)-a.hrs)>0.01)off=true}
+    else if(a.pc!=null&&num(r.l1)+num(r.l2)!==a.pc)off=true;
+    if(a.xp!=null&&num(r.xp)!==num(a.xp))off=true;
+    if(off)ds.push(nice(r.d))}}
+  catch(e){}finally{sid=keep}
+  if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
+  return out}
 function listHTML(){
   const P2=periods();if(!lper||!P2.includes(lper)){const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from===f));lper=withLogs[0]||period(-1)[0]}
   const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x}));const byS={};for(const x of L)byS[x.sid]=x;
@@ -7729,17 +7763,20 @@ function listHTML(){
   const sum=L.reduce((a,x)=>{a.t+=x.T?x.T.total:x.total||0;a.g+=x.T?x.T.gst:0;return a},{t:0,g:0});
   const cnt=k=>all.filter(r=>k==='todo'?!r.inv:r.inv&&r.inv.status===k).length;
   const to=x=>add(x,25);
+  if(lper&&histFor!==lper&&window.needHist){histFor=lper;window.needHist(lper,['days','clock','timesheets']).then(()=>paint()).catch(()=>{})}
+  const chk={};for(const x of L)chk[x.sid]=checkInv(x);const nChk=Object.values(chk).filter(a=>a.length).length;
   return `<section class="card im"><h2>Submitted invoices</h2>
    <div class="row"><label class="f grow"><span>Pay period</span><select id="im_lper">${P2.map(f=>`<option value="${f}" ${f===lper?'selected':''}>${esc(nice(f))} to ${esc(nice(to(f)))}${f===period(0)[0]?' (this period)':f===period(-1)[0]?' (last period)':''}</option>`).join('')}</select></label>
     <div class="acts"><button type="button" class="sh-btn primary" data-im="pall" ${L.length&&!busy?'':'disabled'}>Print all invoices (PDF)</button><button type="button" class="sh-btn" data-im="xsum" ${L.length?'':'disabled'}>Download summary (Excel)</button></div></div>
    <div class="tiles4"><div><span>Submitted</span><b>${L.length} of ${all.length}</b></div><div><span>Checked</span><b>${cnt('checked')+cnt('paid')}</b></div><div><span>Paid</span><b>${cnt('paid')}</b></div><div><span>Period total</span><b>${money(sum.t)}</b><small>${sum.g?'incl. '+money(sum.g)+' GST':''}</small></div></div>
    <div class="segs" role="group">${[['all','Everyone'],['todo','Not submitted'],['submitted','Submitted'],['checked','Checked'],['paid','Paid']].map(([k,l])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l}${k==='all'?'':` <i>${k==='todo'?cnt('todo'):cnt(k)}</i>`}</button>`).join('')}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${nChk?`<p class="chknote">${nChk} invoice${nChk===1?'':'s'} highlighted in yellow ${nChk===1?'needs':'need'} a check: ${nChk===1?'it doesn’t':'they don’t'} match the set rates or the day records. Open it to see the figures.</p>`:''}
    <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
-   ${show.map(r=>{const v=r.inv;return `<tr class="${v?'':'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
+   ${show.map(r=>{const v=r.inv;const ck=v?chk[r.id]||[]:[];return `<tr class="${v?(ck.length?'chk':''):'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
      <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
      <td class="r">${v?money(v.T?v.T.total:v.total):''}</td>
-     <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>`:''}</td>
+     <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>${ck.length?`<small class="why">Check: ${esc(ck.join('; '))}</small>`:''}`:''}</td>
      <td class="acts2">${v&&!(v.rows&&v.T)?`<span class="sub old">Made before invoices were saved in full.</span><button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make again</button>`:v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
        ${v.status==='submitted'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Mark checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Mark paid</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo paid</button>`}`
        :`<button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make invoice</button>`}</td></tr>`}).join('')||'<tr><td colspan="5" class="sub">Nobody here.</td></tr>'}
@@ -8154,7 +8191,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610252110';
+const VERSION='202610252200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -8165,6 +8202,15 @@ const auth=firebase.auth();
 const fs=firebase.firestore();
 try{fs.settings({ignoreUndefinedProperties:true,merge:true})}catch(e){}
 try{fs.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
+/* Poor signal: wait a few seconds for the server, then use the copy saved on this phone */
+const getFast=(ref,ms)=>Promise.race([ref.get(),new Promise((_,no)=>setTimeout(()=>no(new Error('slow')),ms||6000))]).catch(()=>ref.get({source:'cache'}));
+/* Keep a copy of the app on the phone so it opens without signal */
+if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+/* A small bar while the phone has no internet */
+(function(){const bar=document.createElement('div');bar.id='web-off';bar.setAttribute('role','status');bar.dataset.web='1';
+  bar.textContent='No signal. Showing what was saved on this phone; changes send when you are back online.';
+  const set=()=>{bar.hidden=navigator.onLine!==false};set();document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(bar));if(document.body)document.body.appendChild(bar);
+  window.addEventListener('online',set);window.addEventListener('offline',set)})();
 
 /* ---------- data shape helpers (Firestore can't hold arrays inside arrays or some key names) ---------- */
 const AK='~a~',KP='~k~';
@@ -8304,13 +8350,13 @@ function idb(){if(idbP)return idbP;idbP=new Promise(res=>{try{const r=indexedDB.
 async function idbGet(k){const d=await idb();if(!d)return null;return new Promise(res=>{try{const t=d.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>res(t.result||null);t.onerror=()=>res(null)}catch(e){res(null)}})}
 async function idbSet(k,v){const d=await idb();if(!d)return;try{d.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}}
 async function loadShared(){
-  let idxS;try{idxS=await fs.doc('shared/_index').get()}catch(e){return{}}
+  let idxS;try{idxS=await getFast(fs.doc('shared/_index'))}catch(e){return{}}
   if(!idxS.exists)return{};
   const keys=idxS.data().keys||{};const snap={};
   await Promise.all(Object.entries(keys).map(async([k,m])=>{
     const c=await idbGet('sh_'+k);if(c&&c.ver===m.ver){snap[k]=c.v;return}
     try{
-      const parts=await Promise.all(Array.from({length:m.n},(_,i)=>fs.doc(`shared/${k}~${m.ver}~${i}`).get()));
+      const parts=await Promise.all(Array.from({length:m.n},(_,i)=>getFast(fs.doc(`shared/${k}~${m.ver}~${i}`),12000)));
       const v=JSON.parse(parts.map(p=>p.exists?p.data().s:'').join(''));snap[k]=v;idbSet('sh_'+k,{ver:m.ver,v});
     }catch(e){if(c)snap[k]=c.v}
   }));
@@ -8450,9 +8496,9 @@ async function boot(){
   loading();
   ROLE=null;
   if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,emails:OWNERS.slice(),staff:'',name:'',role:'admin'}}
-  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE,login:d.login||'',run:d.run||''}}}catch(e){console.warn(e)}}
+  else{try{const s=await getFast(fs.doc('access/'+EMAIL));if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE,login:d.login||'',run:d.run||''}}}catch(e){console.warn(e)}}
   if(!ROLE){deniedScreen();return}
-  if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await fs.doc('meta/imported').get();if(!m.exists){importScreen();return}}catch(e){}}
+  if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await getFast(fs.doc('meta/imported'));if(!m.exists&&!m.metadata.fromCache){importScreen();return}}catch(e){}}
   loading();
   const snap=await loadShared();
   startApp(snap);
