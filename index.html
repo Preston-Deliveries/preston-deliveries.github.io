@@ -2250,7 +2250,7 @@ try{if(window.parent!==window&&window.parent.__uvSave)window.__UVDL=window.__DLS
 window.__uvSubs=[];
 window.__uvDb=async()=>{const d=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!d)return null;
   const sub=(q,f,e)=>{const u=q.onSnapshot(x=>{try{f(x)}catch(_){}},x=>{try{e&&e(x)}catch(_){}});window.__uvSubs.push(u);return u};
-  return {collection:p=>({onSnapshot:(f,e)=>sub(d.collection(p),f,e),get:()=>d.collection(p).get()}),doc:p=>({get:()=>d.doc(p).get(),onSnapshot:(f,e)=>sub(d.doc(p),f,e)})}};
+  return {serverTime:d.serverTime?()=>d.serverTime():undefined,collection:p=>({onSnapshot:(f,e)=>sub(d.collection(p),f,e),get:()=>d.collection(p).get()}),doc:p=>({get:()=>d.doc(p).get(),set:x=>d.doc(p).set(x),update:x=>d.doc(p).update(x),delete:()=>d.doc(p).delete(),onSnapshot:(f,e)=>sub(d.doc(p),f,e)})}};
 window.__getDb=async()=>{try{if(window.parent!==window&&window.parent.__uvDb)return await window.parent.__uvDb()}catch(e){}return window.claude&&window.claude.use?await window.claude.use('db'):null};
 window.__uvSave=async(filename,d)=>{const dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;if(!dl)throw {code:'unavailable',message:'Downloads are not available here.'};
   const data=typeof d==='string'?d:new Blob([new Uint8Array(d).slice()]);return await dl.save({filename,data})};
@@ -4972,7 +4972,7 @@ async function start(role){
   try{db=await window.__getDb()}catch(e){db=null}
   mode=role==='mgr'?'mgr':'drv';
   if(!db){msg={err:true,t:'Team briefs only open inside Claude while you are signed in.'};render();return}
-  try{me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
+  try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
   if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
     db.collection('staff').get().then(st=>{const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).filter(p=>!OUT.includes(String(p.role||'').toUpperCase())).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
   db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
@@ -6826,8 +6826,8 @@ const page=()=>document.getElementById('ck_page');
 const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
 
 async function load(){
-  const w=window.__webMe;if(!w){loaded=true;return}me={...w};
-  db=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!db){loaded=true;return}
+  let w=window.__webMe;if(!w){try{if(window.parent!==window)w=window.parent.__webMe}catch(e){}}if(!w){loaded=true;return}me={...w};
+  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db){loaded=true;return}
   if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const d=st.docs.find(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
   if(!me.staff){noRec=true;loaded=true;return}
   const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
@@ -6956,7 +6956,7 @@ window.CLOCK={mount,whoami};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251220';
+const VERSION='202610251224';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
