@@ -1271,6 +1271,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-invoices .im .tick span{width:24px;height:24px}
 #mod-invoices .im .sum{min-width:0;width:100%}
 }
+#mod-invoices .im .who{margin:-6px 0 0;font-size:1.1rem;font-weight:700;color:var(--sh-ink)}#mod-invoices .im .who small{font-size:.85rem;color:var(--sh-muted);font-weight:600;margin-left:6px}
 </style>
 <style id="directory-css">#mod-directory .dyx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-directory h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -7504,7 +7505,7 @@ function html(){
   const people=Object.entries(staff).map(([id,p])=>({id,n:nameOf(p),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
   const[cs,ce]=period(0),[ls,le]=period(-1);
   if(role==='drv'&&!sid)return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so you cannot make an invoice here. Ask the office to check your email on the Drivers page.</div>';
-  let h=(role==='drv'?`<section class="card im"><h2>Make my invoice</h2><p class="sub">Pick the dates. Your parcels come from Driver Results, and your loads and extra parcels from what you answered when you clocked out. Check every day, then submit it to the office.</p>`:`<section class="card im"><h2>Make an invoice</h2><p class="sub">Pick the driver and the dates. Parcels come from Driver Results, 2 loads and extra parcels from Clock In and Timesheets. Check it, change anything, then download.</p>`)+`
+  let h=(role==='drv'?`<section class="card im"><h2>Make my invoice</h2><p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p><p class="sub">Pick the dates. Your parcels come from Driver Results, and your loads and extra parcels from what you answered when you clocked out. Check every day, then submit it to the office.</p>`:`<section class="card im"><h2>Make an invoice</h2><p class="sub">Pick the driver and the dates. Parcels come from Driver Results, 2 loads and extra parcels from Clock In and Timesheets. Check it, change anything, then download.</p>`)+`
    ${role==='drv'?'':`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`}
    <div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label>
     <div class="quick"><button type="button" class="sh-btn sm" data-im="per" data-v="-1">Last pay period<small>${esc(short(ls))} to ${esc(short(le))}</small></button><button type="button" class="sh-btn sm" data-im="per" data-v="0">This pay period<small>${esc(short(cs))} to ${esc(short(ce))}</small></button></div></div>`;
@@ -7672,7 +7673,7 @@ function periods(){const set=new Set(Object.values(logs).map(x=>x.from).filter(B
 function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:nameOf(p),login:p.login,role:String(p.role||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.name&&(x.login||Object.values(logs).some(l=>l.sid===x.id))&&!['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR'].includes(x.role)).sort((a,b)=>a.name.localeCompare(b.name))}
 function myListHTML(){
   const L=Object.entries(logs).map(([id,x])=>({id,...x})).sort((a,b)=>String(b.from).localeCompare(String(a.from)));
-  return `<section class="card im"><h2>My invoices</h2>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+  return `<section class="card im"><h2>My invoices</h2><p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Pay period</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(v=>`<tr><td><b>${esc(nice(v.from))}</b> to ${esc(nice(v.to))}</td><td>No. ${esc(v.no)}<small>Sent ${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small></td><td class="r">${money(v.T?v.T.total:v.total)}</td><td><span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span></td>
      <td class="acts2">${v.rows&&v.T?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
    :'<div class="empty">You have not submitted an invoice in the app yet.</div>'}
@@ -8111,7 +8112,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251804';
+const VERSION='202610251807';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
