@@ -1468,6 +1468,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-timesheets .daysel{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
 #mod-timesheets .daysel select{font:700 1rem var(--sh-body);letter-spacing:0;text-transform:none;color:var(--sh-ink);background:var(--sh-surface);border:2px solid var(--sh-accent);border-radius:8px;padding:9px 12px}
 @media (max-width:700px){#mod-timesheets .daysel{margin-left:0;width:100%}#mod-timesheets .daysel select{flex:1}}
+#mod-timesheets td small.tap{color:#1E8A4C;font-weight:700}#mod-timesheets td small.late{color:#B86E00;font-weight:700}
 </style>
 <style id="uniform-css">#mod-uniform .unx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-uniform .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -1925,6 +1926,31 @@ body.sh-uv-on{overflow:hidden}
 body.sh-more-on{overflow:hidden}
 
 .sh-all{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:4px 0 12px}.sh-all .sh-btn{min-height:46px!important;font-size:1rem!important;padding:10px 18px!important}.sh-all span{color:var(--sh-muted);font-size:.9rem}
+
+/* Clock in and out card on the driver Home page */
+#sh-clock:empty{display:none}
+.ck{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 10px rgba(15,26,42,.06)}
+.ck.on{border-color:#1E8A4C;box-shadow:inset 4px 0 0 #1E8A4C}
+.ck.warn{border-color:#D98B00;box-shadow:inset 4px 0 0 #D98B00}
+.ck.done{background:var(--sh-sunk)}
+.ck-h{display:flex;align-items:center;gap:10px}.ck-h b{font:700 1.25rem var(--sh-body);color:var(--sh-ink)}
+.ck p{margin:0;color:var(--sh-muted);font-size:.98rem}
+.ck-dot{width:12px;height:12px;border-radius:50%;background:#D98B00;flex:none}.ck-dot.on{background:#1E8A4C;box-shadow:0 0 0 4px rgba(30,138,76,.18)}
+.ck-tick{width:26px;height:26px;border-radius:50%;background:#1E8A4C;color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.ck-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:64px;border:0;border-radius:8px;font:800 1.35rem var(--sh-body);color:#fff;cursor:pointer;letter-spacing:.01em}
+.ck-big svg{width:26px;height:26px;fill:currentColor}
+.ck-big.go{background:#1E8A4C}.ck-big.stop{background:#C8352B}
+.ck-big:disabled{opacity:.5;cursor:default}
+.ck-link{align-self:center;background:none;border:0;color:var(--sh-accent);font:600 .95rem var(--sh-body);text-decoration:underline;cursor:pointer;padding:4px}
+.ck-row input[type=time]{box-sizing:border-box;width:100%;font:600 1.3rem var(--sh-body);padding:12px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink)}
+.ck-q{font-weight:700;color:var(--sh-ink)!important}
+.ck-chips{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.ck-chips button{min-height:48px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink);font:700 .95rem var(--sh-body);cursor:pointer}
+.ck-chips button[aria-pressed="true"]{background:var(--sh-accent);border-color:var(--sh-accent);color:var(--sh-accent-ink)}
+.ck-sum{color:var(--sh-ink)!important;font-size:1.05rem!important}
+.ck-note{font-size:.85rem!important}
+.ck-msg{font-weight:600;color:#1E8A4C!important}.ck-msg.err{color:#B3261E!important}
+.ck-load{color:var(--sh-muted);padding:8px 0}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -2195,7 +2221,7 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{timesheets:'Daily start, finish, break and hours for every driver, built from Driver Results. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'One place to see the whole contract, each postcode or one driver for a day, week or month. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ mgr:{timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'One place to see the whole contract, each postcode or one driver for a day, week or month. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
  drv:{sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
@@ -2333,8 +2359,10 @@ function renderHome(){
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
+    <div id="sh-clock"></div>
     ${tiles}
     <p class="sh-hello"><span style="color:var(--sh-muted);font-size:.9rem">${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
+    if(window.CLOCK)window.CLOCK.mount();
     return;
   }
   const u=SNAP.updated||{};
@@ -6448,22 +6476,29 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return 
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let mode='wait',db=null,days={},staff={},ts={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
+let mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
 /* ---------- people ---------- */
 function people(){const out={};for(const[id,p]of Object.entries(staff)){const login=dkey(p.login);out[login||'id:'+id]={id,login,name:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', '),role:String(p.role||'').toUpperCase()}}return out}
-function latest(){const ds=Object.keys(days).sort();return ds.length?ds[ds.length-1]:TODAY}
+function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).sort();return ds.length?ds[ds.length-1]:TODAY}
 /* ---------- rows ---------- */
 function rowsFor(date){
   const P=people(),r=(days[date]&&days[date].rows)||{},out=[];
   for(const[l,v]of Object.entries(r)){const k=dkey(l),p=P[k]||{id:'',login:k,name:k,no:''};out.push({date,key:p.id||'L'+k,p,pc:v&&v.pc})}
+  for(const[id,c]of Object.entries(clock)){if(!id.startsWith(date+'_')||!c||!c.staff)continue;if(out.some(x=>x.key===c.staff))continue;const p=Object.values(P).find(x=>x.id===c.staff)||{id:c.staff,login:'',name:c.name||c.staff,no:''};out.push({date,key:c.staff,p,pc:null,clocked:true})}
   for(const[id,t]of Object.entries(ts)){if(!id.startsWith(date+'_')||!t||!t.extra)continue;const sid=id.slice(11);if(out.some(x=>x.key===sid))continue;const p=Object.values(P).find(x=>x.id===sid)||{id:sid,login:'',name:t.name||sid,no:''};out.push({date,key:sid,p,pc:null,extra:true})}
   return out.sort((a,b)=>a.p.name.localeCompare(b.p.name));
 }
 const WD=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat']];
 function startFor(key,date){const v=cfg.starts[key];if(!v)return '';if(typeof v==='string')return v;return v[fromIso(date).getDay()]||''}
 const hasStart=id=>{const v=cfg.starts[id];return typeof v==='string'?!!v:!!(v&&Object.values(v).some(Boolean))};
-function eff(row){const o=ts[row.date+'_'+row.key]||{};const off=startFor(row.key,row.date);const start=o.start||off,finish=o.finish||'',brk=o.brk!=null&&o.brk!==''?o.brk:(cfg.brk||'');
-  const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?b-a-(+brk||0):null;return{o,off,start,finish,brk,hrs,fromOff:!o.start&&!!off}}
+const bneHM=iso=>{try{const p={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(iso)))p[x.type]=x.value;return p.hour+':'+p.minute}catch(e){return ''}};
+const ckT=(c,w)=>!c?'':(!c[w+'Late']&&c[w+'At']&&!isNaN(Date.parse(c[w+'At'])))?bneHM(c[w+'At']):(c[w]||'');
+function eff(row){const o=ts[row.date+'_'+row.key]||{};const c=clock[row.date+'_'+row.key]||null;const off=startFor(row.key,row.date);
+  const cs=ckT(c,'start'),cf=ckT(c,'finish');
+  const start=o.start||cs||off,finish=o.finish||cf||'',brk=o.brk!=null&&o.brk!==''?o.brk:(c&&c.brk!=null&&cf?c.brk:(cfg.brk||''));
+  const src=(own,ck,late,pre)=>own?'':ck?(late?'Entered later':'Tapped'):(pre?'Preset':'');
+  const sS=src(o.start,cs,c&&c.startLate,off),sF=src(o.finish,cf,c&&c.finishLate,'');
+  const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(+brk||0)):null;return{o,c,off,start,finish,brk,hrs,fromOff:sS==='Preset',sS,sF,brkFromClock:!(o.brk!=null&&o.brk!=='')&&!!(c&&c.brk!=null&&cf)}}
 /* ---------- render ---------- */
 function setHTML(){
   const P=Object.values(people()).filter(p=>p.id&&!OFFICE.includes(p.role)).sort((a,b)=>a.name.localeCompare(b.name));
@@ -6476,7 +6511,7 @@ function setHTML(){
   </details>`;
 }
 function weekHTML(){
-  const f=monday(wk),dd=[0,1,2,3,4,5].map(i=>add(f,i));
+  const f=monday(wk),dd=[0,1,2,3,4,5].map(i=>add(f,i));if(Object.keys(clock).some(k=>k.startsWith(add(f,6)+'_')))dd.push(add(f,6));
   let miss=0,tot=0,seen=new Set();
   const cnt=dd.map(d=>rowsFor(d).length);
   if(!dselUser||!dsel||!dd.includes(dsel)){const withData=dd.filter((d,i)=>cnt[i]);dsel=withData.length?withData[withData.length-1]:dd[0]}
@@ -6485,15 +6520,15 @@ function weekHTML(){
     return `<section class="card day"><div class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'}</span>${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
     <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Start</th><th>Finish</th><th>Break (min)</th><th class="r">Hours</th><th>Note</th></tr></thead><tbody>
     ${R.map(r=>{const e=eff(r);if(e.hrs!=null){tot+=e.hrs}else miss++;seen.add(r.key);const id=r.date+'_'+r.key;
-      return `<tr class="${e.hrs==null?'miss':''}"><td><b>${esc(r.p.name)}</b>${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}</td><td>${esc(r.p.no)}</td>
-       <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.fromOff?'<small>Preset</small>':''}</td>
-       <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time"></td>
+      return `<tr class="${e.hrs==null?'miss':''}"><td><b>${esc(r.p.name)}</b>${r.p.login&&r.p.login!==r.p.name?`<small>${esc(r.p.login)}</small>`:''}${r.extra?'<small>Added by hand</small>':''}${r.clocked?'<small>Clocked in, not in results</small>':''}</td><td>${esc(r.p.no)}</td>
+       <td><input type="time" data-f="start" data-id="${esc(id)}" value="${esc(e.start)}" class="${e.fromOff?'off':''}" aria-label="Start time">${e.sS?`<small class="${e.sS==='Tapped'?'tap':e.sS==='Entered later'?'late':''}">${e.sS}</small>`:''}</td>
+       <td><input type="time" data-f="finish" data-id="${esc(id)}" value="${esc(e.finish)}" aria-label="Finish time">${e.sF?`<small class="${e.sF==='Tapped'?'tap':'late'}">${e.sF}</small>`:(e.c&&e.c.start&&!e.c.finish?'<small class="late">Still on shift</small>':'')}</td>
        <td><input type="number" min="0" step="5" data-f="brk" data-id="${esc(id)}" value="${esc(e.brk)}" class="brk ${e.o.brk==null||e.o.brk===''?'off':''}" aria-label="Break minutes"></td>
        <td class="r"><b>${fmtH(e.hrs)}</b></td><td><input type="text" data-f="note" data-id="${esc(id)}" value="${esc(e.o.note||'')}" placeholder="e.g. Arrived late" aria-label="Note"></td></tr>`}).join('')}
     </tbody></table></div></section>`});
   const di=dd.indexOf(dsel),day=secs[di]||`<div class="empty">No Driver Results loaded for ${esc(longD(dsel))}, so there is no one to show. Load that day on Driver Results, or pick another day.</div>`;
   const dayStats=(()=>{let m=0;for(const r of rowsFor(dsel))if(eff(r).hrs==null)m++;return m})();
-  return {secs:day,daySel,dayMiss:dayStats,miss,tot,n:seen.size,label:short(f)+' to '+short(add(f,5))+' '+fromIso(add(f,5)).getFullYear()};
+  return {secs:day,daySel,dayMiss:dayStats,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
 }
 function render(){
   const box=document.getElementById('ts_root');if(!box)return;
@@ -6501,12 +6536,12 @@ function render(){
   if(!wk)wk=latest();
   const W=weekHTML();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
-   <p class="lead">A daily record of dates worked, start, finish, breaks and hours for every driver, kept for 7 years. Days worked come from Driver Results. Start times are preset for each day. Pick a day, add finish times, and change the start for anyone who came in early or late.</p>
+   <p class="lead">A daily record of dates worked, start, finish, breaks and hours for every driver, kept for 7 years. Days worked come from Driver Results. Drivers tap Start and Finish shift in the app; those times show here marked Tapped. Anything typed here replaces it.</p>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button>${W.daySel}<button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div><div class="tile ${W.dayMiss?'warn':'good'}"><span>Missing on this day</span><b>${W.dayMiss}</b></div></div>
    ${W.secs}
-   <p class="hint">Times save as you type. A start time marked Preset is that driver's normal start for the day; type over it to change just that day.</p>
+   <p class="hint">Times save as you type. Tapped means the driver tapped Start or Finish shift in the app. Entered later means they typed it in afterwards. Preset is their normal start. Type over any time to change it.</p>
   </div>`;
 }
 /* ---------- saving ---------- */
@@ -6558,12 +6593,112 @@ async function start(role){
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
   mode='mgr';render();if(!db)return;
   db.collection('timesheets').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);const c=m._settings;delete m._settings;for(const id of pending)if(ts[id])m[id]=ts[id];ts=m;if(c&&!cfgTimerOn)cfg={starts:{...(c.starts||{})},brk:c.brk??''};if(!typing())render()},()=>{});
+  db.collection('clock').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);clock=m;if(!typing())render()},()=>{});
   db.collection('days').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v&&v.date)m[v.date]=v}days=m;if(!typing())render()},()=>{});
   db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())render()},()=>{});
 }
 render();
 window.addEventListener('app:role',e=>start(e.detail));
 if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
+})();
+
+</script>
+<script type="text/x-mod" data-mod="clockin">
+/* Clock in and out for drivers: one big button on the Home page. Times come from Google's server. */
+(()=>{
+const TZ='Australia/Brisbane';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const parts=d=>{const o={};for(const p of new Intl.DateTimeFormat('en-AU',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23',weekday:'short'}).formatToParts(d))o[p.type]=p.value;return o};
+const dayOf=d=>{const p=parts(d);return `${p.year}-${p.month}-${p.day}`};
+const hmOf=d=>{const p=parts(d);return `${p.hour}:${p.minute}`};
+const nice=hm=>{const m=/^(\d{1,2}):(\d{2})$/.exec(hm||'');if(!m)return hm||'';let h=+m[1];const ap=h<12?'am':'pm';h=h%12||12;return `${h}:${m[2]} ${ap}`};
+const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null};
+const hrs=m=>m==null?'':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+const longDay=iso=>{const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'})};
+const BREAKS=[0,15,30,45,60];
+
+let db=null,me=null,today=null,yday=null,T=null,Y=null,ui={},busy=false,msg=null,loaded=false;
+const box=()=>document.getElementById('sh-clock');
+
+async function load(){
+  me=window.__webMe;if(!me||!me.staff||me.role!=='driver'){loaded=true;return}
+  db=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!db){loaded=true;return}
+  const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
+  try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}}catch(e){msg={err:true,t:'Could not load your times. Check your signal.'}}
+  loaded=true;
+}
+function html(){
+  if(!me||!me.staff||me.role!=='driver')return '';
+  if(!loaded)return `<section class="ck"><div class="ck-load">Loading your shift…</div></section>`;
+  const m=msg?`<p class="ck-msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
+  // yesterday left open
+  if(Y&&Y.start&&!Y.finish&&!(ui.skipY)){
+    return `<section class="ck warn"><div class="ck-h"><span class="ck-dot"></span><b>You didn't finish ${esc(longDay(yday))}</b></div>
+    <p>You started at ${esc(nice(Y.start))}. What time did you finish?</p>
+    <div class="ck-row"><input type="time" id="ck-yt" value="${esc(ui.yt||'')}" aria-label="Finish time yesterday"></div>
+    ${breakHTML('yb')}
+    <button type="button" class="ck-big stop" data-ck="yfin" ${busy?'disabled':''}>Save finish time</button>${m}</section>`;
+  }
+  if(!T||!T.start){
+    if(ui.late)return `<section class="ck"><div class="ck-h"><b>When did you start today?</b></div>
+      <div class="ck-row"><input type="time" id="ck-st" value="${esc(ui.st||'')}" aria-label="Start time"></div>
+      <button type="button" class="ck-big go" data-ck="latestart" ${busy?'disabled':''}>Save start time</button>
+      <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
+    return `<section class="ck"><div class="ck-h"><b>Good ${greet()}, ${esc(first())}</b></div>
+      <button type="button" class="ck-big go" data-ck="start" ${busy?'disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Start shift</button>
+      <button type="button" class="ck-link" data-ck="late">Forgot? I started earlier</button>${m}</section>`;
+  }
+  if(!T.finish){
+    if(ui.fin)return `<section class="ck"><div class="ck-h"><span class="ck-dot on"></span><b>Finishing up</b></div>
+      ${ui.late?`<p>What time did you finish?</p><div class="ck-row"><input type="time" id="ck-ft" value="${esc(ui.ft||'')}" aria-label="Finish time"></div>`:''}
+      ${breakHTML('b')}
+      <button type="button" class="ck-big stop" data-ck="${ui.late?'latefin':'finish'}" ${busy||ui.b==null?'disabled':''}>${ui.late?'Save finish time':'Finish shift now'}</button>
+      <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
+    return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>On shift since ${esc(nice(T.start))}</b></div>
+      <button type="button" class="ck-big stop" data-ck="fin"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Finish shift</button>
+      <button type="button" class="ck-link" data-ck="finlate">Forgot? I finished earlier</button>${m}</section>`;
+  }
+  const w=toMin(T.finish)-toMin(T.start)-(+T.brk||0);
+  return `<section class="ck done"><div class="ck-h"><span class="ck-tick">✓</span><b>Done for today</b></div>
+    <p class="ck-sum">${esc(nice(T.start))} to ${esc(nice(T.finish))}${T.brk?`, ${T.brk} min break`:', no break'}${w>0?` · <b>${hrs(w)}</b>`:''}</p>
+    <p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>${m}</section>`;
+}
+function breakHTML(k){const v=ui[k];return `<p class="ck-q">How long was your break?</p><div class="ck-chips" role="group" aria-label="Break">${BREAKS.map(b=>`<button type="button" data-ck="brk" data-k="${k}" data-v="${b}" aria-pressed="${v===b}">${b?b+' min':'None'}</button>`).join('')}</div>`}
+const first=()=>{const n=String(me&&me.name||'').trim().split(/\s+/)[0]||'';return n?n.charAt(0)+n.slice(1).toLowerCase():'there'};
+const greet=()=>{const h=+parts(new Date()).hour;return h<12?'morning':h<17?'afternoon':'evening'};
+function render(){const b=box();if(b)b.innerHTML=html()}
+async function mount(){render();if(!loaded&&!busy){busy=true;await load();busy=false}render()}
+
+async function save(fn,okMsg){busy=true;msg=null;render();try{await fn();msg=okMsg?{t:okMsg}:null;ui={}}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
+const base=()=>({staff:me.staff,name:me.name||'',date:today});
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-ck]');if(!el||!box()||!box().contains(el))return;
+  const a=el.dataset.ck;
+  if(a==='brk'){ui[el.dataset.k]=+el.dataset.v;render();return}
+  if(a==='late'){ui={late:true};msg=null;render();return}
+  if(a==='cancel'){ui={};msg=null;render();return}
+  if(a==='fin'){ui={fin:true};msg=null;render();return}
+  if(a==='finlate'){ui={fin:true,late:true};msg=null;render();return}
+  if(a==='start'){const now=new Date();const d={...base(),start:hmOf(now),startAt:db.serverTime?db.serverTime():now.toISOString(),startLate:false,updatedAt:now.toISOString()};
+    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).set(d);T={...d,startAt:now.toISOString()}},'Shift started at '+nice(d.start)+'. Have a good run.');return}
+  if(a==='latestart'){const t=(document.getElementById('ck-st')||{}).value;if(!t){msg={err:true,t:'Pick the time you started.'};render();return}
+    if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
+    const d={...base(),start:t,startLate:true,updatedAt:new Date().toISOString()};
+    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).set(d);T=d},'Start time saved.');return}
+  if(a==='finish'){if(ui.b==null)return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,brk:ui.b,updatedAt:now.toISOString()};
+    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Shift finished. Thanks!');return}
+  if(a==='latefin'){const t=(document.getElementById('ck-ft')||{}).value;if(!t||ui.b==null){msg={err:true,t:'Pick the finish time and your break.'};render();return}
+    if(toMin(t)<=toMin(T.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
+    const f={finish:t,finishLate:true,brk:ui.b,updatedAt:new Date().toISOString()};
+    await save(async()=>{await db.doc('clock/'+today+'_'+me.staff).update(f);T={...T,...f}},'Finish time saved.');return}
+  if(a==='yfin'){const t=(document.getElementById('ck-yt')||{}).value;if(!t||ui.yb==null){msg={err:true,t:'Pick the finish time and your break.'};render();return}
+    if(toMin(t)<=toMin(Y.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
+    const f={finish:t,finishLate:true,brk:ui.yb,updatedAt:new Date().toISOString()};
+    await save(async()=>{await db.doc('clock/'+yday+'_'+me.staff).update(f);Y={...Y,...f}},'Thanks, yesterday is saved.');return}
+});
+document.addEventListener('input',e=>{if(e.target.id==='ck-st')ui.st=e.target.value;if(e.target.id==='ck-ft')ui.ft=e.target.value;if(e.target.id==='ck-yt')ui.yt=e.target.value});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&dayOf(new Date())!==today){loaded=false;mount()}});
+window.CLOCK={mount};
 })();
 
 </script>
@@ -6575,7 +6710,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251126';
+const VERSION='202610251135';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -6589,7 +6724,9 @@ try{fs.enablePersistence({synchronizeTabs:true}).catch(()=>{})}catch(e){}
 
 /* ---------- data shape helpers (Firestore can't hold arrays inside arrays or some key names) ---------- */
 const AK='~a~',KP='~k~';
+const FV=()=>firebase.firestore.FieldValue;
 function ENC(v){
+  if(v&&FV()&&v instanceof FV())return v;
   if(Array.isArray(v))return v.map(x=>Array.isArray(x)?{[AK]:ENC(x)}:ENC(x));
   if(v&&typeof v==='object'&&!(v instanceof Date)){const o={};for(const k of Object.keys(v)){if(v[k]===undefined||typeof v[k]==='function')continue;const kk=(k===''||/^__.*__$/.test(k)||k.startsWith(KP))?KP+k:k;o[kk]=ENC(v[k])}return o}
   if(typeof v==='number'&&!isFinite(v))return null;
@@ -6604,17 +6741,19 @@ function DEC(v){
   return v;
 }
 const clone=v=>v===undefined?v:JSON.parse(JSON.stringify(v));
+function cloneKeep(v){if(v&&FV()&&v instanceof FV())return v;if(Array.isArray(v))return v.map(cloneKeep);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))o[k]=cloneKeep(v[k]);return o}return v}
 
 /* ---------- database with the same shape the app used inside Claude ---------- */
 const docSnap=s=>({id:s.id,exists:s.exists,data:()=>s.exists?DEC(s.data()):undefined});
 const qSnap=q=>{const docs=q.docs.map(docSnap);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}};
 const subs=new Set();
 const db={
+  serverTime(){return firebase.firestore.FieldValue.serverTimestamp()},
   doc(p){const r=fs.doc(p);return{
     id:r.id,path:p,
     async get(){return docSnap(await r.get())},
-    async set(d){await r.set(ENC(clone(d)))},
-    async update(d){const e=ENC(clone(d));try{await r.update(e)}catch(x){if(x&&x.code==='not-found')await r.set(e);else throw x}},
+    async set(d){await r.set(ENC(cloneKeep(d)))},
+    async update(d){const e=ENC(cloneKeep(d));try{await r.update(e)}catch(x){if(x&&x.code==='not-found')await r.set(e);else throw x}},
     async delete(){await r.delete()},
     onSnapshot(cb,err){const u=r.onSnapshot(s=>cb(docSnap(s)),e=>{if(err)err(e)});subs.add(u);return u}
   }},
@@ -6827,8 +6966,8 @@ async function boot(){
   EMAIL=String(u.email||'').toLowerCase();UID=u.uid;
   loading();
   ROLE=null;
-  if(OWNERS.includes(EMAIL))ROLE='admin';
-  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||''}}catch(e){console.warn(e)}}
+  if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,staff:'',name:'',role:'admin'}}
+  else{try{const s=await fs.doc('access/'+EMAIL).get();if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,staff:d.staff||'',name:NAME,role:ROLE}}}catch(e){console.warn(e)}}
   if(!ROLE){deniedScreen();return}
   if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await fs.doc('meta/imported').get();if(!m.exists){importScreen();return}}catch(e){}}
   loading();

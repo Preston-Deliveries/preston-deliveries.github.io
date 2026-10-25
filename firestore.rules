@@ -27,9 +27,27 @@ service cloud.firestore {
     function adminOnly(col) {
       return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock'];
     }
 
+    function myStaff() {
+      return get(accessPath()).data.staff;
+    }
+    // Clock in and out: drivers add their own times only. Tapped times must be Google's server time.
+    match /clock/{id} {
+      allow read: if isAdmin() || (hasAccess() && (resource == null || resource.data.staff == myStaff()));
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && id == request.resource.data.date + '_' + myStaff()
+        && request.resource.data.keys().hasOnly(['staff', 'name', 'date', 'start', 'startAt', 'startLate', 'finish', 'finishAt', 'finishLate', 'brk', 'updatedAt'])
+        && (request.resource.data.startLate == true || request.resource.data.startAt == request.time));
+      allow update: if isAdmin() || (hasAccess()
+        && resource.data.staff == myStaff()
+        && !('finish' in resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'updatedAt'])
+        && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time));
+      allow delete: if isAdmin();
+    }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());
       allow write: if isAdmin();
