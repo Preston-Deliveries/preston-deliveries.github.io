@@ -1480,6 +1480,10 @@ body.sh-uv-on{overflow:hidden}
 #mod-feedback .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--sh-line);padding-top:10px}
 #mod-feedback .acts a.sh-btn{text-decoration:none}
 #mod-feedback .empty{padding:28px 16px;text-align:center;color:var(--sh-muted);background:var(--sh-surface);border:1px dashed var(--sh-line);border-radius:8px}
+
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-feedback .tp{background:#24324A;color:#C9D6EA}:root:not([data-theme="light"]) #mod-feedback .cb{background:#3A2A0C;color:#FFD58A}}
+:root[data-theme="dark"] #mod-feedback .tp{background:#24324A;color:#C9D6EA}
+:root[data-theme="dark"] #mod-feedback .cb{background:#3A2A0C;color:#FFD58A}
 </style>
 <style id="reports-css">#mod-reports .rpx{max-width:920px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-reports .lead{margin:0;color:var(--sh-muted);line-height:1.5}
@@ -1565,6 +1569,17 @@ body.sh-uv-on{overflow:hidden}
 .sh-report{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;margin:0 0 12px;background:#FDECEA;border:1px solid #F3B8B2;color:#7A1C14;border-radius:8px;padding:12px 14px;font:600 1rem var(--sh-body,inherit);cursor:pointer;text-align:left}
 .sh-report svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .sh-report span{flex:1}.sh-report b{font-size:1.2rem}
+
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-reports .sos{background:#3A1512;border-color:#6B2A24;color:#FFD3CC}:root:not([data-theme="light"]) #mod-reports .steps{background:#14243B;border-color:#2B4366;color:#DCE6F5}:root:not([data-theme="light"]) #mod-reports .warnbox{background:#3A2A0C;border-color:#6E5216;color:#FFE2A8}:root:not([data-theme="light"]) #mod-reports .sub{background:var(--sh-sunk)}:root:not([data-theme="light"]) #mod-reports .ph{background:var(--sh-sunk)}:root:not([data-theme="light"]) #mod-reports .fl i{background:#24324A;color:#C9D6EA}:root:not([data-theme="light"]) #mod-reports .fl i.bad,#mod-reports .flag.bad{background:#3A1512;color:#FFB4AA}:root:not([data-theme="light"]) #mod-reports .fl i.warn,#mod-reports .flag.warn{background:#3A2A0C;color:#FFD58A}:root:not([data-theme="light"]) #mod-reports .req{color:#F2B26B}}
+:root[data-theme="dark"] #mod-reports .sos{background:#3A1512;border-color:#6B2A24;color:#FFD3CC}
+:root[data-theme="dark"] #mod-reports .steps{background:#14243B;border-color:#2B4366;color:#DCE6F5}
+:root[data-theme="dark"] #mod-reports .warnbox{background:#3A2A0C;border-color:#6E5216;color:#FFE2A8}
+:root[data-theme="dark"] #mod-reports .sub{background:var(--sh-sunk)}
+:root[data-theme="dark"] #mod-reports .ph{background:var(--sh-sunk)}
+:root[data-theme="dark"] #mod-reports .fl i{background:#24324A;color:#C9D6EA}
+:root[data-theme="dark"] #mod-reports .fl i.bad,#mod-reports .flag.bad{background:#3A1512;color:#FFB4AA}
+:root[data-theme="dark"] #mod-reports .fl i.warn,#mod-reports .flag.warn{background:#3A2A0C;color:#FFD58A}
+:root[data-theme="dark"] #mod-reports .req{color:#F2B26B}
 </style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
@@ -7563,7 +7578,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251356';
+const VERSION='202610251359';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
