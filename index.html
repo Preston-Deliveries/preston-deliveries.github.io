@@ -2570,7 +2570,6 @@ function renderHome(){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
     <div id="sh-clock"></div>
-    <button type="button" class="sh-report" data-nav="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg><span>Something happened? Report an incident, accident or hazard</span><b aria-hidden="true">›</b></button>
     ${tiles}
     <p class="sh-hello"><span style="color:var(--sh-muted);font-size:.9rem">${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
     if(window.CLOCK)window.CLOCK.mount();
@@ -2580,7 +2579,6 @@ function renderHome(){
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
   <div id="sh-clock"></div>
-    <button type="button" class="sh-report" data-nav="reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg><span>Something happened? Report an incident, accident or hazard</span><b aria-hidden="true">›</b></button>
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
@@ -7565,7 +7563,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251353';
+const VERSION='202610251356';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
