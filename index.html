@@ -2601,8 +2601,11 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .row{grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:6px;padding:10px 14px 10px 16px}
 #sh-main #mod-directory .row .l2{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;min-width:0}
 #sh-main #mod-directory .row .l2 .no,#sh-main #mod-directory .row .l2 .ph{grid-column:auto;grid-row:auto;min-width:0;max-width:100%}
-#sh-main #mod-directory .row .l2 .ph{margin-left:auto}
-#sh-main #mod-directory .row .l2 .no:empty+.ph{margin-left:0}
+#sh-main #mod-directory .row .l2{justify-content:flex-start}
+#sh-main #mod-directory .row .nm{align-items:center;gap:4px 8px}
+#sh-main #mod-directory .row .nm .no{grid-column:auto;grid-row:auto;font-size:.78rem}
+#sh-main #mod-directory .row .nm .rl{flex-basis:100%}
+#sh-main #mod-directory .live{margin:0;font-size:.85rem;font-weight:600;color:#1E8A4C}
 #sh-main #mod-directory .tel{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.25}
 #sh-main #mod-directory .row .av{grid-row:1/span 2;align-self:center;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--ds);color:var(--d);font:700 .95rem var(--sh-body)}
 #sh-main #mod-directory .row .nm{grid-column:2/-1;grid-row:1}
@@ -6411,7 +6414,7 @@ function render(){
   box.innerHTML=`<div class="dyx">
    <div class="head"><h1>Directory</h1></div>
    <p class="lead">${isMgr()?'Name, role, phone number and driver number for everyone on the Drivers page.':'Phone numbers for the team. Tap a number to call. Please only use these for work.'}</p>
-   ${isMgr()?`<div class="share"><span>${shared?`Drivers see the directory from ${esc(shared)}. `:'Not shared with drivers yet. '}${shown} of ${L.length} people will be listed.</span><button type="button" class="sh-btn primary" data-dy="share" ${busy?'disabled':''}>Send latest to drivers</button></div>`:''}
+   ${isMgr()?`<p class="live">\u25CF Live: drivers see changes from the Drivers page straight away.</p>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <label class="srch" for="dy_q"><span>Search</span><input type="search" id="dy_q" value="${esc(q)}" placeholder="Name, role, driver number or phone" autocomplete="off"></label>
    <div id="dy_list">${listHTML(L)}</div>
@@ -6425,14 +6428,25 @@ function listHTML(L){
   const G=GROUPS.map(([k,t])=>({k,t,L:R.filter(x=>x.grp===k)})).filter(g=>g.L.length);
   return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dy="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
   ${G.map(g=>`<section class="grp dg-${g.k}" id="dy_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(x=>{const off=false;
-    return `<li class="row ${off?'off':''}"><span class="av" aria-hidden="true">${esc(String(x.name).split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span><span class="nm"><b>${esc(x.name)}</b>${showRole(x)?`<span class="rl">${esc(x.roleT)}</span>`:''}</span>
-     <span class="l2"><span class="no">${x.no?esc(x.no):''}</span>
-     <span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(x.phone))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(x.phone))}</a>`:'<span class="na">No number</span>'}</span></span></li>`}).join('')}</ul></section>`).join('')}`;
+    return `<li class="row ${off?'off':''}"><span class="av" aria-hidden="true">${esc(String(x.name).split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase())}</span><span class="nm"><b>${esc(x.name)}</b>${x.no?`<span class="no">${esc(x.no)}</span>`:''}${showRole(x)?`<span class="rl">${esc(x.roleT)}</span>`:''}</span>
+     <span class="l2"><span class="ph">${x.phone?`<a class="tel" href="tel:${esc(telOf(x.phone))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneText(x.phone))}</a>`:'<span class="na">No number</span>'}</span></span></li>`}).join('')}</ul></section>`).join('')}`;
 }
 async function saveHide(){try{await db.doc('dircfg/main').set({hide:[...hide]});msg={t:'Saved. Send the latest to drivers when you are ready.'}}catch(e){msg={err:true,t:'Could not save just now.'}}render()}
 async function share(){
   const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));
   await APP.publish({directory:out});
+}
+/* Live: when the Drivers list changes, the drivers' directory updates by itself */
+let liveT=null,liveLast=null;
+function liveSync(){
+  clearTimeout(liveT);liveT=setTimeout(async()=>{
+    let W=window.__liveShare?window:null;if(!W||!window.APP||!APP.SNAP)return;
+    const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));if(!out.length)return;
+    const j=JSON.stringify(out);if(liveLast==null)liveLast=JSON.stringify(APP.SNAP.directory||null);if(j===liveLast)return;
+    const n=new Date(),st=n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+    const upd=Object.assign({},APP.SNAP.updated,{directory:st}),at=Object.assign({},APP.SNAP.at,{directory:n.toISOString()});
+    try{await W.__liveShare({directory:out,updated:upd,at});liveLast=j;APP.SNAP.directory=out;APP.SNAP.updated=upd;APP.SNAP.at=at}catch(e){}
+  },2500);
 }
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-dy]');if(!el||!document.getElementById('mod-directory').contains(el))return;
@@ -6450,6 +6464,7 @@ async function start(role){
   try{const c=await db.doc('dircfg/main').get();if(c.exists)hide=new Set(__D(c).hide||[])}catch(e){}
   db.collection('staff').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=__D(d);people=o;
     if(window.APP)APP.stat('directory',Object.keys(o).length+' people');
+    liveSync();
     const a=document.activeElement;if(a&&a.id==='dy_q'){$('list').innerHTML=listHTML(list());return}render()},()=>{msg={err:true,t:'Could not load the driver list.'};render()});
 }
 window.DIRECTORY={share};
@@ -8765,7 +8780,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261105';
+const VERSION='202610261120';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -8893,6 +8908,21 @@ const downloads={async save({filename,data}){
 /* ---------- "Send latest to drivers": save the drivers' copy in Firebase ---------- */
 const CH=300000;
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return(h>>>0).toString(36)+'_'+s.length.toString(36)}
+async function saveSharedPart(patch){
+  if(ROLE!=='admin'){const e=new Error('Only admins can send to drivers.');e.code='not_writer';throw e}
+  const idxRef=fs.doc('shared/_index');const idxS=await idxRef.get();const keys=Object.assign({},(idxS.exists&&idxS.data().keys)||{});const old={};
+  for(const k of Object.keys(patch)){
+    if(!/^[A-Za-z0-9_]+$/.test(k))continue;
+    const j=JSON.stringify(patch[k]===undefined?null:patch[k]);const h=hash(j);
+    if(keys[k]&&keys[k].h===h)continue;
+    const n=Math.max(1,Math.ceil(j.length/CH));const ver=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    for(let i=0;i<n;i+=8){const b=fs.batch();for(let x=i;x<Math.min(n,i+8);x++)b.set(fs.doc(`shared/${k}~${ver}~${x}`),{s:j.slice(x*CH,(x+1)*CH)});await b.commit()}
+    if(keys[k])old[k]=keys[k];keys[k]={n,ver,h};
+  }
+  await idxRef.set({keys,at:new Date().toISOString(),by:EMAIL});
+  for(const k in old){const o=old[k];for(let i=0;i<o.n;i++)fs.doc(`shared/${k}~${o.ver}~${i}`).delete().catch(()=>{})}
+}
+window.__liveShare=saveSharedPart;
 async function saveShared(snap){
   const idxRef=fs.doc('shared/_index');const idxS=await idxRef.get();const old=(idxS.exists&&idxS.data().keys)||{};
   const out={};
