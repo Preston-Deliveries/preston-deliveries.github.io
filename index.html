@@ -2342,10 +2342,111 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-briefs .tbx>.bar>:is(label,.mini) select,#sh-main #mod-directory .dyx>.bar>:is(label,.mini) select,#sh-main #mod-enquiries .eqx>.bar>:is(label,.mini) select,#sh-main #mod-feedback .fbx>.bar>:is(label,.mini) select,#sh-main #mod-invoices .ivx>.bar>:is(label,.mini) select,#sh-main #mod-leave .lvx>.bar>:is(label,.mini) select,#sh-main #mod-lockers .pcx>.bar>:is(label,.mini) select,#sh-main #mod-precards .pcx>.bar>:is(label,.mini) select,#sh-main #mod-reports .rpx>.bar>:is(label,.mini) select,#sh-main #mod-summary .smx>.bar>:is(label,.mini) select,#sh-main #mod-timesheets .tsx>.bar>:is(label,.mini) select,#sh-main #mod-uniform .unx>.bar>:is(label,.mini) select,#sh-main #mod-updates .ntx>.bar>:is(label,.mini) select,#sh-main #mod-vchecks .vcx>.bar>:is(label,.mini) select{flex:1;min-width:0;width:100%}
 }
 </style>
+<style id="home-v2">
+/* Home screen: one brand colour, shift card up top, daily tools as tiles */
+:root{--pds-navy:#0F2A44;--pds-orange:#F2782D}
+
+/* Top bar and side menu brand with the PDS logo */
+.sh-brand{flex-direction:row!important;align-items:center;gap:10px}
+.sh-brand .bt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sh-logo{width:34px;height:34px;border-radius:8px;flex:none;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.sh-brand small{color:var(--pds-orange);font-size:.62rem;letter-spacing:.14em}
+.sh-brand b{font:700 1.15rem/1.1 var(--sh-body)!important;letter-spacing:0}
+@media (max-width:899.98px){
+  .sh-mtop{padding-block:10px 12px;row-gap:10px}
+  .sh-mtop:has(.sh-vt:not([hidden])) .sh-role{display:none!important}
+  .sh-mtop .sh-vt .seg{border-radius:8px}
+  .sh-mtop .sh-vt .seg button{padding:6px 10px;font-size:.8rem}
+}
+
+/* Page spacing */
+#sh-home.sh-home{gap:20px;padding-top:16px}
+@media (min-width:900px){#sh-home.sh-home{padding-top:28px}}
+
+/* Shift card */
+.sh-hero{position:relative;overflow:hidden;background:var(--pds-navy);color:#fff;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 20px rgba(15,42,68,.18)}
+.sh-hero::after{content:"";position:absolute;top:18px;right:-6px;width:92px;height:46px;opacity:.09;pointer-events:none;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 92 46'%3E%3Cg stroke='%23fff' stroke-width='7' stroke-linecap='round'%3E%3Cpath d='M30 6h58M16 23h72M4 40h84'/%3E%3C/g%3E%3C/svg%3E")}
+.sh-hero:has(.ck.on){box-shadow:inset 0 4px 0 #2BB36A,0 6px 20px rgba(15,42,68,.18)}
+.sh-hero:has(.ck.warn){box-shadow:inset 0 4px 0 #F2B705,0 6px 20px rgba(15,42,68,.18)}
+.sh-date{font:700 .72rem/1 var(--sh-body);letter-spacing:.14em;text-transform:uppercase;color:var(--pds-orange)}
+.sh-hero-t{display:none;margin:2px 0 4px;font:700 1.6rem/1.15 var(--sh-body);color:#fff}
+.sh-hero:not(:has(#sh-clock)) .sh-hero-t,.sh-hero:has(#sh-clock:empty) .sh-hero-t{display:block}
+#sh-home .sh-hero #sh-clock{position:relative;z-index:1}
+#sh-home .sh-hero .ck{--sh-surface:#1A3A5C;--sh-sunk:#163452;--sh-ink:#FFFFFF;--sh-muted:#AEBCCF;--sh-line:rgba(255,255,255,.2);--sh-accent:#FFB27A;--sh-accent-ink:#0F2A44;
+  background:transparent;border:0;box-shadow:none;padding:0;gap:12px;color:#fff}
+#sh-home .sh-hero .ck-h b{font:700 1.5rem/1.2 var(--sh-body);color:#fff;letter-spacing:-.01em}
+#sh-home .sh-hero .ck p{color:var(--sh-muted)}
+#sh-home .sh-hero .ck .ck-sum{color:#fff!important}
+.ck-st{display:flex;align-items:center;gap:8px;margin:-4px 0 2px!important;font-size:.92rem!important}
+.ck-dot.idle{width:9px;height:9px;background:#8195AD}
+#sh-home .sh-hero .ck-big{min-height:56px;border-radius:10px;font:700 1.2rem var(--sh-body);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+#sh-home .sh-hero .ck-big.go{background:#22A05A}
+#sh-home .sh-hero .ck-big.stop{background:#D23B30}
+#sh-home .sh-hero .ck-big:not(:disabled):active{transform:translateY(1px)}
+#sh-home .sh-hero .ck-links{justify-content:space-between;gap:4px 12px}
+#sh-home .sh-hero .ck-link{color:#C9D6E6;text-decoration:none;font:600 .9rem var(--sh-body);padding:6px 2px}
+#sh-home .sh-hero .ck-link:hover{color:#fff;text-decoration:underline}
+#sh-home .sh-hero .ck-row input[type=time],#sh-home .sh-hero .ck-chips button,#sh-home .sh-hero .ck-step button,#sh-home .sh-hero .ck-n input,#sh-home .sh-hero .ck-step input{border-color:var(--sh-line)}
+#mod-clock .ck-times{display:none}
+
+/* Section headings */
+#sh-home .sh-tgroup{gap:8px}
+#sh-home .sh-tgroup h2{margin:2px 2px 0;font:700 .74rem/1 var(--sh-body);letter-spacing:.14em;text-transform:uppercase;color:var(--sh-muted)}
+
+/* Lists: plain rows, one icon colour */
+.sh-list{border-radius:12px}
+.sh-li{min-height:58px;padding:10px 14px;gap:14px}
+.sh-li .ic{width:38px;height:38px;border-radius:10px;background:var(--sh-accent-soft);color:var(--sh-accent)}
+.sh-li .ic svg{width:21px;height:21px}
+.sh-li .tx b{font:600 1.02rem/1.25 var(--sh-body)}
+.sh-li .tx small{font-size:.82rem}
+.sh-li .nw{background:var(--pds-orange);color:#fff;font:700 .7rem/1 var(--sh-body);letter-spacing:.04em;text-transform:uppercase;padding:5px 8px;border-radius:999px}
+@media (max-width:599.98px){.sh-li{min-height:58px;padding:10px 14px}.sh-li .ic{width:38px;height:38px}}
+
+/* On the road: big tiles for the tools used every day */
+#sh-home .sh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;background:none;border:0;border-radius:0;overflow:visible}
+#sh-home .sh-grid .sh-li{position:relative;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:16px;min-height:108px;padding:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;box-shadow:0 1px 2px rgba(15,26,42,.05)}
+#sh-home .sh-grid .sh-li:hover{border-color:var(--sh-accent);background:var(--sh-surface)}
+#sh-home .sh-grid .sh-li .ic{width:42px;height:42px;background:var(--pds-navy);color:#fff}
+#sh-home .sh-grid .sh-li .ic svg{width:22px;height:22px}
+#sh-home .sh-grid .sh-li .tx b{font-size:1.02rem}
+#sh-home .sh-grid .sh-li .chev{display:none}
+#sh-home .sh-grid .sh-li .nw{position:absolute;top:12px;right:12px}
+#sh-home .sh-grid .sh-li:last-child:nth-child(odd){grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-start;min-height:66px}
+#sh-home .sh-grid .sh-li:last-child:nth-child(odd) .chev{display:block;margin-left:auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-home .sh-grid .sh-li .ic{background:#24466D}}
+:root[data-theme="dark"] #sh-home .sh-grid .sh-li .ic{background:#24466D}
+@media (min-width:900px){
+  #sh-home .sh-grid{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  #sh-home .sh-grid .sh-li:last-child:nth-child(odd){grid-column:auto;flex-direction:column;align-items:flex-start;justify-content:space-between;min-height:108px}
+  #sh-home .sh-grid .sh-li:last-child:nth-child(odd) .chev{display:none}
+}
+
+/* Manager panel and footer note */
+#sh-home .sh-panel{border-radius:12px}
+#sh-home .sh-panel h2{font:700 1.1rem var(--sh-body)}
+.sh-foot{margin:0 2px;color:var(--sh-muted);font-size:.85rem;line-height:1.45}
+
+/* Menu: grey icons, orange for the page you are on */
+.sh-side .sh-grp button svg,.sh-side .sh-links button svg{color:var(--sh-nav-muted)}
+.sh-side .sh-links button[aria-current="page"] svg{color:var(--pds-orange)}
+.sh-side .sh-gl{color:var(--sh-nav-muted)}
+.sh-gl::before{background:rgba(255,255,255,.25)}
+@media (min-width:900px){.sh-side .sh-links button[aria-current="page"]{border-left-color:var(--pds-orange)}}
+@media (max-width:899.98px){
+  .sh-side{border-top:1px solid rgba(255,255,255,.08)}
+  .sh-side .sh-links button.tab{position:relative;color:var(--sh-nav-muted);background:transparent!important;box-shadow:none!important;border-radius:10px}
+  .sh-side .sh-links button.tab svg{width:25px;height:25px}
+  .sh-side .sh-links button.tab .sm{font-size:.74rem;font-weight:600}
+  .sh-side .sh-links button.tab[aria-current="page"]{color:#fff}
+  .sh-side .sh-links button.tab[aria-current="page"] .sm{font-weight:700}
+  .sh-side .sh-links button.tab[aria-current="page"]::before{content:"";position:absolute;top:-7px;left:28%;right:28%;height:3px;border-radius:0 0 3px 3px;background:var(--pds-orange)}
+}
+</style>
 <div class="sh-app">
-<nav class="sh-side" aria-label="Sections"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
+<nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
-<div class="sh-mtop"><div class="sh-brand"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
+<div class="sh-mtop"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
 <div class="sh-viewbar" id="sh-viewbar" hidden></div><header class="sh-ph" id="sh-ph" hidden></header>
 <section class="sh-sec" id="mod-home"><div class="sh-home" id="sh-home"></div></section>
 <section class="sh-sec" id="mod-runs" hidden>
@@ -2773,22 +2874,21 @@ function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||'
 function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  if(role==='loading'){box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
+  if(role==='loading'){box.innerHTML=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1></section><div class="sh-wait">Opening your tools</div>`;return}
+  const tilesOrder=[].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list${g.k==='road'?' sh-grid':''}">${ss.map(tile).join('')}</div></section>`}).join('');
+  const hero=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1><div id="sh-clock"></div></section>`;
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
-    box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
-    <div id="sh-clock"></div>
+    box.innerHTML=`${hero}
     ${tiles}
-    <p class="sh-hello"><span style="color:var(--sh-muted);font-size:.9rem">${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
+    <p class="sh-foot"><span>${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
     if(window.CLOCK)window.CLOCK.mount();
     return;
   }
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
-  box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
-  ${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
-  <div id="sh-clock"></div>
+  box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
+  ${hero}
   ${tiles}
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
@@ -7273,9 +7373,10 @@ function html(){
       <div class="ck-row"><input type="time" id="ck-st" value="${esc(ui.st||'')}" aria-label="Start time"></div>
       <button type="button" class="ck-big go" data-ck="latestart" ${busy?'disabled':''}>Save start time</button>
       <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
-    return `<section class="ck"><div class="ck-h"><b>Good ${greet()}, ${esc(first())}</b></div>
+    return `<section class="ck idle"><div class="ck-h"><b>Good ${greet()}, ${esc(first())}</b></div>
+      <p class="ck-st"><span class="ck-dot idle"></span>Not clocked in yet</p>
       <button type="button" class="ck-big go" data-ck="start" ${busy?'disabled':''}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Start shift</button>
-      <button type="button" class="ck-link" data-ck="late">Forgot? I started earlier</button>${m}</section>`;
+      <div class="ck-links"><button type="button" class="ck-link" data-ck="late">Forgot? I started earlier</button><button type="button" class="ck-link ck-times" data-nav="clock">My times</button></div>${m}</section>`;
   }
   if(!T.finish){
     if(ui.edit)return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>Change your start time</b></div>
@@ -8205,7 +8306,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610252200';
+const VERSION='202610252330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
