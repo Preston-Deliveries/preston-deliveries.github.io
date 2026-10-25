@@ -2657,7 +2657,70 @@ p.ck-alert{color:#5A3C00!important}
 #mod-timesheets .ckc .none{margin:0;font-size:.85rem;color:var(--sh-muted)}
 #mod-timesheets .ckn{margin:0;font-size:.82rem;color:var(--sh-muted)}
 #mod-timesheets .ckold{background:var(--sh-surface)}
-</style><div class="sh-app">
+</style><style id="staff-v2">
+#mod-staff .jump{display:flex;flex-wrap:wrap;gap:6px}
+#mod-staff .jump button{border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);border-radius:6px;padding:5px 12px;font:600 .85rem var(--sh-body);cursor:pointer}
+#mod-staff .jump span{color:var(--sh-muted);font-weight:700;margin-left:2px}
+#mod-staff .grp{display:flex;flex-direction:column;gap:6px;scroll-margin-top:12px}
+#mod-staff .grp h2{margin:6px 0 0;font-family:var(--sh-display);font-size:1.45rem;display:flex;align-items:baseline;gap:8px}
+#mod-staff .grp h2 span{font:700 .85rem var(--sh-body);color:var(--sh-muted)}
+#mod-staff .rows{list-style:none;margin:0;padding:0;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;overflow:hidden}
+#mod-staff .row{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem 9.5rem auto;gap:4px 14px;align-items:center;padding:11px 14px;border-top:1px solid var(--sh-line)}
+#mod-staff .row:first-child{border-top:0}
+#mod-staff .row.off{opacity:.5}
+#mod-staff .nm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;min-width:0}
+#mod-staff .nm b{font-size:1.02rem;overflow-wrap:anywhere}
+#mod-staff .rl{font-size:.85rem;color:var(--sh-muted);font-weight:600}
+#mod-staff .no{font-weight:800;font-variant-numeric:tabular-nums;color:var(--sh-ink)}
+#mod-staff .ph{text-align:right}
+#mod-staff .tel{color:var(--sh-accent);font-weight:700;font-size:1rem;text-decoration:none;border-bottom:2px solid currentColor;font-variant-numeric:tabular-nums;white-space:nowrap}
+#mod-staff .na{color:var(--sh-muted);font-size:.85rem}
+
+/* Directory: a colour for each group, coloured initials, green call buttons */
+#mod-staff .dg-office{--d:#C2410C;--ds:#FCE6DA}#mod-staff .dg-sup{--d:#6D3FC7;--ds:#ECE4FA}#mod-staff .dg-4214{--d:#1D5FD1;--ds:#E0EAFB}#mod-staff .dg-4215{--d:#0B7A6E;--ds:#D8F0EC}#mod-staff .dg-4217{--d:#B86E00;--ds:#FDEFD6}#mod-staff .dg-4218{--d:#C2185B;--ds:#FBE1EC}#mod-staff .dg-xl{--d:#3949AB;--ds:#E3E6F8}#mod-staff .dg-relief{--d:#14804A;--ds:#DDF2E5}#mod-staff .dg-other{--d:#5A6576;--ds:#E8ECF1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-staff .dg-office{--d:#F4936A;--ds:#3D2116}:root:not([data-theme="light"]) #mod-staff .dg-sup{--d:#B596F2;--ds:#2C2145}:root:not([data-theme="light"]) #mod-staff .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root:not([data-theme="light"]) #mod-staff .dg-4215{--d:#4FD1BF;--ds:#12332F}:root:not([data-theme="light"]) #mod-staff .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root:not([data-theme="light"]) #mod-staff .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root:not([data-theme="light"]) #mod-staff .dg-xl{--d:#9FA8F0;--ds:#22264A}:root:not([data-theme="light"]) #mod-staff .dg-relief{--d:#5CCB8E;--ds:#14321F}:root:not([data-theme="light"]) #mod-staff .dg-other{--d:#AEB8C6;--ds:#252E3B}}
+:root[data-theme="dark"] #mod-staff .dg-office{--d:#F4936A;--ds:#3D2116}:root[data-theme="dark"] #mod-staff .dg-sup{--d:#B596F2;--ds:#2C2145}:root[data-theme="dark"] #mod-staff .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root[data-theme="dark"] #mod-staff .dg-4215{--d:#4FD1BF;--ds:#12332F}:root[data-theme="dark"] #mod-staff .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root[data-theme="dark"] #mod-staff .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root[data-theme="dark"] #mod-staff .dg-xl{--d:#9FA8F0;--ds:#22264A}:root[data-theme="dark"] #mod-staff .dg-relief{--d:#5CCB8E;--ds:#14321F}:root[data-theme="dark"] #mod-staff .dg-other{--d:#AEB8C6;--ds:#252E3B}
+#sh-main #mod-staff .jump{gap:8px}
+#sh-main #mod-staff .jump button{background:var(--ds);color:var(--d);border:1px solid transparent;border-radius:999px;padding:7px 14px;font:700 .86rem var(--sh-body)}
+#sh-main #mod-staff .jump button span{color:inherit;opacity:.75}
+#sh-main #mod-staff .grp h2{font:700 .8rem/1 var(--sh-body);letter-spacing:.12em;text-transform:uppercase;color:var(--d);align-items:center;margin-top:10px}
+#sh-main #mod-staff .grp h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--d)}
+#sh-main #mod-staff .grp h2 span{background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.74rem;letter-spacing:0}
+#sh-main #mod-staff .rows{border-radius:12px;box-shadow:inset 4px 0 0 var(--d)}
+#sh-main #mod-staff .row{grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:6px;padding:10px 14px 10px 16px}
+#sh-main #mod-staff .row .l2{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;min-width:0}
+#sh-main #mod-staff .row .l2 .no,#sh-main #mod-staff .row .l2 .ph{grid-column:auto;grid-row:auto;min-width:0;max-width:100%}
+#sh-main #mod-staff .row .l2{justify-content:flex-start}
+#sh-main #mod-staff .row .nm{align-items:center;gap:4px 8px}
+#sh-main #mod-staff .row .nm .no{grid-column:auto;grid-row:auto;font-size:.78rem}
+#sh-main #mod-staff .row .nm .rl{flex-basis:100%}
+#sh-main #mod-staff .live{margin:0;font-size:.85rem;font-weight:600;color:#1E8A4C}
+#sh-main #mod-staff .tel{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.25}
+#sh-main #mod-staff .row .av{grid-row:1/span 2;align-self:center;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--ds);color:var(--d);font:700 .95rem var(--sh-body)}
+#sh-main #mod-staff .row .nm{grid-column:2/-1;grid-row:1}
+#sh-main #mod-staff .row .no{grid-column:2;grid-row:2;justify-self:start;font-size:.8rem;font-weight:700;color:var(--d);background:var(--ds);padding:2px 8px;border-radius:6px}
+#sh-main #mod-staff .row .ph{grid-column:3;grid-row:2;text-align:right}
+#sh-main #mod-staff .row .vis{grid-column:2/-1}
+#sh-main #mod-staff .tel{display:inline-flex;align-items:center;gap:6px;border:0;background:#1E8A4C;color:#fff;padding:7px 12px;border-radius:999px;font:700 .92rem var(--sh-body)}
+#sh-main #mod-staff .tel svg{width:15px;height:15px;fill:currentColor}
+#sh-main #mod-staff .tel:active{filter:brightness(.92)}
+#sh-main #mod-staff .na{font-size:.82rem}
+#sh-main #mod-staff .srch input{border-radius:10px}
+
+#sh-main #mod-staff .row{grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer}
+#sh-main #mod-staff .row:hover{background:var(--sh-sunk)}
+#sh-main #mod-staff .row:focus-visible{outline:2px solid var(--sh-accent);outline-offset:-2px}
+#sh-main #mod-staff .row .chev{grid-column:3;grid-row:1/span 2;align-self:center;width:18px;height:18px;fill:none;stroke:var(--sh-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+#sh-main #mod-staff .row .nm{grid-column:2}
+#sh-main #mod-staff .row .nm b{font:700 1.02rem/1.3 var(--sh-body);letter-spacing:0}
+#sh-main #mod-staff .row .nm{font:inherit}
+#sh-main #mod-staff .jump{display:none}
+#sh-main #mod-staff .row .nm .no{font-variant-numeric:normal}
+#sh-main #mod-staff .row .inf{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.82rem;color:var(--sh-ink);flex-basis:100%}
+#sh-main #mod-staff .row .inf i{font-style:normal;color:var(--sh-muted);font-weight:600}
+#sh-main #mod-staff .grp{display:flex;flex-direction:column;gap:6px;scroll-margin-top:12px}
+</style>
+<div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
 <div class="sh-mtop"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
@@ -4895,6 +4958,30 @@ function optCells(p){
    +cell('van','Van',(p.van||p.rego)?`${esc(title(p.van))}${p.rego?`<span class="sub num">${esc(p.rego)}</span>`:''}`:'')
    +cell('ec','Emergency contact',(p.ecName||p.ecPhone)?`${esc(title(p.ecName))}${p.ecPhone?`<span class="sub num">${esc(p.ecPhone)}</span>`:''}`:'');
 }
+/* list laid out like the Directory: a colour for each group, initials, run tags and a call button */
+const DGROUPS=[['office','Office and management'],['sup','Supervisors'],['4214','Drivers 4214'],['4215','Drivers 4215'],['4217','Drivers 4217'],['4218','Drivers 4218'],['xl','XL drivers'],['relief','Relief drivers'],['other','Others']];
+const dgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return DGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
+const telOf=p=>{const d=String(p||'').replace(/[^\d+]/g,'');return d};
+const phoneTxt=p=>{const d=String(p||'').replace(/\D/g,'');return d.length===10&&d[0]==='0'?d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7):String(p||'')};
+const ini=n=>String(n).split(/\s+/).filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+function infoLine(p){const it=[];
+  if(shown.has('login')&&p.login)it.push(['Login',p.login]);
+  if(shown.has('pw')&&p.pw)it.push(['Password',p.pw]);
+  if(shown.has('email')&&p.email)it.push(['Email',p.email]);
+  if(shown.has('van')&&(p.van||p.rego))it.push(['Van',[title(p.van),p.rego].filter(Boolean).join(' ')]);
+  if(shown.has('ec')&&(p.ecName||p.ecPhone))it.push(['Emergency',[title(p.ecName),p.ecPhone].filter(Boolean).join(' ')]);
+  const b=bayLine(p);if(b)it.push(['Bays',b]);
+  return it.length?`<span class="inf">${it.map(([k,v])=>`<span><i>${esc(k)}</i> ${esc(v)}</span>`).join('')}</span>`:''}
+function listHTML(list){
+  const G=DGROUPS.map(([k,t])=>({k,t,L:list.filter(p=>dgrp(p.role)===k)})).filter(g=>g.L.length);
+  const showRole=p=>{const g=dgrp(p.role);return g==='office'||g==='other'||String(p.role).toUpperCase()==='XL RELIEF'};
+  return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dm="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
+  ${G.map(g=>`<section class="grp dg-${g.k}" id="dm_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(p=>{const nm=fullName(p);
+    return `<li class="row" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><span class="av" aria-hidden="true">${esc(ini(nm))}</span>
+     <span class="nm"><b>${esc(nm)}</b>${runsOf(p).map(d=>`<span class="no">${esc(d)}</span>`).join('')}${showRole(p)?`<span class="rl">${esc(String(p.role)==='PRINCIPLE'?'Principal':title(p.role))}</span>`:''}</span>
+     <span class="l2"><span class="ph">${p.mobile?`<a class="tel" data-dm="tel" href="tel:${esc(telOf(p.mobile))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneTxt(p.mobile))}</a>`:'<span class="na">No number</span>'}</span>${infoLine(p)}</span>
+     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></li>`}).join('')}</ul></section>`).join('')}`;
+}
 function render(){
   const box=$('root');if(!box)return;
   if(state==='wait'){box.innerHTML='<div class="dm"><div class="empty">Opening driver details</div></div>';return}
@@ -4910,11 +4997,8 @@ function render(){
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
       <div class="chips" role="group" aria-label="Filter">${FILTERS.map(([k,l])=>`<button type="button" data-dm="filter" data-v="${k}" aria-pressed="${k===filter}">${l}<small>${c[k]}</small></button>`).join('')}</div></div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-    <div class="dm-bar"><span class="lbl">Show</span><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
-    ${list.length?`<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
-      ${list.map((p,i)=>`<tr data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
-      <td class="c-run num">${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${bayLine(p)?`<span class="sub">${esc(bayLine(p))}</span>`:''}</td>${optCells(p)}</tr>`).join('')}
-    </tbody></table></div>`:`<div class="tw"><div class="empty">${Object.keys(people).length?'Nobody matches that search.':'No drivers yet. Add the first person with the button above.'}</div></div>`}
+    <div class="dm-bar"><span class="lbl">Also show</span><div class="chips" role="group" aria-label="Show details">${COLS.filter(([k])=>k!=='mobile').map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
+    ${list.length?listHTML(list):`<div class="empty">${Object.keys(people).length?'Nobody matches that search.':'No drivers yet. Add the first person with the button above.'}</div>`}
   </div>`;
 }
 function detailHTML(){
@@ -5026,6 +5110,8 @@ async function exportXlsx(){
 document.addEventListener('click',e=>{
   const el=e.target.closest('[data-dm]');if(!el||!document.getElementById('mod-staff').contains(el))return;
   const a=el.dataset.dm,v=el.dataset.v;
+  if(a==='tel')return;
+  if(a==='jump'){document.getElementById('dm_g_'+v)?.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(a!=='del')armDel=false;
   if(a==='filter'){filter=v;msg=null;render();return}
   if(a==='col'){shown.has(v)?shown.delete(v):shown.add(v);try{localStorage.setItem('dm_cols',JSON.stringify([...shown].filter(x=>x!=='pw')))}catch(x){}render();return}
@@ -8910,7 +8996,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261200';
+const VERSION='202610261215';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
