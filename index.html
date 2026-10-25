@@ -2657,68 +2657,33 @@ p.ck-alert{color:#5A3C00!important}
 #mod-timesheets .ckc .none{margin:0;font-size:.85rem;color:var(--sh-muted)}
 #mod-timesheets .ckn{margin:0;font-size:.82rem;color:var(--sh-muted)}
 #mod-timesheets .ckold{background:var(--sh-surface)}
-</style><style id="staff-v2">
-#mod-staff .jump{display:flex;flex-wrap:wrap;gap:6px}
-#mod-staff .jump button{border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);border-radius:6px;padding:5px 12px;font:600 .85rem var(--sh-body);cursor:pointer}
-#mod-staff .jump span{color:var(--sh-muted);font-weight:700;margin-left:2px}
-#mod-staff .grp{display:flex;flex-direction:column;gap:6px;scroll-margin-top:12px}
-#mod-staff .grp h2{margin:6px 0 0;font-family:var(--sh-display);font-size:1.45rem;display:flex;align-items:baseline;gap:8px}
-#mod-staff .grp h2 span{font:700 .85rem var(--sh-body);color:var(--sh-muted)}
-#mod-staff .rows{list-style:none;margin:0;padding:0;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;overflow:hidden}
-#mod-staff .row{display:grid;grid-template-columns:minmax(0,1fr) 5.5rem 9.5rem auto;gap:4px 14px;align-items:center;padding:11px 14px;border-top:1px solid var(--sh-line)}
-#mod-staff .row:first-child{border-top:0}
-#mod-staff .row.off{opacity:.5}
-#mod-staff .nm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;min-width:0}
-#mod-staff .nm b{font-size:1.02rem;overflow-wrap:anywhere}
-#mod-staff .rl{font-size:.85rem;color:var(--sh-muted);font-weight:600}
-#mod-staff .no{font-weight:800;font-variant-numeric:tabular-nums;color:var(--sh-ink)}
-#mod-staff .ph{text-align:right}
-#mod-staff .tel{color:var(--sh-accent);font-weight:700;font-size:1rem;text-decoration:none;border-bottom:2px solid currentColor;font-variant-numeric:tabular-nums;white-space:nowrap}
-#mod-staff .na{color:var(--sh-muted);font-size:.85rem}
-
-/* Directory: a colour for each group, coloured initials, green call buttons */
+</style><style id="staff-v3">
 #mod-staff .dg-office{--d:#C2410C;--ds:#FCE6DA}#mod-staff .dg-sup{--d:#6D3FC7;--ds:#ECE4FA}#mod-staff .dg-4214{--d:#1D5FD1;--ds:#E0EAFB}#mod-staff .dg-4215{--d:#0B7A6E;--ds:#D8F0EC}#mod-staff .dg-4217{--d:#B86E00;--ds:#FDEFD6}#mod-staff .dg-4218{--d:#C2185B;--ds:#FBE1EC}#mod-staff .dg-xl{--d:#3949AB;--ds:#E3E6F8}#mod-staff .dg-relief{--d:#14804A;--ds:#DDF2E5}#mod-staff .dg-other{--d:#5A6576;--ds:#E8ECF1}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-staff .dg-office{--d:#F4936A;--ds:#3D2116}:root:not([data-theme="light"]) #mod-staff .dg-sup{--d:#B596F2;--ds:#2C2145}:root:not([data-theme="light"]) #mod-staff .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root:not([data-theme="light"]) #mod-staff .dg-4215{--d:#4FD1BF;--ds:#12332F}:root:not([data-theme="light"]) #mod-staff .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root:not([data-theme="light"]) #mod-staff .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root:not([data-theme="light"]) #mod-staff .dg-xl{--d:#9FA8F0;--ds:#22264A}:root:not([data-theme="light"]) #mod-staff .dg-relief{--d:#5CCB8E;--ds:#14321F}:root:not([data-theme="light"]) #mod-staff .dg-other{--d:#AEB8C6;--ds:#252E3B}}
 :root[data-theme="dark"] #mod-staff .dg-office{--d:#F4936A;--ds:#3D2116}:root[data-theme="dark"] #mod-staff .dg-sup{--d:#B596F2;--ds:#2C2145}:root[data-theme="dark"] #mod-staff .dg-4214{--d:#7FA8F5;--ds:#1B2A47}:root[data-theme="dark"] #mod-staff .dg-4215{--d:#4FD1BF;--ds:#12332F}:root[data-theme="dark"] #mod-staff .dg-4217{--d:#F2B24A;--ds:#3A2C10}:root[data-theme="dark"] #mod-staff .dg-4218{--d:#F48FB1;--ds:#3D1A28}:root[data-theme="dark"] #mod-staff .dg-xl{--d:#9FA8F0;--ds:#22264A}:root[data-theme="dark"] #mod-staff .dg-relief{--d:#5CCB8E;--ds:#14321F}:root[data-theme="dark"] #mod-staff .dg-other{--d:#AEB8C6;--ds:#252E3B}
-#sh-main #mod-staff .jump{gap:8px}
-#sh-main #mod-staff .jump button{background:var(--ds);color:var(--d);border:1px solid transparent;border-radius:999px;padding:7px 14px;font:700 .86rem var(--sh-body)}
-#sh-main #mod-staff .jump button span{color:inherit;opacity:.75}
-#sh-main #mod-staff .grp h2{font:700 .8rem/1 var(--sh-body);letter-spacing:.12em;text-transform:uppercase;color:var(--d);align-items:center;margin-top:10px}
-#sh-main #mod-staff .grp h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--d)}
-#sh-main #mod-staff .grp h2 span{background:var(--ds);color:var(--d);border-radius:999px;padding:3px 8px;font-size:.74rem;letter-spacing:0}
-#sh-main #mod-staff .rows{border-radius:12px;box-shadow:inset 4px 0 0 var(--d)}
-#sh-main #mod-staff .row{grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:6px;padding:10px 14px 10px 16px}
-#sh-main #mod-staff .row .l2{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;min-width:0}
-#sh-main #mod-staff .row .l2 .no,#sh-main #mod-staff .row .l2 .ph{grid-column:auto;grid-row:auto;min-width:0;max-width:100%}
-#sh-main #mod-staff .row .l2{justify-content:flex-start}
-#sh-main #mod-staff .row .nm{align-items:center;gap:4px 8px}
-#sh-main #mod-staff .row .nm .no{grid-column:auto;grid-row:auto;font-size:.78rem}
-#sh-main #mod-staff .row .nm .rl{flex-basis:100%}
-#sh-main #mod-staff .live{margin:0;font-size:.85rem;font-weight:600;color:#1E8A4C}
-#sh-main #mod-staff .tel{max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left;line-height:1.25}
-#sh-main #mod-staff .row .av{grid-row:1/span 2;align-self:center;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--ds);color:var(--d);font:700 .95rem var(--sh-body)}
-#sh-main #mod-staff .row .nm{grid-column:2/-1;grid-row:1}
-#sh-main #mod-staff .row .no{grid-column:2;grid-row:2;justify-self:start;font-size:.8rem;font-weight:700;color:var(--d);background:var(--ds);padding:2px 8px;border-radius:6px}
-#sh-main #mod-staff .row .ph{grid-column:3;grid-row:2;text-align:right}
-#sh-main #mod-staff .row .vis{grid-column:2/-1}
-#sh-main #mod-staff .tel{display:inline-flex;align-items:center;gap:6px;border:0;background:#1E8A4C;color:#fff;padding:7px 12px;border-radius:999px;font:700 .92rem var(--sh-body)}
-#sh-main #mod-staff .tel svg{width:15px;height:15px;fill:currentColor}
-#sh-main #mod-staff .tel:active{filter:brightness(.92)}
-#sh-main #mod-staff .na{font-size:.82rem}
-#sh-main #mod-staff .srch input{border-radius:10px}
 
-#sh-main #mod-staff .row{grid-template-columns:auto minmax(0,1fr) auto;cursor:pointer}
-#sh-main #mod-staff .row:hover{background:var(--sh-sunk)}
-#sh-main #mod-staff .row:focus-visible{outline:2px solid var(--sh-accent);outline-offset:-2px}
-#sh-main #mod-staff .row .chev{grid-column:3;grid-row:1/span 2;align-self:center;width:18px;height:18px;fill:none;stroke:var(--sh-muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
-#sh-main #mod-staff .row .nm{grid-column:2}
-#sh-main #mod-staff .row .nm b{font:700 1.02rem/1.3 var(--sh-body);letter-spacing:0}
-#sh-main #mod-staff .row .nm{font:inherit}
-#sh-main #mod-staff .jump{display:none}
-#sh-main #mod-staff .row .nm .no{font-variant-numeric:normal}
-#sh-main #mod-staff .row .inf{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.82rem;color:var(--sh-ink);flex-basis:100%}
-#sh-main #mod-staff .row .inf i{font-style:normal;color:var(--sh-muted);font-weight:600}
-#sh-main #mod-staff .grp{display:flex;flex-direction:column;gap:6px;scroll-margin-top:12px}
+#mod-staff .chips.grpc button{background:var(--ds,var(--sh-surface));color:var(--d,var(--sh-ink));border-color:transparent;border-radius:999px;padding:6px 14px;font-weight:700}
+#mod-staff .chips.grpc button[aria-pressed="true"]{background:var(--d,var(--sh-ink));color:#fff;border-color:var(--d,var(--sh-ink))}
+#mod-staff .chips.grpc button.all{--d:#1B3F6B;--ds:#E3EAF3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-staff .chips.grpc button.all{--d:#86AEE0;--ds:#1A2A42}:root:not([data-theme="light"]) #mod-staff .chips.grpc button[aria-pressed="true"]{color:#0B1320}}
+:root[data-theme="dark"] #mod-staff .chips.grpc button.all{--d:#86AEE0;--ds:#1A2A42}:root[data-theme="dark"] #mod-staff .chips.grpc button[aria-pressed="true"]{color:#0B1320}
+#mod-staff .chips.miss button{border-radius:999px}
+#mod-staff .chips.miss button[aria-pressed="true"]{background:#C8352B;border-color:#C8352B;color:#fff}
+#mod-staff .dm-sort{display:flex;align-items:center;gap:8px}
+#mod-staff .dm-sort select{min-height:38px;font:600 15px var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:6px 10px}
+#mod-staff tbody tr .role,#mod-staff tbody tr .role.office,#mod-staff tbody tr .role.relief{background:var(--ds);color:var(--d)}
+#mod-staff tbody tr .dno{background:var(--d);color:#fff;font-family:var(--sh-body);font-size:.85rem;padding:2px 7px;border-radius:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-staff tbody tr .dno{color:#0B1320}}
+:root[data-theme="dark"] #mod-staff tbody tr .dno{color:#0B1320}
+#mod-staff td.c-name{white-space:nowrap}
+#mod-staff td.c-name .av{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ds);color:var(--d);font:700 .75rem var(--sh-body);margin-right:8px;vertical-align:middle}
+#mod-staff td.c-name .nm{vertical-align:middle}
+#mod-staff td.c-name .sub{white-space:normal}
+#mod-staff tbody tr:hover td{background:var(--ds)}
+#mod-staff a.tel{display:inline-flex;align-items:center;gap:5px;background:#1E8A4C;color:#fff;text-decoration:none;border-radius:999px;padding:3px 10px;font:700 .85rem var(--sh-body);white-space:nowrap}
+#mod-staff a.tel svg{width:13px;height:13px;fill:currentColor}
+@media (min-width:600px){#mod-staff tbody tr td:first-child{box-shadow:inset 4px 0 0 var(--d)}}
+@media (max-width:599.98px){#mod-staff tbody tr{box-shadow:inset 4px 0 0 var(--d)}#mod-staff tbody tr:hover td{background:transparent}#mod-staff td.c-name{white-space:normal}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -4945,7 +4910,15 @@ function matchesQ(p){
   return [p.first,p.last,p.login,p.mobile,p.email,p.rego,p.van,p.role,runsOf(p).join(' '),p.ecName].join(' ').toLowerCase().replace(/\s+/g,'').includes(t);
 }
 function roleTag(r){r=String(r||'');const c=r==='RELIEF'||r==='XL RELIEF'?'relief':OFFICE.includes(r)?'office':'';return `<span class="role ${c}">${esc(r==='PRINCIPLE'?'Principal':r==='RELIEF'?'Relief':title(r).replace(/^Xl/,'XL'))}</span>`}
-function sorted(list){return list.sort((a,b)=>fullName(a).localeCompare(fullName(b)))}
+let miss='',sortBy=(()=>{try{return localStorage.getItem('dm_sort')||'name'}catch(e){return 'name'}})();
+const MISS=[['mobile','No mobile',p=>!p.mobile],['login','No login',p=>!p.login],['email','No email',p=>!p.email],['van','No van or rego',p=>!p.van&&!p.rego],['ec','No emergency contact',p=>!p.ecName&&!p.ecPhone],['run','No driver number',p=>!runsOf(p).length]];
+function matchesMiss(p){if(!miss)return true;const m=MISS.find(x=>x[0]===miss);return m?m[2](p):true}
+const runKey=p=>{const r=runsOf(p)[0]||'';const m=/(\d+)/.exec(r);return m?r.replace(/\d+/,'')+String(+m[1]).padStart(4,'0'):'~'};
+function sorted(list){const G=['office','sup','4214','4215','4217','4218','xl','relief','other'];const byName=(a,b)=>fullName(a).localeCompare(fullName(b));
+  if(sortBy==='run')return list.sort((a,b)=>runKey(a).localeCompare(runKey(b))||byName(a,b));
+  if(sortBy==='group')return list.sort((a,b)=>G.indexOf(dgrp(a.role))-G.indexOf(dgrp(b.role))||runKey(a).localeCompare(runKey(b))||byName(a,b));
+  if(sortBy==='login')return list.sort((a,b)=>String(a.login||'~').localeCompare(String(b.login||'~'))||byName(a,b));
+  return list.sort(byName)}
 function counts(){const all=Object.values(people);const c={};for(const[k]of FILTERS){const keep=filter;filter=k;c[k]=all.filter(matchesFilter).length;filter=keep}return c}
 function pushStat(){if(!window.APP)return;const all=Object.values(people);const onRuns=all.filter(p=>runsOf(p).length).length,relief=all.filter(p=>String(p.role).includes('RELIEF')).length;APP.stat('staff',`${all.length} people, ${onRuns} on runs, ${relief} relief`)}
 const lockIcon='<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
@@ -4953,7 +4926,7 @@ function optCells(p){
   const cell=(k,l,html)=>shown.has(k)?`<td class="opt c-${k}" data-l="${l}">${html||'<span class="sub">None</span>'}</td>`:'';
   return cell('login','Login',p.login?`<span class="num">${esc(p.login)}</span>`:'')
    +cell('pw','Password',p.pw?`<span class="num">${esc(p.pw)}</span>`:'')
-   +cell('mobile','Mobile',p.mobile?`<span class="num">${esc(p.mobile)}</span>`:'')
+   +cell('mobile','Mobile',p.mobile?`<a class="tel" data-dm="tel" href="tel:${esc(telOf(p.mobile))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneTxt(p.mobile))}</a>`:'')
    +cell('email','Email',p.email?esc(p.email):'')
    +cell('van','Van',(p.van||p.rego)?`${esc(title(p.van))}${p.rego?`<span class="sub num">${esc(p.rego)}</span>`:''}`:'')
    +cell('ec','Emergency contact',(p.ecName||p.ecPhone)?`${esc(title(p.ecName))}${p.ecPhone?`<span class="sub num">${esc(p.ecPhone)}</span>`:''}`:'');
@@ -4972,16 +4945,6 @@ function infoLine(p){const it=[];
   if(shown.has('ec')&&(p.ecName||p.ecPhone))it.push(['Emergency',[title(p.ecName),p.ecPhone].filter(Boolean).join(' ')]);
   const b=bayLine(p);if(b)it.push(['Bays',b]);
   return it.length?`<span class="inf">${it.map(([k,v])=>`<span><i>${esc(k)}</i> ${esc(v)}</span>`).join('')}</span>`:''}
-function listHTML(list){
-  const G=DGROUPS.map(([k,t])=>({k,t,L:list.filter(p=>dgrp(p.role)===k)})).filter(g=>g.L.length);
-  const showRole=p=>{const g=dgrp(p.role);return g==='office'||g==='other'||String(p.role).toUpperCase()==='XL RELIEF'};
-  return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dm="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
-  ${G.map(g=>`<section class="grp dg-${g.k}" id="dm_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(p=>{const nm=fullName(p);
-    return `<li class="row" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><span class="av" aria-hidden="true">${esc(ini(nm))}</span>
-     <span class="nm"><b>${esc(nm)}</b>${runsOf(p).map(d=>`<span class="no">${esc(d)}</span>`).join('')}${showRole(p)?`<span class="rl">${esc(String(p.role)==='PRINCIPLE'?'Principal':title(p.role))}</span>`:''}</span>
-     <span class="l2"><span class="ph">${p.mobile?`<a class="tel" data-dm="tel" href="tel:${esc(telOf(p.mobile))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneTxt(p.mobile))}</a>`:'<span class="na">No number</span>'}</span>${infoLine(p)}</span>
-     <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></li>`}).join('')}</ul></section>`).join('')}`;
-}
 function render(){
   const box=$('root');if(!box)return;
   if(state==='wait'){box.innerHTML='<div class="dm"><div class="empty">Opening driver details</div></div>';return}
@@ -4989,16 +4952,21 @@ function render(){
   if(state==='nodb'){box.innerHTML='<div class="dm"><div class="empty">Driver details are only available when you open this page in Claude while signed in.</div></div>';return}
   if(openId!==null){box.innerHTML=detailHTML();return}
   const c=counts();
-  const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)));
+  const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   box.innerHTML=`<div class="dm">
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
       <div class="act"><button type="button" class="sh-btn primary" data-dm="add">Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
-      <div class="chips" role="group" aria-label="Filter">${FILTERS.map(([k,l])=>`<button type="button" data-dm="filter" data-v="${k}" aria-pressed="${k===filter}">${l}<small>${c[k]}</small></button>`).join('')}</div></div>
+      <div class="chips grpc" role="group" aria-label="Group">${FILTERS.map(([k,l])=>`<button type="button" class="${k==='all'?'all':'dg-'+k}" data-dm="filter" data-v="${k}" aria-pressed="${k===filter}">${l}<small>${c[k]}</small></button>`).join('')}</div></div>
+    <div class="dm-bar"><span class="lbl">Missing</span><div class="chips miss" role="group" aria-label="Missing details">${MISS.map(([k,l,f])=>{const n=Object.values(people).filter(p=>matchesFilter(p)&&f(p)).length;return `<button type="button" data-dm="miss" data-v="${k}" aria-pressed="${k===miss}">${l}<small>${n}</small></button>`}).join('')}</div>
+      <label class="dm-sort"><span class="lbl">Sort</span><select id="dm_sort" aria-label="Sort by"><option value="name"${sortBy==='name'?' selected':''}>Name</option><option value="run"${sortBy==='run'?' selected':''}>Driver number</option><option value="group"${sortBy==='group'?' selected':''}>Group</option><option value="login"${sortBy==='login'?' selected':''}>Login</option></select></label></div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-    <div class="dm-bar"><span class="lbl">Also show</span><div class="chips" role="group" aria-label="Show details">${COLS.filter(([k])=>k!=='mobile').map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
-    ${list.length?listHTML(list):`<div class="empty">${Object.keys(people).length?'Nobody matches that search.':'No drivers yet. Add the first person with the button above.'}</div>`}
+    <div class="dm-bar"><span class="lbl">Show</span><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
+    ${list.length?`<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([,l])=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
+      ${list.map((p,i)=>`<tr class="dg-${dgrp(p.role)}" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
+      <td class="c-run num">${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${bayLine(p)?`<span class="sub">${esc(bayLine(p))}</span>`:''}</td>${optCells(p)}</tr>`).join('')}
+    </tbody></table></div>`:`<div class="tw"><div class="empty">${Object.keys(people).length?'Nobody matches those filters.':'No drivers yet. Add the first person with the button above.'}</div></div>`}
   </div>`;
 }
 function detailHTML(){
@@ -5050,7 +5018,7 @@ async function exportPdf(btn){
     if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
   }catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
-  const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)));
+  const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   const INK=[20,32,29],NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],ACC=[11,107,92],LINE=[211,220,216],ALT=[246,248,247];
   const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
   const fname=(FILTERS.find(f=>f[0]===filter)||['','All'])[1];
@@ -5111,7 +5079,7 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('[data-dm]');if(!el||!document.getElementById('mod-staff').contains(el))return;
   const a=el.dataset.dm,v=el.dataset.v;
   if(a==='tel')return;
-  if(a==='jump'){document.getElementById('dm_g_'+v)?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='miss'){miss=miss===v?'':v;render();return}
   if(a!=='del')armDel=false;
   if(a==='filter'){filter=v;msg=null;render();return}
   if(a==='col'){shown.has(v)?shown.delete(v):shown.add(v);try{localStorage.setItem('dm_cols',JSON.stringify([...shown].filter(x=>x!=='pw')))}catch(x){}render();return}
@@ -5127,6 +5095,7 @@ document.addEventListener('click',e=>{
   if(a==='copy'){navigator.clipboard?.writeText(v).then(()=>{msg={t:'Mobile copied.'};render()},()=>{msg={t:v};render()});return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#mod-staff tr[data-dm=open]')){e.target.click()}});
+document.addEventListener('change',e=>{if(e.target.id==='dm_sort'){sortBy=e.target.value;try{localStorage.setItem('dm_sort',sortBy)}catch(x){}render()}});
 document.addEventListener('input',e=>{if(e.target.id==='dm_q'){q=e.target.value;const pos=e.target.selectionStart;render();const n=$('q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}});
 async function start(role){
   if(role!=='mgr'){state='denied';people={};render();return}
@@ -8996,7 +8965,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261215';
+const VERSION='202610261230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
