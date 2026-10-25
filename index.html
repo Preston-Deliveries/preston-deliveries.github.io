@@ -6537,7 +6537,7 @@ function rowsFor(date){
   for(const[l,v]of Object.entries(r)){const k=dkey(l),p=P[k]||{id:'',login:k,name:k,no:''};out.push({date,key:p.id||'L'+k,p,pc:v&&v.pc})}
   for(const[id,c]of Object.entries(clock)){if(!id.startsWith(date+'_')||!c||!c.staff)continue;if(out.some(x=>x.key===c.staff))continue;const p=Object.values(P).find(x=>x.id===c.staff)||{id:c.staff,login:'',name:c.name||c.staff,no:''};out.push({date,key:c.staff,p,pc:null,clocked:true})}
   for(const[id,t]of Object.entries(ts)){if(!id.startsWith(date+'_')||!t||!t.extra)continue;const sid=id.slice(11);if(out.some(x=>x.key===sid))continue;const p=Object.values(P).find(x=>x.id===sid)||{id:sid,login:'',name:t.name||sid,no:''};out.push({date,key:sid,p,pc:null,extra:true})}
-  return out.filter(r=>!(ts[r.date+'_'+r.key]&&ts[r.date+'_'+r.key].removed)).sort((a,b)=>a.p.name.localeCompare(b.p.name));
+  return out.filter(r=>{const id=r.date+'_'+r.key,o=ts[id];if(!o||!o.removed)return true;const c=clock[id];return !!(c&&String(c.updatedAt||'')>String(o.removedAt||''))}).sort((a,b)=>a.p.name.localeCompare(b.p.name));
 }
 const WD=[[1,'Mon'],[2,'Tue'],[3,'Wed'],[4,'Thu'],[5,'Fri'],[6,'Sat']];
 function startFor(key,date){const v=cfg.starts[key];if(!v)return '';if(typeof v==='string')return v;return v[fromIso(date).getDay()]||''}
@@ -6587,9 +6587,9 @@ function weekHTML(){
 }
 /* ---------- one person's timesheet ---------- */
 function allDates(){return [...new Set(Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d))))].sort()}
-function periodRange(){const T=TODAY;if(per==='week')return[monday(T),add(monday(T),6)];if(per==='lastweek'){const m=add(monday(T),-7);return[m,add(m,6)]}if(per==='month')return[T.slice(0,8)+'01',T];if(per==='fy'){const d=fromIso(T),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return[y+'-07-01',(y+1)+'-06-30']}return['0000','9999']}
+function periodRange(){const T=TODAY;if(per==='today')return[T,T];if(per==='week')return[monday(T),add(monday(T),6)];if(per==='lastweek'){const m=add(monday(T),-7);return[m,add(m,6)]}if(per==='month')return[T.slice(0,8)+'01',T];if(per==='fy'){const d=fromIso(T),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return[y+'-07-01',(y+1)+'-06-30']}return['0000','9999']}
 function personRows(pid){const [a,b]=periodRange();const out=[];for(const d of allDates()){if(d<a||d>b)continue;const r=rowsFor(d).find(x=>x.key===pid);if(r)out.push(r)}return out.sort((x,y)=>y.date.localeCompare(x.date))}
-const PER=[['week','This week'],['lastweek','Last week'],['month','This month'],['fy','This financial year'],['all','All time']];
+const PER=[['today','Today'],['week','This week'],['lastweek','Last week'],['month','This month'],['fy','This financial year'],['all','All time']];
 function personHTML(){
   const p=Object.values(people()).find(x=>x.id===person)||{name:person,no:'',login:''};
   const R=personRows(person);let tot=0,miss=0,xp=0,tl=0,hp=0;for(const r of R){const e=eff(r);if(e.hrs!=null)tot+=e.hrs;else miss++;xp+=+e.xp||0;if(e.tl)tl++;if(e.hp)hp++}
@@ -6741,7 +6741,10 @@ async function load(){
   try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}
     hist=[];if(T)hist.push(T);for(const b of bs)if(b.exists)hist.push(__D(b));const more=[5,6].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const ms=await Promise.all(more.map(d=>db.doc('clock/'+d+'_'+me.staff).get()));for(const m of ms)if(m.exists)hist.push(__D(m));}catch(e){msg={err:true,t:'Could not load your times. Check your signal.'}}
   loaded=true;
+  watch();
 }
+let unsub=null;
+function watch(){if(unsub){try{unsub()}catch(e){}unsub=null}if(!db||!me||!me.staff||!today)return;try{unsub=db.doc('clock/'+today+'_'+me.staff).onSnapshot(sn=>{const v=sn.exists?__D(sn):null;if(JSON.stringify(v)===JSON.stringify(T))return;T=v;hist=[T,...hist.filter(h=>h&&h.date!==today)].filter(Boolean);if(!busy&&!Object.keys(ui).length)render()},()=>{})}catch(e){}}
 function html(){
   if(noRec)return `<section class="ck"><div class="ck-h"><b>Clock in isn't set up for you yet</b></div><p>Your email needs to be on your details on the Drivers page.</p></section>`;
   if(loaded&&!ok())return '';
@@ -6843,7 +6846,7 @@ document.addEventListener('click',async e=>{
     await save(async()=>{await db.doc('clock/'+yday+'_'+me.staff).update(f);Y={...Y,...f}},'Thanks, yesterday is saved.');return}
 });
 document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&dayOf(new Date())!==today){loaded=false;mount()}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){loaded=false;mount()}});
 window.CLOCK={mount};
 })();
 
@@ -6856,7 +6859,7 @@ window.CLOCK={mount};
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251159';
+const VERSION='202610251203';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
