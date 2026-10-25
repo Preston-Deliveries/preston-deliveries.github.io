@@ -27,7 +27,7 @@ service cloud.firestore {
     function adminOnly(col) {
       return col in ['staff', 'days', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback'];
     }
 
     function myStaff() {
@@ -60,6 +60,16 @@ service cloud.firestore {
         && request.resource.data.signedAt == request.time
         && request.resource.data.sig is string && request.resource.data.sig.size() < 300000);
       allow update, delete: if isAdmin();
+    }
+    // Feedback: anyone on the team can send a message for themselves; only admins can read, change or delete
+    match /feedback/{id} {
+      allow read, update, delete: if isAdmin();
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && request.resource.data.keys().hasOnly(['staff', 'name', 'topic', 'text', 'followUp', 'status', 'at'])
+        && request.resource.data.status == 'new'
+        && request.resource.data.at == request.time
+        && request.resource.data.text is string && request.resource.data.text.size() <= 4000);
     }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());

@@ -1437,6 +1437,50 @@ body.sh-uv-on{overflow:hidden}
 #mod-vchecks .msg .vc-pr{margin-left:10px;vertical-align:middle}
 #mod-vchecks .older{display:flex;justify-content:center;margin:14px 0 4px}
 </style>
+<style id="feedback-css">#mod-feedback .fbx{max-width:900px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+#mod-feedback .card{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+#mod-feedback .card h2{margin:0;font-family:var(--sh-display);font-size:1.5rem}
+#mod-feedback .card h3{margin:4px 0 0;font-size:1.02rem;font-weight:700;color:var(--sh-ink)}
+#mod-feedback .lead{margin:0;color:var(--sh-muted);line-height:1.5}
+#mod-feedback .lead b{color:var(--sh-ink)}
+#mod-feedback .hint,#mod-feedback .note{margin:0;color:var(--sh-muted);font-size:.86rem}
+#mod-feedback .note{border-top:1px solid var(--sh-line);padding-top:10px}
+#mod-feedback .msg{margin:0;font-weight:600;color:var(--sh-accent)}#mod-feedback .msg.err{color:#B3261E}
+#mod-feedback .chips,#mod-feedback .yn{display:flex;flex-wrap:wrap;gap:8px}
+#mod-feedback .chip{font:600 .98rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1.5px solid var(--sh-line);border-radius:6px;padding:10px 16px;min-height:44px;cursor:pointer}
+#mod-feedback .chip.on{background:var(--sh-accent);border-color:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-feedback .f{display:flex;flex-direction:column;gap:8px}
+#mod-feedback textarea{font:500 1rem/1.5 var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1.5px solid var(--sh-line);border-radius:8px;padding:12px;resize:vertical;min-height:130px}
+#mod-feedback textarea:focus,#mod-feedback #fb_q:focus{outline:2px solid var(--sh-accent);outline-offset:1px}
+#mod-feedback .big{min-height:52px;font-size:1.05rem;align-self:flex-start;padding:12px 24px}
+#mod-feedback .big[disabled]{opacity:.5;cursor:not-allowed}
+#mod-feedback .sent{align-items:flex-start;border-left:5px solid #1E8A4C}
+#mod-feedback .sent p{margin:0;color:var(--sh-muted)}
+#mod-feedback .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+#mod-feedback .tabs{display:inline-flex;flex-wrap:wrap;border:1px solid var(--sh-line);border-radius:8px;overflow:hidden;background:var(--sh-surface)}
+#mod-feedback .tabs button{border:0;background:transparent;color:var(--sh-ink);font:600 .95rem var(--sh-body);padding:9px 14px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+#mod-feedback .tabs button[aria-pressed="true"]{background:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-feedback .tabs .n{font-size:.78rem;opacity:.8}
+#mod-feedback .mini{display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-feedback .mini select{font:600 .95rem var(--sh-body);letter-spacing:0;text-transform:none;color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:8px 10px}
+#mod-feedback #fb_q{flex:1 1 220px;min-width:0;font:500 1rem var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px 12px}
+#mod-feedback .item{gap:8px;border-left:5px solid var(--sh-line)}
+#mod-feedback .item.st-new{border-left-color:var(--sh-accent)}
+#mod-feedback .item.st-done{opacity:.75}
+#mod-feedback .item .top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#mod-feedback .item .sp,#mod-feedback .acts .sp{flex:1}
+#mod-feedback .tp,#mod-feedback .nw,#mod-feedback .cb{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px}
+#mod-feedback .tp{background:#E6EAF0;color:#2B3A52}
+#mod-feedback .nw{background:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-feedback .cb{background:#FCEBD2;color:#8A4B00}
+#mod-feedback .when{font-size:.84rem;color:var(--sh-muted)}
+#mod-feedback .item h3{margin:0;font-size:1.1rem}
+#mod-feedback .item h3 small{font-weight:600;color:var(--sh-muted);font-size:.82rem}
+#mod-feedback .txt{margin:0;line-height:1.55;white-space:normal;overflow-wrap:anywhere}
+#mod-feedback .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-top:1px solid var(--sh-line);padding-top:10px}
+#mod-feedback .acts a.sh-btn{text-decoration:none}
+#mod-feedback .empty{padding:28px 16px;text-align:center;color:var(--sh-muted);background:var(--sh-surface);border:1px dashed var(--sh-line);border-radius:8px}
+</style>
 <style id="timesheets-css">#mod-timesheets .tsx{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
 #mod-timesheets .head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 16px}
 #mod-timesheets h1{font-family:var(--sh-display);font-size:2rem;line-height:1;margin:0}
@@ -2240,6 +2284,7 @@ p.ck-alert{color:#5A3C00!important}
 <section class="sh-sec" id="mod-clock" hidden><div class="ckx" id="ck_page"></div></section>
 <section class="sh-sec" id="mod-summary" hidden><div id="sm_root"></div></section>
 <section class="sh-sec" id="mod-vchecks" hidden><div id="vc_root"></div></section>
+<section class="sh-sec" id="mod-feedback" hidden><div id="fb_root"></div></section>
 <section class="sh-sec" id="mod-timesheets" hidden><div id="ts_root"></div></section>
 <section class="sh-sec" id="mod-uniform" hidden><div id="un_root"></div></section>
 <section class="sh-sec" id="mod-updates" hidden><div id="nt_root"></div></section>
@@ -2268,13 +2313,14 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
-const NAMES={home:'Home',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
-const MOD={home:'mod-home',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
+const NAMES={home:'Home',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const MOD={home:'mod-home',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
+ feedback:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
  sort:'<svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/><path d="M8 10.5h5"/></svg>',
  runs:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 3.5v2h6v-2"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg>',
@@ -2297,8 +2343,8 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
+ mgr:{feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails, score each driver and share the boards.',survey:'Upload the Call Reason Drill sheet and rank drivers on customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods. Import the time off export.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ drv:{feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s scores, points and ranking.',survey:'See what customers said and where you rank.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -2432,7 +2478,7 @@ function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
+  const tilesOrder=['clock'].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
     box.innerHTML=`<div class="sh-hello"><small>Preston Delivery Service Pty Ltd</small><h1>Contract 1161</h1><p>${esc(today)}</p></div>
@@ -6998,6 +7044,118 @@ try{if(window.APP&&window.APP.section==='clock')mount()}catch(e){}
 })();
 
 </script>
+<script type="text/x-mod" data-mod="feedback">
+(()=>{
+/* Feedback: drivers send a private message to the managers. Only managers can read them. */
+const $=id=>document.getElementById('fb_'+id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const TOPICS=[['app','The app'],['idea','A feature idea'],['work','Work'],['person','A person'],['problem','A problem'],['outside','Outside work'],['other','Something else']];
+const TOPIC=Object.fromEntries(TOPICS);
+const STATUS={new:'New',read:'Read',done:'Done'};
+const toDate=v=>{if(!v)return null;if(typeof v==='string'||typeof v==='number')return new Date(v);if(v.toDate)return v.toDate();if(v.seconds!=null)return new Date(v.seconds*1000);return null};
+function when(v){const d=toDate(v);if(!d||isNaN(d))return '';const now=new Date(),t=d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
+  const day=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();const diff=Math.round((day(now)-day(d))/864e5);
+  if(diff===0)return 'Today at '+t;if(diff===1)return 'Yesterday at '+t;return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+(d.getFullYear()!==now.getFullYear()?' '+d.getFullYear():'')+' at '+t}
+
+let mode='wait',db=null,items={},staff={},me=null,meTried=false,msg=null,busy=false;
+let form={topic:'',text:'',call:null},sent=null;
+let filt='new',tf='all',q='',arm=null;
+
+/* ---------- driver: send a message ---------- */
+function driverHTML(){
+  if(sent)return `<section class="card sent"><h2>Thanks${sent?', '+esc(sent):''}.</h2><p>Your message has been sent. Only the managers can read it.</p><button type="button" class="sh-btn primary" data-fb="again">Send another</button></section>`;
+  if(!meTried)return '<div class="empty">Opening…</div>';
+  if(!me)return `<div class="empty">Your sign in is not linked to a driver on the team list yet, so feedback cannot be sent. Ask the manager to check your email on the Drivers page.</div>`;
+  const ok=form.topic&&form.text.trim().length>=3&&form.call!==null;
+  return `<section class="card">
+   <p class="lead">Want to tell the manager something without calling? Send it here. It can be about the app, an idea, work, a person, a problem, or something outside work. <b>Only managers can read it.</b></p>
+   <h3>What is it about?</h3>
+   <div class="chips" role="group" aria-label="Topic">${TOPICS.map(([k,l])=>`<button type="button" class="chip ${form.topic===k?'on':''}" data-fb="topic" data-v="${k}" aria-pressed="${form.topic===k}">${esc(l)}</button>`).join('')}</div>
+   <label class="f" for="fb_text"><h3>What would you like to say?</h3><textarea id="fb_text" rows="6" maxlength="4000" placeholder="Type your message here">${esc(form.text)}</textarea></label>
+   <h3>Would you like the manager to call you about it?</h3>
+   <div class="yn" role="group" aria-label="Call back"><button type="button" class="chip ${form.call===true?'on':''}" data-fb="call" data-v="yes" aria-pressed="${form.call===true}">Yes, please call me</button><button type="button" class="chip ${form.call===false?'on':''}" data-fb="call" data-v="no" aria-pressed="${form.call===false}">No need</button></div>
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   <button type="button" class="sh-btn primary big" data-fb="send" ${ok&&!busy?'':'disabled'}>${busy?'Sending…':'Send to the manager'}</button>
+   ${ok?'':`<p class="hint">${!form.topic?'Pick what it is about.':form.text.trim().length<3?'Type your message.':'Choose if you would like a call.'}</p>`}
+   <p class="note">Anything urgent or unsafe? Call your supervisor straight away.</p>
+  </section>`;
+}
+async function send(){
+  if(busy||!db||!me)return;const text=form.text.trim();if(!form.topic||text.length<3||form.call===null)return;
+  busy=true;msg=null;render();
+  const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'_'+me.staff;
+  try{await db.doc('feedback/'+id).set({staff:me.staff,name:me.name||'',topic:form.topic,text,followUp:form.call,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()});
+    sent=tc(String(me.name||'').split(' ')[0]);form={topic:'',text:'',call:null};busy=false;render();window.scrollTo(0,0)}
+  catch(e){busy=false;msg={err:true,t:'Could not send just now. Check your connection and try again.'};render()}
+}
+
+/* ---------- manager: read messages ---------- */
+function person(r){const p=staff[r.staff]||{};return{name:tc([p.first,p.last].filter(Boolean).join(' '))||tc(r.name)||'Unknown',mobile:String(p.mobile||'').replace(/[^\d+]/g,''),no:(p.runs||[]).filter(Boolean).join(', ')}}
+const wa=m=>{let n=m.replace(/^\+/,'');if(/^0\d{9}$/.test(n))n='61'+n.slice(1);return 'https://wa.me/'+n};
+function list(){return Object.entries(items).map(([id,r])=>({id,...r,_t:(toDate(r.at)||new Date(0)).getTime()})).sort((a,b)=>b._t-a._t)}
+function mgrHTML(){
+  const L=list(),nNew=L.filter(r=>r.status==='new').length;
+  const t=q.trim().toLowerCase();
+  const show=L.filter(r=>(filt==='all'||(filt==='new'?r.status==='new':filt==='call'?r.followUp&&r.status!=='done':r.status!=='done'))&&(tf==='all'||r.topic===tf)&&(!t||[person(r).name,r.text,TOPIC[r.topic]].join(' ').toLowerCase().includes(t)));
+  const F=[['new','New',nNew],['open','Not done',L.filter(r=>r.status!=='done').length],['call','Wants a call',L.filter(r=>r.followUp&&r.status!=='done').length],['all','All',L.length]];
+  return `<div class="bar"><div class="tabs" role="group" aria-label="Show">${F.map(([k,l,n])=>`<button type="button" data-fb="filt" data-v="${k}" aria-pressed="${filt===k}">${l}<span class="n">${n}</span></button>`).join('')}</div>
+   <label class="mini" for="fb_tf">Topic<select id="fb_tf"><option value="all">All topics</option>${TOPICS.map(([k,l])=>`<option value="${k}" ${tf===k?'selected':''}>${l}</option>`).join('')}</select></label>
+   <input type="search" id="fb_q" placeholder="Search name or words" value="${esc(q)}" autocomplete="off" aria-label="Search"></div>
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${show.length?show.map(itemHTML).join(''):`<div class="empty">${L.length?'Nothing here. Try another tab or topic.':'No feedback yet. When drivers send a message it shows up here, and only managers can see it.'}</div>`}
+   <p class="hint">Drivers find Feedback in the app menu. Only managers can read these messages.</p>`;
+}
+function itemHTML(r){const p=person(r);
+  return `<article class="card item st-${r.status||'new'}"><div class="top"><span class="tp">${esc(TOPIC[r.topic]||'Other')}</span>${r.status==='new'?'<span class="nw">New</span>':''}${r.followUp?'<span class="cb">Wants a call</span>':''}<span class="sp"></span><span class="when">${esc(when(r.at))}</span></div>
+   <h3>${esc(p.name)}${p.no?` <small>${esc(p.no)}</small>`:''}</h3>
+   <p class="txt">${esc(r.text).replace(/\n/g,'<br>')}</p>
+   <div class="acts">${p.mobile?`<a class="sh-btn sm" href="tel:${esc(p.mobile)}">Call</a><a class="sh-btn sm" href="${esc(wa(p.mobile))}" target="_blank" rel="noopener">WhatsApp</a>`:''}
+    ${r.status==='new'?`<button type="button" class="sh-btn sm" data-fb="st" data-id="${esc(r.id)}" data-v="read">Mark as read</button>`:''}
+    ${r.status!=='done'?`<button type="button" class="sh-btn sm primary" data-fb="st" data-id="${esc(r.id)}" data-v="done">Mark done</button>`:`<button type="button" class="sh-btn sm" data-fb="st" data-id="${esc(r.id)}" data-v="read">Reopen</button>`}
+    <span class="sp"></span><button type="button" class="sh-btn sm danger ${arm===r.id?'arm':''}" data-fb="del" data-id="${esc(r.id)}">${arm===r.id?'Tap again to delete':'Delete'}</button></div></article>`}
+function pushStat(){if(mode!=='mgr'||!window.APP||!APP.stat)return;const n=list().filter(r=>r.status==='new').length;APP.stat('feedback',n?n+' new':'')}
+
+function render(){
+  const box=$('root');if(!box)return;
+  if(mode==='wait'){box.innerHTML='<div class="fbx"><div class="empty">Opening…</div></div>';return}
+  box.innerHTML=`<div class="fbx">${mode==='mgr'?mgrHTML():driverHTML()}</div>`;
+}
+function renderKeepSearch(){const a=document.activeElement,isQ=a&&a.id==='fb_q',pos=isQ?a.selectionStart:0;render();if(isQ){const n=$('q');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(e){}}}}
+
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-fb]');const sec=document.getElementById('mod-feedback');if(!el||!sec||!sec.contains(el))return;
+  const a=el.dataset.fb,v=el.dataset.v,id=el.dataset.id;if(a!=='del')arm=null;
+  if(a==='topic'){form.topic=v;msg=null;render();return}
+  if(a==='call'){form.call=v==='yes';msg=null;render();return}
+  if(a==='send'){send();return}
+  if(a==='again'){sent=null;render();return}
+  if(a==='filt'){filt=v;msg=null;render();return}
+  if(a==='st'&&items[id]){const prev=items[id].status;items[id]={...items[id],status:v};pushStat();render();try{await db.doc('feedback/'+id).update({status:v})}catch(x){items[id]={...items[id],status:prev};msg={err:true,t:'Could not update just now.'};pushStat();render()}return}
+  if(a==='del'&&items[id]){if(arm!==id){arm=id;render();setTimeout(()=>{if(arm===id){arm=null;render()}},3500);return}
+    try{await db.doc('feedback/'+id).delete();delete items[id];arm=null;msg={t:'Message deleted.'};pushStat();render()}catch(x){arm=null;msg={err:true,t:'Could not delete just now.'};render()}return}
+});
+document.addEventListener('input',e=>{if(e.target.id==='fb_text'){const had=form.text.trim().length>=3;form.text=e.target.value;const has=form.text.trim().length>=3;if(had!==has){const pos=e.target.selectionStart;render();const n=$('text');if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}}return}
+  if(e.target.id==='fb_q'){q=e.target.value;renderKeepSearch()}});
+document.addEventListener('change',e=>{if(e.target.id==='fb_tf'){tf=e.target.value;render()}});
+
+async function loadMe(){try{let tries=0;while(!window.CLOCK&&tries<40){await new Promise(r=>setTimeout(r,150));tries++}
+  me=window.CLOCK?await window.CLOCK.whoami():null}catch(x){me=null}meTried=true;render()}
+async function start(role){
+  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  if(role!=='mgr'){mode='drv';render();loadMe();return}
+  mode='mgr';render();if(!db)return;
+  const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-feedback')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='fb_q'};
+  db.collection('feedback').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);items=m;pushStat();if(!typing())renderKeepSearch()},()=>{msg={err:true,t:'Could not load feedback. Check the app rules have been updated.'};render()});
+  db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())renderKeepSearch()},()=>{});
+}
+render();
+window.addEventListener('app:role',e=>start(e.detail));
+if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
+})();
+
+</script>
 
 <script data-web>
 /* Contract 1161 web app: sign in, connect to Firebase, then start the app.
@@ -7006,7 +7164,7 @@ try{if(window.APP&&window.APP.section==='clock')mount()}catch(e){}
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251330';
+const VERSION='202610251341';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
