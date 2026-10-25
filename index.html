@@ -2494,6 +2494,7 @@ p.ck-alert{color:#5A3C00!important}
       </div>
       <div class="row" style="align-items:center">
         <button class="hv" id="v_save" type="button">Save image</button>
+        <button class="ghost" id="v_remove" type="button" hidden style="padding:10px 16px;font-size:16px">Remove this week</button>
         <span class="status" id="v_status" role="status"></span>
       </div>
     </div>
@@ -4029,6 +4030,7 @@ function renderWeek(){
   $("fit").hidden=!has; $("emptyW").hidden=has; $("shotBox").hidden=true;
   $("cycleHint").textContent=`${weekRange(sel.cycleStart,sel.week)} · ${monthName(sel.cycleStart)} (${cycleLabel(sel.cycleStart)})`;
   $("dropHead").textContent=has?`Replace the week ${sel.week} sheet`:`Upload the week ${sel.week} sheet`;
+  const rb=$("remove");rb.hidden=!has;rb.disabled=false;rb.classList.remove("arm");rb.textContent=`Remove week ${sel.week}`;
   if(!has) return;
   const D=cur.drivers, rows=rank(D), none=Object.entries(D).filter(([,r])=>!r.length).map(([id])=>id);
   const comments=r=>{const c=r.filter(x=>x.c);return c.length?c.map(x=>`<p class="c ${kind(x.s)}"><span class="b sm ${kind(x.s)}">${x.s}</span><span class="tx">“${esc(x.c)}”</span></p>`).join(""):'<span class="nc">Score only, no comment</span>'};
@@ -4078,6 +4080,18 @@ function renderCycle(){
   fit("fit4","board4",1000);
 }
 $("cycle").addEventListener("change",renderCycle);
+let removeTimer=null;
+$("remove").addEventListener("click",async()=>{
+  const b=$("remove"); if(!cur) return;
+  if(!b.classList.contains("arm")){b.classList.add("arm");b.textContent="Tap again to remove";clearTimeout(removeTimer);removeTimer=setTimeout(()=>{b.classList.remove("arm");b.textContent=`Remove week ${sel.week}`},3000);return;}
+  clearTimeout(removeTimer);clearTimeout(saveTimer);b.disabled=true;
+  const id=docIdFor(sel.cycleStart,sel.week), wk=sel.week;
+  try{
+    if(db&&saved.some(x=>x.id===id)) await db.doc("weeks/"+id).delete();
+    cur=null;$("dropTxt").textContent="Tap to choose the .xlsx file, or drag it here";
+    renderWeek();status(`Week ${wk} removed. It's no longer in the monthly report.`,"ok");
+  }catch(err){b.disabled=false;b.classList.remove("arm");b.textContent=`Remove week ${wk}`;status("Couldn't remove that week. Try again.","err");}
+});
 $("weeks").addEventListener("click",async e=>{
   const b=e.target.closest("[data-del]"); if(!b||!db) return;
   if(!b.classList.contains("arm")){b.classList.add("arm");b.textContent="Tap again";setTimeout(()=>{b.classList.remove("arm");b.textContent="Remove"},3000);return;}
