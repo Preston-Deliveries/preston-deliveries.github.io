@@ -2187,6 +2187,44 @@ function renderViewbar(){
   vb.hidden=false;vb.className='sh-viewbar drv';vb.innerHTML=`<b>${esc(NAMES[cur]||'')}</b><button type="button" class="sh-btn primary" data-sh="print">⬇ Download to print</button><span class="pm" id="sh-pm" role="status"></span>`;
 }
 function loadJs(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`)&&(src.includes('jspdf')?window.jspdf:window.html2canvas)){ok();return}const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
+/* Turn a printable HTML page into an A4 PDF: each .pg section is one page, otherwise the page is split at row boundaries. */
+window.htmlToPdf=async function(html,opt){
+  opt=opt||{};
+  if(!window.html2canvas)await loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+  if(!window.jspdf)await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;
+  f.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0;opacity:0;pointer-events:none';
+  document.body.appendChild(f);
+  try{
+    await new Promise(res=>{f.onload=res;f.srcdoc=html;setTimeout(res,6000)});
+    const d=f.contentDocument;
+    try{if(d.fonts&&d.fonts.ready)await Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,2500))])}catch(e){}
+    await new Promise(r=>setTimeout(r,350));
+    d.querySelectorAll('.pg').forEach(p=>{if(p.style.zoom){p.style.zoom='';p.style.width='';p.dataset.zoomed='1'}});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const M=opt.margin==null?9:opt.margin,PW=210-2*M,PH=297-2*M;
+    const shot=el=>window.html2canvas(el,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false,windowWidth:794});
+    const add=(canvas,first)=>{if(!first)pdf.addPage();const r=Math.min(PW/canvas.width,PH/canvas.height);pdf.addImage(canvas.toDataURL('image/jpeg',.92),'JPEG',M+(PW-canvas.width*r)/2,M,canvas.width*r,canvas.height*r)};
+    const pages=[...d.querySelectorAll('.pg')];
+    if(pages.length){let i=0;for(const p of pages){add(await shot(p),i===0);i++}}
+    else{
+      const body=d.body;const full=await shot(body);const scale=full.width/body.scrollWidth;
+      const pageCss=Math.floor(PH*(full.width/PW)/scale);
+      const top=body.getBoundingClientRect().top;
+      const cuts=[...new Set([...body.querySelectorAll('tr,li,h2,h3,section,.sec,.st,.row,p')].map(e=>Math.round(e.getBoundingClientRect().bottom-top)))].sort((a,b)=>a-b);
+      let y=0,first=true;const H=body.scrollHeight;
+      while(y<H-4){
+        let end=Math.min(H,y+pageCss);
+        if(end<H){const c=cuts.filter(v=>v>y+pageCss*.5&&v<=end);if(c.length)end=c[c.length-1]}
+        const cv=document.createElement('canvas');cv.width=full.width;cv.height=Math.max(1,Math.round((end-y)*scale));
+        const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);g.drawImage(full,0,Math.round(y*scale),cv.width,cv.height,0,0,cv.width,cv.height);
+        if(!first)pdf.addPage();const r=PW/cv.width;pdf.addImage(cv.toDataURL('image/jpeg',.92),'JPEG',M,M,PW,cv.height*r);
+        first=false;y=end;
+      }
+    }
+    return pdf.output('blob');
+  }finally{f.remove()}
+};
 async function printPage(btn){
   const pm=$('sh-pm'),say=t=>{if(pm)pm.textContent=t};
   const sec=document.getElementById(MOD[cur]);if(!sec)return;
@@ -2716,10 +2754,10 @@ async function act(a,el){
   if(a==='edSave'){if(S.ed)edSave();return}
   if(a==='shareRuns'){el.disabled=true;toast('Sending to drivers…');try{await shareRuns();toast('Done. Drivers now see the latest. Reloading.')}catch(e){el.disabled=false;toast(e&&e.code==='conflict'?'Changed elsewhere at the same time. Try again after it reloads.':'Could not send to drivers just now.')}return}
   if(a==='clearQ'){S.q='';render();focusQ();return}
-  if(a==='printSort'){if(!downloads)return;try{await downloads.save({filename:`${S.pc} Missort Sheet.html`,data:sortPrintDoc(S.pc)});toast('Saved. Open the file and print it.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}return}
+  if(a==='printSort'){if(!downloads)return;el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(sortPrintDoc(S.pc),{margin:9});await downloads.save({filename:`${S.pc} Missort Sheet.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
   if(a==='driver'){S.cur=d.v;S.open.clear();S.trayEdit=null;S.traySearch='';S.confirm=null;render();window.scrollTo(0,0);return}
   if(a==='copy'){const t=sheetText(r);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it into Connecteam or a message.')}catch{const ta=document.createElement('textarea');ta.value=t;ta.style.width='100%';ta.rows=12;app.prepend(ta);ta.select();toast('Select all and copy the text above')}return}
-  if(a==='download'){try{await downloads.save({filename:`Run sheet ${r.driver} ${r.login}.html`,data:printDoc(r)});toast('Saved. Open the file and print it.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}return}
+  if(a==='download'){el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(printDoc(r),{margin:10});await downloads.save({filename:`Run sheet ${r.driver} ${r.login}.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
   if(!r||!canWrite) return;
   const s=d.st?findStreet(r,d.st):null;
   const resetConfirm=()=>{S.confirm=null};
@@ -6483,7 +6521,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610251051';
+const VERSION='202610251108';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
