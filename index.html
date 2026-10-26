@@ -3475,6 +3475,12 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #mod-leave .rq-warn{background:#3A2C10;color:#F2C46A}:root[data-theme="dark"] #mod-leave .rq-long{background:#3D1A1A;color:#F4B4B0}
 </style>
 <style id="ncr">
+#sh-main #mod-enquiries .eqx.nx{max-width:760px;margin-left:auto;margin-right:auto;width:100%}
+#sh-main #mod-enquiries .eqx.nx>*{width:100%;max-width:none;box-sizing:border-box}
+#sh-main #mod-enquiries .eqx.nx>.back,#sh-main #mod-enquiries .eqx.nx>.tabs{width:auto;align-self:flex-start}
+#mod-enquiries .nfoot{display:flex;gap:8px;align-items:center}#mod-enquiries .nfoot .gap{flex:1}
+#mod-enquiries .nwhat{font-size:.95rem}
+#mod-enquiries .sp>i{color:#fff}
 #sh-main #mod-enquiries .tabs .n{display:inline-block;min-width:1.3em;margin-left:5px;padding:0 5px;border-radius:9px;background:#D93025!important;color:#fff!important;font-size:.74rem;line-height:1.5;text-align:center}
 #mod-enquiries .nstat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 #mod-enquiries .nstat div{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:8px 12px}
@@ -8340,7 +8346,7 @@ function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=
      ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
      :'<div class="empty">No NCRs recorded. When the facility manager sends one, press + Add NCR.</div>'}`}
 function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).by||'';
-  return `<div class="eqx"><button type="button" class="sh-btn back" data-eq="ncancel">‹ NCRs</button>
+  return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="ncancel">‹ NCRs</button>
   <section class="card"><h2>${isNew?'Add an NCR':'Edit NCR'}</h2>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <label class="sh-btn primary up">Fill in from the NCR form (Word file)<input type="file" id="eq_nform" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></label>
   <div class="grid">
@@ -8360,7 +8366,7 @@ function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).b
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="nsave">${isNew?'Save NCR':'Save changes'}</button><button type="button" class="sh-btn" data-eq="ncancel">Cancel</button></div></section></div>`}
 function ncrOneHTML(n){const st=nState(n),k=strikeOf(n),F=nFiles[n.id],since=sinceEnq(n),end=addD(monFrom(n),MONDAYS);
   const step=(key,label,who)=>`<div class="sp ${n[key]?'ok':''}"><i>${n[key]?'✓':''}</i><div>${label}<small>${n[key]?esc(nice(n[key]))+(who?', '+esc(who):''):'Not done yet'}</small></div>${n[key]?`<button type="button" class="sh-btn sm ghost" data-eq="nundo" data-v="${key}">Undo</button>`:`<button type="button" class="sh-btn sm" data-eq="ndone" data-v="${key}">Done</button>`}</div>`;
-  return `<div class="eqx"><button type="button" class="sh-btn back" data-eq="nback">‹ NCRs</button>
+  return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="nback">‹ NCRs</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <section class="card"><div class="t2"><h2>${esc(n.driver||n.login)}</h2>${pill(n)}</div><p class="sub">${esc(n.login)} · NCR ${k} of 3 for ${esc((ISS[n.issue]||'this issue').toLowerCase())}${k>=3?' · <b class="r3">Tell the Area Manager</b>':''}</p></section>
   ${n.what?`<div class="nwhat"><b>What happened</b><p>${esc(n.what)}</p></div>`:''}
@@ -8369,9 +8375,9 @@ function ncrOneHTML(n){const st=nState(n),k=strikeOf(n),F=nFiles[n.id],since=sin
    <div class="sp ok"><i>✓</i><div>NCR received<small>${esc(nice(n.issued))}${n.by?', from '+esc(n.by):''}</small></div></div>
    ${step('spokeAt','Driver spoken to')}${step('signAt','Driver has read and signed it')}${step('respAt','Your response and actions sent back')}
    <div class="sp ${st==='closed'?'ok':''}"><i>${st==='closed'?'✓':''}</i><div>Monitoring for ${MONDAYS} days<small>${n.closed?'Closed '+esc(nice(n.closed)):!(n.spokeAt&&n.signAt&&n.respAt)?'Starts once the steps above are done':st==='closed'?'Finished '+esc(nice(end))+' with no new at fault enquiry':'Until '+esc(nice(end))}</small></div></div></div></section>
-  <section class="card"><span class="lbl">Monitoring</span>${since.length?`<p class="${since.some(e=>e.fault==='yes')?'wt':''}">Enquiries since the NCR:</p><ul class="nl">${since.map(e=>`<li>${esc(nice(e.date))} · ${esc(e.address||'')} · ${e.fault==='yes'?'<b class="r3">At fault</b>':e.fault==='no'?'Not at fault':'No outcome yet'}</li>`).join('')}</ul>`:`<p>No new enquiries for ${esc((n.driver||'this driver').split(' ')[0])} since ${esc(nice(monFrom(n)))}.</p>`}</section>
+  <section class="card"><span class="lbl">Monitoring</span><p class="sub">For ${MONDAYS} days after your response, any enquiry you record for ${esc((n.driver||'this driver').split(' ')[0])} in the Enquiries tab shows here. If one is at fault the NCR stays open. If the ${MONDAYS} days pass clean, it closes by itself.</p>${since.length?`<p class="${since.some(e=>e.fault==='yes')?'wt':''}">Enquiries since the NCR:</p><ul class="nl">${since.map(e=>`<li>${esc(nice(e.date))} · ${esc(e.address||'')} · ${e.fault==='yes'?'<b class="r3">At fault</b>':e.fault==='no'?'Not at fault':'No outcome yet'}</li>`).join('')}</ul>`:`<p>No new enquiries for ${esc((n.driver||'this driver').split(' ')[0])} since ${esc(nice(monFrom(n)))}.</p>`}</section>
   <section class="card"><span class="lbl">Files</span>${F==null?'<p class="sub">Loading…</p>':F.length?`<div class="nfiles">${F.map(f=>/^image\//.test(f.type)?`<a href="${f.data}" download="${esc(f.name)}" target="_blank" rel="noopener"><img src="${f.data}" alt="${esc(f.name)}"></a>`:`<a class="nf" href="${f.data}" download="${esc(f.name)}">${esc(f.name)}</a>`).join('')}</div>`:'<p class="sub">No files attached.</p>'}</section>
-  <div class="foot"><button type="button" class="sh-btn" data-eq="nedit">Edit</button>${n.closed?'<button type="button" class="sh-btn" data-eq="nreopen">Reopen</button>':'<button type="button" class="sh-btn" data-eq="nclose">Close NCR now</button>'}<span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="ndel">${arm?'Tap again to delete':'Delete'}</button></div></div>`}
+  <div class="foot nfoot"><button type="button" class="sh-btn" data-eq="nedit">Edit</button>${n.closed?'<button type="button" class="sh-btn" data-eq="nreopen">Reopen</button>':'<button type="button" class="sh-btn" data-eq="nclose">Close NCR now</button>'}<span class="gap"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="ndel">${arm?'Tap again to delete':'Delete'}</button></div></div>`}
 async function loadFiles(id){if(nFiles[id]!=null)return;nFiles[id]=null;try{const c=db.collection('enqimg');const q=c.where?await c.where('ncr','==',id).get():await c.get();nFiles[id]=q.docs.map(d=>clone(__D(d))).filter(f=>f&&f.ncr===id)}catch(e){nFiles[id]=[]}render()}
 /* read the facility's NCR Word form and pull out the details */
 async function docxLines(file){if(!window.JSZip)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
@@ -8419,7 +8425,7 @@ function render(){
   if(mode!=='mgr'){box.innerHTML='';return}
   if(tab==='ncr'){if(nDraft){box.innerHTML=ncrFormHTML();return}if(nOpen&&recs[nOpen]){loadFiles(nOpen);box.innerHTML=ncrOneHTML(recs[nOpen]);return}
     const no=ncrs().filter(n=>nState(n)!=='closed').length;
-    box.innerHTML=`<div class="eqx"><div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="nnew">+ Add NCR</button></div></div>${tabsHTML(no)}${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${ncrListHTML()}</div>`;return}
+    box.innerHTML=`<div class="eqx nx"><div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="nnew">+ Add NCR</button></div></div>${tabsHTML(no)}${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${ncrListHTML()}</div>`;return}
   if(view==='form'){box.innerHTML=formHTML();return}
   if(view==='one'&&recs[open]){box.innerHTML=oneHTML(recs[open]);return}
   const L=filtered();
@@ -10417,7 +10423,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271615';
+const VERSION='202610271630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
