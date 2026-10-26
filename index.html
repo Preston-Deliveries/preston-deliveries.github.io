@@ -6839,7 +6839,7 @@ function profileHTML(){
   return `<section class="me-card">
     <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
     <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}
-    ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b>${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}<button type="button" class="me-rbtn" data-me="run" data-login="${esc(me.login)}">${my('My run sheet','Run sheet')}</button></div>`:''}</div>
+    ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b>${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}</div>`:''}</div>
   </section>
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
@@ -9829,7 +9829,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270110';
+const VERSION='202610270120';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
