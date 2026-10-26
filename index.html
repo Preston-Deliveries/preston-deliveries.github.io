@@ -570,10 +570,10 @@ body.sh-uv-on{overflow:hidden}
 #mod-survey .b4 th:nth-child(4),#mod-survey .b4 td:nth-child(4){text-align:right;width:110px;padding-right:30px}
 #mod-survey .board tr.top td{background:#fff8d6}
 #mod-survey .id{font-family:var(--mono);font-weight:500;font-size:20px;line-height:40px}
-#mod-survey .rk{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:8px;font-family:var(--display);font-weight:800;font-size:24px;background:#f4f6f8;color:#17202a}
-#mod-survey .rk.r1{background:#d9a400;color:#fff}
-#mod-survey .rk.r2{background:#8f9ba6;color:#fff}
-#mod-survey .rk.r3{background:#b0703a;color:#fff}
+#mod-survey .rk:not(td):not(th){display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:40px;border-radius:8px;font-family:var(--display);font-weight:800;font-size:24px;background:#f4f6f8;color:#17202a}
+#mod-survey span.rk.r1{background:#d9a400;color:#fff}
+#mod-survey span.rk.r2{background:#8f9ba6;color:#fff}
+#mod-survey span.rk.r3{background:#b0703a;color:#fff}
 #mod-survey .bx{display:flex;gap:5px;flex-wrap:wrap;padding-top:4px}
 #mod-survey .b{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;font-family:var(--display);font-weight:800;font-size:19px;color:#fff;flex:none}
 #mod-survey .b.p{background:#1f8a4c}
@@ -3059,6 +3059,36 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .rt-p{padding:3px 8px;font-size:.92rem}
 #sh-main .rt .rt-swipe{display:block}
 }
+</style><style id="svtable">
+#sh-main .sv-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#sh-main .sv-month{min-height:42px;font:600 15px var(--sh-body);color:var(--sh-ink);background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:10px;padding:8px 10px}
+#sh-main .sv-lab{margin:0 0 4px}
+#sh-main .sv-wk{margin:6px 0 4px}
+#sh-main .rt .sv-mix{display:flex;height:10px;border-radius:999px;overflow:hidden;background:var(--sh-sunk)}
+#sh-main .rt .sv-mix span{display:block;height:100%}
+#sh-main .rt .sv-mix .p{background:var(--rg)}#sh-main .rt .sv-mix .m{background:var(--rw)}#sh-main .rt .sv-mix .d{background:var(--rb)}
+#sh-main .rt .rt-sum .sv-g{border-top-color:var(--rg)}#sh-main .rt .rt-sum .sv-r{border-top-color:var(--rb)}
+#sh-main .rt .rt-sum .sv-g b{color:var(--rg)}#sh-main .rt .rt-sum .sv-r b{color:var(--rb)}
+#sh-main .rt .sv-bx{display:flex;flex-wrap:wrap;gap:4px;max-width:220px}
+#sh-main .rt .sv-b{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 4px;border-radius:7px;font:800 .9rem var(--sh-body);font-variant-numeric:tabular-nums}
+#sh-main .rt .sv-b.sm{min-width:22px;height:22px;font-size:.78rem;vertical-align:middle;margin-right:4px}
+#sh-main .rt .sv-b.p{background:var(--rgs);color:var(--rg)}#sh-main .rt .sv-b.m{background:var(--rws);color:var(--rw)}#sh-main .rt .sv-b.d{background:var(--rbs);color:var(--rb)}
+#sh-main .rt .sv-t td.cm{white-space:normal;min-width:240px;max-width:420px;font-size:.88rem;color:var(--sh-ink)}
+#sh-main .rt .sv-c{margin:0 0 6px;display:flex;gap:4px;align-items:flex-start;line-height:1.4}
+#sh-main .rt .sv-c:last-child{margin:0}
+#sh-main .rt .sv-t td.cm .mu{color:var(--sh-muted)}
+#sh-main .rt .sv-t td{vertical-align:middle}
+#v_save,#v_save4{display:none!important}
+#sh-main .rt .sv-t :is(th,td){border-radius:0!important;box-sizing:border-box}
+#sh-main .rt .sv-t td.rk,#sh-main .rt .sv-t th.rk{border-top:0;border-left:0;border-right:0}
+#sh-main #v_driverView,#sh-main #v_tool,#sh-main #v_viewW,#sh-main #v_viewC{min-width:0;max-width:100%}
+#sh-main :is(#v_driverView,#v_tool,#v_viewW,#v_viewC)>*{min-width:0;max-width:100%}
+#sh-main :is(#v_dvTbl,#v_tblW,#v_tblC){min-width:0;width:100%;overflow:hidden}
+#sh-main :is(#v_dvTbl,#v_tblW,#v_tblC) .rt-tw{max-width:100%}
+#sh-main .rt .rt-p.neg{background:var(--rbs);color:var(--rb)}
+#sh-main .rt .thx{display:block;padding:10px;font:700 .74rem var(--sh-body);letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .rt .sv-t{min-width:860px}
+@media (max-width:560px){#sh-main .rt .sv-t{min-width:760px}}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3184,18 +3214,17 @@ p.ck-alert{color:#5A3C00!important}
 <div class="dv" id="v_driverView" hidden="">
   <header>
     <h1>Survey Ranking</h1>
-    <p class="sub" id="v_dvUpdated"></p>
   </header>
-  <div class="tabs pvseg" role="tablist" id="v_dvTabs"></div>
-  <div class="fit" id="v_dvFitW" hidden=""><div class="board bw" id="v_dvBoardW"></div></div>
-  <div class="fit" id="v_dvFitC" hidden=""><div class="board b4" id="v_dvBoardC"></div></div>
-  <div class="empty" id="v_dvEmpty" hidden=""><b>No results shared yet</b>The ranking will show here once it is shared.</div>
+  <div class="sv-top"><div class="seg pvseg" role="group" aria-label="Week or month" id="v_dvTabs"></div><select id="v_dvMonth" class="sv-month" aria-label="Month" hidden></select></div>
+  <div class="persub" id="v_dvSub" role="group" aria-label="Choose a week"></div>
+  <p class="hint sv-lab" id="v_dvUpdated"></p>
+  <div id="v_dvTbl"></div>
   <div class="dvbar" id="v_dvOwner" hidden=""><button type="button" id="v_dvBack">Back to the ranking tool</button><span class="hint">Only you see this button.</span></div>
 </div>
 <div class="wrap" id="v_tool">
   <header>
     <h1>Survey Ranking</h1>
-    <p class="sub">Pick the month and week, upload that week's Call Reason Drill sheet, then save the ranking as an image. Each week is kept for that month's report.</p>
+    <p class="sub">Pick the month and week, then upload that week's Call Reason Drill sheet. Drivers see it straight away.</p>
   </header>
 
   <div class="tabs pvseg" role="tablist">
@@ -3215,26 +3244,28 @@ p.ck-alert{color:#5A3C00!important}
   <div class="view" id="v_viewW" role="tabpanel" aria-labelledby="v_tabW">
     <div class="panel">
       <div class="row">
-        <div class="field sm" style="flex:0 1 250px"><label for="v_wmonth">Month</label><select id="v_wmonth"></select></div><div class="field sm"><label for="v_week">Week</label><select id="v_week"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
+        <div class="field sm" style="flex:0 1 250px"><label for="v_wmonth">Month</label><select id="v_wmonth"></select></div><div class="field sm" hidden><label for="v_week">Week</label><select id="v_week"><option value="1">Week 1</option><option value="2">Week 2</option><option value="3">Week 3</option><option value="4">Week 4</option></select></div>
         <div class="hint" id="v_cycleHint" style="padding-bottom:10px"></div>
       </div>
+      <div class="persub sv-wk" id="v_wkSub" role="group" aria-label="Choose a week"></div>
       <label class="drop" id="v_drop" tabindex="0" for="v_file">
         <strong id="v_dropHead">Upload the sheet for this week</strong>
         <span id="v_dropTxt">Tap to choose the .xlsx file, or drag it here</span>
       </label>
       <input class="vh" id="v_file" type="file" accept=".xlsx,.xls,.csv">
-      <div class="row">
+      <div class="row" hidden>
         <div class="field"><label for="v_tip1">Tip 1</label><input id="v_tip1" type="text"></div>
         <div class="field"><label for="v_tip2">Tip 2</label><input id="v_tip2" type="text"></div>
       </div>
       <div class="row" style="align-items:center">
-        <button class="hv" id="v_save" type="button">Save image</button>
+        <button class="hv" id="v_save" type="button" hidden>Save image</button>
         <button class="ghost" id="v_remove" type="button" hidden style="padding:10px 16px;font-size:16px">Remove this week</button>
         <span class="status" id="v_status" role="status"></span>
       </div>
     </div>
-    <div class="fit" id="v_fit"><div class="board bw" id="v_board"></div></div>
-    <div class="empty" id="v_emptyW" hidden=""><b>Nothing uploaded for this week yet</b>Upload the Call Reason Drill sheet for this pay week to build the ranking.</div>
+    <div id="v_tblW"></div>
+    <div class="fit" id="v_fit" hidden style="display:none"><div class="board bw" id="v_board"></div></div>
+    <div class="empty" id="v_emptyW" hidden style="display:none"><b>Nothing uploaded for this week yet</b>Upload the Call Reason Drill sheet for this pay week to build the ranking.</div>
     <div class="shot" id="v_shotBox" hidden="">
       <span class="lab">Your image: press and hold (or right click) to save it</span>
       <img id="v_shot" alt="Weekly survey ranking image">
@@ -3248,12 +3279,13 @@ p.ck-alert{color:#5A3C00!important}
       </div>
       <div class="weeks" id="v_weeks"></div>
       <div class="row" style="align-items:center">
-        <button class="hv" id="v_save4" type="button">Save image</button>
+        <button class="hv" id="v_save4" type="button" hidden>Save image</button>
         <span class="status" id="v_status4" role="status"></span>
       </div>
     </div>
-    <div class="fit" id="v_fit4"><div class="board b4" id="v_board4"></div></div>
-    <div class="empty" id="v_emptyC" hidden=""><b>No weeks saved yet</b>Load a weekly sheet on the Weekly tab. Each one is added to its month here.</div>
+    <div id="v_tblC"></div>
+    <div class="fit" id="v_fit4" hidden style="display:none"><div class="board b4" id="v_board4"></div></div>
+    <div class="empty" id="v_emptyC" hidden style="display:none"><b>No weeks saved yet</b>Load a weekly sheet on the Weekly tab. Each one is added to its month here.</div>
     <div class="shot" id="v_shotBox4" hidden="">
       <span class="lab">Your image: press and hold (or right click) to save it</span>
       <img id="v_shot4" alt="Monthly survey ranking image">
@@ -4912,7 +4944,7 @@ $("tip1").value=store.get("tip1")??DEFAULT_TIPS[0];
 $("tip2").value=store.get("tip2")??DEFAULT_TIPS[1];
 
 function rank(drivers){
-  const rows=Object.entries(drivers).filter(([,r])=>r.length).map(([id,r])=>({id,r,pts:r.reduce((s,x)=>s+(x.s>=9?1:x.s<7?-1:0),0),avg:r.reduce((s,x)=>s+x.s,0)/r.length}));
+  const rows=Object.entries(drivers).filter(([,r])=>r.length).map(([id,r])=>({id,r,pts:r.reduce((s,x)=>s+SPTS(x.s),0),avg:r.reduce((s,x)=>s+x.s,0)/r.length}));
   rows.sort((a,b)=>b.pts-a.pts||b.avg-a.avg||a.id.localeCompare(b.id));
   rows.forEach((r,i)=>{const p=rows[i-1];r.rank=(p&&p.pts===r.pts&&Math.abs(p.avg-r.avg)<1e-9)?p.rank:i+1});
   return rows;
@@ -4926,16 +4958,20 @@ function summary(all){
    <div class="mix"><span style="width:${pct(P)};background:#1f8a4c"></span><span style="width:${pct(M)};background:#c27a00"></span><span style="width:${pct(X)};background:#c23b2e"></span></div>
    <div class="key"><span><i style="background:#1f8a4c"></i>9 or 10: ${P}</span><span><i style="background:#c27a00"></i>7 or 8: ${M}</span><span><i style="background:#c23b2e"></i>0 to 6: ${X}</span></div></div></div>`;
 }
-const HOW=`<div class="how"><div class="h">How points work</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = <b>+1</b></span><span><span class="b sm m">7</span>7 or 8 = <b>0</b></span><span><span class="b sm d">0</span>0 to 6 = <b>−1</b></span></div><div>Same points? Higher average score ranks first.</div></div>`;
+const HOW=`<div class="how"><div class="h">How points work</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = <b>+2</b></span><span><span class="b sm m">7</span>7 or 8 = <b>+1</b></span><span><span class="b sm d">0</span>0 to 6 = <b>−1</b></span></div><div>Same points? Higher average score ranks first.</div></div>`;
 const head=(t,s)=>`<div class="band"><div class="t">${t}</div><div class="s">${s}</div></div><div class="stripe"></div>`;
 
 // Weekly board
+function renderWkSub(){const box=$("wkSub");if(!box)return;
+  box.innerHTML=[1,2,3,4].map(n=>{const st=addDays(fromISO(sel.cycleStart),(n-1)*7);const has=saved.some(x=>x.id===docIdFor(sel.cycleStart,n));return `<button type="button" data-w="${n}" aria-pressed="${n===sel.week}" class="${has?"has":""}"><b>Week ${n}</b><small>${st.getDate()} ${st.toLocaleDateString("en-AU",{month:"short"})}</small></button>`}).join("")}
 function renderWeek(){
   const has=!!cur;
   $("fit").hidden=!has; $("emptyW").hidden=has; $("shotBox").hidden=true;
   $("cycleHint").textContent=`${weekRange(sel.cycleStart,sel.week)} · ${monthName(sel.cycleStart)} (${cycleLabel(sel.cycleStart)})`;
   $("dropHead").textContent=has?`Replace the week ${sel.week} sheet`:`Upload the week ${sel.week} sheet`;
   const rb=$("remove");rb.hidden=!has;rb.disabled=false;rb.classList.remove("arm");rb.textContent=`Remove week ${sel.week}`;
+  renderWkSub();
+  mountSV($("tblW"),has?cur.drivers:{},"Nothing uploaded for this week yet. Upload the Call Reason Drill sheet above.");
   if(!has) return;
   const D=cur.drivers, rows=rank(D), none=Object.entries(D).filter(([,r])=>!r.length).map(([id])=>id);
   const comments=r=>{const c=r.filter(x=>x.c);return c.length?c.map(x=>`<p class="c ${kind(x.s)}"><span class="b sm ${kind(x.s)}">${x.s}</span><span class="tx">“${esc(x.c)}”</span></p>`).join(""):'<span class="nc">Score only, no comment</span>'};
@@ -4973,9 +5009,10 @@ function renderCycle(){
     if(!w.length) return `<div class="wk miss"><div><b>Week ${n}</b><small>Not loaded yet</small></div></div>`;
     return w.map(x=>`<div class="wk"><div><b>Week ${n}</b><small>${esc(weekRange(key,n))}</small></div><button type="button" class="ghost" data-del="${x.id}">Remove</button></div>`).join("");
   }).join(""):"";
-  if(!has) return;
+  if(!has){mountSV($("tblC"),{},"No weeks saved for this month yet.");return}
   const agg={};
   wks.forEach(w=>Object.entries(w.drivers||{}).forEach(([id,r])=>{(agg[id]=agg[id]||[]).push(...r)}));
+  mountSV($("tblC"),agg,"No surveys for this month yet.");
   const rows=rank(agg), weeksIn=[...new Set(wks.map(w=>w.week))].sort();
   $("board4").innerHTML=head("Monthly Survey Ranking",`Contract 1161 · ${esc(monthName(key))} · ${esc(cycleLabel(key))}`)+summary(Object.values(agg).flat())+`
   <table><tr><th>Rank</th><th>Driver</th><th>Customer scores</th><th>Points</th></tr>
@@ -5110,6 +5147,7 @@ function startDb(){
     renderCycleOptions();
     if(window.APP){const cs=new Set(saved.map(w=>w.cycleStart));APP.stat("survey",saved.length?`${saved.length} week${saved.length>1?"s":""} saved across ${cs.size} pay cycle${cs.size>1?"s":""}`:"No weeks saved yet")}
     if(firstSnap){firstSnap=false;if(!cur)showSaved();}
+    renderWkSub();liveSurvey();
     if(!$("viewC").hidden) renderCycle();
   },()=>status4("Saved weeks couldn't be loaded. Reload the page.","err"));
 }
@@ -5142,20 +5180,126 @@ $("save4").addEventListener("click",async()=>{
 });
 
 
-// Drivers' view: a saved copy of the rankings, visible without signing in
+/* ---------- survey as a table, with filters, for admin and drivers ---------- */
+const SPTS=s=>s>=9?2:s>=7?1:-1;
+const SV={q:"",grp:"all",sort:"rank",dir:1};
+const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
+const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
+const kk=s=>String(s||"").toUpperCase().replace(/\s+/g,"");
+const myLogin=()=>{let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}return kk(window.__myLogin||(w&&w.login))};
+function svRows(drivers){
+  const N=window.__runNames||{},G=window.__runGrp||{},me=myLogin();
+  return rank(drivers||{}).map(r=>{const k=kk(r.id);return{...r,key:k,name:N[k]||"",grp:G[k]||"",me:!!me&&k===me,n:r.r.length,hi:r.r.filter(x=>x.s>=9).length,mid:r.r.filter(x=>x.s>=7&&x.s<9).length,lo:r.r.filter(x=>x.s<7).length}});
+}
+const SVS={rank:[r=>r.rank,1],name:[r=>(r.name||r.id).toLowerCase(),1],pts:[r=>r.pts,-1],n:[r=>r.n,-1],avg:[r=>r.avg,-1],lo:[r=>r.lo,-1]};
+function svFilt(rows){
+  const q=SV.q.trim().toLowerCase();
+  const out=rows.filter(r=>(SV.grp==="all"||r.grp===SV.grp)&&(!q||(r.name+" "+r.id).toLowerCase().includes(q)));
+  const[f]=SVS[SV.sort]||SVS.rank,d=SV.dir;
+  return out.sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||a.rank-b.rank});
+}
+function svRowHTML(r){
+  const said=r.r.filter(x=>x.c);
+  return `<tr class="${r.me?"me":""}" data-k="${esc(r.key)}">
+   <td class="rk"><span class="n${r.rank<=3?" t"+r.rank:""}">${r.rank}</span></td>
+   <td class="dr"><b>${esc(r.name||r.id)}${r.me?' <em class="you">You</em>':""}</b><small>${r.name?esc(r.id):""}${r.grp?`<span class="gp dg-${esc(r.grp)}">${esc(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
+   <td class="pt"><span class="rt-p${r.pts<0?" neg":""}">${r.pts>0?"+":""}${r.pts}</span></td>
+   <td><div class="sv-bx">${r.r.map(x=>`<span class="sv-b ${kind(x.s)}">${x.s}</span>`).join("")}</div></td>
+   <td class="num">${r.avg.toFixed(1)}</td>
+   <td class="cm">${said.length?said.map(x=>`<p class="sv-c ${kind(x.s)}"><span class="sv-b sm ${kind(x.s)}">${x.s}</span><span>“${esc(x.c)}”</span></p>`).join(""):'<span class="mu">No comment</span>'}</td></tr>`;
+}
+function svBody(box){
+  const rows=box.__rows||[],F=svFilt(rows);
+  box.querySelector("tbody").innerHTML=F.length?F.map(svRowHTML).join(""):`<tr><td colspan="6" class="none">No drivers match.</td></tr>`;
+  const busy=SV.q||SV.grp!=="all";
+  box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-sv="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-sv="find">Find me</button>':""}`;
+  box.querySelectorAll("thead [data-ss]").forEach(b=>{const on=b.dataset.ss===SV.sort;b.closest("th").setAttribute("aria-sort",on?(SV.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(SV.dir===1?"▲":"▼"):""});
+  box.querySelectorAll("[data-sg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sg===SV.grp)));
+  const so=box.querySelector("[data-sv=sort]");if(so)so.value=SV.sort;
+}
+function mountSV(box,drivers,emptyTxt){
+  box.classList.add("rt");const rows=svRows(drivers);box.__rows=rows;
+  if(!rows.length){box.innerHTML=`<div class="empty">${esc(emptyTxt||"No surveys yet.")}</div>`;return}
+  const all=rows.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,M=N-P-X;
+  const gs=GRPO.filter(g=>rows.some(r=>r.grp===g));
+  const th=(k,l,c)=>`<th class="${c||""}" scope="col"><button type="button" data-ss="${k}">${l}<i aria-hidden="true"></i></button></th>`;
+  box.innerHTML=`<div class="rt-sum">
+     <div><small>Surveys</small><b>${N}</b></div>
+     <div><small>Score</small><b>${N?Math.round(100*(P-X)/N):0}</b></div>
+     <div class="sv-g"><small>9 or 10</small><b>${P}</b></div>
+     <div class="sv-r"><small>0 to 6</small><b>${X}</b></div></div>
+   <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
+   <div class="rt-f">
+     <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-sv="q" placeholder="Search name or number" aria-label="Search drivers" value="${esc(SV.q)}"></label>
+       <label class="rt-so"><span>Sort</span><select data-sv="sort" aria-label="Sort by"><option value="rank">Rank</option><option value="pts">Points</option><option value="avg">Average score</option><option value="n">Most surveys</option><option value="lo">Most 0 to 6</option><option value="name">Name</option></select></label></div>
+     ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role"><button type="button" data-sg="all"><span>All roles</span></button>${gs.map(g=>`<button type="button" data-sg="${g}" class="dg-${g}"><span>${GRPN[g]||g}</span><small>${rows.filter(r=>r.grp===g).length}</small></button>`).join("")}</div>`:""}
+   </div>
+   <p class="rt-n" role="status"></p>
+   <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
+   <div class="rt-tw"><table class="rt-t sv-t"><thead><tr>${th("rank","#","rk")}${th("name","Driver","dr")}${th("pts","Points","pt")}${th("n","Customer scores")}${th("avg","Average","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
+   <details class="rt-how"><summary>How points work</summary>
+     <p>Every customer survey you get earns points:</p>
+     <p><span class="sv-b sm p">9</span> 9 or 10 = <b>+2 points</b></p>
+     <p><span class="sv-b sm m">7</span> 7 or 8 = <b>+1 point</b></p>
+     <p><span class="sv-b sm d">5</span> 0 to 6 = <b>−1 point</b></p>
+     <p>Your points add up for every survey. Same points? The higher average score ranks first.</p></details>`;
+  svBody(box);
+  if(box.__wired)return;box.__wired=true;
+  box.addEventListener("input",e=>{if(e.target.dataset.sv==="q"){SV.q=e.target.value;svBody(box)}});
+  box.addEventListener("change",e=>{if(e.target.dataset.sv==="sort"){SV.sort=e.target.value;SV.dir=SVS[SV.sort][1];svBody(box)}});
+  box.addEventListener("click",e=>{
+    const s=e.target.closest("[data-ss]");if(s){const k=s.dataset.ss;if(SV.sort===k)SV.dir=-SV.dir;else{SV.sort=k;SV.dir=SVS[k][1]}svBody(box);return}
+    const g=e.target.closest("[data-sg]");if(g){SV.grp=g.dataset.sg;svBody(box);return}
+    const a=e.target.closest("[data-sv]");if(!a)return;
+    if(a.dataset.sv==="clear"){SV.q="";SV.grp="all";const q=box.querySelector("[data-sv=q]");if(q)q.value="";svBody(box)}
+    if(a.dataset.sv==="find"){if(SV.q||SV.grp!=="all"){SV.q="";SV.grp="all";const q=box.querySelector("[data-sv=q]");if(q)q.value="";svBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
+  });
+}
+/* the drivers' copy: the last two pay cycles, sent live whenever a week is saved or removed */
+function svPayload(){
+  const keep=[...new Set(saved.map(w=>w.cycleStart))].sort().reverse().slice(0,2),cycles={};
+  for(const w of saved){if(!keep.includes(w.cycleStart))continue;(cycles[w.cycleStart]=cycles[w.cycleStart]||{})[w.week]=w.drivers||{}}
+  const now=new Date();
+  return{v:2,updated:now.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),cycles};
+}
+let lastSv=null;
+function liveSurvey(){
+  if(!(window.APP&&APP.role==="mgr")||window.__UV||!window.__liveShare)return;
+  const p=svPayload(),j=JSON.stringify(p.cycles);
+  if(lastSv==null)lastSv=JSON.stringify(((APP.SNAP&&APP.SNAP.survey)||{}).cycles||null);
+  if(j===lastSv)return;lastSv=j;
+  window.__liveShare({survey:p}).then(()=>{try{APP.SNAP.survey=p}catch(e){}}).catch(()=>{lastSv=null});
+}
+/* driver view */
+let dvCs=null,dvWk=null;
+function dvData(){
+  if(isEditor&&saved.length&&!window.__UV){const c={};saved.forEach(w=>{(c[w.cycleStart]=c[w.cycleStart]||{})[w.week]=w.drivers||{}});return c}
+  const s=(window.APP&&APP.SNAP&&APP.SNAP.survey)||SNAP;return(s&&s.cycles)||null;
+}
 function showDriverView(owner){
   $("tool").hidden=true;$("driverView").hidden=false;$("dvOwner").hidden=!owner;
-  const has=SNAP&&(SNAP.weekly||SNAP.cycle);
-  $("dvEmpty").hidden=!!has;$("dvTabs").innerHTML="";$("dvFitW").hidden=true;$("dvFitC").hidden=true;
-  if(!has){$("dvUpdated").textContent="";return}
-  if(dvTab==="w"&&!SNAP.weekly)dvTab="c";if(dvTab==="c"&&!SNAP.cycle)dvTab="w";
-  [["w",SNAP.weekly,"Week"],["c",SNAP.cycle,"Month"]].forEach(([k,v,l])=>{if(!v)return;const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");b.textContent=l;b.setAttribute("aria-selected",String(k===dvTab));b.onclick=()=>{dvTab=k;showDriverView(owner)};$("dvTabs").append(b)});
-  $("dvUpdated").textContent="Updated "+SNAP.updated;
-  if(dvTab==="w"){$("dvBoardW").innerHTML=SNAP.weekly.html;$("dvFitW").hidden=false;fit("dvFitW","dvBoardW",1280)}
-  else{$("dvBoardC").innerHTML=SNAP.cycle.html;$("dvFitC").hidden=false;fit("dvFitC","dvBoardC",1000)}
+  const C=dvData(),tabs=$("dvTabs"),sub=$("dvSub"),box=$("dvTbl"),ms=$("dvMonth");
+  tabs.innerHTML="";sub.innerHTML="";
+  if(!C||!Object.keys(C).length){$("dvUpdated").textContent="";ms.hidden=true;box.classList.remove("rt");box.innerHTML='<div class="empty"><b>No surveys yet</b> The ranking will show here once a week is loaded.</div>';return}
+  const keys=Object.keys(C).sort().reverse();
+  if(!keys.includes(dvCs))dvCs=keys[0];
+  const wk=C[dvCs],have=[1,2,3,4].filter(n=>wk[n]);
+  if(!have.includes(+dvWk))dvWk=have[have.length-1]||1;
+  for(const[k,l]of[["w","Week"],["c","Month"]]){const b=document.createElement("button");b.type="button";b.textContent=l;b.setAttribute("aria-pressed",String(k===dvTab));b.onclick=()=>{dvTab=k;showDriverView(owner)};tabs.append(b)}
+  ms.hidden=keys.length<2;ms.innerHTML=keys.map(k=>`<option value="${k}">${esc(monthName(k))}</option>`).join("");ms.value=dvCs;
+  ms.onchange=()=>{dvCs=ms.value;dvWk=null;showDriverView(owner)};
+  if(dvTab==="w"){
+    sub.innerHTML=[1,2,3,4].map(n=>{const s=addDays(fromISO(dvCs),(n-1)*7);return `<button type="button" data-w="${n}" aria-pressed="${n===+dvWk}" class="${wk[n]?"has":""}"><b>Week ${n}</b><small>${s.getDate()} ${s.toLocaleDateString("en-AU",{month:"short"})}</small></button>`}).join("");
+    sub.onclick=e=>{const b=e.target.closest("[data-w]");if(b){dvWk=+b.dataset.w;showDriverView(owner)}};
+    $("dvUpdated").textContent=`Week ${dvWk} · ${weekRange(dvCs,dvWk)}`;
+    mountSV(box,wk[dvWk]||{},"No surveys for this week yet.");
+  }else{
+    const agg={};have.forEach(n=>Object.entries(wk[n]||{}).forEach(([id,r])=>{(agg[id]=agg[id]||[]).push(...r)}));
+    $("dvUpdated").textContent=`${monthName(dvCs)} · ${cycleLabel(dvCs)}${have.length<4?` · weeks ${have.join(", ")} of 4`:""}`;
+    mountSV(box,agg,"No surveys for this month yet.");
+  }
 }
 function showTool(){$("driverView").hidden=true;$("tool").hidden=false;fit("fit","board",1280);fit("fit4","board4",1000)}
-addEventListener("resize",()=>{if(!$("driverView").hidden){fit("dvFitW","dvBoardW",1280);fit("dvFitC","dvBoardC",1000)}});
 function pageHtml(snap){
   const json=JSON.stringify(snap).replace(/</g,"\\u003c");
   const body=KEEP.map(h=>h.startsWith('<script type="application/json" id="snapshot">')?'<script type="application/json" id="snapshot">'+json+'<\/script>':h).join("\n");
@@ -5163,30 +5307,16 @@ function pageHtml(snap){
 }
 function shareStatus(t,c){const s=$("shareStatus");s.textContent=t;s.className="status "+(c||"")}
 $("shareDrivers").addEventListener("click",async()=>{
-  if(!art){shareStatus("Updating the drivers’ link isn’t available in this view. Open the page in Claude while signed in.","err");return}
-  renderWeek();renderCycle();
-  const weekly=cur?{html:$("board").innerHTML}:null;
-  const cycle=$("cycle").value&&$("board4").innerHTML.trim()?{html:$("board4").innerHTML}:null;
-  if(!weekly&&!cycle){shareStatus("Load a week first, so there is something to share.","err");return}
-  const now=new Date();
-  const snap={updated:now.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),weekly,cycle};
-  const b=$("shareDrivers");b.disabled=true;shareStatus("Updating the drivers’ link…");
-  try{await APP.publish({survey:snap});shareStatus("Done. Drivers now see this ranking on the same link. The page is reloading.","ok")}
-  catch(e){b.disabled=false;const c=e&&e.code;
-    shareStatus(c==="conflict"?"The page was changed somewhere else at the same time and is reloading. Press the button again after it loads."
-      :c==="not_writer"||c==="not_granted"?"This view can’t update the drivers’ link. Open it from your own Claude account."
-      :"Couldn’t update just now ("+(e&&e.message||"unknown error")+"). Try again in a minute.","err")}
+  if(!saved.length){shareStatus("Load a week first, so there is something to share.","err");return}
+  try{await APP.publish({survey:svPayload()});shareStatus("Done.","ok")}catch(e){shareStatus("Couldn\u2019t update just now. Try again in a minute.","err")}
 });
 $("previewDrivers").addEventListener("click",()=>{showDriverView(true);scrollTo(0,0)});
 $("dvBack").addEventListener("click",showTool);
 /* used by Send latest of everything on Home */
-window.SURVEY={share:async()=>{try{renderWeek();renderCycle()}catch(e){}
-  const old=(window.APP&&APP.SNAP&&APP.SNAP.survey)||{};
-  const weekly=cur?{html:$("board").innerHTML}:(old.weekly||null);
-  const cycle=$("cycle")&&$("cycle").value&&$("board4").innerHTML.trim()?{html:$("board4").innerHTML}:(old.cycle||null);
-  if(!weekly&&!cycle)throw new Error("nothing to share");
-  const now=new Date();
-  await APP.publish({survey:{updated:now.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),weekly,cycle}})}};
+window.SURVEY={share:async()=>{
+  if(!saved.length&&db){try{const sn=await db.collection("weeks").get();saved=sn.docs.map(d=>({id:d.id,...__D(d)})).filter(w=>w.week&&w.cycleStart)}catch(e){}}
+  if(!saved.length)throw new Error("nothing to share");
+  const p=svPayload();await APP.publish({survey:p});lastSv=JSON.stringify(p.cycles)}};
 // Start
 renderWeek(); renderCycle();
 if(SNAP)showDriverView(false);
@@ -5196,7 +5326,8 @@ if(window.claude?.use){
   Promise.all([window.claude.use("user"),window.claude.use("artifact")]).then(async([u,a])=>{art=a;try{isEditor=!!(u&&await u.canEdit())&&!window.__UV}catch(e){isEditor=false}
     if(isEditor)showTool();else showDriverView(false);}).catch(()=>showDriverView(false));
 }else{showDriverView(false)}
-if(document.fonts?.ready) document.fonts.ready.then(()=>{fit("fit","board",1280);fit("fit4","board4",1000)});
+$("wkSub").addEventListener("click",e=>{const b=e.target.closest("[data-w]");if(!b)return;$("week").value=b.dataset.w;$("week").dispatchEvent(new Event("change"))});
+window.addEventListener("runnames",()=>{try{if(!$("driverView").hidden)showDriverView(!$("dvOwner").hidden);else{renderWeek();if(!$("viewC").hidden)renderCycle()}}catch(e){}});
 
 })();
 </script>
@@ -6444,8 +6575,23 @@ function myResults(){
   const out={};for(const k of['week','day','cycle']){const L=r.mine[k]||[];const x=L.find(y=>dkey(y.l)===me.login);if(x)out[k]={...x,of:L.length,label:(r.boards||[]).find(b=>b.key===k)?.label||''}}
   return Object.keys(out).length?out:null;
 }
-function mySurvey(which){
-  const s=S().survey;const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
+function mySurvey(which,opt){
+  const s=S().survey;
+  if(s&&s.cycles){
+    const C=s.cycles,ks=Object.keys(C).sort().reverse();if(!ks.length)return null;
+    const cs=opt&&opt.cs&&C[opt.cs]?opt.cs:(opt&&opt.cs?null:ks[0]);if(!cs)return{found:false,of:0,sub:''};
+    const W=C[cs]||{};let D={};
+    if(which==='cycle')Object.values(W).forEach(d=>Object.entries(d||{}).forEach(([id,r])=>{(D[id]=D[id]||[]).push(...r)}));
+    else{const have=Object.keys(W).map(Number).sort((a,b)=>a-b);const w=opt&&opt.wk?(W[opt.wk]?opt.wk:null):have[have.length-1];D=w?W[w]:{}}
+    const P=x=>x>=9?2:x>=7?1:-1;
+    const L=Object.entries(D).filter(([,r])=>r&&r.length).map(([id,r])=>({id,r,pts:r.reduce((a,x)=>a+P(x.s),0),avg:r.reduce((a,x)=>a+x.s,0)/r.length})).sort((a,b)=>b.pts-a.pts||b.avg-a.avg);
+    L.forEach((x,i)=>{const p=L[i-1];x.rank=p&&p.pts===x.pts&&Math.abs(p.avg-x.avg)<1e-9?p.rank:i+1});
+    const keys=[...myKeys(),dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
+    const row=L.find(x=>keys.includes(dkey(x.id)));
+    if(!row)return{found:false,of:L.length,sub:''};
+    const sc=row.r.map(x=>x.s);
+    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),of:L.length};
+  }const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
   let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
   const keys=[...myKeys(),dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
@@ -6567,7 +6713,7 @@ function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?'
 function profileHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates),h=hoursFor(per.dates);
   const run=myRun(),pcs=myPrecards(),wk=weekShifts();
-  const sv=mySurvey(PER==='cycle'?'cycle':'weekly');
+  const sv=mySurvey(PER==='cycle'?'cycle':'weekly',P.cyc?{cs:P.cyc.cs,wk:PER==='cycle'?null:(P.subW.find(x=>x.on)||{}).n}:null);
   const brief=data&&data.briefs[0],signed=brief?data.sigs[brief.id]:null;
   const when={day:'that day',week:'this week',cycle:'this pay cycle'}[PER];
   const own=!(pickSubj&&me===pickSubj),my=(a,b)=>own?a:b;
@@ -9558,7 +9704,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262020';
+const VERSION='202610262115';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
