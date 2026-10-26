@@ -3313,6 +3313,32 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) td.pcd{grid-column:2}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) td.sb{grid-column:3}
 }
+</style><style id="restable">
+#sh-main .rt .rt-t.res-t td.dr small.m-pcs{display:none}
+/* phones: Driver Results is a narrow table: Driver, 2 hr ETA, NC scans, Enquiries */
+@media (max-width:600px){
+#sh-main#sh-main .rt .res-t{display:table!important;width:100%;table-layout:fixed;border-collapse:collapse}
+#sh-main#sh-main .rt .res-t thead{display:table-header-group!important}
+#sh-main#sh-main .rt .res-t tbody{display:table-row-group!important}
+#sh-main#sh-main .rt .res-t tbody tr{display:table-row!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent}
+#sh-main#sh-main .rt .res-t tbody tr.me{background:var(--gs)!important}
+#sh-main#sh-main .rt .res-t :is(th,td){display:table-cell!important;padding:8px 4px!important;border-bottom:1px solid var(--sh-line)!important;vertical-align:middle;position:static!important}
+#sh-main#sh-main .rt .res-t :is(th,td).dr{width:40%;padding-left:10px!important}
+#sh-main#sh-main .rt .res-t :is(th,td):not(.dr){text-align:center}
+#sh-main#sh-main .rt .res-t th button{justify-content:center;padding:8px 2px;font-size:.6rem;letter-spacing:.04em;white-space:normal;line-height:1.15}
+#sh-main#sh-main .rt .res-t th.dr button{justify-content:flex-start}
+#sh-main#sh-main .rt .res-t td[data-l]::before{display:none!important}
+#sh-main#sh-main .rt .res-t :is(th,td):is(.m-i,.num){display:none!important}
+#sh-main#sh-main .rt .res-t thead th:nth-child(n+5){display:none!important}
+#sh-main#sh-main .rt .res-t td.dr b{font-size:.9rem;white-space:normal;line-height:1.2}
+#sh-main#sh-main .rt .res-t td.dr small{flex-wrap:wrap;gap:4px;font-size:.7rem}
+#sh-main#sh-main .rt .res-t td.dr .m-pcs{display:block;margin-top:2px;color:var(--sh-muted)}
+#sh-main#sh-main .rt .res-t .rt-v{min-width:0;width:auto;padding:3px 5px;font-size:.8rem;gap:2px}
+#sh-main#sh-main .rt .res-t .rt-v i{font-size:.65rem}
+#sh-main#sh-main .rt .res-t small.rk2{display:block;width:max-content;margin:4px auto 0;font-size:.66rem;padding:0 6px}
+#sh-main#sh-main .rt .rt-tw:has(.res-t){background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+#sh-main#sh-main .rt .res-t tbody tr:last-child td{border-bottom:0!important}
+}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -4940,7 +4966,7 @@ function cell(c,txt){return `<span class="rt-v ${c?"r-"+c:"r-n"}">${c?`<i aria-h
 function rowHTML(r,multi){
   const nm=r.name||r.login,sub=r.name?r.login:"";
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
-   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
+   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small>${r.pc!=null?`<small class="m-pcs">${Math.round(r.pc).toLocaleString("en-AU")} parcels${multi&&r.days?` \u00b7 ${r.days} day${r.days===1?"":"s"}`:""}</small>`:""}</td>
    
    <td class="m-k" data-l="2 hr ETA">${cell(r.rt.eta,p1(r.eta))}${r.etaRk?`<small class="rk2">${r.etaRk}/${r.etaRkOf}</small>`:""}</td>
    <td class="m-k" data-l="NC scans">${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}${r.ncRk?`<small class="rk2">${r.ncRk}/${r.ncRkOf}</small>`:""}</td>
@@ -4977,7 +5003,7 @@ function rtHTML(rows,multi){
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rt-tw"><table class="rt-t nork"><thead><tr>${th("name","Driver","dr")}${th("eta","2 hr ETA")}${th("nc","NC scans")}${th("enq","Enquiries")}${th("pc","Parcels","num")}${th("ftd","FTD","num")}${multi?th("days","Days","num"):""}</tr></thead><tbody></tbody></table></div>
+   <div class="rt-tw"><table class="rt-t nork res-t"><thead><tr>${th("name","Driver","dr")}${th("eta","2 hr ETA")}${th("nc","NC scans")}${th("enq","Enquiries")}${th("pc","Parcels","num")}${th("ftd","FTD","num")}${multi?th("days","Days","num"):""}</tr></thead><tbody></tbody></table></div>
    <p class="rt-key"><span class="rt-v r-g"><i>\u2713</i>On target</span> <span class="rt-v r-b"><i>\u2715</i>Missed</span> 2 hr ETA ${T().etaG}% or more, no NC scans, no enquiries.</p>`;
 }
 function mountRT(box,rows,multi){
@@ -9986,7 +10012,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270410';
+const VERSION='202610270420';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
