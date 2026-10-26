@@ -5906,7 +5906,7 @@ function svBody(box){
   const busy=SV.q||SV.grp!=="all";
   box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-sv="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-sv="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-ss]").forEach(b=>{const on=b.dataset.ss===SV.sort;b.closest("th").setAttribute("aria-sort",on?(SV.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(SV.dir===1?"▲":"▼"):""});
-  box.querySelectorAll("[data-sg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sg===SV.grp)));
+  box.querySelectorAll("[data-sg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sg===SV.grp)));const psel=box.querySelector("[data-sv=pc]");if(psel)psel.value=SV.grp;
   const so=box.querySelector("[data-sv=sort]");if(so)so.value=SV.sort;
 }
 function mountSV(box,drivers,emptyTxt){
@@ -5923,7 +5923,7 @@ function mountSV(box,drivers,emptyTxt){
    <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-sv="q" placeholder="Search name or number" aria-label="Search drivers" value="${esc(SV.q)}"></label>
-       <label class="rt-so"><span>Sort</span><select data-sv="sort" aria-label="Sort by"><option value="name">Name</option><option value="avg">Score</option><option value="n">Most surveys</option><option value="lo">Most 0 to 6</option></select></label></div>
+       <label class="rt-so"><span>Filter</span><select data-sv="pc" aria-label="Filter by postcode"><option value="all">All postcodes</option>${gs.map(g=>`<option value="${esc(g)}">${esc(GRPN[g]||g)}</option>`).join("")}</select></label></div>
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
@@ -5932,7 +5932,7 @@ function mountSV(box,drivers,emptyTxt){
   svBody(box);
   if(box.__wired)return;box.__wired=true;
   box.addEventListener("input",e=>{if(e.target.dataset.sv==="q"){SV.q=e.target.value;svBody(box)}});
-  box.addEventListener("change",e=>{if(e.target.dataset.sv==="sort"){SV.sort=e.target.value;SV.dir=SVS[SV.sort][1];svBody(box)}});
+  box.addEventListener("change",e=>{if(e.target.dataset.sv==="pc"){SV.grp=e.target.value;svBody(box)}});
   box.addEventListener("click",e=>{
     const s=e.target.closest("[data-ss]");if(s){const k=s.dataset.ss;if(SV.sort===k)SV.dir=-SV.dir;else{SV.sort=k;SV.dir=SVS[k][1]}svBody(box);return}
     const g=e.target.closest("[data-sg]");if(g){SV.grp=g.dataset.sg;svBody(box);return}
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280400';
+const VERSION='202610280420';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
