@@ -3478,7 +3478,7 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .empty{padding:14px;color:var(--sh-muted);text-align:center;border:1px dashed var(--sh-line);border-radius:8px}
 #mod-roster .msg{margin:0;font-size:.9rem;color:#1E8E5A}#mod-roster .msg.err{color:#C0392B}
 #mod-roster .ro-week{display:flex;flex-direction:column;gap:8px}
-#mod-roster .ro-wh{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px}#mod-roster .ro-wh .sh-btn{grid-row:1/3;grid-column:2}
+#mod-roster .ro-wh{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px}#mod-roster .ro-wh .ro-whb{grid-row:1/3;grid-column:2;display:flex;gap:6px}
 #mod-roster .ro-wh h2{margin:0;font:700 1.2rem var(--sh-body)}
 #mod-roster .ro-wh p{margin:0;color:var(--sh-muted);font-size:.88rem}
 #mod-roster .ro-wt{border:1px solid var(--sh-line);border-radius:8px;overflow:hidden;background:var(--sh-surface)}
@@ -3493,6 +3493,11 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .ro-mine{display:flex;gap:10px;align-items:baseline;background:var(--gs);border-radius:8px;padding:10px 12px}
 #mod-roster .ro-mine i{font-style:normal;font-weight:700;color:var(--g);min-width:84px}
 #mod-roster .ro-lead{margin:0;color:var(--sh-muted);font-size:.9rem}
+#mod-roster .pcl{font-size:.78rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--gs);color:var(--g)}
+#mod-roster .ro-shot{display:flex;flex-direction:column;gap:8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px}
+#mod-roster .ro-shot img{width:100%;max-width:560px;height:auto;border:1px solid var(--sh-line);border-radius:6px;align-self:center}
+#mod-roster .ro-shotb{display:flex;gap:6px;flex-wrap:wrap}
+#mod-roster .ro-head .sh-btn+.sh-btn{margin-left:0}
 #mod-roster .ro-tk{display:flex;gap:6px;flex-wrap:wrap}
 #mod-roster .ro-wk{display:flex;gap:8px;flex-wrap:wrap}
 #mod-roster .ro-pick select{font-weight:700;font-size:1.05rem}
@@ -9437,10 +9442,10 @@ const longD=s=>{const d=fromIso(s);return DOWL[d.getDay()]+' '+d.getDate()+' '+M
 const nextWork=s=>{let x=addD(s,1);if(fromIso(x).getDay()===0)x=addD(x,1);return x};
 const TODAY=iso(new Date());
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL','SUPERVISOR'];
-const KN=['Never','Done once','Knows it'];
+const KN=['Never','Knows some','Knows it'];
 const when=v=>{const d=new Date(v);if(isNaN(d))return '';const t=d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});const ds=iso(d);return (ds===TODAY?'today':ds===addD(TODAY,-1)?'yesterday':niceD(ds))+' at '+t};
 
-let mode='wait',db=null,staff={},leave={},cfg={fl:{}},ros={},avg={},me=null,msg=null,tab='plan',day=nextWork(TODAY),open=null,cfgT=null,weeks=1,loaded={staff:false,cfg:false};
+let shot=null,shotBusy=false,mode='wait',db=null,staff={},leave={},cfg={fl:{}},ros={},avg={},me=null,msg=null,tab='plan',day=nextWork(TODAY),open=null,cfgT=null,weeks=1,loaded={staff:false,cfg:false};
 
 /* ---------- people ---------- */
 const isRelief=p=>String(p.role||'').toUpperCase().includes('RELIEF');
@@ -9492,7 +9497,7 @@ function pplSel(kind,x,d,its){const off=offSet(d,its),used=usedSet(its,d),taken=
 function chips(kind,x){return x[kind].map(k=>`<button type="button" class="ro-p" data-ro="rm" data-k="${kind}" data-sid="${esc(x.sid)}" data-who="${esc(k)}" aria-label="Take ${esc(short(k))} off">${esc(short(k)||'Unknown')}<span aria-hidden="true">×</span></button>`).join('')}
 function itemHTML(x,d,its){const n=avg[x.sid],sg=suggest(x,d,its),mxs=x.cover.map(k=>+flc(k).max||0),cap=mxs.every(Boolean)?mxs.reduce((a,b)=>a+b,0):0;
   return `<article class="ro-it ${x.cover.length?'':'need'}">
-   <div class="ro-top"><b>${esc(short(x.sid)||x.name)}</b>${x.pc?`<span class="pcp">${esc(x.pc)}</span>`:''}${x.run?`<span class="rn">${esc(x.run)}</span>`:''}${x.cover.length?'':'<span class="ndt">Needs cover</span>'}<span class="sp"></span><small>${x.leave?'On leave':'Off'}${n?' · about '+Math.round(n)+' parcels':''}</small>
+   <div class="ro-top"><b>${esc(short(x.sid)||x.name)}</b>${n?`<span class="pcl" title="Average parcels a day over the last 4 weeks">${Math.round(n)} parcels</span>`:''}${x.pc?`<span class="pcp">${esc(x.pc)}</span>`:''}${x.run?`<span class="rn">${esc(x.run)}</span>`:''}${x.cover.length?'':'<span class="ndt">Needs cover</span>'}<span class="sp"></span><small>${x.leave?'On leave':'Off'}</small>
     <button type="button" class="ro-x" data-ro="drop" data-sid="${esc(x.sid)}" aria-label="Not needed">×</button></div>
    <div class="ro-row"><span class="lab">Covered by</span><div class="ppl">${chips('cover',x)}${pplSel('cover',x,d,its)}</div></div>
    ${sg.length&&x.cover.length<3?`<div class="ro-sug"><span>Suggested</span>${sg.map(o=>`<button type="button" data-ro="addc" data-sid="${esc(x.sid)}" data-who="${esc(o.f)}">${esc(short(o.f))} <i class="k${o.k}">${o.over?'over limit':KN[o.k].toLowerCase()}</i></button>`).join('')}</div>`:''}
@@ -9506,7 +9511,8 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
   const regs=runList().filter(r=>r.sid&&!its.some(x=>x.sid===r.sid));const rm=(doc.removed||[]).filter(s=>leaveSids(d).has(s));
   return `${dayBtns()}
    <div class="ro-head"><div><h2>${esc(longD(d))}</h2><p>${p?(ch?'<b class="chg">Changed since you sent it</b>':'Sent '+esc(when(p.at))):'Not sent yet'}${need?` · <b class="nd">${need} still ${need>1?'need':'needs'} cover</b>`:''}</p></div>
-    <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${p?'Send changes':'Send to drivers'}</button></div>
+    <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${p?'Send changes':'Send to drivers'}</button>${p&&!ch?'<button type="button" class="sh-btn" data-ro="img">Picture</button>':''}</div>
+   ${shotHTML()}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${its.length?its.map(x=>itemHTML(x,d,its)).join(''):`<div class="empty">Nobody is off on ${esc(longD(d))}. Add someone below if they call in sick, or put floaters on XL parcels.</div>`}
    <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL ${pc}</span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
@@ -9525,13 +9531,39 @@ function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!dr
   const nm=L=>L.length?L.map(o=>`<span class="${mine(o.sid)?'me':''}">${esc(o.name)}</span>`).join(', '):'<span class="nd">Needs cover</span>';
   const a=W[0],b=W[W.length-1];
   return `<div id="ro_week" class="ro-week">
-   <div class="ro-wh"><h2>Leave and cover roster</h2><p>${esc(niceD(a))} to ${esc(niceD(b))}</p>${drv?'':'<button type="button" class="sh-btn" data-ro="print">Print</button>'}</div>
+   <div class="ro-wh"><h2>Leave and cover roster</h2><p>${esc(niceD(a))} to ${esc(niceD(b))}</p>${drv?'':'<span class="ro-whb"><button type="button" class="sh-btn" data-ro="wimg">Picture</button><button type="button" class="sh-btn" data-ro="print">Print</button></span>'}</div>${drv?'':shotHTML()}
    ${rows.length?`<div class="ro-wt"><div class="hd"><span>Driver off</span><span>Covered by</span><span>Sorting</span></div>
     ${rows.map(r=>`<section class="dy ${r.d===TODAY?'tdy':''}"><h3>${esc(longD(r.d))}${!drv&&!(ros[r.d]||{}).pub?' <small>not sent</small>':!drv&&changed(r.d,itemsFor(r.d))?' <small>changed, not sent</small>':''}</h3>
-     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.run?` <small>${esc(x.run)}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${Object.entries(r.xl).map(([pc,L])=>`<div class="rw"><span class="off"><b>XL ${esc(pc)}</b></span><span>${nm(L)}</span><span></span></div>`).join('')}</section>`).join('')}</div>`
+     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.run?` <small>${esc(x.run)}</small>`:''}${!drv&&avg[x.sid]?` <small>· ${Math.round(avg[x.sid])}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${Object.entries(r.xl).map(([pc,L])=>`<div class="rw"><span class="off"><b>XL ${esc(pc)}</b></span><span>${nm(L)}</span><span></span></div>`).join('')}</section>`).join('')}</div>`
     :`<div class="empty">${drv?'Nothing on the roster yet. When the manager sends it, it shows here.':'Nobody is off '+(weeks>1?'in these '+weeks+' weeks':'this week')+'.'}</div>`}
   ${drv?'':`<div class="ro-wk"><button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}</div>`}
   </div>`}
+
+/* ---------- picture to post to drivers ---------- */
+function imgHTML(dates){const rows=dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})).filter(r=>r.its.length||XLP.some(pc=>r.xl[pc].length));if(!rows.length)return '';
+  const td='padding:11px 14px;border-bottom:1px solid #E3E8EF;vertical-align:top',nm=L=>L.length?L.map(k=>esc(short(k))).join(', '):'<span style="color:#C0392B;font-weight:700">Needs cover</span>';
+  const head=dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]);
+  return `<div style="width:720px;background:#fff;color:#0F1B2D;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif">
+   <div style="background:#0F2A44;color:#fff;padding:22px 24px 20px"><div style="font-size:12px;letter-spacing:.14em;font-weight:700;color:#FFB27A">PRESTON DELIVERY SERVICE · CONTRACT 1161</div>
+    <div style="font-size:30px;font-weight:800;margin-top:6px;line-height:1.1">Roster</div><div style="font-size:19px;margin-top:4px;color:#D6E0EC">${esc(head)}</div></div>
+   <table style="width:100%;border-collapse:collapse;font-size:17px;line-height:1.35">
+    <thead><tr style="background:#EEF2F7;color:#4A5A70;font-size:12px;letter-spacing:.08em;text-transform:uppercase"><th style="text-align:left;padding:9px 14px 9px 24px;width:38%">Driver off</th><th style="text-align:left;padding:9px 14px">Covered by</th><th style="text-align:left;padding:9px 24px 9px 14px;width:24%">Sorting</th></tr></thead>
+    <tbody>${rows.map(r=>`${dates.length>1?`<tr><td colspan="3" style="padding:12px 24px 4px;font-weight:800;color:#0F2A44;font-size:16px;border-bottom:1px solid #E3E8EF">${esc(longD(r.d))}</td></tr>`:''}
+     ${r.its.map(x=>`<tr><td style="${td};padding-left:24px"><div style="font-weight:800">${esc(short(x.sid)||x.name)}</div><div style="font-size:13px;color:#5B6B80;margin-top:2px">${[x.run,x.pc,avg[x.sid]?'about '+Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</div></td><td style="${td};font-weight:600">${nm(x.cover)}</td><td style="${td};padding-right:24px">${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span style="color:#8A97A8">Not set</span>'}</td></tr>`).join('')}
+     ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td style="${td};padding-left:24px"><div style="font-weight:800">XL parcels</div><div style="font-size:13px;color:#5B6B80;margin-top:2px">${pc}</div></td><td style="${td};font-weight:600">${nm(r.xl[pc])}</td><td style="${td};padding-right:24px"></td></tr>`).join('')}`).join('')}</tbody></table>
+   <div style="padding:12px 24px 16px;font-size:13px;color:#5B6B80">Everyone not listed is on their usual run. Questions? Call the office.</div></div>`}
+async function makeImage(dates){const html=imgHTML(dates);if(!html){msg={err:true,t:'Nothing to put in the picture yet.'};render();return}
+  shotBusy=true;shot=null;render();const box=document.createElement('div');box.style.cssText='position:fixed;left:-10000px;top:0;z-index:-1';box.innerHTML=html;document.body.appendChild(box);
+  try{if(!window.html2canvas&&window.loadH2C)await window.loadH2C();if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const c=await window.html2canvas(box.firstElementChild,{scale:2,backgroundColor:'#ffffff',logging:false});const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+    if(shot&&shot.url)URL.revokeObjectURL(shot.url);shot={blob,url:URL.createObjectURL(blob),name:'Roster '+(dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]))+'.png'}}
+  catch(e){msg={err:true,t:'Could not make the picture. Check your connection and try again.'}}
+  box.remove();shotBusy=false;render()}
+function shotHTML(){if(shotBusy)return '<p class="ro-note">Making the picture…</p>';if(!shot)return '';
+  return `<div class="ro-shot"><img src="${shot.url}" alt="Roster picture"><div class="ro-shotb"><button type="button" class="sh-btn primary" data-ro="shareimg">Share</button><button type="button" class="sh-btn" data-ro="saveimg">Save picture</button><button type="button" class="sh-btn ghost" data-ro="closeimg">Close</button></div><p class="ro-note">Share sends it straight to WhatsApp, Connecteam or messages. Or press and hold the picture to save it.</p></div>`}
+async function saveShot(){if(!shot)return;try{const dl=window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM;if(dl)await dl.save({filename:shot.name,data:shot.blob});else throw 0;msg={t:'Picture saved.'}}
+  catch(e){if(e&&e.code==='declined')return;const a=document.createElement('a');a.href=shot.url;a.download=shot.name;document.body.appendChild(a);a.click();a.remove();msg={t:'Picture saved.'}}render()}
+async function shareShot(){if(!shot)return;try{const f=new File([shot.blob],shot.name,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:shot.name.replace(/\.png$/,'')});return}}catch(e){if(e&&e.name==='AbortError')return}saveShot()}
 
 /* ---------- floaters ---------- */
 function flHTML(){const fl=floaters(),R=runList(),G={};for(const r of R)(G[r.pc||'Other']=G[r.pc||'Other']||[]).push(r);
@@ -9540,12 +9572,12 @@ function flHTML(){const fl=floaters(),R=runList(),G={};for(const r of R)(G[r.pc|
   return `<label class="ro-off ro-pick"><span>Floater</span><select id="ro_flsel">${fl.map(k=>`<option value="${esc(k)}" ${k===f?'selected':''}>${esc(short(k))}</option>`).join('')}<option value="+add">+ Add someone as a floater</option></select></label>
    <label class="ro-off" id="ro_addwrap" ${fl.length?'hidden':''}><span>Add someone as a floater</span><select id="ro_addfl"><option value="">Pick a person</option>${add.map(k=>`<option value="${esc(k)}">${esc(short(k))}</option>`).join('')}</select></label>
    ${f?`<div class="ro-flb">
-    <p class="ro-lead">${ds.length?ds.sort().map(x=>DOW[x]).join(' '):'Days not set'} · ${c.max?esc(c.max)+' parcels':'No limit set'} · knows ${kn} of ${R.length} runs</p>
+    <p class="ro-lead">${ds.length?ds.sort().map(x=>DOW[x]).join(' '):'Days not set'} · ${c.max?esc(c.max)+' parcels':'No limit set'} · knows ${kn} of ${R.length} runs${R.filter(r=>know(f,r.run)===1).length?', some of '+R.filter(r=>know(f,r.run)===1).length:''}</p>
     <div class="ro-f"><span>Days they work</span><div class="ro-dw">${[1,2,3,4,5,6].map(x=>`<button type="button" data-ro="fday" data-sid="${esc(f)}" data-v="${x}" aria-pressed="${ds.includes(x)}">${DOW[x]}</button>`).join('')}</div></div>
     <label class="ro-f"><span>Parcels they can handle in a day</span><input type="number" inputmode="numeric" min="0" step="10" data-ro-in="max" data-sid="${esc(f)}" value="${esc(c.max||'')}" placeholder="For example 150"></label>
     <div class="ro-f"><span>Runs they know</span>
      <div class="ro-tk"><button type="button" class="sh-btn sm" data-ro="tick" data-sid="${esc(f)}" data-v="2">Tick all</button><button type="button" class="sh-btn sm ghost" data-ro="tick" data-sid="${esc(f)}" data-v="0">Clear all</button></div>
-     <div class="ro-key"><span class="k0">Never</span><span class="k1">Done once</span><span class="k2">Knows it</span><small>Tap a run to change it.</small></div>
+     <div class="ro-key"><span class="k0">Never</span><span class="k1">Knows some</span><span class="k2">Knows it</span><small>Tap a run to change it.</small></div>
      ${Object.entries(G).map(([pc,L])=>`<div class="ro-rg"><small>${esc(pc)}</small><div>${L.map(r=>{const k=know(f,r.run);return `<button type="button" class="k${k}" data-ro="kn" data-sid="${esc(f)}" data-v="${esc(r.run)}" title="${KN[k]}"><b>${esc(r.run)}</b> ${esc(r.name)}</button>`}).join('')}</div></div>`).join('')||'<p class="sub">No runs on the Drivers page yet.</p>'}</div>
     <button type="button" class="sh-btn sm ghost" data-ro="unfl" data-sid="${esc(f)}">Take ${esc(short(f))} off the floater list</button>
    </div>`:'<div class="empty">No floaters yet. Anyone with the Relief role on the Drivers page shows here, or add someone above.</div>'}`}
@@ -9578,8 +9610,13 @@ function pushStat(){if(mode!=='mgr'||!window.APP||!APP.stat)return;const d=nextW
 /* ---------- actions ---------- */
 document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');const sec=document.getElementById('mod-roster');if(!el||!sec||!sec.contains(el)||mode!=='mgr')return;
   const a=el.dataset.ro,v=el.dataset.v,sid=el.dataset.sid,who=el.dataset.who;
-  if(a==='tab'){tab=v;msg=null;render();return}
-  if(a==='day'){day=v;msg=null;render();return}
+  if(a==='tab'){tab=v;msg=null;shot=null;render();return}
+  if(a==='shareimg'){shareShot();return}
+  if(a==='saveimg'){saveShot();return}
+  if(a==='closeimg'){shot=null;render();return}
+  if(a==='img'){makeImage([day]);return}
+  if(a==='wimg'){makeImage(weekDays(weeks));return}
+  if(a==='day'){day=v;msg=null;shot=null;render();return}
   if(a==='print'){document.body.classList.add('ro-print');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('ro-print'),500)},50);return}
   if(a==='addwk'){weeks=Math.min(8,weeks+1);render();return}
   if(a==='rmwk'){weeks=Math.max(1,weeks-1);render();return}
@@ -9588,7 +9625,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   if(a==='kn'){const k=know(sid,v);setFl(sid,{know:{...(flc(sid).know||{}),[v]:(k+1)%3}});render();return}
   if(a==='unfl'){setFl(sid,{off:true});open=null;render();return}
   const d=day,its=itemsFor(d),x=its.find(i=>i.sid===sid);msg=null;
-  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Sent. Drivers see it on their home screen and on the Roster page.'};render()});return}
+  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg){msg={t:'Sent. Drivers see it on their home screen and on the Roster page. Here is a picture to post to the group.'};makeImage([d])}else render()});return}
   if(a==='rm'&&String(sid).startsWith('_xl')){const o=xlOf(d),pc=sid.slice(3);o[pc]=o[pc].filter(k=>k!==who);saveDay(d,its,{xl:o});return}
   if(a==='rm'&&x){x[el.dataset.k]=x[el.dataset.k].filter(k=>k!==who);saveDay(d,its);return}
   if(a==='addc'&&x){if(!x.cover.includes(who))x.cover.push(who);saveDay(d,its);return}
@@ -10463,7 +10500,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271000';
+const VERSION='202610271030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
