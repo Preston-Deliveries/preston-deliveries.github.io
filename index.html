@@ -9006,7 +9006,7 @@ function dl(cur,prev,kind,lab){
 function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
   const T=[['Parcels',fmtN(a.pc),a.days?`${fmtN(a.days)} driver day${a.days===1?'':'s'}`:'No results loaded',''],
-   ['FTD',fmtPct(ftd),'First time delivery',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
+   ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan errors',fmtN(a.nc),'Lower is better',a.days?(a.nc===0?'good':a.nc<=Math.max(1,Math.round(a.days*0.05))?'warn':'bad'):'none'],
    ['Enquiries',fmtN(a.enq),a.fault?`${a.fault} at fault in the log`:'From Driver Results',a.days?(a.enq?'bad':'good'):'none'],
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280320';
+const VERSION='202610280330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
