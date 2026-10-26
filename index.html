@@ -5897,7 +5897,7 @@ function svRowHTML(r){
   return `<tr class="${r.me?"me":""}" data-k="${esc(r.key)}">
    <td class="dr"><b>${esc(r.name||r.id)}${r.me?' <em class="you">You</em>':""}</b><small>${r.name?esc(r.id):""}${r.grp?`<span class="gp dg-${esc(r.grp)}">${esc(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    <td class="m-sc"><div class="sv-bx">${r.r.map(x=>`<span class="sv-b ${kind(x.s)}">${x.s}</span>`).join("")}</div></td>
-   <td class="num m-av" data-l="Average">${r.avg.toFixed(1)}</td>
+   <td class="num m-av" data-l="Score">${(v=>`<span class="${v>=70?"svg":"svb"}">${String(v)}</span>`)(Math.round(r.avg*100)/10)}</td>
    <td class="cm">${said.length?said.map(x=>`<p class="sv-c ${kind(x.s)}"><span class="sv-b sm ${kind(x.s)}">${x.s}</span><span>“${esc(x.c)}”</span></p>`).join(""):'<span class="mu">No comment</span>'}</td></tr>`;
 }
 function svBody(box){
@@ -5923,11 +5923,11 @@ function mountSV(box,drivers,emptyTxt){
    <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-sv="q" placeholder="Search name or number" aria-label="Search drivers" value="${esc(SV.q)}"></label>
-       <label class="rt-so"><span>Sort</span><select data-sv="sort" aria-label="Sort by"><option value="name">Name</option><option value="avg">Average score</option><option value="n">Most surveys</option><option value="lo">Most 0 to 6</option></select></label></div>
+       <label class="rt-so"><span>Sort</span><select data-sv="sort" aria-label="Sort by"><option value="name">Name</option><option value="avg">Score</option><option value="n">Most surveys</option><option value="lo">Most 0 to 6</option></select></label></div>
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rt-tw"><table class="rt-t sv-t nork"><thead><tr>${th("name","Driver","dr")}${th("n","Customer scores")}${th("avg","Average","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
+   <div class="rt-tw"><table class="rt-t sv-t nork"><thead><tr>${th("name","Driver","dr")}${th("n","Customer scores")}${th("avg","Score","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
    <p class="rt-key"><span class="sv-b sm p">9</span> 9 or 10 <span class="sv-b sm m">7</span> 7 or 8 <span class="sv-b sm d">5</span> 0 to 6</p>`;
   svBody(box);
   if(box.__wired)return;box.__wired=true;
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280340';
+const VERSION='202610280350';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
