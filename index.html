@@ -7401,6 +7401,7 @@ function statsHTML(per,x,sv,own){
    <div class="ms-sec"><h3>Driver results</h3>
     ${x?[
       row('Days worked',String(x.days)),
+      row('Delivered first time (FTD)',x.ftd!=null?pctf(x.ftd):'–'),
       row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
       row('NC scans',String(Math.round(x.nc||0))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'nc'))),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
       row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}`))].join('')
@@ -7413,7 +7414,7 @@ function statsHTML(per,x,sv,own){
      :`<p class="ms-none">No customer surveys ${PER==='cycle'?'this month':'this week'} yet.</p>`}
    </div>
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
-    ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):'',x.ftd!=null?row('Delivered first time',pctf(x.ftd)):''].join(''):''}
+    ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):''].join(''):''}
    </div>
    ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fbHTML}</div>`:''}
   </section>`;
@@ -10708,7 +10709,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280005';
+const VERSION='202610280015';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
