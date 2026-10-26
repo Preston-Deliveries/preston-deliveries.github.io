@@ -7532,7 +7532,7 @@ function listHTML(L){
   if(!R.length)return `<div class="empty">No one matches “${esc(q)}”.</div>`;
   const showRole=x=>x.grp==='office'||x.grp==='other'||(x.grp==='relief'&&x.roleT!=='Relief driver');
   const G=GROUPS.map(([k,t])=>({k,t,L:R.filter(x=>x.grp===k)})).filter(g=>g.L.length);
-  return `${G.length>1?`<nav class="jump" aria-label="Jump to a group">${G.map(g=>`<button type="button" class="dg-${g.k}" data-dy="jump" data-v="${g.k}">${esc(g.t)} <span>${g.L.length}</span></button>`).join('')}</nav>`:''}
+  return `
   ${G.map(g=>`<section class="grp dg-${g.k}" id="dy_g_${g.k}"><h2>${esc(g.t)} <span>${g.L.length}</span></h2><ul class="rows">${g.L.map(x=>{const off=false;
     return `<li class="row ${off?'off':''}"><span class="nm"><b>${esc(x.name)}</b>${x.no?`<span class="no">${esc(x.no)}</span>`:''}${showRole(x)?`<span class="rl">${esc(x.roleT)}</span>`:''}</span>
      <span class="ph">${x.phone?`<a class="tel ico" href="tel:${esc(telOf(first1(x.phone)))}" title="Call ${esc(phoneText(first1(x.phone)))}" aria-label="Call ${esc(x.name)}, ${esc(phoneText(first1(x.phone)))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg></a>${waOf(x.phone)?`<a class="wa" href="https://wa.me/${waOf(x.phone)}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(x.name)}" title="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm5.3 13.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg></a>`:''}`:'<span class="na">No number</span>'}</span></li>`}).join('')}</ul></section>`).join('')}`;
@@ -10018,7 +10018,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270430';
+const VERSION='202610270440';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
