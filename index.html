@@ -7567,8 +7567,9 @@ function statsHTML(per,x,sv,own){
       row('Score',sv.avg!=null?(Math.round(sv.avg*100)/10).toFixed(1).replace(/\.0$/,''):'–',sv.avg==null?'':sv.avg*10>=70?'g':'b','','70')].join('')
      :`<p class="ms-none">No customer surveys ${PER==='cycle'?'this month':'this week'} yet.</p>`}
    </div>
-   <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
-    ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):''].join(''):''}
+   <div class="ms-sec"><h3>Invoice quick summary</h3>
+    ${row('Parcels',x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–')}
+    ${x&&x.pc!=null?[x.days>1?row('Average parcels a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):''].join(''):''}
     ${(h=>{const sd=d=>{const x=fromIso(d);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][x.getDay()]+' '+x.getDate()};const W=h.worked.length;
       return (h.n?row('Hours worked',hrs(h.m),'',W&&h.n<W?`From ${h.n} of ${W} days worked`:''):W?row('Hours worked','None logged','b'):'')
        +(h.n>1?row('Average hours a day',hrs(Math.round(h.m/h.n))):'')
@@ -10918,7 +10919,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280830';
+const VERSION='202610280840';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
