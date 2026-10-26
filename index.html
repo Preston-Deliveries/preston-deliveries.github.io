@@ -8133,7 +8133,11 @@ function renderSug(){
   el._m=M;
 }
 function pick(m){if(!m)return;scope=m.t==='all'?{t:'all'}:{t:m.t,v:m.v};q='';render();window.scrollTo(0,0)}
-const later=()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;const a=document.activeElement;if(a&&a.id==='sm_q')return;const sec=document.getElementById('mod-summary');if(sec&&sec.hidden)return;render()})};
+let dirty=false;
+const later=()=>{dirty=true;if(pending)return;pending=true;setTimeout(()=>{pending=false;const a=document.activeElement;if(a&&a.id==='sm_q')return;const sec=document.getElementById('mod-summary');if(sec&&sec.hidden)return;dirty=false;render()},60)};
+/* data that arrived while the page was hidden, or while typing in search, shows as soon as you come back */
+try{const sec=document.getElementById('mod-summary');if(sec)new MutationObserver(()=>{if(!sec.hidden&&dirty){dirty=false;render()}}).observe(sec,{attributes:true,attributeFilter:['hidden']})}catch(e){}
+document.addEventListener('focusout',e=>{if(e.target&&e.target.id==='sm_q'&&dirty)later()});
 /* ---------- PDF ---------- */
 function loadScript(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`)&&window.jspdf){ok();return}const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
 async function pdf(btn){
@@ -9707,7 +9711,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262140';
+const VERSION='202610262150';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
