@@ -3738,6 +3738,20 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary .pnav{all:unset;cursor:pointer;display:grid!important;place-items:center;width:30px;border-radius:10px!important;border:1px solid var(--sh-line)!important;color:var(--sh-muted)!important;font-size:1.2rem;background:transparent!important}
 @media (max-width:700px){#sh-main #mod-summary .pseg2{display:flex!important;width:100%;box-sizing:border-box}#sh-main #mod-summary .pseg2 button{flex:1;padding:9px 0!important}#sh-main #mod-summary .pchs{gap:5px}#sh-main #mod-summary .pchs button{padding:7px 2px!important}#sh-main #mod-summary .pchs button b{font-size:.8rem}#sh-main #mod-summary .pchs button small{font-size:.66rem}#sh-main #mod-summary .pnav{width:24px}#sh-main #mod-summary .pchips{gap:5px}}
 </style>
+<style id="fbbright">
+#sh-main #mod-feedback .chip.tp-app{--tc:#2F6FED}#sh-main #mod-feedback .chip.tp-idea{--tc:#B7791F}#sh-main #mod-feedback .chip.tp-work{--tc:#0B7A6E}#sh-main #mod-feedback .chip.tp-person{--tc:#7C4DDB}#sh-main #mod-feedback .chip.tp-problem{--tc:#C62828}#sh-main #mod-feedback .chip.tp-outside{--tc:#C2410C}#sh-main #mod-feedback .chip.tp-other{--tc:#4B5563}#sh-main #mod-feedback .chip.tp-yes{--tc:#14804A}#sh-main #mod-feedback .chip.tp-no{--tc:#4B5563}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-app{--tc:#7FA8F5}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-idea{--tc:#F2C94C}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-work{--tc:#4FD1BF}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-person{--tc:#B596F2}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-problem{--tc:#F48A8A}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-outside{--tc:#F4936A}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-other{--tc:#AAB4C3}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-yes{--tc:#5CCB8E}:root:not([data-theme="light"]) #sh-main #mod-feedback .chip.tp-no{--tc:#AAB4C3}}
+:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-app{--tc:#7FA8F5}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-idea{--tc:#F2C94C}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-work{--tc:#4FD1BF}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-person{--tc:#B596F2}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-problem{--tc:#F48A8A}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-outside{--tc:#F4936A}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-other{--tc:#AAB4C3}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-yes{--tc:#5CCB8E}:root[data-theme="dark"] #sh-main #mod-feedback .chip.tp-no{--tc:#AAB4C3}
+#sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"]{border:0!important;background:color-mix(in srgb,var(--tc) 16%,transparent)!important;color:var(--tc)!important;font-weight:700;transition:background .15s}
+#sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"]:hover{background:color-mix(in srgb,var(--tc) 26%,transparent)!important}
+#sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"].on,#sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"][aria-pressed="true"]{background:var(--tc)!important;color:#fff!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"].on{color:#0B1220!important}}:root[data-theme="dark"] #sh-main#sh-main #mod-feedback#mod-feedback .chip[class*="tp-"].on{color:#0B1220!important}
+#sh-main #mod-feedback h3{display:flex;align-items:center;gap:10px}
+#sh-main #mod-feedback .stp{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--g);color:#0B1220;font:800 .85rem var(--sh-body);flex:none}
+#sh-main #mod-feedback [data-fb="send"]:not([disabled]){background:#1E8A4C!important;color:#fff!important;border:0!important}
+#sh-main #mod-feedback .lead b{color:var(--g)}
+#sh-main #mod-feedback .note{color:#D98B00}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -9980,11 +9994,11 @@ function driverHTML(){
   const ok=form.topic&&form.text.trim().length>=3&&form.call!==null;
   return `<section class="card">
    <p class="lead">Want to tell the manager something without calling? Send it here. It can be about the app, an idea, work, a person, a problem, or something outside work. <b>Only managers can read it.</b></p>
-   <h3>What is it about?</h3>
-   <div class="chips" role="group" aria-label="Topic">${TOPICS.map(([k,l])=>`<button type="button" class="chip ${form.topic===k?'on':''}" data-fb="topic" data-v="${k}" aria-pressed="${form.topic===k}">${esc(l)}</button>`).join('')}</div>
-   <label class="f" for="fb_text"><h3>What would you like to say?</h3><textarea id="fb_text" rows="6" maxlength="4000" placeholder="Type your message here">${esc(form.text)}</textarea></label>
-   <h3>Would you like the manager to call you about it?</h3>
-   <div class="yn" role="group" aria-label="Call back"><button type="button" class="chip ${form.call===true?'on':''}" data-fb="call" data-v="yes" aria-pressed="${form.call===true}">Yes, please call me</button><button type="button" class="chip ${form.call===false?'on':''}" data-fb="call" data-v="no" aria-pressed="${form.call===false}">No need</button></div>
+   <h3><span class="stp">1</span>What is it about?</h3>
+   <div class="chips" role="group" aria-label="Topic">${TOPICS.map(([k,l])=>`<button type="button" class="chip tp-${k} ${form.topic===k?'on':''}" data-fb="topic" data-v="${k}" aria-pressed="${form.topic===k}">${esc(l)}</button>`).join('')}</div>
+   <label class="f" for="fb_text"><h3><span class="stp">2</span>What would you like to say?</h3><textarea id="fb_text" rows="6" maxlength="4000" placeholder="Type your message here">${esc(form.text)}</textarea></label>
+   <h3><span class="stp">3</span>Would you like the manager to call you about it?</h3>
+   <div class="yn" role="group" aria-label="Call back"><button type="button" class="chip tp-yes ${form.call===true?'on':''}" data-fb="call" data-v="yes" aria-pressed="${form.call===true}">Yes, please call me</button><button type="button" class="chip tp-no ${form.call===false?'on':''}" data-fb="call" data-v="no" aria-pressed="${form.call===false}">No need</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <button type="button" class="sh-btn primary big" data-fb="send" ${ok&&!busy?'':'disabled'}>${busy?'Sending…':'Send to the manager'}</button>
    ${ok?'':`<p class="hint">${!form.topic?'Pick what it is about.':form.text.trim().length<3?'Type your message.':'Choose if you would like a call.'}</p>`}
@@ -10787,7 +10801,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280520';
+const VERSION='202610280530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
