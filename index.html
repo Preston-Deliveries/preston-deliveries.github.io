@@ -3917,20 +3917,40 @@ html.appui[data-theme="dark"] .t-reports{--tc:#F48A8A}
 html.appui[data-theme="dark"] .t-uniform,html.appui[data-theme="dark"] .t-me,html.appui[data-theme="dark"] .t-alerts,html.appui[data-theme="dark"] .t-clock{--tc:#AAB4C3}
 .ah-qa .qa .ic{background:var(--tbg,rgba(242,120,45,.15))!important;color:var(--tc,#C2570C)!important}
 html.appui .dh-todo .dh-do .ic{background:var(--tc,var(--act))}
-/* Admin view / User view switch: always at the bottom */
+/* Admin view / User view: one button in the bottom tabs */
+html.appui .sh-links .vsw{display:none}
 @media (max-width:899.98px){
- .sh-side .sh-vt:not([hidden]){display:block!important;position:absolute;left:0;right:0;bottom:100%;padding:8px 12px;background:var(--sh-nav);border-top:1px solid rgba(255,255,255,.1);box-sizing:border-box}
- .sh-side .sh-vt .seg{border-radius:10px;max-width:520px;margin:0 auto;display:flex}
- .sh-side .sh-vt .seg button{min-height:38px;font-size:.92rem;padding:6px 10px}
- .sh-mtop .sh-vt{display:none!important}
- html:has(.sh-side .sh-vt:not([hidden])) .sh-main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))!important}
+ html.appui .sh-links .vsw{display:flex;order:5}
+ html.appui .sh-mtop .sh-vt{display:none!important}
+ html.appui .sh-links .vsw .ic2{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.12);color:#E6EBF2}
+ html.appui .sh-links .vsw .ic2 svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+ html.appui .sh-links .vsw .ic2 svg{color:inherit!important}
+ html.appui .sh-links .vsw.u .ic2{background:#F2B705;color:#13201C}
+ html.appui .sh-links .vsw.u .sm{color:#F2B705}
+ html.appui .sh-links [data-nav="home"]{--g:#4FD1A5}
+ html.appui .sh-links [data-nav="summary"]{--g:#B596F2}
+ html.appui .sh-links [data-nav="updates"]{--g:#F2C94C}
+ html.appui .sh-links [data-nav="menu"]{--g:#F5A25D}
+ html.appui .sh-links [data-nav="me"]{--g:#7FA8F5}
+ html.appui .sh-links [data-nav="alerts"]{--g:#FF8A8E}
 }
-@media (min-width:900px){.sh-side .sh-role{order:1}.sh-side .sh-vt{order:2;padding:10px 8px 0;margin-top:0}.sh-side .sh-vt .seg button{padding:9px 10px;font-size:.88rem}}
+/* bigger title banner on phones */
+@media (max-width:899.98px){
+ .sh-mtop .sh-brand{gap:14px!important;align-items:center}
+ .sh-mtop .sh-brand .sh-logo{width:66px!important;height:66px!important;border-radius:15px!important}
+ .sh-mtop .sh-brand small{font-size:.86rem!important;letter-spacing:.07em!important;white-space:normal!important;line-height:1.2}
+ .sh-mtop .sh-brand b{font-size:2.05rem!important;white-space:nowrap}
+ .sh-mtop{padding-top:16px!important;padding-bottom:16px!important}
+}
+@media (max-width:380px){.sh-mtop .sh-brand .sh-logo{width:56px!important;height:56px!important}.sh-mtop .sh-brand small{font-size:.76rem!important}.sh-mtop .sh-brand b{font-size:1.75rem!important}}
+@media (max-width:899.98px){html.appui .sh-mtop .web-out{display:none!important}}
+.dm-out{all:unset;box-sizing:border-box;display:block;width:100%;margin-top:22px;padding:14px;border-radius:14px;border:1px solid var(--sh-line);text-align:center;font:700 1rem var(--sh-body);color:var(--sh-muted);cursor:pointer}
+html:not(:has(.web-out)) .dm-out{display:none}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
 html.appui:not(.drvui) .dmenu{padding:4px 16px 24px}
-html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute;top:12px;right:12px;bottom:auto;left:auto;margin:0;background:#E5484D;color:#fff;font:800 .85rem var(--sh-body);min-width:26px;height:26px;border-radius:13px;display:grid;place-items:center;padding:0 7px;box-sizing:border-box}
+html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:12px;right:12px;bottom:auto;left:auto;margin:0;background:#E5484D;color:#fff;font:800 .85rem var(--sh-body);min-width:26px;height:26px;border-radius:13px;display:grid;place-items:center;padding:0 7px;box-sizing:border-box}
 .ah-qa .qa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
 .ah-qa .qa{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 6px;border-radius:14px;background:var(--sh-sunk,rgba(127,127,127,.08));text-align:center;min-height:96px;color:var(--sh-ink)}
 .ah-qa .qa .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(242,120,45,.15);color:#C2570C}
@@ -4270,8 +4290,8 @@ function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
 function navHTML(){const v=new Set(visible());const T=tabSecs();
   if(role!=='mgr'){const L=T.concat(DRV_MENU.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',alerts:'News',menu:'Menu'};
-    return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}</div>`}
-  return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
+    return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'Back to admin view':'See the user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></span><span class="sm">${previewChild?'Admin':'User view'}</span></button>`:''}</div>`}
+  return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group">${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'Back to admin view':'See the user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></span><span class="sm">${previewChild?'Admin':'User view'}</span></button>`:''}</div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
@@ -4459,10 +4479,10 @@ const AMENU=[['Every day','day',[['results','Load the daily results'],['timeshee
  ['Office','office',[['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards'],['feedback','Driver messages']]],
  ['Me','me',[['me','My profile'],['alerts','My notifications'],['clock','My start and finish']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+'<button type="button" class="dm-out" data-sh="signout">Sign out</button>';setTimeout(applyNavBadges,0);return}
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
-  <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`}
+  <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
@@ -4559,6 +4579,7 @@ async function shareRuns(btn){
 document.addEventListener('click',e=>{
   const mo=e.target.closest('[data-sh="more"]');if(mo){openMore();return}
   if(e.target.closest('[data-sh="moreclose"]')){closeMore();return}
+  if(e.target.closest('[data-sh="signout"]')){const w=document.querySelector('.web-out');if(w)w.click();return}
   const qa=e.target.closest('[data-qa]');if(qa){go(qa.dataset.qa,qa.dataset.act?{act:qa.dataset.act}:{});return}
   const bk=e.target.closest('[data-sh="back"]');if(bk){const p=hist.pop()||(DRV_MENU.includes(cur)?'menu':'home');go(p,{back:true});return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
@@ -11218,7 +11239,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281020';
+const VERSION='202610281040';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
