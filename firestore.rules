@@ -43,12 +43,17 @@ service cloud.firestore {
         && (request.resource.data.startLate == true || request.resource.data.startAt == request.time));
       allow update: if isAdmin() || (hasAccess()
         && resource.data.staff == myStaff()
-        && !('finish' in resource.data)
-        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['start', 'startEdited', 'updatedAt'])
-             && request.resource.data.startEdited == true)
-          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
-             && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time))));
-      allow delete: if isAdmin();
+        && request.resource.data.staff == myStaff()
+        && ((!('finish' in resource.data)
+          && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['start', 'startEdited', 'updatedAt'])
+               && request.resource.data.startEdited == true)
+            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
+               && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time))))
+        // tapped Finish by mistake: take the finish off again and carry on the shift
+        || (('finish' in resource.data) && !('finish' in request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt']))));
+      // tapped Start by mistake: drivers can remove their own entry while the shift is still open
+      allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff() && !('finish' in resource.data));
     }
     // Team brief sign off: each person signs once for themselves; only admins change or remove
     match /briefsigs/{id} {

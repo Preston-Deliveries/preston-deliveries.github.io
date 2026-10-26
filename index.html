@@ -3285,6 +3285,12 @@ p.ck-alert{color:#5A3C00!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}}
 :root[data-theme="dark"] #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}
 @media (max-width:600px){#sh-main#sh-main #mod-directory .jump{flex-wrap:wrap;overflow:visible;gap:5px}#sh-main#sh-main #mod-directory .jump::-webkit-scrollbar{display:none}#sh-main#sh-main #mod-directory .jump>button{flex:none;min-height:32px;padding:3px 11px;font-size:.84rem}}
+</style><style id="ckundo">
+#sh-main .ck-oops{display:block;margin:10px auto 0;font-size:.86rem;color:var(--sh-muted);text-decoration:underline;text-underline-offset:3px}
+#sh-main .ck-undo{margin-top:12px;padding:12px;border-radius:12px;background:var(--sh-sunk);border:1px solid var(--sh-line)}
+#sh-main .ck-undo p{margin:0 0 10px;font-size:.92rem;color:var(--sh-ink)}
+#sh-main .ck-undo>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+#sh-main .ck-undo .ck-big.sm{width:auto;min-height:44px;padding:8px 16px;font-size:.95rem}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -9032,13 +9038,15 @@ function html(){
       <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
     return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>On shift since ${esc(nice(T.start))}</b></div>
       <button type="button" class="ck-big stop" data-ck="fin"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>Finish shift</button>
-      <div class="ck-links"><button type="button" class="ck-link" data-ck="edit">Change start time</button><button type="button" class="ck-link" data-ck="finlate">Forgot? I finished earlier</button></div>${m}</section>`;
+      <div class="ck-links"><button type="button" class="ck-link" data-ck="edit">Change start time</button><button type="button" class="ck-link" data-ck="finlate">Forgot? I finished earlier</button></div>
+      ${ui.undo==='start'?`<div class="ck-undo"><p>Remove today's start? Only do this if you are not working today.</p><div><button type="button" class="ck-big stop sm" data-ck="undostart" ${busy?'disabled':''}>Yes, remove it</button><button type="button" class="ck-link" data-ck="cancel">Keep it</button></div></div>`:`<button type="button" class="ck-link ck-oops" data-ck="askundo" data-v="start">Started by mistake? Remove it</button>`}${m}</section>`;
   }
   const w=toMin(T.finish)-toMin(T.start)-(+T.brk||0);
   return `<section class="ck done"><div class="ck-h"><span class="ck-tick">✓</span><b>Done for today</b></div>
     <p class="ck-sum">${esc(nice(T.start))} to ${esc(nice(T.finish))}${T.brk?`, ${T.brk} min break`:', no break'}${w>0?` · <b>${hrs(w)}</b>`:''}</p>
     ${extrasLine(T)}
     ${T.held?'<p class="ck-alert">You held parcels in your van. Make sure your supervisor or manager knows.</p>':''}
+    ${ui.undo==='finish'?`<div class="ck-undo"><p>Take the finish off? You will be back on shift and can finish again later.</p><div><button type="button" class="ck-big go sm" data-ck="undofinish" ${busy?'disabled':''}>Yes, I'm still working</button><button type="button" class="ck-link" data-ck="cancel">Keep it</button></div></div>`:`<button type="button" class="ck-link ck-oops" data-ck="askundo" data-v="finish">Finished by mistake? Undo it</button>`}
     ${me.role==='admin'?`<button type="button" class="ck-link" data-ck="clear">Clear today's entry (admin)</button>`:`<p class="ck-note">Wrong time? Tell the office and they'll fix it.</p>`}${m}</section>`;
 }
 const extrasLine=r=>(r.extra!=null||r.twoLoads!=null||r.held!=null)?`<p class="ck-x">${r.held!=null?`Held parcels: <b>${r.held?'Yes'+(r.heldCount?' ('+r.heldCount+')':''):'No'}</b> · `:''}${r.extra!=null?`Extra parcels: <b>${+r.extra||0}</b> · `:''}${r.twoLoads!=null?`Loads: <b>${r.twoLoads?'2':'1'}</b>`:''}</p>`:'';
@@ -9079,6 +9087,15 @@ document.addEventListener('click',async e=>{
   if(a==='yn'){ui[el.dataset.k]=el.dataset.v==='1';render();return}
   if(a==='step'){const k=el.dataset.k;ui[k]=Math.max(0,(parseInt(ui[k],10)||0)+(+el.dataset.v));render();return}
   if(a==='edit'){ui={edit:true};msg=null;render();return}
+  if(a==='askundo'){ui={undo:el.dataset.v};msg=null;render();return}
+  if(a==='undostart'){if(!T||T.finish)return;busy=true;msg=null;render();
+    try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);ui={};msg={t:'Removed. Nothing is logged for today.'}}
+    catch(e){console.warn(e);msg={err:true,t:'Could not remove it. Check you have signal, or ask the office to clear it.'}}busy=false;render();return}
+  if(a==='undofinish'){if(!T||!T.finish)return;busy=true;msg=null;render();
+    try{const keep={};for(const[k,v]of Object.entries(T))if(!['finish','finishAt','finishLate','brk','held','heldCount','extra','twoLoads'].includes(k))keep[k]=v;keep.updatedAt=new Date().toISOString();
+      if(T.startAt&&typeof T.startAt!=='string'){const cur=await db.doc('clock/'+today+'_'+me.staff).get();if(cur.exists){const o=__D(cur);if(o.startAt)keep.startAt=o.startAt}}
+      await db.doc('clock/'+today+'_'+me.staff).set(keep);T=keep;ui={};msg={t:'Done. You are back on shift since '+nice(T.start)+'.'}}
+    catch(e){console.warn(e);msg={err:true,t:'Could not undo it. Check you have signal, or ask the office to fix it.'}}busy=false;render();return}
   if(a==='clear'){if(me.role!=='admin')return;if(!confirm('Clear your entry for today? You can start again after.'))return;
     busy=true;render();try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);msg={t:'Cleared. You can start again.'}}catch(e){console.warn(e);msg={err:true,t:'Could not clear it: '+((e&&(e.code||e.message))||'unknown')}}busy=false;render();return}
   if(a==='saveedit'){const t=(document.getElementById('ck-et')||{}).value;if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
@@ -9947,7 +9964,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270340';
+const VERSION='202610270350';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
