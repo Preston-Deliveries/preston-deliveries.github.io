@@ -2812,9 +2812,6 @@ p.ck-alert{color:#5A3C00!important}
 </style>
 <style id="pc-colours">
 /* a colour for each postcode, the same as the Directory */
-#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#1D5FD1;--ps:#E0EAFB}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#0B7A6E;--ps:#D8F0EC}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#B86E00;--ps:#FDEFD6}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#C2185B;--ps:#FBE1EC}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#7FA8F5;--ps:#1B2A47}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#4FD1BF;--ps:#12332F}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#F2B24A;--ps:#3A2C10}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#F48FB1;--ps:#3D1A28}}
-:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#7FA8F5;--ps:#1B2A47}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#4FD1BF;--ps:#12332F}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#F2B24A;--ps:#3A2C10}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#F48FB1;--ps:#3D1A28}
 #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pcc{display:inline-block;background:var(--ps,var(--gs));color:var(--p,var(--g));border-radius:999px;padding:2px 9px;font-weight:700;font-size:.85rem}
 @media (min-width:600px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"] td:first-child{box-shadow:inset 4px 0 0 var(--p,transparent)}}
 @media (max-width:599.98px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"]{box-shadow:inset 4px 0 0 var(--p,var(--g))!important}}
@@ -3195,6 +3192,15 @@ p.ck-alert{color:#5A3C00!important}
 }
 #sh-main .rt .rt-t small.rk2{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--sh-sunk);color:var(--sh-muted);font:700 .72rem var(--sh-body);vertical-align:middle}
 @media (max-width:600px){#sh-main .rt .rt-t small.rk2{display:block;width:max-content;margin:5px auto 0}}
+</style><style id="pcbub">
+#sh-main #mod-precards .pcb{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+#sh-main #mod-precards .pcb button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:700 .92rem var(--sh-body);cursor:pointer}
+#sh-main #mod-precards .pcb button small{font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
+#sh-main #mod-precards .pcb button[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:inherit}
+#sh-main #mod-precards tbody tr{-webkit-tap-highlight-color:transparent}
+#sh-main #mod-precards tbody tr:focus{outline:none}
+#sh-main #mod-precards tbody tr:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+@media (hover:none){#sh-main #mod-precards tbody tr[data-pc]:hover td{background:transparent}}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -5911,7 +5917,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const fmtDate=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${+m[3]} ${MON[+m[2]-1]} ${m[1]}`:(iso||'')};
 const FIELDS=[['address','Address','e.g. 15 Harley St'],['suburb','Suburb'],['postcode','Postcode'],['driver','Driver number','e.g. D21'],['date','Date approved'],['reason','Reason']];
-let mode='wait', db=null, items={}, tab='approved', pcf='all', q='', sortBy='driver', openId=null, isNew=false, armDel=false, msg=null;
+let mode='wait', db=null, items={}, tab='approved', pcf='all', q='', sortBy='street', openId=null, isNew=false, armDel=false, msg=null;
 let staffNames={},staffOpts=[],snapDn={};
 const tcase=x=>String(x||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
 const dkey=d=>String(d||'').toUpperCase().replace(/\s+/g,'');
@@ -5944,8 +5950,8 @@ function render(){
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-pc="share">Send latest to drivers</button></div>`:`<p class="lead">Card these addresses to the Post Office instead of attempting delivery. Tap an address for the reason.</p>`}
    ${isMgr()?`<div class="tabs" role="group" aria-label="List"><button type="button" data-pc="tab" data-v="approved" aria-pressed="${tab==='approved'}">Approved <small>${cnt('approved')}</small></button><button type="button" data-pc="tab" data-v="review" aria-pressed="${tab==='review'}">Under review <small>${cnt('review')}</small></button></div>`:''}
    <div class="bar"><input type="search" id="pc_q" class="q" placeholder="Search address, suburb, driver or reason" value="${esc(q)}" autocomplete="off" aria-label="Search precards">
-     <label class="sort" for="pc_pcf">Postcode<select id="pc_pcf">${['all','4214','4215','4217','4218'].map(k=>`<option value="${k}" ${k===pcf?'selected':''}>${k==='all'?'All postcodes':k}</option>`).join('')}</select></label>
-     <label class="sort" for="pc_sort">Sort<select id="pc_sort"><option value="driver" ${sortBy==='driver'?'selected':''}>By driver</option><option value="street" ${sortBy==='street'?'selected':''}>By street</option><option value="date" ${sortBy==='date'?'selected':''}>Newest first</option></select></label></div>
+     <label class="sort" for="pc_sort">Sort<select id="pc_sort"><option value="street" ${sortBy==='street'?'selected':''}>By street</option><option value="date" ${sortBy==='date'?'selected':''}>Newest first</option></select></label></div>
+   <div class="pcs pcb" role="group" aria-label="Postcode">${['all','4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.status||'approved')===tab&&(k==='all'||String(p.postcode).trim()===k)).length;return `<button type="button" data-pc="pcf" data-v="${k}" aria-pressed="${k===pcf}">${k==='all'?'All':k}<small>${n}</small></button>`}).join('')}</div>
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
@@ -9858,7 +9864,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270140';
+const VERSION='202610270150';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
