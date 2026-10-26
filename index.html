@@ -3168,6 +3168,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .ms-fb ul{list-style:none;margin:2px 0 10px;padding:0;display:flex;flex-direction:column;gap:8px}
 #sh-main .ms-fb li{position:relative;padding:2px 0 2px 16px;font-size:.92rem;line-height:1.45;color:var(--sh-ink)}
 #sh-main .ms-fb li::before{content:'';position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--c)}
+#sh-main .ms-fb h4{margin:6px 0 4px;font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .ms-fb li.ok{--c:#1E8A4C}#sh-main .ms-fb li.no{--c:#D98B00}
 #sh-main .ms-fb li.enq{--c:#C62828}#sh-main .ms-fb li.eta{--c:#D98B00}#sh-main .ms-fb li.nc{--c:#C2410C}#sh-main .ms-fb li.sv{--c:#B7356B}
 #sh-main .ms-good{margin:4px 0 10px;color:#14804A;font-weight:600}
 #sh-main .ms-r b small.mr{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--sh-sunk);color:var(--sh-muted);font:700 .74rem var(--sh-body);vertical-align:2px}
@@ -6987,7 +6989,7 @@ function mySurvey(which,opt){
     const all=Object.fromEntries(L.map(x=>[dkey(x.id),x.pts]));
     if(!row)return{found:false,of:L.length,sub:'',all};
     const sc=row.r.map(x=>x.s);
-    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),low:row.r.filter(x=>x.s<7),of:L.length,all};
+    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),low:row.r.filter(x=>x.s<7),good:row.r.filter(x=>x.s>=9&&x.c),of:L.length,all};
   }const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
   let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
@@ -7126,11 +7128,24 @@ function statsHTML(per,x,sv,own){
   const t=targets(),sh=s=>{const d=fromIso(s);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()};
   const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
   const etaBad=my.filter(r=>r.eta!=null&&r.eta!==''&&r.eta*100<t.etaG),ncDays=my.filter(r=>(+r.nc||0)>0),enqDays=my.filter(r=>(+r.enq||0)>0);
-  const fb=[];
-  if(enqDays.length)fb.push(['enq',`${Math.round(x.enq)} customer enquir${Math.round(x.enq)===1?'y':'ies'} (${enqDays.map(r=>sh(r.dt)).join(', ')}). Take extra care with safe drops and cards.`]);
-  if(etaBad.length)fb.push(['eta',`2 hr ETA under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)+' '+pctf(r.eta)).join(', ')}. Deliver 2 hr ETA parcels first.`]);
-  if(ncDays.length)fb.push(['nc',`${Math.round(x.nc)} NC scan${Math.round(x.nc)===1?'':'s'} (${ncDays.map(r=>sh(r.dt)+': '+r.nc).join(', ')}). Scan every parcel at the door.`]);
-  if(sv&&sv.found&&sv.low&&sv.low.length)fb.push(['sv',`${sv.low.length} customer survey score${sv.low.length>1?'s':''} of 0 to 6${sv.low.some(z=>z.c)?': '+sv.low.filter(z=>z.c).map(z=>'\u201c'+z.c+'\u201d').join(' '):''}.`]);
+  const q=c=>'“'+String(c).trim().replace(/\s+/g,' ').slice(0,140)+'”';
+  const good=[],need=[],rkE=x?metricRank(per.dates,'eta'):null,rkN=x?metricRank(per.dates,'nc'):null,many=n=>n>Math.max(1,my.length/2);
+  if(x){
+    if(!enqDays.length)good.push('No customer enquiries. Customers are happy with how their parcels are delivered.');
+    else need.push((enqDays.length>1?'There were customer enquiries about your deliveries.':'There was a customer enquiry about one of your deliveries.')+' Take extra care with safe drops, follow delivery instructions and always leave a card.');
+    if(my.some(r=>r.eta!=null&&r.eta!=='')){if(!etaBad.length)good.push('2 hr ETA parcels delivered on time'+(rkE&&rkE.rank<=Math.ceil(rkE.of/3)?', one of the best on the team.':'.'));
+      else need.push(many(etaBad.length)?'2 hr ETA parcels are often running late. Plan your run so these go first.':'Some 2 hr ETA parcels were late. Deliver these first.')}
+    if(!ncDays.length)good.push('Every parcel scanned at the door'+(rkN&&rkN.rank<=Math.ceil(rkN.of/3)?', great scanning.':'.'));
+    else need.push(many(ncDays.length)?'Parcels are often being scanned away from the door. Scan every parcel when you hand it over or leave it.':'A few parcels were not scanned at the door. Scan every parcel when you deliver it.');
+  }
+  if(sv&&sv.found){
+    if(sv.avg!=null&&sv.avg>=9)good.push('Customers rate you highly in the surveys'+(sv.good&&sv.good.length?'. They said: '+sv.good.slice(0,2).map(z=>q(z.c)).join(' '):'.'));
+    else if(sv.good&&sv.good.length)good.push('Customers said: '+sv.good.slice(0,2).map(z=>q(z.c)).join(' '));
+    if(sv.low&&sv.low.length)need.push((sv.low.length>1?'Some customers were not happy':'One customer was not happy')+(sv.low.some(z=>z.c)?'. They said: '+sv.low.filter(z=>z.c).slice(0,2).map(z=>q(z.c)).join(' ')+'.':'.')+' Be friendly, follow their delivery instructions and leave parcels somewhere safe.');
+    else if(sv.avg!=null&&sv.avg<7)need.push('Survey results are lower than we would like. Small things like a friendly hello and careful placement make a big difference.');
+  }
+  const fbHTML=`${good.length?`<div class="fbg"><h4>Going well</h4><ul>${good.map(t=>`<li class="ok">${esc(t)}</li>`).join('')}</ul></div>`:''}
+    <div class="fbn"><h4>Needs improvement</h4>${need.length?`<ul>${need.map(t=>`<li class="no">${esc(t)}</li>`).join('')}</ul>`:'<p class="ms-good">Nothing to work on. Keep it up.</p>'}</div>`;
   const row=(l,v,cls,note)=>`<div class="ms-r"><span class="l">${l}${note?`<small>${note}</small>`:''}</span><b class="${cls||''}">${v}</b></div>`;
   const ok=(bad,txt)=>bad?txt:'';
   const svb=sv&&sv.found?sv.scores.map(n=>`<i class="${n>=9?'g':n>=7?'w':'b'}">${n}</i>`).join(''):'';
@@ -7152,7 +7167,7 @@ function statsHTML(per,x,sv,own){
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
     ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):'',x.ftd!=null?row('Delivered first time',pctf(x.ftd)):''].join(''):''}
    </div>
-   ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fb.length?`<ul>${fb.map(([k,txt])=>`<li class="${k}">${esc(txt)}</li>`).join('')}</ul>`:`<p class="ms-good">Great work. Nothing to work on ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]}.</p>`}</div>`:''}
+   ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fbHTML}</div>`:''}
   </section>`;
 }
 function profileHTML(){
@@ -10252,7 +10267,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271515';
+const VERSION='202610271530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
