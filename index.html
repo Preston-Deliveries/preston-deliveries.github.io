@@ -3890,11 +3890,36 @@ html.drvui .dr .dr-said .me-q{font-size:1.05rem}
 @media (max-width:899.98px){html.appui:not(.drvui) .sh-links [data-nav="home"]{order:1}html.appui:not(.drvui) .sh-links [data-nav="summary"]{order:2}html.appui:not(.drvui) .sh-links [data-nav="updates"]{order:3}html.appui:not(.drvui) .sh-links [data-nav="menu"]{order:4}}
 html.drvui #sh-main #mod-updates .ntx>.tabs{display:none!important}
 html.drvui .al-i b{font-size:1.08rem}html.drvui .al-i .tx>span{font-size:.98rem}
+/* one colour per page, used everywhere */
+html.appui .t-results,html.appui .t-survey,html.appui .t-enquiries,html.appui .t-timesheets,html.appui .t-feedback{--tc:#7C4DDB;--tbg:rgba(124,77,219,.13)}
+html.appui .t-updates,html.appui .t-briefs,html.appui .t-guide{--tc:#B7791F;--tbg:rgba(242,178,74,.18)}
+html.appui .t-staff,html.appui .t-leave,html.appui .t-vchecks{--tc:#1E8A4C;--tbg:rgba(30,138,76,.13)}
+html.appui .t-directory{--tc:#0B7A6E;--tbg:rgba(11,122,110,.13)}
+html.appui .t-runs,html.appui .t-sort,html.appui .t-precards,html.appui .t-lockers{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}
+html.appui .t-invoices{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}
+html.appui .t-reports{--tc:#C62828;--tbg:rgba(198,40,40,.12)}
+html.appui .t-uniform,html.appui .t-me,html.appui .t-alerts,html.appui .t-clock{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
+@media (prefers-color-scheme:dark){html.appui:not([data-theme="light"]) .t-results,html.appui:not([data-theme="light"]) .t-survey,html.appui:not([data-theme="light"]) .t-enquiries,html.appui:not([data-theme="light"]) .t-timesheets,html.appui:not([data-theme="light"]) .t-feedback{--tc:#B596F2}
+html.appui:not([data-theme="light"]) .t-updates,html.appui:not([data-theme="light"]) .t-briefs,html.appui:not([data-theme="light"]) .t-guide{--tc:#F2C94C}
+html.appui:not([data-theme="light"]) .t-staff,html.appui:not([data-theme="light"]) .t-leave,html.appui:not([data-theme="light"]) .t-vchecks{--tc:#5CCB8E}
+html.appui:not([data-theme="light"]) .t-directory{--tc:#4FD1C0}
+html.appui:not([data-theme="light"]) .t-runs,html.appui:not([data-theme="light"]) .t-sort,html.appui:not([data-theme="light"]) .t-precards,html.appui:not([data-theme="light"]) .t-lockers{--tc:#7FA8F5}
+html.appui:not([data-theme="light"]) .t-invoices{--tc:#F5A25D}
+html.appui:not([data-theme="light"]) .t-reports{--tc:#F48A8A}
+html.appui:not([data-theme="light"]) .t-uniform,html.appui:not([data-theme="light"]) .t-me,html.appui:not([data-theme="light"]) .t-alerts,html.appui:not([data-theme="light"]) .t-clock{--tc:#AAB4C3}}
+html.appui[data-theme="dark"] .t-results,html.appui[data-theme="dark"] .t-survey,html.appui[data-theme="dark"] .t-enquiries,html.appui[data-theme="dark"] .t-timesheets,html.appui[data-theme="dark"] .t-feedback{--tc:#B596F2}
+html.appui[data-theme="dark"] .t-updates,html.appui[data-theme="dark"] .t-briefs,html.appui[data-theme="dark"] .t-guide{--tc:#F2C94C}
+html.appui[data-theme="dark"] .t-staff,html.appui[data-theme="dark"] .t-leave,html.appui[data-theme="dark"] .t-vchecks{--tc:#5CCB8E}
+html.appui[data-theme="dark"] .t-directory{--tc:#4FD1C0}
+html.appui[data-theme="dark"] .t-runs,html.appui[data-theme="dark"] .t-sort,html.appui[data-theme="dark"] .t-precards,html.appui[data-theme="dark"] .t-lockers{--tc:#7FA8F5}
+html.appui[data-theme="dark"] .t-invoices{--tc:#F5A25D}
+html.appui[data-theme="dark"] .t-reports{--tc:#F48A8A}
+html.appui[data-theme="dark"] .t-uniform,html.appui[data-theme="dark"] .t-me,html.appui[data-theme="dark"] .t-alerts,html.appui[data-theme="dark"] .t-clock{--tc:#AAB4C3}
+.ah-qa .qa .ic{background:var(--tbg,rgba(242,120,45,.15))!important;color:var(--tc,#C2570C)!important}
+html.appui .dh-todo .dh-do .ic{background:var(--tc,var(--act))}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
-.am-day .dm-t{--tc:#7C4DDB;--tbg:rgba(124,77,219,.13)}.am-news .dm-t{--tc:#B7791F;--tbg:rgba(242,178,74,.18)}.am-team .dm-t{--tc:#1E8A4C;--tbg:rgba(30,138,76,.13)}.am-road .dm-t{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}.am-office .dm-t{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}.am-me .dm-t{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
-@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .am-day .dm-t{--tc:#B596F2}html:not([data-theme="light"]) .am-news .dm-t{--tc:#F2C94C}html:not([data-theme="light"]) .am-team .dm-t{--tc:#5CCB8E}html:not([data-theme="light"]) .am-road .dm-t{--tc:#7FA8F5}html:not([data-theme="light"]) .am-office .dm-t{--tc:#F5A25D}html:not([data-theme="light"]) .am-me .dm-t{--tc:#AAB4C3}}
 html.appui:not(.drvui) .dmenu{padding:4px 16px 24px}
 html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute;top:12px;right:12px;bottom:auto;left:auto;margin:0;background:#E5484D;color:#fff;font:800 .85rem var(--sh-body);min-width:26px;height:26px;border-radius:13px;display:grid;place-items:center;padding:0 7px;box-sizing:border-box}
 .ah-qa .qa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
@@ -4425,14 +4450,14 @@ const AMENU=[['Every day','day',[['results','Load the daily results'],['timeshee
  ['Office','office',[['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards'],['feedback','Driver messages']]],
  ['Me','me',[['me','My profile'],['alerts','My notifications'],['clock','My start and finish']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
   <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`}
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
-  const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act])=>`<button type="button" class="dh-do" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
+  const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
   if(el.innerHTML!==html)el.innerHTML=html}
 function renderHome(){
   const box=$('sh-home'); if(!box) return;
@@ -11184,7 +11209,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281000';
+const VERSION='202610281010';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
