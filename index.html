@@ -3714,15 +3714,13 @@ p.ck-alert{color:#5A3C00!important}
 @media (max-width:380px){.sh-brand .sh-logo{width:44px!important;height:44px!important}.sh-brand small{font-size:.7rem!important}.sh-brand b{font-size:1.35rem!important}}
 </style>
 <style id="dotsonly">
-/* good or bad is shown with a green or red dot, the number itself stays plain */
-.svg,.svb,#sh-main .tile.svg>b,#sh-main .tile.svb>b,#sh-main#sh-main .sh-sec.pg .tile.svg>b,#sh-main#sh-main .sh-sec.pg .tile.svb>b,#sh-main .rt .rtk .tk b.g,#sh-main .rt .rtk .tk b.b,#sh-main .ms-r b.g,#sh-main .ms-r b.b{color:var(--sh-ink)!important}
-#sh-main #mod-summary .tile:is(.svg,.svb)>b,#sh-main .rt .rtk .tk b:is(.g,.b){color:var(--sh-ink)!important}
-.svg::before,.svb::before,#sh-main .tile:is(.svg,.svb)>b::before,#sh-main .rt .rtk .tk b:is(.g,.b)::before,#sh-main .ms-r b:is(.g,.b)::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:2px;background:#1E8A4C}
-.svb::before,#sh-main .tile.svb>b::before,#sh-main .rt .rtk .tk b.b::before,#sh-main .ms-r b.b::before{background:#C8352B}
-#sh-main .tile:is(.svg,.svb)>b::before,#sh-main .rt .rtk .tk b:is(.g,.b)::before{width:11px;height:11px;margin-right:8px;vertical-align:5px}
-.tile.svg::before,.tile.svb::before{display:none!important;content:none!important}
-#sh-main .tile.svg,#sh-main .tile.svb{color:inherit!important}
-@media (max-width:700px){#sh-main table .svg::before,#sh-main table .svb::before{width:6px;height:6px;margin-right:3px;vertical-align:1px}}
+/* good or bad is shown by green or red text, no dots */
+#sh-main i.dt,#sh-main .rt i.rd{display:none!important}
+.svg,#sh-main .tile.svg>b,#sh-main#sh-main .sh-sec.pg .tile.svg>b,#sh-main .rt .rtk .tk b.g,#sh-main .ms-r b.g,#sh-main #mod-summary td:has(> i.dt.good),#sh-main .rt td:has(> i.rd.r-g),#sh-main .rt .rsk span:has(> i.rd.r-g){color:#14804A!important}
+.svb,#sh-main .tile.svb>b,#sh-main#sh-main .sh-sec.pg .tile.svb>b,#sh-main .rt .rtk .tk b.b,#sh-main .ms-r b.b,#sh-main #mod-summary td:has(> i.dt.bad),#sh-main .rt td:has(> i.rd.r-b),#sh-main .rt .rsk span:has(> i.rd.r-b){color:#C62828!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .svg,:root:not([data-theme="light"]) #sh-main .tile.svg>b,:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svg>b,:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g,:root:not([data-theme="light"]) #sh-main .ms-r b.g,:root:not([data-theme="light"]) #sh-main #mod-summary td:has(> i.dt.good),:root:not([data-theme="light"]) #sh-main .rt td:has(> i.rd.r-g),:root:not([data-theme="light"]) #sh-main .rt .rsk span:has(> i.rd.r-g){color:#5CCB8E!important}:root:not([data-theme="light"]) .svb,:root:not([data-theme="light"]) #sh-main .tile.svb>b,:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svb>b,:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.b,:root:not([data-theme="light"]) #sh-main .ms-r b.b,:root:not([data-theme="light"]) #sh-main #mod-summary td:has(> i.dt.bad),:root:not([data-theme="light"]) #sh-main .rt td:has(> i.rd.r-b),:root:not([data-theme="light"]) #sh-main .rt .rsk span:has(> i.rd.r-b){color:#F48A8A!important}}
+:root[data-theme="dark"] .svg,:root[data-theme="dark"] #sh-main .tile.svg>b,:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svg>b,:root[data-theme="dark"] #sh-main .rt .rtk .tk b.g,:root[data-theme="dark"] #sh-main .ms-r b.g,:root[data-theme="dark"] #sh-main #mod-summary td:has(> i.dt.good),:root[data-theme="dark"] #sh-main .rt td:has(> i.rd.r-g),:root[data-theme="dark"] #sh-main .rt .rsk span:has(> i.rd.r-g){color:#5CCB8E!important}:root[data-theme="dark"] .svb,:root[data-theme="dark"] #sh-main .tile.svb>b,:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svb>b,:root[data-theme="dark"] #sh-main .rt .rtk .tk b.b,:root[data-theme="dark"] #sh-main .ms-r b.b,:root[data-theme="dark"] #sh-main #mod-summary td:has(> i.dt.bad),:root[data-theme="dark"] #sh-main .rt td:has(> i.rd.r-b),:root[data-theme="dark"] #sh-main .rt .rsk span:has(> i.rd.r-b){color:#F48A8A!important}
+#sh-main#sh-main .tile.svg,#sh-main#sh-main .tile.svb{color:inherit!important}
 #sh-main .pcol{color:var(--p,var(--d))!important}
 </style>
 <style id="smper">
@@ -10789,7 +10787,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280500';
+const VERSION='202610280510';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
