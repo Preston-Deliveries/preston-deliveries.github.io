@@ -3523,6 +3523,12 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-enquiries .eqx.nx>.nstat{order:3}#sh-main #mod-enquiries .eqx.nx>.srch{order:4}#sh-main #mod-enquiries .eqx.nx>.eres{order:5}#sh-main #mod-enquiries .eqx.nx>.ntr{order:6}#sh-main #mod-enquiries .eqx.nx>button.card,#sh-main #mod-enquiries .eqx.nx>.empty{order:5}
 </style>
 <style id="eqmore">
+#mod-enquiries .pbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#mod-enquiries .pseg{display:inline-flex;border:1px solid var(--sh-line);border-radius:8px;overflow:hidden;background:var(--sh-surface)}
+#mod-enquiries .pseg button{border:0;background:transparent;color:var(--sh-ink);font:600 .9rem var(--sh-body);padding:7px 14px;cursor:pointer}
+#mod-enquiries .pseg button[aria-pressed="true"]{background:var(--g);color:#fff}
+#mod-enquiries .pbar select{font:600 .92rem var(--sh-body);padding:7px 10px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink)}
+#sh-main #mod-enquiries .eqx.nx>.pbar{order:2}
 #mod-enquiries .pcp{display:inline-block;font-size:.7rem;font-weight:800;padding:0 6px;border-radius:4px;line-height:1.6;background:var(--ps,#EEF2F7);color:var(--p,#5A6576);vertical-align:1px}
 @media (max-width:600px){#mod-enquiries .kv{grid-template-columns:1fr;gap:0}#mod-enquiries .kv dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}#mod-enquiries .kv dt:first-child{margin-top:0}}
 #sh-main #mod-enquiries .eqx.nx>.eres{order:5}
@@ -8315,6 +8321,7 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const nice=s=>{if(!s)return '';const[a,b,c]=s.split('-').map(Number);const d=new Date(a,b-1,c);return DOW[d.getDay()]+' '+c+' '+MON[b-1]+' '+a};
+const PM0=today().slice(0,7),PER={enq:{mode:'month',m:PM0,y:PM0.slice(0,4)},ncr:{mode:'year',m:PM0,y:PM0.slice(0,4)}};
 let nqD='',nqA='',nqP='',qPc='',tab='enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 /* ---------- people ---------- */
@@ -8357,6 +8364,12 @@ const dnTag=l=>dno(l)?` <span class="dno">${esc(dno(l))}</span>`:'';
 const pcOf=x=>String(x.postcode||((String(x.address||'').match(/\b(42\d\d)\b/g)||[]).pop()||'')||'');
 const pcTag=pc=>pc?`<span class="pcp pcz-${pc}">${pc}</span>`:'';
 const normA=a=>String(a||'').toLowerCase().replace(/\b(place|pl|street|st|road|rd|avenue|ave|crescent|cres|court|ct|drive|dr|parade|pde|terrace|tce|close|cl)\b/g,'').replace(/[^a-z0-9]/g,'');
+const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const inPer=(dt,k)=>{const P=PER[k],d=String(dt||'');return P.mode==='all'||(P.mode==='year'?d.startsWith(P.y):d.startsWith(P.m))};
+const perLab=k=>{const P=PER[k];return P.mode==='all'?'All time':P.mode==='year'?P.y:MONL[+P.m.slice(5)-1]+' '+P.m.slice(0,4)};
+function perBar(k,dates){const P=PER[k],ms=[...new Set(dates.map(d=>String(d||'').slice(0,7)).filter(x=>/^\d{4}-\d\d$/.test(x)).concat([PM0]))].sort().reverse(),ys=[...new Set(ms.map(x=>x.slice(0,4)))];
+  return `<div class="pbar"><div class="pseg" role="group" aria-label="Period">${[['month','Month'],['year','Year'],['all','All']].map(([v,l])=>`<button type="button" data-eq="pmode" data-k="${k}" data-v="${v}" aria-pressed="${P.mode===v}">${l}</button>`).join('')}</div>
+   ${P.mode==='month'?`<select id="eq_pm_${k}" aria-label="Month">${ms.map(x=>`<option value="${x}" ${x===P.m?'selected':''}>${MONL[+x.slice(5)-1]} ${x.slice(0,4)}</option>`).join('')}</select>`:P.mode==='year'?`<select id="eq_py_${k}" aria-label="Year">${ys.map(x=>`<option ${x===P.y?'selected':''}>${x}</option>`).join('')}</select>`:''}</div>`}
 const enqs=()=>Object.values(recs).filter(x=>x.kind!=='ncr');
 const ncrs=()=>Object.values(recs).filter(x=>x.kind==='ncr').sort((a,b)=>String(b.issued).localeCompare(String(a.issued)));
 const monFrom=n=>n.respAt||n.signAt||n.issued;
@@ -8369,13 +8382,13 @@ function tracker(){const from=addD(today(),-365),by={};for(const n of ncrs()){if
   return Object.values(by).map(d=>{const top=Object.entries(d.iss).sort((a,b)=>b[1]-a[1])[0];return{...d,max:top[1],issue:top[0],total:Object.values(d.iss).reduce((a,b)=>a+b,0)}}).sort((a,b)=>b.max-a.max||a.name.localeCompare(b.name))}
 const waiting=n=>[!n.spokeAt&&'driver spoken to',!n.signAt&&'driver to sign',!n.respAt&&'your response'].filter(Boolean);
 const dots=k=>`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=k?'on':''}"></i>`).join('')}</span>`;
-function ncrCards(){const L=ncrs(),d=nqD.trim().toLowerCase(),a=nqA.trim().toLowerCase();const F=L.filter(n=>(!nqP||pcOf(n)===nqP)&&(!d||[n.driver,n.login,dno(n.login)].join(' ').toLowerCase().includes(d))&&(!a||String(n.address||'').toLowerCase().includes(a)));
+function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim().toLowerCase(),a=nqA.trim().toLowerCase();const F=L.filter(n=>(!nqP||pcOf(n)===nqP)&&(!d||[n.driver,n.login,dno(n.login)].join(' ').toLowerCase().includes(d))&&(!a||String(n.address||'').toLowerCase().includes(a)));
   return `<span class="sub">${F.length} of ${L.length} NCR${L.length===1?'':'s'}</span>${F.length?F.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
      <small>${pcTag(pcOf(n))} ${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
      ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
      :`<div class="empty">${L.length?'Nothing matches that search.':'No NCRs recorded. When the facility manager sends one, press + Add NCR.'}</div>`}`}
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
-  return `<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>String(n.issued).startsWith(yr)).length}</b><small>This year</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
+  return `${perBar('ncr',L.map(n=>n.issued))}<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>inPer(n.issued,'ncr')).length}</b><small>${esc(perLab('ncr'))}</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
 
    <div class="srch"><label class="f" for="eq_nqd">Driver<input type="search" id="eq_nqd" value="${esc(nqD)}" placeholder="Name or login" autocomplete="off"></label>
     <label class="f" for="eq_nqa">Address<input type="search" id="eq_nqa" value="${esc(nqA)}" placeholder="Street or suburb" autocomplete="off"></label>
@@ -8466,7 +8479,7 @@ async function patchN(id,patch,t){const n=recs[id];if(!n)return;const doc={...n,
 /* ---------- list ---------- */
 function filtered(){
   const d=qDriver.trim().toLowerCase(),a=qAddr.trim().toLowerCase();
-  return enqs().filter(r=>(!qPc||pcOf(r)===qPc)&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login].join(' ').toLowerCase().includes(d))&&(!a||String(r.address||'').toLowerCase().includes(a)))
+  return enqs().filter(r=>inPer(r.date,'enq')&&(!qPc||pcOf(r)===qPc)&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login].join(' ').toLowerCase().includes(d))&&(!a||String(r.address||'').toLowerCase().includes(a)))
     .sort((x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt)));
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
@@ -8485,7 +8498,8 @@ function render(){
   <div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="new">+ Add enquiry</button></div></div>
   ${tabsHTML(ncrs().filter(n=>nState(n)!=='closed').length)}
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-  <div class="nstat"><div><b>${Y.length}</b><small>This year</small></div><div class="${Y.some(x=>x.fault==='yes')?'r':''}"><b>${Y.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${enqs().filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>
+  ${perBar('enq',enqs().map(x=>x.date))}
+  ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
   <div class="srch"><label class="f" for="eq_qd">Driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
    <label class="f" for="eq_qa">Address<input type="search" id="eq_qa" value="${esc(qAddr)}" placeholder="Street or suburb" autocomplete="off"></label>
    <label class="f" for="eq_qp">Postcode<select id="eq_qp"><option value="">All postcodes</option>${['4214','4215','4217','4218'].map(pc=>`<option ${qPc===pc?'selected':''}>${pc}</option>`).join('')}</select></label>
@@ -8558,6 +8572,7 @@ function readForm(){const r=draft;const g=k=>($(k)||{}).value||'';r.enqType=g('t
 document.addEventListener('click',async ev=>{
   const el=ev.target.closest('[data-eq]');if(!el||!document.getElementById('mod-enquiries').contains(el))return;
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
+  if(a==='pmode'){PER[el.dataset.k].mode=v;render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
   if(a==='nnew'){nDraft={issue:'sig'};nNew=[];msg=null;render();window.scrollTo(0,0);return}
   if(a==='nopen'){nOpen=v;msg=null;render();window.scrollTo(0,0);return}
@@ -8597,6 +8612,8 @@ document.addEventListener('change',async ev=>{const el=ev.target;
     catch(x){msg={err:true,t:'Couldn’t read that file. Make sure it is the NCR Word form (.docx), or fill it in by hand.'}}
     el.value='';render();return}
   if(el.id==='eq_nfile'&&el.files.length){readN();nNew=nNew.concat([...el.files]);el.value='';render();return}
+  if(el.id==='eq_pm_enq'||el.id==='eq_pm_ncr'){PER[el.id.slice(6)].m=el.value;render();return}
+  if(el.id==='eq_py_enq'||el.id==='eq_py_ncr'){PER[el.id.slice(6)].y=el.value;render();return}
   if(el.id==='eq_nqp'){nqP=el.value;$('nres').innerHTML=ncrCards();return}
   if(el.id==='eq_qp'){qPc=el.value;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_of'){onlyFault=el.checked;$('res').innerHTML=resHTML(filtered());return}
@@ -10484,7 +10501,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271815';
+const VERSION='202610271830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
