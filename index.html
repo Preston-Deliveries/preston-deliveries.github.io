@@ -5368,7 +5368,7 @@ function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?wee
   R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});
   R.prevAll=P?Object.values(P):null;R.svT=svTeam(weekId,view);R.svTp=view==="day"?null:svTeam(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);return R}
 function svTeam(id,v){const C=svCycles(),ci=cycleInfo(id),cy=C[iso(ci.start)]||{},a=[];for(const n of(v==="cycle"?[1,2,3,4]:[ci.no]))for(const arr of Object.values(cy[n]||cy[String(n)]||{}))for(const x of arr||[])if(!isNaN(+x.s))a.push(+x.s);
-  if(!a.length)return null;return{n:Math.round((a.filter(x=>x>=9).length-a.filter(x=>x<=6).length)/a.length*100),c:a.length}}
+  if(!a.length)return null;return{n:Math.round(a.reduce((p,q)=>p+q,0)/a.length*1000)/100,c:a.length}}
 /* customer survey: score per driver for the same week (or the 4 weeks of the pay period) */
 let SVC=null,svAsked=false;
 function svCycles(){if(SVC)return SVC;
@@ -5377,7 +5377,7 @@ function svCycles(){if(SVC)return SVC;
 function svFor(id,v){const C=svCycles(),ci=cycleInfo(id),cs=iso(ci.start),cy=C[cs]||{};const by={};
   const wks=v==="cycle"?[1,2,3,4]:[ci.no];
   for(const n of wks)for(const[l,arr]of Object.entries(cy[n]||cy[String(n)]||{}))for(const x of arr||[]){const k=String(l).toUpperCase().replace(/\s+/g,"");(by[k]=by[k]||[]).push(+x.s)}
-  const out={};for(const[k,a]of Object.entries(by)){const v=a.filter(x=>!isNaN(x));if(!v.length)continue;const pr=v.filter(x=>x>=9).length,de=v.filter(x=>x<=6).length;out[k]={n:Math.round((pr-de)/v.length*100),c:v.length}}return out}
+  const out={};for(const[k,a]of Object.entries(by)){const v=a.filter(x=>!isNaN(x));if(!v.length)continue;out[k]={n:Math.round(v.reduce((p,q)=>p+q,0)/v.length*1000)/100,c:v.length}}return out}
 /* the period before, so each number can show if it went up or down */
 const PW={};
 function pwGet(id){if(id===weekId)return week;if(cycleWeeks&&cycleWeeks[id])return cycleWeeks[id];if(PW[id]&&PW[id]!=="l")return PW[id];
@@ -5393,7 +5393,7 @@ const PLAB={day:"the day before",week:"last week",cycle:"last pay period"};
 function dlt(cur,prev,kind){if(cur==null||prev==null)return "";let d,t,g;
   if(kind==="pct"){d=(cur-prev)*100;t=Math.abs(d).toFixed(1)+" pts";g=d>0}
   else if(kind==="down"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d<0}
-  else if(kind==="up"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d>0}
+  else if(kind==="up"){d=cur-prev;t=String(Math.round(Math.abs(d)*100)/100);g=d>0}
   else{if(!prev)return "";d=(cur-prev)/prev*100;t=Math.abs(d).toFixed(0)+"%";g=null}
   if(Math.abs(d)<0.05)return "";
   return `<span class="rdl ${g==null?"n":g?"g":"b"}">${d>0?"▲":"▼"} ${t}</span>`}
@@ -5648,7 +5648,7 @@ const boxes=r=>r.map(x=>`<span class="b ${kind(x.s)}">${x.s}</span>`).join("");
 function summary(all){
   const N=all.length||1,P=all.filter(x=>x.s>=9).length,M=all.filter(x=>x.s>=7&&x.s<9).length,X=all.filter(x=>x.s<7).length;
   const pct=n=>(100*n/N).toFixed(2)+"%";
-  return `<div class="sum">${(sc=>`<div class="big ${sc>=70?"svg":"svb"}">${sc}</div>`)(Math.round(100*(P-X)/N))}<div><div class="l">Team score<small>${P} of ${all.length} customers gave us 9 or 10</small></div>
+  return `<div class="sum">${(sc=>`<div class="big ${sc>=70?"svg":"svb"}">${sc}</div>`)(Math.round(all.reduce((a,x)=>a+(+x.s||0),0)/N*1000)/100)}<div><div class="l">Team score<small>${P} of ${all.length} customers gave us 9 or 10</small></div>
    <div class="mix"><span style="width:${pct(P)};background:#1f8a4c"></span><span style="width:${pct(M)};background:#c27a00"></span><span style="width:${pct(X)};background:#c23b2e"></span></div>
    <div class="key"><span><i style="background:#1f8a4c"></i>9 or 10: ${P}</span><span><i style="background:#c27a00"></i>7 or 8: ${M}</span><span><i style="background:#c23b2e"></i>0 to 6: ${X}</span></div></div></div>`;
 }
@@ -5917,7 +5917,7 @@ function mountSV(box,drivers,emptyTxt){
   const th=(k,l,c)=>`<th class="${c||""}" scope="col"><button type="button" data-ss="${k}">${l}<i aria-hidden="true"></i></button></th>`;
   box.innerHTML=`<div class="rt-sum">
      <div><small>Surveys</small><b>${N}</b></div>
-     <div><small>Score</small>${(sc=>`<b class="${N?(sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?Math.round(100*(P-X)/N):0)}</div>
+     <div><small>Score</small>${(sc=>`<b class="${N?(sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?Math.round(all.reduce((a,x)=>a+(+x.s||0),0)/N*1000)/100:0)}</div>
      <div class="sv-g"><small>9 or 10</small><b>${P}</b></div>
      <div class="sv-r"><small>0 to 6</small><b>${X}</b></div></div>
    <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
@@ -8931,7 +8931,7 @@ function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
   if(r.ftd!=null&&r.ftd!==''){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
   a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);const p=dayPoints(r);a.pts+=p;a.max+=3;a.list.push({date,...r,p})}
-function nps(sc){if(!sc.length)return null;const pr=sc.filter(x=>x.s>=9).length,de=sc.filter(x=>x.s<=6).length;return Math.round((pr-de)/sc.length*100)}
+function nps(sc){const v=sc.map(x=>+x.s).filter(x=>!isNaN(x));if(!v.length)return null;return Math.round(v.reduce((a,b)=>a+b,0)/v.length*1000)/100}
 function compute(R0){
   const P=people(),R=R0||range(),per={};
   const get=k=>per[k]||(per[k]=blank());
@@ -8996,7 +8996,7 @@ function dl(cur,prev,kind,lab){
   if(cur==null||prev==null||!PC)return '';
   let d,txt,good;
   if(kind==='pct'){d=(cur-prev)*100;txt=Math.abs(d).toFixed(1)+' pts';good=d>0}
-  else if(kind==='nps'){d=cur-prev;txt=String(Math.abs(d));good=d>0}
+  else if(kind==='nps'){d=cur-prev;txt=String(Math.round(Math.abs(d)*100)/100);good=d>0}
   else if(kind==='down'){d=cur-prev;txt=fmtN(Math.abs(d));good=d<0}
   else{if(!prev)return '';d=(cur-prev)/prev*100;txt=Math.abs(d).toFixed(0)+'%';good=null}
   if(Math.abs(d)<0.05)return `<span class="dlt neu same">Same <small>as ${lab}</small></span>`;
@@ -9060,7 +9060,7 @@ function bossNotes(C,all,pa,pcs){
   if(ftd!=null)(pf!=null&&ok&&ftd<pf-.005?watch:good).push(`Delivered first time ${P(ftd)}${chg(ftd,pf,'pts')}.`);
   (all.nc===0?good:watch).push(all.nc===0?'No NC scans.':`${fmtN(all.nc)} NC scan${all.nc===1?'':'s'}${chg(all.nc,pa&&pa.days?pa.nc:null)}.`);
   const fault=all.fault;(all.enq===0?good:watch).push(all.enq===0?'No customer enquiries.':`${fmtN(all.enq)} customer enquir${all.enq===1?'y':'ies'}${fault?`, ${fault} found at fault`:''}${chg(all.enq,pa&&pa.days?pa.enq:null)}.`);
-  if(n!=null)(n>=50?good:watch).push(`Customer survey score ${n} from ${all.scores.length} customer${all.scores.length===1?'':'s'}${ok&&pn!=null&&n!==pn?`, ${n>pn?'up':'down'} ${Math.abs(n-pn)} on ${L}`:''}.`);
+  if(n!=null)(n>=70?good:watch).push(`Customer survey score ${n} from ${all.scores.length} customer${all.scores.length===1?'':'s'}${ok&&pn!=null&&n!==pn?`, ${n>pn?'up':'down'} ${Math.round(Math.abs(n-pn)*100)/100} on ${L}`:''}.`);
   if(C.ncr&&C.ncr.length)watch.push(`${C.ncr.length} NCR${C.ncr.length===1?'':'s'} from the facility manager: ${[...new Set(C.ncr.map(x=>x.driver||x.login))].join(', ')}.`);
   const R=pcs.filter(x=>x.pc&&GRPS.includes(x.pc)).map(x=>({pc:x.pc,eta:pct(x.a.etaW,x.a.etaN),enq:x.a.enq,nc:x.a.nc})).filter(x=>x.eta!=null);
   if(R.length>1){const b=[...R].sort((x,y)=>y.eta-x.eta);if(b[0].eta-b[b.length-1].eta>=.003)good.push(`${b[0].pc} has the best 2 hr ETA (${P(b[0].eta)}). ${b[b.length-1].pc} is the lowest (${P(b[b.length-1].eta)}).`)}
@@ -10751,7 +10751,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280240';
+const VERSION='202610280250';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
