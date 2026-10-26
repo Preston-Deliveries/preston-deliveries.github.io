@@ -2786,6 +2786,14 @@ p.ck-alert{color:#5A3C00!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .dno,:root:not([data-theme="light"]) #sh-main .sh-sec.pg .sheet .sh-no,:root:not([data-theme="light"]) #sh-main .sh-sec.pg .secno{color:#0B1320!important}}
 :root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .dno,:root[data-theme="dark"] #sh-main .sh-sec.pg .sheet .sh-no,:root[data-theme="dark"] #sh-main .sh-sec.pg .secno{color:#0B1320!important}
 #sh-main .sh-sec.pg #lk_root tbody tr td.ty{font-weight:700}
+</style><style id="pc-colours">
+/* a colour for each postcode, the same as the Directory */
+#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#1D5FD1;--ps:#E0EAFB}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#0B7A6E;--ps:#D8F0EC}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#B86E00;--ps:#FDEFD6}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#C2185B;--ps:#FBE1EC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#7FA8F5;--ps:#1B2A47}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#4FD1BF;--ps:#12332F}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#F2B24A;--ps:#3A2C10}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#F48FB1;--ps:#3D1A28}}
+:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#7FA8F5;--ps:#1B2A47}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#4FD1BF;--ps:#12332F}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#F2B24A;--ps:#3A2C10}:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,:root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#F48FB1;--ps:#3D1A28}
+#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pcc{display:inline-block;background:var(--ps,var(--gs));color:var(--p,var(--g));border-radius:999px;padding:2px 9px;font-weight:700;font-size:.85rem}
+@media (min-width:600px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"] td:first-child{box-shadow:inset 4px 0 0 var(--p,transparent)}}
+@media (max-width:599.98px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"]{box-shadow:inset 4px 0 0 var(--p,var(--g))!important}}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -5260,7 +5268,7 @@ function render(){
      <label class="sort" for="pc_sort">Sort<select id="pc_sort"><option value="driver" ${sortBy==='driver'?'selected':''}>By driver</option><option value="street" ${sortBy==='street'?'selected':''}>By street</option><option value="date" ${sortBy==='date'?'selected':''}>Newest first</option></select></label></div>
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
-     ${l.map((p,i)=>`<tr ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${esc(p.postcode)}</td>
+     ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
    </tbody></table></div>${isMgr()?`<button type="button" class="sh-btn primary addmore" data-pc="add">+ Add an address</button>`:''}`:`${isMgr()?`<button type="button" class="sh-btn primary addmore" data-pc="add">+ Add an address</button>`:''}<div class="tw"><div class="empty">${all.length?(tab==='review'?'Nothing under review right now. Add an address and set it to Under review while you check it.':'No address matches that search.'):(isMgr()?'No precards yet.':'The precard list has not been shared yet.')}</div></div>`}
   </div>`;
@@ -5407,7 +5415,7 @@ function render(){
      <label class="sort" for="lk_pcf">Postcode<select id="lk_pcf">${['all','4214','4215','4217','4218'].map(k=>`<option value="${k}" ${k===pcf?'selected':''}>${k==='all'?'All postcodes':k}</option>`).join('')}</select></label></div>
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Locker</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
-     ${l.map((p,i)=>`<tr ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.name)}</b></td><td class="aa">${esc(p.address)}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${esc(p.postcode)}</td>
+     ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.name)}</b></td><td class="aa">${esc(p.address)}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}</td><td class="dn">${dnames(p).map(n=>`<span class="nl">${esc(n)}</span>`).join('')}</td><td class="rs">${p.description?desc(p.description):'<span class="sub">No details yet</span>'}</td></tr>`).join('')}
    </tbody></table></div>${add}`:`${add}<div class="tw"><div class="empty">${all.length?'No locker matches that search.':(isMgr()?'No lockers yet.':'The locker list has not been shared yet.')}</div></div>`}
   </div>`;
@@ -9078,7 +9086,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261415';
+const VERSION='202610261420';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
