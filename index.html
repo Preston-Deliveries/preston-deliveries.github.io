@@ -3753,6 +3753,19 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-feedback .lead b{color:var(--g)}
 #sh-main #mod-feedback .note{color:#D98B00}
 </style>
+<style id="metrend">
+#sh-main .me-trend .tr-row{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:end;padding:8px 0;border-top:1px solid var(--sh-line)}
+#sh-main .me-trend .tr-h{display:flex;flex-direction:column;gap:2px}#sh-main .me-trend .tr-h span{font-size:.8rem;color:var(--sh-muted)}#sh-main .me-trend .tr-h b{font:700 1.05rem var(--sh-body)}
+#sh-main .me-trend .tr-bars{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;height:44px;align-items:end}
+#sh-main .me-trend .tr-c{height:100%;display:flex;align-items:flex-end}
+#sh-main .me-trend .tr-c i{display:block;width:100%;border-radius:4px 4px 2px 2px;background:#1E8A4C}
+#sh-main .me-trend .tr-c i.no{background:#C8352B}#sh-main .me-trend .tr-c i.na{background:var(--sh-line)}
+#sh-main .me-trend .tr-wk{display:grid;grid-template-columns:96px repeat(6,1fr);column-gap:6px;padding-top:4px;font-size:.66rem;color:var(--sh-muted);text-align:center}
+#sh-main .me-trend .tr-wk::before{content:"";grid-column:1}#sh-main .me-trend .tr-wk span{white-space:nowrap}
+#sh-main .me-trend .tr-wins{margin-top:10px;display:flex;flex-direction:column;gap:4px}#sh-main .me-trend .tr-wins p{margin:0;font-weight:700;color:#D98B00;font-size:.9rem}
+@media (max-width:420px){#sh-main .me-trend .tr-row{grid-template-columns:80px 1fr}#sh-main .me-trend .tr-wk{grid-template-columns:80px repeat(6,1fr);column-gap:6px;font-size:.6rem}}
+#sh-main .me-trend .tr-h small{font-size:.64rem;color:var(--sh-muted);line-height:1.2}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -7243,7 +7256,7 @@ async function fetchData(m){
     const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null};
     const now=new Date();
     const tasks=[];
-    const days=Array.from({length:36},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
+    const days=Array.from({length:44},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
     if(db){
       tasks.push(Promise.all(days.map(x=>db.doc('days/'+x).get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.rows)d.days[x]=v}}).catch(()=>{}))));
       if(me&&me.admin)tasks.push(db.doc('settings/main').get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.targets)d.tg=v.targets}}).catch(()=>{}));
@@ -7407,6 +7420,30 @@ function statsFor(dates){
   const points=rs.reduce((s,r)=>s+(r.eta==null||r.eta===''?1:PT[rate('eta',r.eta)])+((+r.nc||0)>0?0:1)+((r.enq==null?0:+r.enq)>0?-1:1),0);
   return{days:n,pc,eta,nc,enq,ftd:avg(rs.map(r=>r.ftd)),points,max:n*3,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
 }
+/* last 6 weeks as small bars, plus streaks. Plain boxes, no pictures, no extra data */
+function trendHTML(own){
+  const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();if(all.length<2)return '';
+  const last=all[all.length-1],lmon=addD(last,-((fromIso(last).getDay()+6)%7));
+  const W=[5,4,3,2,1,0].map(i=>addD(lmon,-7*i));const t=targets();const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()]};
+  const st=W.map(m=>statsFor([0,1,2,3,4,5].map(i=>addD(m,i))));
+  const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
+  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,D]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(D||{}).find(x=>keys.includes(dkey(x)));const r=k?D[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
+  const lines=[
+    ['2 hr ETA','Target '+t.etaG+'%',st.map(x=>x&&x.eta!=null?x.eta*100:null),v=>v>=t.etaG,v=>(Math.round(v*10)/10)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
+    ['NC scans','Target 0, shorter is better',st.map(x=>x?x.nc:null),v=>v<=0,v=>String(v),null],
+    ['Enquiries','Target 0, shorter is better',st.map(x=>x?x.enq:null),v=>v<=0,v=>String(v),null],
+    ['Survey','Target 70',sv,v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
+  const bars=([l,tg,vals,ok,fmt,h])=>{const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1];
+    return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${tg}</small><b class="${cur==null?'':ok(cur)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><i class="${v==null?'na':ok(v)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
+  /* streaks, counted back from the latest day */
+  let ncRun=0;for(let i=all.length-1;i>=0;i--){const r=myRow(data.days[all[i]].rows);if((+r.nc||0)>0)break;ncRun++}
+  let enqRun=0;for(let i=all.length-1;i>=0;i--){const r=myRow(data.days[all[i]].rows);if((+(r.enq||0))>0)break;enqRun++}
+  let etaRun=0;for(let i=st.length-1;i>=0;i--){const x=st[i];if(!x||x.eta==null)continue;if(x.eta*100<t.etaG)break;etaRun++}
+  const wins=[ncRun>=3?`${ncRun} days in a row with no NC scans`:'',enqRun>=5?`${enqRun} days in a row with no enquiries`:'',etaRun>=2?`${etaRun} weeks in a row at ${t.etaG}% ETA or better`:''].filter(Boolean);
+  return `<section class="me-box g-perf me-trend"><h2>${own?'How you are tracking':'How they are tracking'}</h2><p class="me-line">Last 6 weeks, one bar a week. The newest week is on the right.</p>
+   ${lines.map(bars).join('')}<div class="tr-wk">${W.map(m=>`<span>${sh(m)}</span>`).join('')}</div>
+   ${wins.length?`<div class="tr-wins">${wins.map(w=>`<p>★ ${w}</p>`).join('')}</div>`:''}</section>`;
+}
 const CYC0='2026-10-05';
 function periods(){
   const all=Object.keys((data&&data.days)||{}).filter(k=>Object.keys(data.days[k].rows||{}).length).sort();
@@ -7523,6 +7560,7 @@ function profileHTML(){
   ${subRowHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
   ${statsHTML(per,x,sv,own)}
+  ${trendHTML(own)}
   <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
   ${data&&data.inv.length?`<section class="me-box g-admin"><h2>${my('My invoices','Invoices')}</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
@@ -10812,7 +10850,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280700';
+const VERSION='202610280720';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
