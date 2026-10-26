@@ -3525,6 +3525,7 @@ p.ck-alert{color:#5A3C00!important}
 <style id="eqmore">
 #mod-enquiries .pcp{display:inline-block;font-size:.7rem;font-weight:800;padding:0 6px;border-radius:4px;line-height:1.6;background:var(--ps,#EEF2F7);color:var(--p,#5A6576);vertical-align:1px}
 @media (max-width:600px){#mod-enquiries .kv{grid-template-columns:1fr;gap:0}#mod-enquiries .kv dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}#mod-enquiries .kv dt:first-child{margin-top:0}}
+#sh-main #mod-enquiries .eqx.nx>.nimp{order:6;width:auto;align-self:flex-start}
 #mod-enquiries .dno{font-size:.78rem;font-weight:700;color:var(--sh-muted);margin-left:4px}
 #mod-enquiries dd.wt{color:#C62828;font-weight:700}#mod-enquiries dd.wt small{font-weight:500}
 @media (max-width:600px){#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:1fr 1fr}#sh-main #mod-enquiries .eqx.nx .srch label.f:nth-child(3){grid-column:1}}
@@ -8347,7 +8348,7 @@ function fromCase(T){
   return o;
 }
 /* ---------- NCRs: non compliance reports from the facility manager ---------- */
-const ISSUES=[['sig','Signature item signed by driver'],['drop','Unsafe or wrong safe drop'],['damage','Parcel thrown or damaged'],['card','Not attempted or not carded'],['scan','Scanning or GPS'],['conduct','Driver conduct'],['other','Other']];
+const ISSUES=[['sig','Signature item signed by driver'],['drop','Unsafe or wrong safe drop'],['damage','Parcel thrown or damaged'],['card','Not attempted or not carded'],['scan','Scanning or GPS'],['ppe','PPE or safety'],['conduct','Driver conduct'],['other','Other']];
 const ISS=Object.fromEntries(ISSUES),MONDAYS=30;
 const addD=(s,n)=>{const[a,b,c]=String(s).split('-').map(Number);const d=new Date(a,b-1,c+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const dno=l=>{const q=byLogin(l);return q&&q.runs?q.runs:''};
@@ -8414,20 +8415,26 @@ async function docxLines(file){if(!window.JSZip)await loadScript('https://cdnjs.
   const doc=new DOMParser().parseFromString(xml,'application/xml'),W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
   const out=[];for(const p of doc.getElementsByTagNameNS(W,'p')){let t='';for(const n of p.getElementsByTagNameNS(W,'*')){if(n.localName==='t')t+=n.textContent;else if(n.localName==='tab')t+=' ';else if(n.localName==='br')t+='\n'}out.push(t)}
   return out.join('\n')}
-function fromNcr(T){const o={},flat=T.replace(/\s+/g,' ');const iso=m=>m?`${m[3]}-${pad(m[2])}-${pad(m[1])}`:'';
-  const after=(re,n)=>{const m=flat.match(re);return m?m[n||1].trim():''};
+function fromNcr(T){const o={},flat=T.replace(/\s+/g,' ');const iso=m=>m&&+m[3]>=2020&&+m[3]<=2035&&+m[2]<=12?`${m[3]}-${pad(m[2])}-${pad(m[1])}`:'';
+  const after=(re,n)=>{const m=flat.match(re);return m?m[n||1].trim():''};const D='(\\d{1,2})[\\/.](\\d{1,2})[\\/.](\\d{4})';
   o.caseNo=after(/Case:\s*(\d{5,})/i);
-  o.login=after(/PDC Driver:\s*([A-Z0-9]+)/i).toUpperCase()||after(/delivery made by driver\s+([A-Z0-9]+)/i).toUpperCase();
+  o.login=(after(/PDC Driver:\s*([A-Z0-9]+)/i)||after(/(?:made|attempted)\s+(?:by\s+)?driver\s+([A-Z0-9]+)/i)).toUpperCase();
   o.article=after(/Consignment:\s*([A-Z0-9]{8,})/i);
-  const ad=flat.match(/delivery made by driver\s+\S+\s+to\s+(.+?,\s*(?:QLD|NSW|VIC|SA|WA|NT|TAS|ACT),?\s*\d{4})/i);if(ad)o.address=tc(ad[1].replace(/,\s*(QLD|NSW|VIC|SA|WA|NT|TAS|ACT),?\s*(\d{4})/i,' $2').replace(/\s+,/g,','));
-  o.delivered=iso(flat.match(/On the\s+(\d{1,2})\/(\d{1,2})\/(\d{4})/i));
+  const ad=flat.match(/(?:made|attempted)\s+(?:by\s+)?driver\s+\S+(?:\s+on the\s+[\d.\/]+)?\s+to\s+(.+?)\.\s/i);
+  if(ad)o.address=tc(ad[1].replace(/,?\s*(AU|AUSTRALIA)\s*$/i,'').replace(/,?\s*(QLD|NSW|VIC|SA|WA|NT|TAS|ACT),?\s*(\d{4})/i,' $2').replace(/\s+,/g,',').replace(/^(unit|u)\s*/i,'Unit ').trim());
+  o.delivered=iso(flat.match(new RegExp('On the\\s+'+D,'i')));
   const by=flat.match(/Completed by \(Facility Manager\)\s*Name:\s*([A-Za-z' ]+?)\s*Signature/i)||flat.match(/Manager:\s*([A-Za-z' ]+?)\s+(?:Contract|MS|Principal)/i);if(by)o.by=tc(by[1]);
-  const dts=[...flat.matchAll(/(\d{1,2})\/(\d{1,2})\/(\d{4})/g)];const cd=flat.match(/Completed by \(Facility Manager\)[\s\S]*?(\d{1,2})\/(\d{1,2})\/(\d{4})/i);o.issued=iso(cd)||(dts.length?iso(dts[dts.length-1]):'');
+  const cd=flat.match(new RegExp('Completed by \\(Facility Manager\\)[\\s\\S]*?'+D,'i')),hd=flat.match(new RegExp('Principal\\/Representative:[^|]*?Date:\\s*'+D,'i'))||flat.match(new RegExp('Simpson\\s+Date:\\s*'+D,'i'));
+  const dts=[...flat.matchAll(new RegExp(D,'g'))];o.issued=[iso(cd),iso(hd)].filter(Boolean).sort().pop()||(dts.length?iso(dts[dts.length-1]):'');
   const what=after(/(Our investigation determined[\s\S]*?)(?:Acceptable response|If no, actions required|$)/i);if(what)o.what=what.replace(/\s+/g,' ').trim();
   const act=after(/actions required:\s*([\s\S]*?)(?:Review date|Completed by|$)/i),rev=after(/Review date of actions taken:\s*([\s\S]*?)(?:Completed by|$)/i);o.actions=[act,rev].filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
   const prev=after(/Previous non-compliance on same issue\s*(\d+)/i);if(prev)o.prev=+prev;
-  const w=(o.what||flat).toLowerCase();o.issue=/signature|signed on behalf|sod\b/.test(w)?'sig':/thr[eo]w|damag|fence/.test(w)?'damage':/safe ?drop/.test(w)?'drop':/card/.test(w)?'card':/scan|gps/.test(w)?'scan':'other';
+  const w=(o.what||flat).toLowerCase();
+  o.issue=/\bppe\b|footwear|steel cap|\bboots\b|\bhi.?vis\b/.test(w)?'ppe':/signed (for|on) (the )?(delivery )?(on )?behalf|signature|signed on/.test(w)?'sig':/thr[eo]w|over the (customer.s )?fence|damag/.test(w)?'damage':/incorrect address|wrong address|unsafe location|exposed to the weather|safe ?drop/.test(w)?'drop':/carded|delivery attempt|transfer|scanner eod|no attempt/.test(w)?'card':/scan|gps/.test(w)?'scan':'other';
   return o}
+function matchLogin(L){L=String(L||'').toUpperCase();const p=byLogin(L);if(p)return p;const A=L.replace(/[^A-Z]/g,'');
+  return staff.find(x=>{const n=x.name.toUpperCase().split(/\s+/);if(n.length<2)return false;for(let i=1;i<n.length;i++){const last=n.slice(i).join('').replace(/[^A-Z]/g,'');const k=Math.min(5,last.length);if(last&&A.startsWith(last.slice(0,k))&&A.slice(Math.min(last.length,A.length-1)).includes(n[0][0]))return true}return false})||
+    staff.find(x=>{const n=x.name.toUpperCase().split(/\s+/);const last=n[n.length-1].replace(/[^A-Z]/g,'');return n.length>1&&last.length>=4&&A.startsWith(last.slice(0,5))})||null}
 function readFile(f){return new Promise((ok,no)=>{const rd=new FileReader();rd.onload=()=>ok(rd.result);rd.onerror=no;rd.readAsDataURL(f)})}
 async function shrink(f){const url=await readFile(f);if(!/^image\//.test(f.type))return url;const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=url});const k=Math.min(1,1400/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.8)}
 function readN(){const n=nDraft,v=k=>($(k)||{}).value;n.login=v('ndrv');const p=byLogin(n.login);n.driver=p?p.name:(n.driver||'');n.issue=v('niss');n.issued=v('ndate')||today();n.by=(v('nby')||'').trim();n.caseNo=(v('ncase')||'').trim();n.delivered=v('ndel')||'';n.address=(v('naddr')||'').trim();n.article=(v('nart')||'').trim();n.what=(v('nwhat')||'').trim();n.actions=(v('nact')||'').trim();return n}
@@ -8439,6 +8446,16 @@ async function saveN(){const n=readN();if(!n.login){msg={err:true,t:'Pick the dr
     let i=0,bad=[];for(const f of nNew){try{const data=await shrink(f);if(data.length>950000){bad.push(f.name);continue}await db.doc('enqimg/'+id+'_'+Date.now().toString(36)+(i++)).set({ncr:id,name:f.name,type:/^image\//.test(f.type)?'image/jpeg':f.type||'application/octet-stream',data,at:now})}catch(e){bad.push(f.name)}}
     delete nFiles[id];nNew=[];nOpen=id;view='none';nDraft=null;msg=bad.length?{err:true,t:'Saved, but these files were too big to attach: '+bad.join(', ')+'.'}:{t:'Saved.'};loadFiles(id)}
   catch(e){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0)}
+async function importOld(files){const done=[],skip=[],need=[];msg={t:'Reading '+files.length+' NCR form'+(files.length===1?'':'s')+'…'};render();
+  for(const f of files){try{const o=fromNcr(await docxLines(f));if(!o.login&&!o.caseNo){skip.push(f.name);continue}
+      const p=matchLogin(o.login),login=p?p.login:o.login;
+      if(ncrs().some(x=>(x.login===login||x.login===o.login)&&x.issued===o.issued&&String(x.caseNo||'')===String(o.caseNo||''))){skip.push(f.name+' (already in)');continue}
+      const id='ncr-'+(o.issued||today())+'-'+String(login).toLowerCase()+'-'+Math.random().toString(36).slice(2,5),now=new Date().toISOString(),dt=o.issued||today();
+      const doc={kind:'ncr',login,driver:p?p.name:o.login,issue:o.issue||'other',issued:dt,by:o.by||'',caseNo:o.caseNo||'',delivered:o.delivered||'',address:o.address||'',article:o.article||'',what:o.what||'',actions:o.actions||'',spokeAt:dt,signAt:dt,respAt:dt,closed:dt,old:true,date:dt,createdAt:now,updatedAt:now};
+      await db.doc('enqlog/'+id).set(doc);recs[id]={id,...doc};
+      try{const data=await readFile(f);if(data.length<950000)await db.doc('enqimg/'+id+'_f').set({ncr:id,name:f.name.replace(/^[0-9a-f]{8}-/,''),type:f.type||'application/vnd.openxmlformats-officedocument.wordprocessingml.document',data,at:now})}catch(e){}
+      done.push(doc);if(!p)need.push(o.login)}catch(e){skip.push(f.name)}}
+  msg={t:`Added ${done.length} NCR${done.length===1?'':'s'} as dealt with.`+(need.length?` Pick the driver on: ${need.join(', ')} (login not on the Drivers page).`:'')+(skip.length?` Skipped: ${skip.join(', ')}.`:''),err:false};render()}
 async function patchN(id,patch,t){const n=recs[id];if(!n)return;const doc={...n,...patch,updatedAt:new Date().toISOString()};delete doc.id;recs[id]={id,...doc};msg=t?{t}:null;render();try{await db.doc('enqlog/'+id).set(doc)}catch(e){msg={err:true,t:'Could not save just now.'};render()}}
 /* ---------- list ---------- */
 function filtered(){
@@ -8454,7 +8471,7 @@ function render(){
   if(mode!=='mgr'){box.innerHTML='';return}
   if(tab==='ncr'){if(nDraft){box.innerHTML=ncrFormHTML();return}if(nOpen&&recs[nOpen]){loadFiles(nOpen);box.innerHTML=ncrOneHTML(recs[nOpen]);return}
     const no=ncrs().filter(n=>nState(n)!=='closed').length;
-    box.innerHTML=`<div class="eqx nx"><div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="nnew">+ Add NCR</button></div></div>${tabsHTML(no)}${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${ncrListHTML()}</div>`;return}
+    box.innerHTML=`<div class="eqx nx"><div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="nnew">+ Add NCR</button></div></div>${tabsHTML(no)}<label class="sh-btn up nimp">Import old NCR forms (already dealt with)<input type="file" id="eq_nimp" multiple accept=".docx" hidden></label>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${ncrListHTML()}</div>`;return}
   if(view==='form'){box.innerHTML=formHTML();return}
   if(view==='one'&&recs[open]){box.innerHTML=oneHTML(recs[open]);return}
   const L=filtered(),yr=String(new Date().getFullYear()),Y=enqs().filter(x=>String(x.date).startsWith(yr));
@@ -8565,10 +8582,11 @@ document.addEventListener('click',async ev=>{
 });
 document.addEventListener('input',ev=>{const el=ev.target;if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
+  if(el.id==='eq_nimp'&&el.files.length){const F=[...el.files];el.value='';importOld(F);return}
   if(el.id==='eq_nform'&&el.files[0]){const f=el.files[0];readN();msg={t:'Reading the NCR form…'};render();
     try{const o=fromNcr(await docxLines(f));if(!o.caseNo&&!o.login&&!o.what)throw 0;
       for(const k of ['caseNo','article','address','delivered','by','issued','what','actions','issue'])if(o[k])nDraft[k]=o[k];
-      if(o.login){const p=byLogin(o.login)||staff.find(x=>x.name&&o.login.startsWith(x.name.split(' ').slice(-1)[0].toUpperCase().slice(0,6))&&o.login.endsWith(x.name[0].toUpperCase()));nDraft.login=p?p.login:o.login;nDraft.driver=p?p.name:o.login}
+      if(o.login){const p=matchLogin(o.login);nDraft.login=p?p.login:o.login;nDraft.driver=p?p.name:o.login}
       nNew=nNew.filter(x=>x.name!==f.name).concat([f]);msg={t:'Filled in from the NCR form. Check the details, then press Save NCR.'+(nDraft.login&&!byLogin(nDraft.login)?' Pick the driver, the login on the form is not on the Drivers page.':'')}}
     catch(x){msg={err:true,t:'Couldn’t read that file. Make sure it is the NCR Word form (.docx), or fill it in by hand.'}}
     el.value='';render();return}
@@ -10459,7 +10477,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271715';
+const VERSION='202610271745';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
