@@ -3291,6 +3291,21 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .ck-undo p{margin:0 0 10px;font-size:.92rem;color:var(--sh-ink)}
 #sh-main .ck-undo>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 #sh-main .ck-undo .ck-big.sm{width:auto;min-height:44px;padding:8px 16px;font-size:.95rem}
+</style><style id="nocolourborders">
+/* No coloured borders or stripes anywhere except the page title banner (.sh-ph) */
+#sh-main#sh-main :is(.card:not(.ckk),.sec,.tile,.lk-key,.lk-st,.me-c,.me-st,.sh-li,.ck.on,.ck.warn,.sh-tile,.sh-tile.hl,#mod-directory .rows,#mod-guide .gd-cat .gd-rows,#mod-guide .gd,#mod-uniform .order,#mod-uniform .prod,#mod-timesheets .ckc,#pc_root .tw,#lk_root .tw,.ms,.fb){box-shadow:none!important}
+#sh-main#sh-main :is(tr,tbody tr,tr.pcr,tr.grow,tr.smr)>:is(td,th){box-shadow:none!important}
+#sh-main#sh-main#sh-main#sh-main .sh-sec tbody tr,#sh-main#sh-main#sh-main#sh-main .sh-sec tbody tr>td{box-shadow:none!important}
+#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tw,.card,.sec,.lk-st,.lk-key,.rows,.gd-rows){box-shadow:none!important}
+#sh-main#sh-main tr.grow th{box-shadow:none!important}
+#sh-main#sh-main :is(.rt .rt-sum div,.tile,.me-c,.sh-tile,.card,.sec){border-top-color:var(--sh-line)!important}
+#sh-main#sh-main .rt .rt-sum div{border-top-width:1px!important}
+#sh-main#sh-main .tile{border-top-width:1px!important}
+#sh-main#sh-main :is(.me-q,.me-pick){border-left:1px solid var(--sh-line)!important}
+#sh-main#sh-main .me-q{border:0!important}
+#sh-home .sh-grid .sh-li,.sh-hero:has(.ck.on),.sh-hero:has(.ck.warn){box-shadow:none!important}
+#sh-main#sh-main #mod-timesheets .ckc{border-color:var(--sh-line)!important;box-shadow:none!important}
+#sh-main#sh-main #mod-directory .rows{border-color:var(--sh-line)!important}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -9964,7 +9979,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270350';
+const VERSION='202610270400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
