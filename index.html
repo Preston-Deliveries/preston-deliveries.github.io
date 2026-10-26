@@ -3898,7 +3898,7 @@ html.appui .t-directory{--tc:#0B7A6E;--tbg:rgba(11,122,110,.13)}
 html.appui .t-runs,html.appui .t-sort,html.appui .t-precards,html.appui .t-lockers{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}
 html.appui .t-invoices{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}
 html.appui .t-reports{--tc:#C62828;--tbg:rgba(198,40,40,.12)}
-html.appui .t-uniform,html.appui .t-me,html.appui .t-alerts,html.appui .t-clock{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
+html.appui .t-me{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}html.appui .t-alerts{--tc:#C62828;--tbg:rgba(198,40,40,.12)}html.appui .t-uniform,html.appui .t-clock{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
 @media (prefers-color-scheme:dark){html.appui:not([data-theme="light"]) .t-results,html.appui:not([data-theme="light"]) .t-survey,html.appui:not([data-theme="light"]) .t-enquiries,html.appui:not([data-theme="light"]) .t-timesheets,html.appui:not([data-theme="light"]) .t-feedback{--tc:#B596F2}
 html.appui:not([data-theme="light"]) .t-updates,html.appui:not([data-theme="light"]) .t-briefs,html.appui:not([data-theme="light"]) .t-guide{--tc:#F2C94C}
 html.appui:not([data-theme="light"]) .t-staff,html.appui:not([data-theme="light"]) .t-leave,html.appui:not([data-theme="light"]) .t-vchecks{--tc:#5CCB8E}
@@ -3906,7 +3906,7 @@ html.appui:not([data-theme="light"]) .t-directory{--tc:#4FD1C0}
 html.appui:not([data-theme="light"]) .t-runs,html.appui:not([data-theme="light"]) .t-sort,html.appui:not([data-theme="light"]) .t-precards,html.appui:not([data-theme="light"]) .t-lockers{--tc:#7FA8F5}
 html.appui:not([data-theme="light"]) .t-invoices{--tc:#F5A25D}
 html.appui:not([data-theme="light"]) .t-reports{--tc:#F48A8A}
-html.appui:not([data-theme="light"]) .t-uniform,html.appui:not([data-theme="light"]) .t-me,html.appui:not([data-theme="light"]) .t-alerts,html.appui:not([data-theme="light"]) .t-clock{--tc:#AAB4C3}}
+html.appui:not([data-theme="light"]) .t-me{--tc:#7FA8F5}html.appui:not([data-theme="light"]) .t-alerts{--tc:#F48A8A}html.appui:not([data-theme="light"]) .t-uniform,html.appui:not([data-theme="light"]) .t-clock{--tc:#AAB4C3}}
 html.appui[data-theme="dark"] .t-results,html.appui[data-theme="dark"] .t-survey,html.appui[data-theme="dark"] .t-enquiries,html.appui[data-theme="dark"] .t-timesheets,html.appui[data-theme="dark"] .t-feedback{--tc:#B596F2}
 html.appui[data-theme="dark"] .t-updates,html.appui[data-theme="dark"] .t-briefs,html.appui[data-theme="dark"] .t-guide{--tc:#F2C94C}
 html.appui[data-theme="dark"] .t-staff,html.appui[data-theme="dark"] .t-leave,html.appui[data-theme="dark"] .t-vchecks{--tc:#5CCB8E}
@@ -3914,7 +3914,7 @@ html.appui[data-theme="dark"] .t-directory{--tc:#4FD1C0}
 html.appui[data-theme="dark"] .t-runs,html.appui[data-theme="dark"] .t-sort,html.appui[data-theme="dark"] .t-precards,html.appui[data-theme="dark"] .t-lockers{--tc:#7FA8F5}
 html.appui[data-theme="dark"] .t-invoices{--tc:#F5A25D}
 html.appui[data-theme="dark"] .t-reports{--tc:#F48A8A}
-html.appui[data-theme="dark"] .t-uniform,html.appui[data-theme="dark"] .t-me,html.appui[data-theme="dark"] .t-alerts,html.appui[data-theme="dark"] .t-clock{--tc:#AAB4C3}
+html.appui[data-theme="dark"] .t-me{--tc:#7FA8F5}html.appui[data-theme="dark"] .t-alerts{--tc:#F48A8A}html.appui[data-theme="dark"] .t-uniform,html.appui[data-theme="dark"] .t-clock{--tc:#AAB4C3}
 .ah-qa .qa .ic{background:var(--tbg,rgba(242,120,45,.15))!important;color:var(--tc,#C2570C)!important}
 html.appui .dh-todo .dh-do .ic{background:var(--tc,var(--act))}
 /* Admin view / User view: one button in the bottom tabs */
@@ -3948,6 +3948,23 @@ html.appui .sh-links .vsw{display:none}
 @media (max-width:899.98px){html.appui .sh-mtop .web-out{display:none!important}}
 .dm-out{all:unset;box-sizing:border-box;display:block;width:100%;margin-top:22px;padding:14px;border-radius:14px;border:1px solid var(--sh-line);text-align:center;font:700 1rem var(--sh-body);color:var(--sh-muted);cursor:pointer}
 html:not(:has(.web-out)) .dm-out{display:none}
+/* side menu and bottom tabs: each page in its own colour, same as the Menu tiles */
+html.appui .sh-side .sh-links [data-nav="results"],html.appui .sh-side .sh-links [data-nav="survey"],html.appui .sh-side .sh-links [data-nav="enquiries"],html.appui .sh-side .sh-links [data-nav="timesheets"],html.appui .sh-side .sh-links [data-nav="feedback"]{--g:#B596F2}
+html.appui .sh-side .sh-links [data-nav="updates"],html.appui .sh-side .sh-links [data-nav="briefs"],html.appui .sh-side .sh-links [data-nav="guide"]{--g:#F2C94C}
+html.appui .sh-side .sh-links [data-nav="staff"],html.appui .sh-side .sh-links [data-nav="leave"],html.appui .sh-side .sh-links [data-nav="vchecks"]{--g:#5CCB8E}
+html.appui .sh-side .sh-links [data-nav="directory"]{--g:#4FD1C0}
+html.appui .sh-side .sh-links [data-nav="runs"],html.appui .sh-side .sh-links [data-nav="sort"],html.appui .sh-side .sh-links [data-nav="precards"],html.appui .sh-side .sh-links [data-nav="lockers"]{--g:#7FA8F5}
+html.appui .sh-side .sh-links [data-nav="me"]{--g:#7FA8F5}
+html.appui .sh-side .sh-links [data-nav="invoices"]{--g:#F5A25D}
+html.appui .sh-side .sh-links [data-nav="reports"]{--g:#F48A8A}
+html.appui .sh-side .sh-links [data-nav="alerts"]{--g:#FF8A8E}
+html.appui .sh-side .sh-links [data-nav="uniform"],html.appui .sh-side .sh-links [data-nav="clock"]{--g:#AAB4C3}
+html.appui .sh-side .sh-links [data-nav="home"]{--g:#4FD1A5}
+html.appui .sh-side .sh-links [data-nav="summary"]{--g:#B596F2}
+html.appui .sh-side .sh-links [data-nav="menu"]{--g:#C8D1DE}
+html.appui .sh-side .sh-links button:not(.vsw) svg{color:var(--g)!important}
+@media (min-width:900px){html.appui .sh-side .sh-links button[aria-current="page"]{border-left-color:var(--g)!important}}
+@media (min-width:900px){.sh-side .sh-role{order:1}.sh-side .sh-vt{order:2;padding:10px 8px 0;margin-top:0}.sh-side .sh-vt .seg button{padding:9px 10px;font-size:.88rem}}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -11241,7 +11258,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281050';
+const VERSION='202610281100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
