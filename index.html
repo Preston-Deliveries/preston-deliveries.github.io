@@ -3475,7 +3475,7 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #mod-leave .rq-warn{background:#3A2C10;color:#F2C46A}:root[data-theme="dark"] #mod-leave .rq-long{background:#3D1A1A;color:#F4B4B0}
 </style>
 <style id="ncr">
-#sh-main #mod-enquiries .eqx.nx{max-width:760px;margin-left:auto;margin-right:auto;width:100%}
+#sh-main #mod-enquiries .eqx.nx{max-width:760px;margin-left:auto;margin-right:auto;width:100%;box-sizing:border-box}
 #sh-main #mod-enquiries .eqx.nx>*{width:100%;max-width:none;box-sizing:border-box}
 #sh-main #mod-enquiries .eqx.nx>.back,#sh-main #mod-enquiries .eqx.nx>.tabs{width:auto;align-self:flex-start}
 #mod-enquiries .nfoot{display:flex;gap:8px;align-items:center}#mod-enquiries .nfoot .gap{flex:1}
@@ -3511,6 +3511,16 @@ p.ck-alert{color:#5A3C00!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-enquiries .nwhat{background:#3D1A1A;color:#F4B4B0}}
 :root[data-theme="dark"] #mod-enquiries .nwhat{background:#3D1A1A;color:#F4B4B0}
 @media (max-width:600px){#mod-enquiries .grid{grid-template-columns:1fr}}
+</style>
+<style id="equnify">
+#mod-enquiries .nwhat.neu{background:var(--sh-surface);color:var(--sh-ink);border:1px solid var(--sh-line)}
+#mod-enquiries .nwhat.neu b{color:var(--sh-muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+#mod-enquiries .eres{display:flex;flex-direction:column;gap:10px}
+#mod-enquiries .eres .sum{margin-bottom:2px}
+#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
+@media (max-width:600px){#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:1fr 1fr}#sh-main #mod-enquiries .eqx.nx .srch .tog{grid-column:1/-1;padding-bottom:0}}
+#mod-enquiries .rh{margin-top:0}
+#sh-main #mod-enquiries .eqx.nx>.nstat{order:3}#sh-main #mod-enquiries .eqx.nx>.srch{order:4}#sh-main #mod-enquiries .eqx.nx>.eres{order:5}#sh-main #mod-enquiries .eqx.nx>.ntr{order:4}#sh-main #mod-enquiries .eqx.nx>button.card,#sh-main #mod-enquiries .eqx.nx>.empty{order:5}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -8342,7 +8352,7 @@ function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=
   return `<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>String(n.issued).startsWith(yr)).length}</b><small>This year</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
    ${T.length?`<section class="card ntr"><span class="lbl">Drivers with NCRs, last 12 months</span>${T.map(d=>`<div class="drv"><div><b>${esc(d.name)}</b><small>${esc(d.login)} · ${esc(ISS[d.issue]||'')}${d.total>d.max?' · '+d.total+' in total':''}</small></div>${dots(d.max)}</div>`).join('')}<p class="sub">Three on the same issue means the Area Manager must be told.</p></section>`:''}
    ${L.length?L.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}</b>${pill(n)}</div>
-     <span class="nw">${esc(ISS[n.issue]||'NCR')}</span><small>${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>NCR issued ${esc(nice(n.issued))}${n.by?' by '+esc(n.by):''}</small>
+     <small>${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
      ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
      :'<div class="empty">No NCRs recorded. When the facility manager sends one, press + Add NCR.</div>'}`}
 function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).by||'';
@@ -8359,7 +8369,7 @@ function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).b
    <label class="f wide" for="eq_naddr">Address<input type="text" id="eq_naddr" value="${esc(n.address||'')}" placeholder="15 Blair Athol Crescent, Bundall 4217"></label>
    <label class="f wide" for="eq_nart">Article or tracking number<input type="text" id="eq_nart" value="${esc(n.article||'')}"></label>
   </div>
-  <label class="f" for="eq_nwhat">What happened<textarea id="eq_nwhat" rows="4" placeholder="In plain words">${esc(n.what||'')}</textarea></label>
+  <label class="f" for="eq_nwhat">What happened<textarea id="eq_nwhat" rows="6" placeholder="In plain words">${esc(n.what||'')}</textarea></label>
   <label class="f" for="eq_nact">Actions the facility wants (optional)<textarea id="eq_nact" rows="2">${esc(n.actions||'')}</textarea></label>
   <label class="sh-btn up">Add other files (optional)<input type="file" id="eq_nfile" multiple accept="image/*,application/pdf,.doc,.docx,.eml,message/rfc822" hidden></label>
   ${nNew.length?`<p class="sub">To attach: ${nNew.map(f=>esc(f.name)).join(', ')}</p>`:''}
@@ -8419,7 +8429,7 @@ function filtered(){
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
   return `<div class="sum">${Object.entries(by).map(([k,v])=>`<div><b>${esc(k)}</b><span>${v.n} enquir${v.n===1?'y':'ies'}</span><span class="fc">${v.f} at fault</span></div>`).join('')||'<div><span>No enquiries found.</span></div>'}</div>`}
-const chip=f=>f==='yes'?'<span class="ft yes">At fault</span>':f==='no'?'<span class="ft no">Not at fault</span>':'<span class="ft none">No outcome yet</span>';
+const chip=f=>f==='yes'?'<span class="pill p-open">At fault</span>':f==='no'?'<span class="pill p-done">Not at fault</span>':'<span class="pill p-mon">No outcome yet</span>';
 function render(){
   const box=$('root');if(!box)return;
   if(mode!=='mgr'){box.innerHTML='';return}
@@ -8428,57 +8438,56 @@ function render(){
     box.innerHTML=`<div class="eqx nx"><div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="nnew">+ Add NCR</button></div></div>${tabsHTML(no)}${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${ncrListHTML()}</div>`;return}
   if(view==='form'){box.innerHTML=formHTML();return}
   if(view==='one'&&recs[open]){box.innerHTML=oneHTML(recs[open]);return}
-  const L=filtered();
-  box.innerHTML=`<div class="eqx">
-  <div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="new">+ Record an enquiry</button></div></div>
+  const L=filtered(),yr=String(new Date().getFullYear()),Y=enqs().filter(x=>String(x.date).startsWith(yr));
+  box.innerHTML=`<div class="eqx nx">
+  <div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="new">+ Add enquiry</button></div></div>
   ${tabsHTML(ncrs().filter(n=>nState(n)!=='closed').length)}
-  <p class="lead">A record of every enquiry and whether the driver was at fault. Search by driver or address to review them.</p>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-  <div class="srch"><label class="f" for="eq_qd">Search driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
-   <label class="f" for="eq_qa">Search address<input type="search" id="eq_qa" value="${esc(qAddr)}" placeholder="Street or suburb" autocomplete="off"></label>
+  <div class="nstat"><div><b>${Y.length}</b><small>This year</small></div><div class="${Y.some(x=>x.fault==='yes')?'r':''}"><b>${Y.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${enqs().filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>
+  <div class="srch"><label class="f" for="eq_qd">Driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
+   <label class="f" for="eq_qa">Address<input type="search" id="eq_qa" value="${esc(qAddr)}" placeholder="Street or suburb" autocomplete="off"></label>
    <label class="tog"><input type="checkbox" id="eq_of" ${onlyFault?'checked':''}> At fault only</label></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
-  <div id="eq_res">${resHTML(L)}</div>
+  <div id="eq_res" class="eres">${resHTML(L)}</div>
   </div>`;
 }
 const tabsHTML=no=>`<div class="tabs" role="group" aria-label="Show"><button type="button" data-eq="tab" data-v="enq" aria-pressed="${tab==='enq'}">Enquiries</button><button type="button" data-eq="tab" data-v="ncr" aria-pressed="${tab==='ncr'}">NCRs${no?` <span class="n">${no}</span>`:''}</button></div>`;
 function resHTML(L){const total=enqs().length;
   return `${sumHTML(L)}<div class="rh"><span class="sub">${L.length} of ${total} enquir${total===1?'y':'ies'}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
-  ${L.length?`<div class="tw"><table class="el"><thead><tr><th>Date</th><th>Case</th><th>Driver</th><th>Address</th><th>Outcome</th><th>Supervisor</th></tr></thead><tbody>
-   ${L.map(r=>`<tr data-eq="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td>${esc(r.caseNo||'')}</td><td><b>${esc(r.driver||r.login||'')}</b></td><td>${esc(r.address||'')}</td><td>${chip(r.fault)}</td><td>${esc(r.supervisor||'')}</td></tr>`).join('')}
-  </tbody></table></div>`:`<div class="empty">${total?'Nothing matches that search.':'No enquiries recorded yet. Press + Record an enquiry.'}</div>`}`;
+  ${L.length?L.map(r=>`<button type="button" class="card ncr" data-eq="open" data-v="${esc(r.id)}"><div class="t"><b>${esc(r.driver||r.login||'')}</b>${chip(r.fault)}</div>
+     <small>${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.supervisor?' · '+esc(r.supervisor):''}</small></button>`).join('')
+   :`<div class="empty">${total?'Nothing matches that search.':'No enquiries recorded yet. Press + Add enquiry.'}</div>`}`;
 }
 function formHTML(){
   const r=draft;const isNew=!r.id;
-  return `<div class="eqx"><button type="button" class="sh-btn back" data-eq="cancel">‹ Enquiries</button>
-  <section class="card"><h2>${isNew?'Record an enquiry':'Edit enquiry'}</h2>
+  return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="cancel">‹ Enquiries</button>
+  <section class="card"><h2>${isNew?'Add an enquiry':'Edit enquiry'}</h2>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   ${busy?`<p class="msg">${esc(busy)}</p>`:''}
-  <label class="sh-btn up fill">Fill in from the case PDF (optional)<input type="file" id="eq_pdf" accept="application/pdf" hidden></label>
+  <label class="sh-btn primary up">Fill in from the case PDF<input type="file" id="eq_pdf" accept="application/pdf" hidden></label>
   <div class="grid">
+   <label class="f" for="eq_drv">Driver<select id="eq_drv"><option value="">Pick the driver</option>${staff.filter(p=>p.login).map(p=>`<option value="${esc(p.login)}" ${r.login===p.login?'selected':''}>${esc(p.name)}</option>`).join('')}${r.login&&!byLogin(r.login)?`<option value="${esc(r.login)}" selected>${esc(r.driver||r.login)}</option>`:''}</select></label>
+   <label class="f" for="eq_sup">Supervisor<select id="eq_sup"><option value="">Pick</option>${supervisors().map(p=>`<option ${r.supervisor===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}${r.supervisor&&!supervisors().some(p=>p.name===r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
    <label class="f" for="eq_date">Date<input type="date" id="eq_date" value="${esc(r.date||today())}"></label>
    <label class="f" for="eq_case">Case number<input type="text" id="eq_case" value="${esc(r.caseNo||'')}" inputmode="numeric"></label>
-   <label class="f" for="eq_drv">Driver<select id="eq_drv"><option value="">Pick the driver</option>${staff.filter(p=>p.login).map(p=>`<option value="${esc(p.login)}" ${r.login===p.login?'selected':''}>${esc(p.name)}${p.runs?' ('+esc(p.runs)+')':''}</option>`).join('')}${r.login&&!byLogin(r.login)?`<option value="${esc(r.login)}" selected>${esc(r.driver||r.login)}</option>`:''}</select></label>
-   <label class="f" for="eq_sup">Supervisor<select id="eq_sup"><option value="">Pick</option>${supervisors().map(p=>`<option ${r.supervisor===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}${r.supervisor&&!supervisors().some(p=>p.name===r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
    <label class="f wide" for="eq_addr">Address<input type="text" id="eq_addr" value="${esc(r.address||'')}" placeholder="6 Balmoral Avenue, Bundall"></label>
   </div>
-  <label class="f" for="eq_det">Enquiry details<textarea id="eq_det" rows="7" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
-  <span class="lbl">Supervisor outcome</span>
+  <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
+  <span class="lbl">Was the driver at fault?</span>
   <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">Yes, at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">No, not at fault</button></div>
   <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Why">${esc(r.note||'')}</textarea></label>
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
   </section></div>`;
 }
 function oneHTML(r){
-  return `<div class="eqx"><button type="button" class="sh-btn back" data-eq="back">‹ Enquiries</button>
-  <section class="card one ${r.fault==='yes'?'isyes':r.fault==='no'?'isno':''}"><div class="oh"><h2>${esc(r.driver||r.login||'')}</h2>${chip(r.fault)}</div>
+  const prev=enqs().filter(x=>x.login===r.login&&x.id!==r.id&&x.fault==='yes').length;
+  return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="back">‹ Enquiries</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-  <dl class="facts"><div><dt>Date</dt><dd>${esc(nice(r.date))}</dd></div><div><dt>Case number</dt><dd>${esc(r.caseNo||'')}</dd></div><div><dt>Driver</dt><dd>${esc(r.driver||'')}${r.login?` <span class="sub">${esc(r.login)}</span>`:''}</dd></div><div><dt>Address</dt><dd>${esc(r.address||'')}</dd></div><div><dt>Supervisor</dt><dd>${esc(r.supervisor||'')}</dd></div></dl>
-  ${r.details?`<div class="det"><span class="lbl">Enquiry details</span><p>${esc(r.details)}</p></div>`:''}
-  ${r.note?`<div class="det"><span class="lbl">Supervisor note</span><p>${esc(r.note)}</p></div>`:''}
-  <p class="sub">Recorded ${esc(nice((r.createdAt||'').slice(0,10)))}${r.updatedAt&&r.updatedAt!==r.createdAt?', last changed '+esc(nice(r.updatedAt.slice(0,10))):''}.</p>
-  <div class="foot"><button type="button" class="sh-btn primary" data-eq="edit">Edit</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="del">${arm?'Tap again to delete':'Delete'}</button></div>
-  </section></div>`;
+  <section class="card"><div class="t2"><h2>${esc(r.driver||r.login||'')}</h2>${chip(r.fault)}</div><p class="sub">${esc(r.login||'')}${prev?` · ${prev} other at fault enquir${prev===1?'y':'ies'}`:''}</p></section>
+  ${r.details?`<div class="nwhat ${r.fault==='yes'?'':'neu'}"><b>What happened</b><p>${esc(r.details).replace(/\n/g,'<br>')}</p></div>`:''}
+  <section class="card"><span class="lbl">Details</span><dl class="kv"><dt>Date</dt><dd>${esc(nice(r.date))}</dd>${r.caseNo?`<dt>Case</dt><dd>${esc(r.caseNo)}</dd>`:''}${r.address?`<dt>Address</dt><dd>${esc(r.address)}</dd>`:''}<dt>Outcome</dt><dd>${r.fault==='yes'?'At fault':r.fault==='no'?'Not at fault':'No outcome yet'}</dd>${r.supervisor?`<dt>Supervisor</dt><dd>${esc(r.supervisor)}</dd>`:''}${r.note?`<dt>Note</dt><dd>${esc(r.note)}</dd>`:''}</dl></section>
+  ${r.createdAt?`<p class="sub">Recorded ${esc(nice(r.createdAt.slice(0,10)))}${r.updatedAt&&r.updatedAt!==r.createdAt?', last changed '+esc(nice(r.updatedAt.slice(0,10))):''}.</p>`:''}
+  <div class="foot nfoot"><button type="button" class="sh-btn" data-eq="edit">Edit</button><span class="gap"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="del">${arm?'Tap again to delete':'Delete'}</button></div></div>`;
 }
 /* ---------- print the current list on one page ---------- */
 async function printList(){
@@ -10423,7 +10432,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271630';
+const VERSION='202610271645';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
