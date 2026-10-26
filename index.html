@@ -3966,7 +3966,7 @@ window.__runNamesFrom=list=>{const m={};for(const p of list||[]){const nm=String
 try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length){window.__runNames=window.__runNamesFrom(SNAP.directory);window.__runGrp=window.__runGrpFrom(SNAP.directory)}}catch(e){}
 setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
-const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
+const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards','lockers'];
 const NAMES={home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
 const MOD={home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
@@ -4189,7 +4189,7 @@ function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1></section><div class="sh-wait">Opening your tools</div>`;return}
-  const tilesOrder=[].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs','precards','lockers','reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
+  const tilesOrder=[].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','sort','runs']).concat(role==='mgr'?['precards','lockers']:[]).concat(['reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   const hero=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1><div id="sh-clock"></div></section>`;
   if(role==='drv'){
     const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
@@ -7289,7 +7289,7 @@ function build(){
   const s=S().survey;if(s&&s.updated){const m=mySurvey();
     add({id:'sv-'+s.updated,at:snapAt('survey'),g:'perf',ic:'survey',nav:'survey',title:'Customer survey updated',body:m&&m.found?`You had ${m.n} customer survey${m.n===1?'':'s'}${m.said.length?` and ${m.said.length} customer comment${m.said.length===1?'':'s'}`:''}.`:'See what customers said.'})}
   // precards on my run
-  for(const p of myPrecards().slice(0,10)){if(p.date&&old(p.date+'T08:00:00'))continue;add({id:'pc-'+(p.id||p.address),at:snapAt('precards'),g:'road',ic:'precard',nav:'precards',title:'New precard on your run',body:[p.address,p.suburb].filter(Boolean).join(', ')+(p.reason?'. '+p.reason:'')})}
+  for(const p of myPrecards().slice(0,10)){if(p.date&&old(p.date+'T08:00:00'))continue;add({id:'pc-'+(p.id||p.address),at:snapAt('precards'),g:'road',ic:'precard',nav:'runs',title:'New precard on your run',body:[p.address,p.suburb].filter(Boolean).join(', ')+(p.reason?'. '+p.reason:'')})}
   // my run sheet changed
   const run=myRun();if(run){const h=hash(JSON.stringify(run));const was=get('runhash');if(was==null)put('runhash',h);else if(was!==h){add({id:'run-'+h,at:snapAt('runs'),g:'road',ic:'run',nav:'runs',run:true,title:'Your run sheet was updated',body:'Check the delivery order, gate codes and notes for '+(run.id||'your run')+'.'})}}
   // invoices
@@ -10726,7 +10726,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280100';
+const VERSION='202610280110';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
