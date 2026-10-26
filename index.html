@@ -3089,6 +3089,14 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .thx{display:block;padding:10px;font:700 .74rem var(--sh-body);letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
 #sh-main .rt .sv-t{min-width:860px}
 @media (max-width:560px){#sh-main .rt .sv-t{min-width:760px}}
+</style><style id="smcolour">
+#sh-main #mod-summary tr.smr td:first-child{box-shadow:inset 5px 0 0 var(--d,transparent)}
+#sh-main #mod-summary tr.smr td:nth-child(2) b{color:var(--sh-ink)}
+#sh-main #mod-summary tr.smr .dno{background:var(--d,var(--sh-ink));color:#fff}
+#sh-main #mod-summary tr.smr .smg{display:inline-block;font:800 .78rem var(--sh-body);letter-spacing:.03em;padding:3px 9px;border-radius:999px;background:var(--ds);color:var(--d);white-space:nowrap}
+#sh-main #mod-summary tr.smr:hover td{background:var(--ds)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary tr.smr .dno{color:#0B1320}}
+:root[data-theme="dark"] #sh-main #mod-summary tr.smr .dno{color:#0B1320}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8034,10 +8042,14 @@ function drvRows(keys,C){
   const by={points:(x,y)=>totPts(y.a)-totPts(x.a)||y.a.pts-x.a.pts||y.a.pc-x.a.pc,parcels:(x,y)=>y.a.pc-x.a.pc,name:(x,y)=>x.p.name.localeCompare(y.p.name),eta:(x,y)=>(pct(y.a.etaW,y.a.etaN)??-1)-(pct(x.a.etaW,x.a.etaN)??-1),survey:(x,y)=>(nps(y.a.scores)??-999)-(nps(x.a.scores)??-999)};
   return rows.sort(by[sortBy]||by.points);
 }
+/* role colour for each driver: postcode, XL, relief, supervisors or office */
+function grpCls(p){const pc=String(p.pc||'');if(/^42\d\d$/.test(pc))return 'dg-'+pc;const r=String(p.role||'').toUpperCase();
+  if(/\bXL\b/.test(r))return 'dg-xl';if(/RELIEF/.test(r))return 'dg-relief';if(/SUPER/.test(r))return 'dg-sup';if(pc===ADM||/ADMIN|OFFICE|MANAGER|PRINCIP|COORD/.test(r))return 'dg-office';if(pc===XLR)return 'dg-relief';return ''}
+function grpLbl(p){const c=grpCls(p);return{'dg-xl':'XL','dg-relief':'Relief','dg-sup':'Supervisor','dg-office':'Office'}[c]||p.pc}
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
   return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th>No.</th><th>Group</th><th class="r ptsh">Total points</th><th class="r">Results points</th><th class="r">Survey points</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th></tr></thead><tbody>
-  ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0"><td class="n">${i+1}</td><td><b>${esc(p.name)}</b>${p.login&&p.login!==p.name?`<span class="sub">${esc(p.login)}</span>`:''}</td><td>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join(' ')}</td><td>${esc(p.pc)}</td>
+  ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="n">${i+1}</td><td><b>${esc(p.name)}</b>${p.login&&p.login!==p.name?`<span class="sub">${esc(p.login)}</span>`:''}</td><td>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join(' ')}</td><td>${g?`<span class="smg">${esc(gl)}</span>`:esc(p.pc)}</td>
    <td class="r pts"><b>${fmtN(totPts(a))}</b></td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?`${sgn(svPts(a))} <span class="sub in">(${a.scores.length})</span>`:'–'}</td><td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':a.nc<=1?'warn':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td></tr>`}).join('')}
   </tbody></table></div>`;
 }
@@ -9711,7 +9723,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262210';
+const VERSION='202610262220';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
