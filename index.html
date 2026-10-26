@@ -3886,6 +3886,8 @@ html.drvui .dr .dr-said .me-q{font-size:1.05rem}
 .iv-sum .ps-miss{margin:0;color:var(--bad);font-weight:700;font-size:.98rem}
 #sh-main #mod-invoices .ivx>.iv-sum{order:-5;width:100%}
 @media (min-width:900px){html.drvui #sh-home,html.drvui .dmenu,html.drvui .dr{max-width:760px;margin-left:auto;margin-right:auto}html.drvui .sh-links [data-nav="menu"]{display:none}html.drvui .dm-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+html.drvui #sh-main #mod-updates .ntx>.tabs{display:none!important}
+html.drvui .al-i b{font-size:1.08rem}html.drvui .al-i .tx>span{font-size:.98rem}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -4200,7 +4202,7 @@ const ICONS={
 };
 const DESC={
  mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{me:'',alerts:'',menu:'',reports:'Tell us about an accident, an injury or something unsafe.',feedback:'Send a private message to the manager.',clock:'Your start and finish times.',runs:'Your streets, gate codes and notes.',guide:'How we do things, one topic at a time.',briefs:'Read the team brief, then sign it.',leave:'Check which days are free, then ask for time off.',invoices:'See what you have earned and send your invoice.',directory:'Tap a name to call or message.',updates:'Messages from the office.',uniform:'Order your shirts.'}
+ drv:{me:'',alerts:'',menu:'',reports:'',feedback:'',clock:'Your start and finish times.',runs:'Your streets, gate codes and notes.',guide:'How we do things, one topic at a time.',briefs:'Read the team brief, then sign it.',leave:'Check which days are free, then ask for time off.',invoices:'See what you have earned and send your invoice.',directory:'Tap a name to call or message.',updates:'Messages from the office.',uniform:'Order your shirts.'}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -11141,7 +11143,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280910';
+const VERSION='202610280920';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
