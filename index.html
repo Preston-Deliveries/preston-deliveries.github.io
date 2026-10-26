@@ -4742,7 +4742,7 @@ if(!ok){set(5,7);ps.forEach(function(p){var z=H/p.scrollHeight;if(z<1){p.style.z
 }
 
 async function shareRuns(){if(!window.APP)throw new Error('unavailable');await APP.publish({runs:JSON.parse(JSON.stringify(S.runs))})}
-window.RUNS={driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
+window.RUNS={list(){return allIds().map(i=>({login:String(S.runs[i].login||'').toUpperCase(),postcode:String(S.runs[i].postcode||''),driver:String(S.runs[i].driver||'')}))},driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
 function useSnapshot(){
   const snap=window.APP&&APP.SNAP&&APP.SNAP.runs;
   if(!snap||!Object.keys(snap).length){S.noDb=true;render();return}
@@ -9444,11 +9444,16 @@ let mode='wait',db=null,staff={},leave={},cfg={fl:{}},ros={},avg={},me=null,msg=
 
 /* ---------- people ---------- */
 const isRelief=p=>String(p.role||'').toUpperCase().includes('RELIEF');
-const runOf=p=>((p&&p.runs)||[]).filter(Boolean)[0]||'';
-const pcOf=p=>{const r=String((p&&p.role)||'').toUpperCase();return /^\d{4}$/.test(r)?r:r.startsWith('XL')?'XL':''};
+const runNos=p=>[...new Set(((p&&p.runs)||[]).join(',').toUpperCase().split(/[,\s\/]+/).filter(x=>/^[A-Z]*\d+$/.test(x)))];
+const sheets=()=>{try{return window.RUNS&&RUNS.list?RUNS.list():[]}catch(e){return []}};
+const runOf=p=>runNos(p).join('/');
+const pcOf=p=>{const r=String((p&&p.role)||'').toUpperCase();if(/^\d{4}$/.test(r))return r;const L=runNos(p),h=sheets().find(x=>L.includes(x.login)&&x.postcode);return h?h.postcode:r.startsWith('XL')?'XL':''};
 function short(sid){const p=staff[sid];if(!p)return '';const f=tc(p.first||'');const dup=Object.entries(staff).some(([k,q])=>k!==sid&&tc(q.first||'')===f);return dup&&p.last?f+' '+tc(p.last)[0]:f}
 const byShort=(a,b)=>short(a).localeCompare(short(b));
-function runList(){const seen={};for(const[sid,p]of Object.entries(staff)){if(!runOf(p)||isRelief(p))continue;const r=runOf(p),o=seen[r];if(!o||(!o.pc&&pcOf(p)))seen[r]={sid,run:r,pc:pcOf(p),name:short(sid)}}return Object.values(seen).sort((a,b)=>(a.pc||'~').localeCompare(b.pc||'~')||a.run.localeCompare(b.run,undefined,{numeric:true}))}
+function runList(){const seen={};for(const[sid,p]of Object.entries(staff)){if(!runOf(p)||isRelief(p))continue;const r=runOf(p),o=seen[r];if(!o||(!o.pc&&pcOf(p)))seen[r]={sid,run:r,pc:pcOf(p),name:short(sid)}}
+  const have=new Set(Object.keys(seen).flatMap(k=>k.split('/')));
+  for(const x of sheets())if(x.login&&!have.has(x.login)&&x.driver&&!/unassigned|vacant|^tbc$/i.test(x.driver)){have.add(x.login);seen[x.login]={sid:'',run:x.login,pc:x.postcode,name:tc(String(x.driver).split(/\s+/)[0])}}
+  return Object.values(seen).sort((a,b)=>(a.pc||'~').localeCompare(b.pc||'~')||a.run.localeCompare(b.run,undefined,{numeric:true}))}
 const flc=k=>(cfg.fl||{})[k]||{};
 function floaters(){const ids=new Set();for(const k of Object.keys(cfg.fl||{}))if(staff[k]&&!flc(k).off)ids.add(k);for(const[k,p]of Object.entries(staff))if(isRelief(p)&&!flc(k).off)ids.add(k);return [...ids].sort(byShort)}
 const know=(f,run)=>+((flc(f).know||{})[run]||0);
@@ -9463,16 +9468,18 @@ function itemsFor(d){const doc=ros[d]||{},rm=new Set(doc.removed||[]),lv=leaveSi
   for(const sid of lv){const p=staff[sid];if(!p||!runOf(p)||isRelief(p)||rm.has(sid)||out.some(x=>x.sid===sid))continue;out.push({...blank(sid,'leave'),leave:true})}
   return out.sort((a,b)=>(a.pc||'~').localeCompare(b.pc||'~')||String(a.run).localeCompare(String(b.run),undefined,{numeric:true}))}
 const offSet=(d,its)=>{const s=leaveSids(d);for(const x of its)s.add(x.sid);return s};
-const xlFor=d=>[...(((ros[d]||{}).xl)||[])];
+const XLP=['4214','4215','4217','4218'];
+const xlOf=d=>{const v=(ros[d]||{}).xl,o={};for(const pc of XLP)o[pc]=v&&!Array.isArray(v)&&Array.isArray(v[pc])?[...v[pc]]:[];return o};
+const xlFor=d=>Object.values(xlOf(d)).flat();
 const usedSet=(its,d)=>{const s=new Set();for(const x of its)for(const c of x.cover)s.add(c);if(d)for(const k of xlFor(d))s.add(k);return s};
-const xlPub=L=>L.map(s=>({sid:s,name:short(s)}));
+const xlPub=d=>{const o=xlOf(d),r={};for(const pc of XLP)if(o[pc].length)r[pc]=o[pc].map(s=>({sid:s,name:short(s)}));return r};
 function suggest(x,d,its){const off=offSet(d,its),used=usedSet(its,d),n=avg[x.sid]||0;
   return floaters().filter(f=>!off.has(f)&&!used.has(f)&&works(f,d)).map(f=>{const k=know(f,x.run),mx=+flc(f).max||0,over=!!(mx&&n&&n>mx);return{f,k,over,s:k*10-(over?5:0)}}).filter(o=>o.k>0||o.s>=0).sort((a,b)=>b.s-a.s||byShort(a.f,b.f)).slice(0,3)}
 const pubOf=its=>its.map(x=>({sid:x.sid,name:short(x.sid)||x.name||'',run:x.run||'',pc:x.pc||'',cover:x.cover.map(s=>({sid:s,name:short(s)})),sort:x.sort.map(s=>({sid:s,name:short(s)}))}));
 const clean=its=>its.map(x=>({sid:x.sid,name:x.name||short(x.sid)||'',run:x.run||'',pc:x.pc||'',why:x.why||'',cover:x.cover||[],sort:x.sort||[]}));
 async function saveDay(d,its,extra){const doc={...(ros[d]||{}),date:d,items:clean(its),updatedAt:new Date().toISOString(),...(extra||{})};ros[d]=doc;render();
   try{await db.doc('roster/'+d).set(doc)}catch(e){msg={err:true,t:'Could not save just now. Check your connection.'};render()}}
-function changed(d,its){const p=(ros[d]||{}).pub;return !!p&&(JSON.stringify(p.items||[])!==JSON.stringify(pubOf(its))||JSON.stringify(p.xl||[])!==JSON.stringify(xlPub(xlFor(d))))}
+function changed(d,its){const p=(ros[d]||{}).pub;return !!p&&(JSON.stringify(p.items||[])!==JSON.stringify(pubOf(its))||JSON.stringify(Array.isArray(p.xl)?{}:p.xl||{})!==JSON.stringify(xlPub(d)))}
 
 /* ---------- manager: plan a day ---------- */
 function dayBtns(){const L=[];let d=fromIso(TODAY).getDay()===0?nextWork(TODAY):TODAY;for(let i=0;i<6;i++){L.push(d);d=nextWork(d)}if(!L.includes(day))L.push(day);
@@ -9494,15 +9501,15 @@ function itemHTML(x,d,its){const n=avg[x.sid],sg=suggest(x,d,its),mxs=x.cover.ma
    <div class="ro-row"><span class="lab">Sorting</span><div class="ppl">${chips('sort',x)}${pplSel('sort',x,d,its)}</div></div>
   </article>`}
 function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=changed(d,its),need=its.filter(x=>!x.cover.length).length;
-  const off=offSet(d,its),used=usedSet(its,d),fl=floaters(),xl={sid:'_xl',xl:xlFor(d)};
+  const off=offSet(d,its),used=usedSet(its,d),fl=floaters(),xo=xlOf(d),xl={xl:xlFor(d)};
   const free=fl.filter(f=>!off.has(f)&&!used.has(f)&&works(f,d)),notw=fl.filter(f=>!off.has(f)&&!works(f,d)),lvF=fl.filter(f=>leaveSids(d).has(f));
-  const regs=runList().filter(r=>!its.some(x=>x.sid===r.sid));const rm=(doc.removed||[]).filter(s=>leaveSids(d).has(s));
+  const regs=runList().filter(r=>r.sid&&!its.some(x=>x.sid===r.sid));const rm=(doc.removed||[]).filter(s=>leaveSids(d).has(s));
   return `${dayBtns()}
    <div class="ro-head"><div><h2>${esc(longD(d))}</h2><p>${p?(ch?'<b class="chg">Changed since you sent it</b>':'Sent '+esc(when(p.at))):'Not sent yet'}${need?` · <b class="nd">${need} still ${need>1?'need':'needs'} cover</b>`:''}</p></div>
     <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${p?'Send changes':'Send to drivers'}</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${its.length?its.map(x=>itemHTML(x,d,its)).join(''):`<div class="empty">Nobody is off on ${esc(longD(d))}. Add someone below if they call in sick, or put floaters on XL parcels.</div>`}
-   <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div><div class="ro-row"><span class="lab">Doing XL</span><div class="ppl">${chips('xl',xl)}${pplSel('xl',xl,d,its)}</div></div></article>
+   <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL ${pc}</span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
    <label class="ro-off"><span>Someone else off or sick?</span><select id="ro_add"><option value="">Pick the driver</option>${regs.map(r=>`<option value="${esc(r.sid)}">${esc(r.name)} · ${esc(r.run)}${r.pc?' · '+esc(r.pc):''}</option>`).join('')}</select></label>
    ${rm.length?`<p class="ro-note">Taken off this day: ${rm.map(s=>`<button type="button" class="lnk" data-ro="undrop" data-sid="${esc(s)}">${esc(short(s))} (put back)</button>`).join(', ')}</p>`:''}
    <div class="ro-free"><b>Floaters</b>
@@ -9513,7 +9520,7 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
 
 /* ---------- week list, like the paper roster ---------- */
 function weekDays(n){const m=fromIso(TODAY);m.setDate(m.getDate()-((m.getDay()+6)%7));const L=[];for(let i=0;i<7*(n||1);i++){const x=new Date(m);x.setDate(m.getDate()+i);if(x.getDay()!==0)L.push(iso(x))}return L}
-function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!drv);const rows=D.map(d=>{const pb=(ros[d]||{}).pub||{};const its=drv?(pb.items||[]):pubOf(itemsFor(d)),xl=drv?(pb.xl||[]):xlPub(xlFor(d));return{d,its,xl}}).filter(r=>r.its.length||r.xl.length);
+function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!drv);const rows=D.map(d=>{const pb=(ros[d]||{}).pub||{};const its=drv?(pb.items||[]):pubOf(itemsFor(d)),xl=drv?(Array.isArray(pb.xl)?{}:pb.xl||{}):xlPub(d);return{d,its,xl}}).filter(r=>r.its.length||Object.keys(r.xl).length);
   const mine=s=>me&&s===me.staff;
   const nm=L=>L.length?L.map(o=>`<span class="${mine(o.sid)?'me':''}">${esc(o.name)}</span>`).join(', '):'<span class="nd">Needs cover</span>';
   const a=W[0],b=W[W.length-1];
@@ -9521,7 +9528,7 @@ function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!dr
    <div class="ro-wh"><h2>Leave and cover roster</h2><p>${esc(niceD(a))} to ${esc(niceD(b))}</p>${drv?'':'<button type="button" class="sh-btn" data-ro="print">Print</button>'}</div>
    ${rows.length?`<div class="ro-wt"><div class="hd"><span>Driver off</span><span>Covered by</span><span>Sorting</span></div>
     ${rows.map(r=>`<section class="dy ${r.d===TODAY?'tdy':''}"><h3>${esc(longD(r.d))}${!drv&&!(ros[r.d]||{}).pub?' <small>not sent</small>':!drv&&changed(r.d,itemsFor(r.d))?' <small>changed, not sent</small>':''}</h3>
-     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.run?` <small>${esc(x.run)}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${r.xl.length?`<div class="rw"><span class="off"><b>XL parcels</b></span><span>${nm(r.xl)}</span><span></span></div>`:''}</section>`).join('')}</div>`
+     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.run?` <small>${esc(x.run)}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${Object.entries(r.xl).map(([pc,L])=>`<div class="rw"><span class="off"><b>XL ${esc(pc)}</b></span><span>${nm(L)}</span><span></span></div>`).join('')}</section>`).join('')}</div>`
     :`<div class="empty">${drv?'Nothing on the roster yet. When the manager sends it, it shows here.':'Nobody is off '+(weeks>1?'in these '+weeks+' weeks':'this week')+'.'}</div>`}
   ${drv?'':`<div class="ro-wk"><button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}</div>`}
   </div>`}
@@ -9551,7 +9558,7 @@ function mineFor(d){const its=((ros[d]||{}).pub||{}).items;if(!its||!me)return n
     if(x.cover.some(c=>c.sid===me.staff))L.push(`Helping cover <b>${esc(x.name)}’s run</b>${x.run?' '+esc(x.run):''}${x.pc?' ('+esc(x.pc)+')':''}${others.length?' with '+esc(others.join(', ')):''}`);
     if(x.sort.some(c=>c.sid===me.staff))L.push(`Sorting <b>${esc(x.name)}’s run</b>${x.run?' '+esc(x.run):''}`);
     if(x.sid===me.staff)L.push('You are off. Your run is covered.')}
-  if((((ros[d]||{}).pub||{}).xl||[]).some(c=>c.sid===me.staff))L.push('Doing <b>XL parcels</b>');
+  const px=((ros[d]||{}).pub||{}).xl;if(px&&!Array.isArray(px))for(const[pc,M]of Object.entries(px))if(M.some(c=>c.sid===me.staff))L.push('Doing <b>XL parcels '+esc(pc)+'</b>');
   return L.length?L:['No changes for you. Your usual run.']}
 function myDays(){if(!me)return [];const nx=nextWork(TODAY),L=[];for(let i=0;i<8;i++){const d=addD(TODAY,i);if(fromIso(d).getDay()===0||!((ros[d]||{}).pub))continue;const m=mineFor(d),mine=!/^No changes/.test(m[0]);if(d===TODAY||d===nx||mine)L.push([d,d===TODAY?'Today':d===addD(TODAY,1)?'Tomorrow':DOW[fromIso(d).getDay()]+' '+fromIso(d).getDate(),m])}return L}
 function homeHTML(){const D=myDays();if(!D.length)return '';
@@ -9581,15 +9588,15 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   if(a==='kn'){const k=know(sid,v);setFl(sid,{know:{...(flc(sid).know||{}),[v]:(k+1)%3}});render();return}
   if(a==='unfl'){setFl(sid,{off:true});open=null;render();return}
   const d=day,its=itemsFor(d),x=its.find(i=>i.sid===sid);msg=null;
-  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(xlFor(d)),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Sent. Drivers see it on their home screen and on the Roster page.'};render()});return}
-  if(a==='rm'&&sid==='_xl'){saveDay(d,its,{xl:xlFor(d).filter(k=>k!==who)});return}
+  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Sent. Drivers see it on their home screen and on the Roster page.'};render()});return}
+  if(a==='rm'&&String(sid).startsWith('_xl')){const o=xlOf(d),pc=sid.slice(3);o[pc]=o[pc].filter(k=>k!==who);saveDay(d,its,{xl:o});return}
   if(a==='rm'&&x){x[el.dataset.k]=x[el.dataset.k].filter(k=>k!==who);saveDay(d,its);return}
   if(a==='addc'&&x){if(!x.cover.includes(who))x.cover.push(who);saveDay(d,its);return}
   if(a==='drop'&&x){const doc=ros[d]||{};const rm=new Set(doc.removed||[]);if(x.leave)rm.add(sid);saveDay(d,its.filter(i=>i.sid!==sid),{removed:[...rm]});return}
   if(a==='undrop'){const doc=ros[d]||{};saveDay(d,its,{removed:(doc.removed||[]).filter(s=>s!==sid)});return}
 });
 document.addEventListener('change',e=>{const t=e.target;const sec=document.getElementById('mod-roster');if(!sec||!sec.contains(t)||mode!=='mgr')return;
-  if(t.dataset.roAdd==='xl'){const d=day,L=xlFor(d);if(t.value&&!L.includes(t.value))L.push(t.value);saveDay(d,itemsFor(d),{xl:L});return}
+  if(t.dataset.roAdd==='xl'){const d=day,o=xlOf(d),pc=t.dataset.sid.slice(3);if(t.value&&o[pc]&&!o[pc].includes(t.value))o[pc].push(t.value);saveDay(d,itemsFor(d),{xl:o});return}
   if(t.dataset.roAdd){const d=day,its=itemsFor(d),x=its.find(i=>i.sid===t.dataset.sid),k=t.value;if(!x||!k)return;if(!x[t.dataset.roAdd].includes(k))x[t.dataset.roAdd].push(k);saveDay(d,its);return}
   if(t.id==='ro_add'&&t.value){const d=day,its=itemsFor(d);if(!its.some(i=>i.sid===t.value))its.push(blank(t.value,'sick'));const doc=ros[d]||{};saveDay(d,its,{removed:(doc.removed||[]).filter(s=>s!==t.value)});return}
   if(t.id==='ro_flsel'){if(t.value==='+add'){t.value=open||'';const w=$('addwrap');if(w){w.hidden=false;const x=w.querySelector('select');x&&x.focus()}}else{open=t.value;render()}return}
@@ -10456,7 +10463,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270930';
+const VERSION='202610271000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
