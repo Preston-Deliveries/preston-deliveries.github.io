@@ -3630,6 +3630,7 @@ p.ck-alert{color:#5A3C00!important}
 </style>
 <style id="drvview">
 #mod-summary .smback{margin:0 0 10px;align-self:flex-start;width:auto}
+#sh-main #mod-summary #sm_pcdrv .smback{border-color:var(--sh-line)!important;color:var(--sh-ink)!important;background:var(--sh-surface)!important;box-shadow:none!important}#sh-main #mod-summary #sm_pcdrv .smback:last-child{margin:12px 0 0}
 @media (max-width:700px){
 #sh-main #mod-summary .tw:has(table.ddt),#sh-main #mod-summary .tw:has(table.stk){overflow:visible}
 #sh-main #mod-summary table.ddt{table-layout:fixed;width:100%;min-width:0;font-size:.78rem}
@@ -9146,7 +9147,7 @@ function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
   return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)],PC?sumOf(keys,PC.per):null)+
-   `<section class="card" id="sm_pcdrv"><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}</section>`;
+   `<section class="card" id="sm_pcdrv"><button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}<button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button></section>`;
 }
 function driverHTML(C,k){
   const p=C.P[k];if(!p)return `<div class="empty">That driver could not be found.</div>`;
@@ -9271,7 +9272,8 @@ document.addEventListener('click',e=>{
   if(a==='per'){period=v;try{localStorage.setItem('sm_period',period)}catch(x){}render();return}
   if(a==='chip'){anchor=v;render();return}
   if(a==='scope'){scope=v==='all'?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
-  if(a==='pc'){scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
+  if(a==='pcback'){scope={t:'all'};render();const y=window.__smPcY||0;window.scrollTo(0,y);return}
+  if(a==='pc'){window.__smPcY=window.scrollY;scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
   if(a==='drv'){back=scope.t!=='drv'?{s:scope,y:window.scrollY}:back;scope={t:'drv',v};render();window.scrollTo(0,0);return}
   if(a==='back'){const b=back||{s:{t:'all'},y:0};back=null;scope=b.s;render();window.scrollTo(0,b.y);return}
   if(a==='fbcopy'){const t=(window.__smFb||{})[v]||'';(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{el.textContent='Copied';setTimeout(()=>{el.textContent='Copy message'},1500)}).catch(()=>{prompt('Copy this message',t)});return}
@@ -10809,7 +10811,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280620';
+const VERSION='202610280630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
