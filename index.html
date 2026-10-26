@@ -7128,21 +7128,24 @@ function statsHTML(per,x,sv,own){
   const t=targets(),sh=s=>{const d=fromIso(s);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()};
   const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
   const etaBad=my.filter(r=>r.eta!=null&&r.eta!==''&&r.eta*100<t.etaG),ncDays=my.filter(r=>(+r.nc||0)>0),enqDays=my.filter(r=>(+r.enq||0)>0);
-  const q=c=>'“'+String(c).trim().replace(/\s+/g,' ').slice(0,140)+'”';
-  const good=[],need=[],rkE=x?metricRank(per.dates,'eta'):null,rkN=x?metricRank(per.dates,'nc'):null,many=n=>n>Math.max(1,my.length/2);
+  const good=[],need=[],rkE=x?metricRank(per.dates,'eta'):null,rkN=x?metricRank(per.dates,'nc'):null;
+  const top=r=>r&&r.of>2&&r.rank<=Math.ceil(r.of/3),worse=r=>r&&r.of>1&&r.rank>Math.ceil(r.of/2);
   if(x){
-    if(!enqDays.length)good.push('No customer enquiries. Customers are happy with how their parcels are delivered.');
-    else need.push((enqDays.length>1?'There were customer enquiries about your deliveries.':'There was a customer enquiry about one of your deliveries.')+' Take extra care with safe drops, follow delivery instructions and always leave a card.');
-    if(my.some(r=>r.eta!=null&&r.eta!=='')){if(!etaBad.length)good.push('2 hr ETA parcels delivered on time'+(rkE&&rkE.rank<=Math.ceil(rkE.of/3)?', one of the best on the team.':'.'));
-      else need.push(many(etaBad.length)?'2 hr ETA parcels are often running late. Plan your run so these go first.':'Some 2 hr ETA parcels were late. Deliver these first.')}
-    if(!ncDays.length)good.push('Every parcel scanned at the door'+(rkN&&rkN.rank<=Math.ceil(rkN.of/3)?', great scanning.':'.'));
-    else need.push(many(ncDays.length)?'Parcels are often being scanned away from the door. Scan every parcel when you hand it over or leave it.':'A few parcels were not scanned at the door. Scan every parcel when you deliver it.');
+    if(!enqDays.length)good.push('No customer enquiries.');
+    else need.push('You had '+(enqDays.length>1?'customer enquiries':'a customer enquiry')+'. Take care with safe drops and always leave a card.');
+    if(my.some(r=>r.eta!=null&&r.eta!=='')){
+      if(!etaBad.length)good.push(top(rkE)?'2 hr ETA is one of the best on the team.':'2 hr ETA parcels on time.');
+      else if(worse(rkE))need.push('2 hr ETA was below the team average. Deliver 2 hr parcels first.');
+      else need.push('2 hr ETA was a little late on some days. Deliver 2 hr parcels first.')}
+    if(!ncDays.length)good.push(top(rkN)?'Scanning is one of the best on the team.':'No NC scans.');
+    else if(worse(rkN))need.push('NC scans were higher than the team average. Remember to scan every parcel at the door.');
+    else need.push('A few NC scans. Remember to scan every parcel at the door.');
   }
   if(sv&&sv.found){
-    if(sv.avg!=null&&sv.avg>=9)good.push('Customers rate you highly in the surveys'+(sv.good&&sv.good.length?'. They said: '+sv.good.slice(0,2).map(z=>q(z.c)).join(' '):'.'));
-    else if(sv.good&&sv.good.length)good.push('Customers said: '+sv.good.slice(0,2).map(z=>q(z.c)).join(' '));
-    if(sv.low&&sv.low.length)need.push((sv.low.length>1?'Some customers were not happy':'One customer was not happy')+(sv.low.some(z=>z.c)?'. They said: '+sv.low.filter(z=>z.c).slice(0,2).map(z=>q(z.c)).join(' ')+'.':'.')+' Be friendly, follow their delivery instructions and leave parcels somewhere safe.');
-    else if(sv.avg!=null&&sv.avg<7)need.push('Survey results are lower than we would like. Small things like a friendly hello and careful placement make a big difference.');
+    if(sv.avg!=null&&sv.avg>=9)good.push('Customer surveys are excellent.');
+    else if(sv.avg!=null&&sv.avg>=7&&!(sv.low&&sv.low.length))good.push('Customer surveys are good.');
+    if(sv.low&&sv.low.length)need.push((sv.low.length>1?'Some customers':'A customer')+' gave a low survey score. Be friendly and follow delivery instructions.');
+    else if(sv.avg!=null&&sv.avg<7)need.push('Customer surveys are below where they should be. Be friendly and follow delivery instructions.');
   }
   const fbHTML=`${good.length?`<div class="fbg"><h4>Going well</h4><ul>${good.map(t=>`<li class="ok">${esc(t)}</li>`).join('')}</ul></div>`:''}
     <div class="fbn"><h4>Needs improvement</h4>${need.length?`<ul>${need.map(t=>`<li class="no">${esc(t)}</li>`).join('')}</ul>`:'<p class="ms-good">Nothing to work on. Keep it up.</p>'}</div>`;
@@ -10267,7 +10270,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271530';
+const VERSION='202610271545';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
