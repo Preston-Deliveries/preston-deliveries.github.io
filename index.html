@@ -2946,6 +2946,19 @@ p.ck-alert{color:#5A3C00!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-guide .gd-warn{background:#3D1C1E;color:#FFD6D3}:root:not([data-theme="light"]) #sh-main #mod-guide .gd-n{background:#24466D}:root:not([data-theme="light"]) #sh-main #mod-guide .gd-rule{border-left-color:#86AEE0}}
 :root[data-theme="dark"] #sh-main #mod-guide .gd-warn{background:#3D1C1E;color:#FFD6D3}:root[data-theme="dark"] #sh-main #mod-guide .gd-n{background:#24466D}:root[data-theme="dark"] #sh-main #mod-guide .gd-rule{border-left-color:#86AEE0}
 @media (max-width:599.98px){#sh-main #mod-guide .gd{padding:16px;gap:18px}#sh-main #mod-guide .gd-h h1{font-size:1.5rem}#sh-main #mod-guide .gd-lead{font-size:1.02rem}}
+</style><style id="guide-cats">
+/* a colour for each topic group on the guide */
+#sh-main #mod-guide .gc-delivery{--k:#1D5FD1;--ks:#E0EAFB}#sh-main #mod-guide .gc-scanner{--k:#0E7C93;--ks:#D5F1F6}#sh-main #mod-guide .gc-safety{--k:#C62828;--ks:#FDE2E1}#sh-main #mod-guide .gc-conduct{--k:#6D3FC7;--ks:#ECE4FA}#sh-main #mod-guide .gc-contract{--k:#A87400;--ks:#FFF3C4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-guide .gc-delivery{--k:#7FA8F5;--ks:#1B2A47}:root:not([data-theme="light"]) #sh-main #mod-guide .gc-scanner{--k:#5FD0E6;--ks:#10323A}:root:not([data-theme="light"]) #sh-main #mod-guide .gc-safety{--k:#FF8A80;--ks:#3D1C1E}:root:not([data-theme="light"]) #sh-main #mod-guide .gc-conduct{--k:#B596F2;--ks:#2C2145}:root:not([data-theme="light"]) #sh-main #mod-guide .gc-contract{--k:#F2C94C;--ks:#3A300E}}
+:root[data-theme="dark"] #sh-main #mod-guide .gc-delivery{--k:#7FA8F5;--ks:#1B2A47}:root[data-theme="dark"] #sh-main #mod-guide .gc-scanner{--k:#5FD0E6;--ks:#10323A}:root[data-theme="dark"] #sh-main #mod-guide .gc-safety{--k:#FF8A80;--ks:#3D1C1E}:root[data-theme="dark"] #sh-main #mod-guide .gc-conduct{--k:#B596F2;--ks:#2C2145}:root[data-theme="dark"] #sh-main #mod-guide .gc-contract{--k:#F2C94C;--ks:#3A300E}
+#sh-main #mod-guide .gd-cat h2{color:var(--k)}
+#sh-main #mod-guide .gd-cat h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--k)}
+#sh-main #mod-guide .gd-cat h2 span{background:var(--ks);color:var(--k);border-radius:999px;padding:2px 8px;font-size:.74rem}
+#sh-main #mod-guide .gd-cat .gd-rows{box-shadow:inset 4px 0 0 var(--k)}
+#sh-main #mod-guide .gd-cat .gd-num{background:var(--ks);border-color:transparent;color:var(--k)}
+#sh-main #mod-guide .gd-cat .gd-row:hover{background:var(--ks)}
+#sh-main #mod-guide .gd.gc-delivery .gd-eb,#sh-main #mod-guide .gd.gc-scanner .gd-eb,#sh-main #mod-guide .gd.gc-safety .gd-eb,#sh-main #mod-guide .gd.gc-conduct .gd-eb,#sh-main #mod-guide .gd.gc-contract .gd-eb{color:var(--k)}
+#sh-main #mod-guide .gd[class*="gc-"]{box-shadow:inset 0 4px 0 var(--k)}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4994,7 +5007,7 @@ const scene=k=>`<svg viewBox="0 0 160 100" aria-hidden="true">${(SC[k]||SC.plant
 
 /* ---------- topics: kept in the guide-data block above ---------- */
 const T=JSON.parse(JSON.stringify((window.APP&&APP.SNAP&&APP.SNAP.guide)||[]));
-T.forEach((t,i)=>t.n=i+1);
+T.sort((a,b)=>CAT_ORDER.indexOf(a.cat)-CAT_ORDER.indexOf(b.cat));T.forEach((t,i)=>t.n=i+1);
 
 /* ---------- rendering ---------- */
 const $=id=>document.getElementById("g_"+id);
@@ -5008,7 +5021,7 @@ function cardsHtml(list){
 function sheetHtml(t){
   const C=CATS[t.cat]||{name:""};const h=[];
   const picTitle=t.id==="photos"?"Good and bad photos":t.id==="magnets"?"Right and wrong":"Where to leave it";
-  h.push(`<article class="gd">`);
+  h.push(`<article class="gd gc-${esc(t.cat)}">`);
   h.push(`<header class="gd-h"><div class="gd-eb">${esc(C.name)}<span>Topic ${t.n} of ${T.length}</span></div><h1>${esc(t.title)}</h1>${t.lead?`<p class="gd-lead">${esc(t.lead)}</p>`:""}</header>`);
   if(t.remember)h.push(`<div class="gd-rule"><span class="gd-lbl">The rule</span><p>${esc(t.remember)}</p></div>`);
   if(t.warn)h.push(`<div class="gd-warn"><span class="gd-lbl">Important</span><p>${esc(t.warn)}</p></div>`);
@@ -5048,7 +5061,7 @@ function copy(text){
 function showHome(){
   $("topic").value="home";document.title="1161 Driver Guide";
   view.innerHTML=`<div class="gd-home"><p class="gd-intro">${T.length} topics. Each one covers one rule: what it means, what to do and what not to do. Tap a topic to read it, or search at the top.</p>`+
-  CAT_ORDER.map(c=>{const list=T.filter(t=>t.cat===c);if(!list.length)return "";return `<section class="gd-cat"><h2>${esc(CATS[c].name)}<span>${list.length}</span></h2><div class="gd-rows">${list.map(t=>`<button class="gd-row" data-go="${t.id}"><span class="gd-num">${t.n}</span><span class="gd-tx"><b>${esc(t.title)}</b>${t.lead?`<small>${esc(t.lead)}</small>`:""}</span><svg class="gd-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join("")}</div></section>`}).join("")+`</div>`;
+  CAT_ORDER.map(c=>{const list=T.filter(t=>t.cat===c);if(!list.length)return "";return `<section class="gd-cat gc-${c}"><h2>${esc(CATS[c].name)}<span>${list.length}</span></h2><div class="gd-rows">${list.map(t=>`<button class="gd-row" data-go="${t.id}"><span class="gd-num">${t.n}</span><span class="gd-tx"><b>${esc(t.title)}</b>${t.lead?`<small>${esc(t.lead)}</small>`:""}</span><svg class="gd-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join("")}</div></section>`}).join("")+`</div>`;
   window.scrollTo(0,0);
 }
 function go(id){
@@ -9251,7 +9264,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261600';
+const VERSION='202610261610';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
