@@ -3783,6 +3783,110 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-staff .rgrow span{font-size:.82rem;color:var(--sh-muted)}
 </style>
 
+<style id="drvui">
+/* ================= Driver app: big, clear, one job per screen ================= */
+html.drvui{font-size:17px;--ok:#14804A;--okbg:rgba(30,138,76,.11);--bad:#C62828;--badbg:rgba(198,40,40,.09);--act:#C2570C;--actbg:rgba(232,113,10,.11)}
+@media (prefers-color-scheme:dark){html.drvui:not([data-theme="light"]){--ok:#5CCB8E;--okbg:rgba(92,203,142,.13);--bad:#F48A8A;--badbg:rgba(244,138,138,.12);--act:#F5A25D;--actbg:rgba(245,162,93,.13)}}
+html.drvui[data-theme="dark"]{--ok:#5CCB8E;--okbg:rgba(92,203,142,.13);--bad:#F48A8A;--badbg:rgba(244,138,138,.12);--act:#F5A25D;--actbg:rgba(245,162,93,.13)}
+/* bottom bar */
+@media (max-width:899.98px){
+ html.drvui .sh-side .sh-links button.tab{padding:9px 2px 9px!important;gap:4px}
+ html.drvui .sh-side .sh-links button.tab svg{width:30px!important;height:30px!important}
+ html.drvui .sh-links button.tab .sm{font-size:.82rem!important;font-weight:800}
+ html.drvui .sh-links button.tab[aria-current="page"] .sm{color:var(--sh-nav-ink)}
+}
+html.drvui .dnav button.tab .lg{font-weight:800}
+/* page heading with a big Back button */
+html.drvui .sh-ph.dph{border-top:0!important}
+html.drvui .sh-ph.dph .in{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+html.drvui .sh-ph.dph h1{font:800 1.75rem/1.15 var(--sh-body)!important;margin:0!important;letter-spacing:0}
+html.drvui .sh-ph.dph p{font-size:1rem!important;margin:0!important;color:var(--sh-muted)}
+html.drvui .dback{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:4px;padding:9px 16px 9px 8px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line);font:800 1rem var(--sh-body);color:var(--sh-ink);cursor:pointer;min-height:46px}
+html.drvui .dback svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+html.drvui .dback:focus-visible,html.drvui .dm-t:focus-visible,html.drvui .dh-do:focus-visible,html.drvui .dh-week:focus-visible{outline:3px solid var(--sh-signal,#F2782D);outline-offset:2px}
+/* Home */
+html.drvui .dh-hero{margin-bottom:0}
+.dh-cards{display:flex;flex-direction:column;gap:14px;margin:14px 0 24px}
+.dh-card{display:block;box-sizing:border-box;width:100%;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;color:var(--sh-ink);text-align:left}
+.dh-card h2{font:800 1.25rem var(--sh-body);margin:0 0 4px;letter-spacing:0}
+.dh-wait{color:var(--sh-muted);font-size:1rem}
+.dh-todo{background:var(--actbg);border-color:transparent}
+.dh-todo h2{color:var(--act)}
+.dh-do{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;width:100%;padding:14px;margin-top:10px;background:var(--sh-surface);border-radius:14px;cursor:pointer;min-height:74px}
+.dh-do .ic{flex:none;width:48px;height:48px;border-radius:50%;background:var(--act);color:#fff;display:grid;place-items:center}
+.dh-do .ic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dh-do .tx{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}.dh-do b{font-size:1.12rem;font-weight:800}.dh-do small{font-size:.95rem;color:var(--sh-muted)}
+.dh-card .chev,.dm-also .chev{flex:none;width:22px;height:22px;fill:none;stroke:var(--sh-muted);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dh-done{display:flex;flex-direction:column;gap:2px;background:var(--okbg);border-color:transparent}.dh-done b{color:var(--ok);font-size:1.25rem;font-weight:800}.dh-done span{color:var(--sh-muted);font-size:1rem}
+.dh-week{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;cursor:pointer;width:100%;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;color:var(--sh-ink)}
+.dh-week .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.dh-week .hd b{font:800 1.25rem var(--sh-body)}.dh-week .hd small{color:var(--sh-muted);font-size:.95rem}
+.dh-week .rk,.dr-rank .rk{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.dh-week .rk b{font:800 3rem/1 var(--sh-body)}.dh-week .rk span,.dr-rank .rk span{font-size:1.1rem;color:var(--sh-muted);font-weight:600}
+.mv{margin:0;font-weight:800;font-size:1.02rem;color:var(--sh-muted)}.mv.up{color:var(--ok)}.mv.dn{color:var(--bad)}
+.dh-week .st4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.dh-week .st4 .s{border-radius:12px;padding:10px 4px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1px;background:var(--sh-sunk,rgba(127,127,127,.08));min-width:0}
+.dh-week .st4 .s.ok{background:var(--okbg)}.dh-week .st4 .s.bad{background:var(--badbg)}
+.dh-week .st4 small{font-size:.74rem;font-weight:800;color:var(--sh-muted);white-space:nowrap}
+.dh-week .st4 b{font:800 1.2rem var(--sh-body);white-space:nowrap}.dh-week .st4 i{font-style:normal;font-weight:900;font-size:1.15rem;line-height:1}
+.dh-week .st4 .ok b,.dh-week .st4 .ok i{color:var(--ok)}.dh-week .st4 .bad b,.dh-week .st4 .bad i{color:var(--bad)}
+.dh-week .msg{font-weight:800;font-size:1.02rem}.dh-week .msg.ok{color:var(--ok)}.dh-week .msg:empty{display:none}
+.dh-week .win{font-weight:800;color:#B7791F;font-size:1rem}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .dh-week .win{color:#F2C94C}}
+.dh-week .nores,.dr .nores{color:var(--sh-muted);font-size:1.02rem;margin:0}
+.dh-week .go{display:flex;justify-content:center;align-items:center;gap:6px;padding:13px;border-radius:12px;background:var(--sh-sunk,rgba(127,127,127,.08));font-weight:800;font-size:1.05rem}
+.dh-week .go svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.dh-news .hd{display:flex;justify-content:space-between;align-items:center}.dh-news .hd button{all:unset;cursor:pointer;font-weight:800;color:var(--sh-signal,#F2782D);padding:8px 4px;font-size:1rem}
+.dh-n{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;width:100%;padding:13px 0;border-top:1px solid var(--sh-line);cursor:pointer}
+.dh-n b{font-size:1.08rem;font-weight:700}.dh-n small{color:var(--sh-muted);font-size:.9rem}
+.dh-n em{align-self:flex-start;font-style:normal;font-size:.75rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:var(--bad);color:#fff;padding:2px 8px;border-radius:6px}
+/* Menu */
+.dmenu{padding:4px 0 24px}
+.dm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dm-t{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:16px;border-radius:18px;background:var(--sh-surface);border:1px solid var(--sh-line);min-height:138px;cursor:pointer;color:var(--sh-ink)}
+.dm-t .ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;background:var(--tbg);color:var(--tc);margin-bottom:4px}
+.dm-t .ic svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dm-t b{font:800 1.1rem/1.2 var(--sh-body)}.dm-t small{font-size:.86rem;color:var(--sh-muted);line-height:1.3}
+.dm-t.t-runs{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}.dm-t.t-leave{--tc:#1E8A4C;--tbg:rgba(30,138,76,.13)}.dm-t.t-invoices{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}.dm-t.t-reports{--tc:#C62828;--tbg:rgba(198,40,40,.12)}
+.dm-t.t-feedback{--tc:#7C4DDB;--tbg:rgba(124,77,219,.13)}.dm-t.t-guide{--tc:#B7791F;--tbg:rgba(242,178,74,.18)}.dm-t.t-directory{--tc:#0B7A6E;--tbg:rgba(11,122,110,.13)}.dm-t.t-uniform{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .dm-t.t-runs{--tc:#7FA8F5}html:not([data-theme="light"]) .dm-t.t-leave{--tc:#5CCB8E}html:not([data-theme="light"]) .dm-t.t-invoices{--tc:#F5A25D}html:not([data-theme="light"]) .dm-t.t-reports{--tc:#F48A8A}html:not([data-theme="light"]) .dm-t.t-feedback{--tc:#B596F2}html:not([data-theme="light"]) .dm-t.t-guide{--tc:#F2C94C}html:not([data-theme="light"]) .dm-t.t-directory{--tc:#4FD1BF}html:not([data-theme="light"]) .dm-t.t-uniform{--tc:#AAB4C3}}
+.dm-also{margin-top:16px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;overflow:hidden}
+.dm-also button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;min-height:64px;cursor:pointer;border-top:1px solid var(--sh-line);color:var(--sh-ink)}
+.dm-also button:first-child{border-top:0}.dm-also b{flex:1;font-size:1.05rem;font-weight:700}
+.dm-also .ic{width:28px;height:28px;color:var(--sh-muted)}.dm-also .ic svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* My results */
+.dr{padding-bottom:24px}
+.dr-who{display:flex;flex-direction:column;gap:2px;margin:2px 0 14px}.dr-who b{font:800 1.4rem var(--sh-body)}.dr-who span{color:var(--sh-muted);font-size:1rem}.dr-who em{font-style:normal;font-weight:800}
+html.drvui .dr .me-seg{display:flex;padding:5px;gap:4px}html.drvui .dr .me-seg button{flex:1;min-height:50px;font-size:1.05rem;font-weight:800}
+html.drvui .dr .persub button{min-height:56px}html.drvui .dr .persub button b{font-size:1rem}
+.dr-rank{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;margin:14px 0;display:flex;flex-direction:column;gap:8px}
+.dr-rank small{color:var(--sh-muted);font-size:.98rem;font-weight:700}.dr-rank .rk b{font:800 3.4rem/1 var(--sh-body)}
+.dr-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.dt{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:3px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
+.dt.ok{background:var(--okbg);border-color:transparent}.dt.bad{background:var(--badbg);border-color:transparent}
+.dt small{font-weight:800;font-size:.9rem;color:var(--sh-muted)}.dt b{font:800 2.1rem/1.1 var(--sh-body);color:var(--sh-ink)}
+.dt.ok b,.dt.ok .st{color:var(--ok)}.dt.bad b,.dt.bad .st{color:var(--bad)}.dt.none b{color:var(--sh-muted)}
+.dt .st{font-weight:800;font-size:1rem}.dt .tg{font-size:.85rem;color:var(--sh-muted)}.dt.none .st{color:var(--sh-muted);font-weight:600}
+.dt.wide{grid-column:1/-1}
+.dr-fb{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+.dr-fb>div{border-radius:18px;padding:16px 18px;background:var(--sh-surface);border:1px solid var(--sh-line)}
+.dr-fb .need{background:var(--badbg);border-color:transparent}.dr-fb .good{background:var(--okbg);border-color:transparent}
+.dr-fb h3{margin:0 0 6px;font:800 1.15rem var(--sh-body)}.dr-fb .need h3{color:var(--bad)}.dr-fb .good h3{color:var(--ok)}
+.dr-fb ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}.dr-fb li{font-size:1.05rem;line-height:1.35;padding-left:28px;position:relative}
+.dr-fb .need li::before{content:"✗";position:absolute;left:4px;color:var(--bad);font-weight:900}.dr-fb .good li::before{content:"✓";position:absolute;left:4px;color:var(--ok);font-weight:900}
+html.drvui .dr .me-trend{border-radius:18px}
+html.drvui .dr .dr-said .me-q{font-size:1.05rem}
+@media (max-width:899.98px){html.drvui .sh-links [data-nav="home"]{order:1}html.drvui .sh-links [data-nav="me"]{order:2}html.drvui .sh-links [data-nav="alerts"]{order:3}html.drvui .sh-links [data-nav="menu"]{order:4}}
+.iv-sum .ps{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;margin:0 0 16px;display:flex;flex-direction:column;gap:12px}
+.iv-sum .hd{display:flex;flex-direction:column;gap:2px}.iv-sum h2{margin:0;font:800 1.25rem var(--sh-body)}.iv-sum .hd small{color:var(--sh-muted);font-size:.95rem}
+.iv-sum .ps-big{display:flex;flex-direction:column;gap:2px;padding:14px;border-radius:14px;background:var(--okbg,rgba(30,138,76,.1))}
+.iv-sum .ps-big b{font:800 2rem/1.1 var(--sh-body);color:var(--ok,#14804A)}.iv-sum .ps-big span{font-size:.9rem;color:var(--sh-muted)}
+.iv-sum .ps-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.iv-sum .ps-grid>div{background:var(--sh-sunk,rgba(127,127,127,.08));border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.iv-sum .ps-grid small{font-size:.85rem;font-weight:800;color:var(--sh-muted)}.iv-sum .ps-grid b{font:800 1.5rem var(--sh-body)}
+.iv-sum .ps-grid .bad{background:var(--badbg)}.iv-sum .ps-grid .bad b{color:var(--bad)}.iv-sum .ps-grid .ok b{color:var(--ok)}
+.iv-sum .ps-miss{margin:0;color:var(--bad);font-weight:700;font-size:.98rem}
+#sh-main #mod-invoices .ivx>.iv-sum{order:-5;width:100%}
+@media (min-width:900px){html.drvui #sh-home,html.drvui .dmenu,html.drvui .dr{max-width:760px;margin-left:auto;margin-right:auto}html.drvui .sh-links [data-nav="menu"]{display:none}html.drvui .dm-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3804,6 +3908,7 @@ p.ck-alert{color:#5A3C00!important}
 <section class="sh-sec" id="mod-home"><div class="sh-home" id="sh-home"></div></section>
 <section class="sh-sec" id="mod-me" hidden><div class="mex" id="me_box"></div></section>
 <section class="sh-sec" id="mod-alerts" hidden><div class="alx" id="al_box"></div></section>
+<section class="sh-sec" id="mod-menu" hidden><div class="dmenu" id="sh-menu"></div></section>
 <section class="sh-sec" id="mod-runs" hidden>
 <header class="top">
   <div class="wrap">
@@ -4049,7 +4154,7 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
 window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
@@ -4058,9 +4163,16 @@ try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length){window.__runNames=w
 setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards','lockers','sort'];
-const NAMES={home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
-const MOD={home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
+/* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
+const DRV_HIDE=['results','survey'];
+const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','directory','uniform'];
+const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Time off',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'Office news',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
+const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
+let hist=[];
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'Latest Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
+ menu:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
  reports:'<svg viewBox="0 0 24 24"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>',
  feedback:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
@@ -4088,7 +4200,7 @@ const ICONS={
 };
 const DESC={
  mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
- drv:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally, like a new precard on your run or a brief to sign.',reports:'Report an incident, a vehicle accident or a safety hazard. Only managers can read it.',feedback:'Tell the manager something without calling. Only managers can read it.',clock:'Start and finish your shift, and see your times for the week.',sort:'Got a parcel that isn’t yours? Type the street to see whose it is.',runs:'Open any run sheet: delivery order, sections, gate codes and notes.',results:'See this week’s results for every driver.',survey:'See what customers said about each driver.',guide:'How we do things: knocking, safe drops, photos, lockers, dogs and more.',precards:'Addresses to card to the Post Office instead of attempting delivery, and why.',lockers:'Where every building locker is, how to get in, and the nearest Australia Post lockers.',briefs:'This week\u2019s team brief from the facility, with its toolbox talks and safety focus.',leave:'See which days still have room before you ask for time off.',invoices:'Download your invoice template and see how to send it to the office.',directory:'Phone numbers for the team. Tap to call.',updates:'Notices from the office, like training days and site changes.',uniform:'Order shirts, find your size and send the order to the office.',enquiries:''}
+ drv:{me:'',alerts:'',menu:'',reports:'Tell us about an accident, an injury or something unsafe.',feedback:'Send a private message to the manager.',clock:'Your start and finish times.',runs:'Your streets, gate codes and notes.',guide:'How we do things, one topic at a time.',briefs:'Read the team brief, then sign it.',leave:'Check which days are free, then ask for time off.',invoices:'See what you have earned and send your invoice.',directory:'Tap a name to call or message.',updates:'Messages from the office.',uniform:'Order your shirts.'}
 };
 let canMgr=false,previewUser=false;
 const previewChild=(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})();
@@ -4096,27 +4208,32 @@ let cur='home', role='loading', stats={}, homeMsg=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
-function visible(){return SECS.filter(s=>!MGR_ONLY.includes(s)||role==='mgr')}
-function tabSecs(){return ['home','updates','alerts','me']}
+function visible(){return SECS.filter(s=>role==='mgr'?s!=='menu':!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s))}
+function tabSecs(){return role==='mgr'?['home','updates','alerts','me']:['home','me','alerts','menu']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
   document.body.appendChild(w);document.body.classList.add('sh-more-on');}
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
-function navHTML(){const v=new Set(visible());const T=tabSecs();return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
+function navHTML(){const v=new Set(visible());const T=tabSecs();
+  if(role!=='mgr'){const L=T.concat(DRV_MENU.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',alerts:'News',menu:'Menu'};
+    return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}</div>`}
+  return GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Latest',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
   if(cur==='home'||cur==='me'){ph.hidden=true;ph.innerHTML='';return}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
+  if(role!=='mgr'){const tab=['alerts','menu'].includes(cur);ph.className+=' dph';
+    ph.innerHTML=`<div class="in">${tab?'':`<button type="button" class="dback" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back</button>`}<h1>${esc(nm(cur)||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;markDup();return}
   ph.innerHTML=`<div class="in"><span class="eb">${esc(g&&g.k!=='start'?g.name:'Overview')}</span><h1>${esc(NAMES[cur]||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;
   markDup();
 }
 const normT=t=>String(t||'').trim().toLowerCase().replace(/\s+/g,' ').replace(/s$/,'');
 function markDup(){
-  const sec=document.getElementById(MOD[cur]);if(!sec||cur==='home')return;const want=normT(NAMES[cur]);
-  sec.querySelectorAll('h1').forEach(h=>{const dup=normT(h.textContent)===want;if(h.classList.contains('sh-dup')!==dup)h.classList.toggle('sh-dup',dup)});
+  const sec=document.getElementById(MOD[cur]);if(!sec||cur==='home')return;const want=normT(NAMES[cur]),want2=normT(nm(cur));
+  sec.querySelectorAll('h1').forEach(h=>{const t=normT(h.textContent);const dup=t===want||(role!=='mgr'&&(t===want2||!!(h.parentElement&&h.parentElement.classList.contains('head'))));if(h.classList.contains('sh-dup')!==dup)h.classList.toggle('sh-dup',dup)});
 }
 /* Postcode colours everywhere: 4214 blue, 4215 teal, 4217 amber, 4218 pink */
 const PCRE=/^42(14|15|17|18)$/;
@@ -4252,23 +4369,28 @@ function applyNavBadges(){const on=role==='mgr';for(const k of ['feedback','unif
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
   const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)]];
   for(const[c,k,f]of W){try{db.collection(c).onSnapshot(sn=>{let n=0;for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&f(v))n++}window.__navN[k]=n;applyNavBadges()},()=>{})}catch(e){}}}
-function renderNav(){renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
+function renderNav(){document.documentElement.classList.toggle('drvui',role!=='mgr');renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
   document.querySelectorAll('.sh-role').forEach(e=>e.innerHTML=r)}
 function go(sec,opts){
   opts=opts||{};
   if(!SECS.includes(sec)) sec='home';
   if(MGR_ONLY.includes(sec)&&role==='drv') sec='home';
+  if(role==='drv'&&DRV_HIDE.includes(sec)) sec='me';
+  if(role==='mgr'&&sec==='menu') sec='home';
+  if(!opts.back&&sec!==cur){hist.push(cur);if(hist.length>20)hist.shift()}
+  if(['home','me','alerts','menu'].includes(sec))hist=[];
   cur=sec;
   const want=MOD[sec];
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
   if((sec==='sort'||sec==='runs')&&window.RUNS) RUNS.setView(sec==='sort'?'lookup':'runs');
   if(sec==='home') renderHome();
+  if(sec==='menu') renderMenu();
   if(sec==='clock'&&window.CLOCK) window.CLOCK.mount();
   if(sec==='me'&&window.ME) window.ME.profile();
   if(sec==='alerts'&&window.ME) window.ME.alerts();
   renderNav();
-  document.title=(sec==='home'?'Contract 1161':NAMES[sec]+' · 1161');
+  document.title=(sec==='home'?'Contract 1161':nm(sec)+' · 1161');
   if(!opts.keepScroll) window.scrollTo(0,0);
   if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
@@ -4276,6 +4398,11 @@ function go(sec,opts){
 function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
+/* the driver Menu: everything else, as big tiles */
+function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
+  const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
+  box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
+  <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`}
 function renderHome(){
   const box=$('sh-home'); if(!box) return;
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -4283,11 +4410,9 @@ function renderHome(){
   const tilesOrder=[].concat(role==='mgr'?['summary']:[]).concat(['updates','briefs','leave','runs']).concat(role==='mgr'?['sort','precards','lockers']:[]).concat(['reports','results','survey','guide','directory','feedback','uniform','invoices']).concat(role==='mgr'?['enquiries','vchecks','timesheets','staff']:[]);const tset=new Set(tilesOrder);const tiles=GROUPS.map(g=>{const ss=g.secs.filter(x=>x!=='home'&&tset.has(x));if(!ss.length)return '';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('');
   const hero=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1><div id="sh-clock"></div></section>`;
   if(role==='drv'){
-    const rs=SNAP.results&&SNAP.results.updated, sv=SNAP.survey&&SNAP.survey.updated;
-    box.innerHTML=`${hero}
-    ${tiles}
-    <p class="sh-foot"><span>${rs?'Results updated '+esc(rs)+'. ':''}${sv?'Survey ranking updated '+esc(sv)+'.':''}</span></p>`;
+    box.innerHTML=`<section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section><div id="dh_cards" class="dh-cards"><div class="dh-card dh-wait">Getting your week ready…</div></div>`;
     if(window.CLOCK)window.CLOCK.mount();
+    const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
   const u=SNAP.updated||{};
@@ -4358,6 +4483,7 @@ async function shareRuns(btn){
 document.addEventListener('click',e=>{
   const mo=e.target.closest('[data-sh="more"]');if(mo){openMore();return}
   if(e.target.closest('[data-sh="moreclose"]')){closeMore();return}
+  const bk=e.target.closest('[data-sh="back"]');if(bk){const p=hist.pop()||(DRV_MENU.includes(cur)?'menu':'home');go(p,{back:true});return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
   const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='backup')backup(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
 });
@@ -7318,6 +7444,7 @@ function renderProfile(){
   const pick=pickerHTML();
   if(PICK&&pickSubj&&pickData){const m0=me,d0=data;me=pickSubj;data=Object.assign({},pickData,{tg:d0&&d0.tg});
     try{box.innerHTML=pick+profileHTML()}finally{me=m0;data=d0}}
+  else if(!isAdminView()){box.innerHTML=driverHTML();return}
   else box.innerHTML=pick+profileHTML();
   fillEarn();
 }
@@ -7624,7 +7751,101 @@ document.addEventListener('click',e=>{
 function openRun(l){l=l||(me&&me.login);try{if(window.RUNS&&RUNS.openLogin&&l&&RUNS.openLogin(l))return}catch(x){}if(window.APP)APP.go('runs')}
 document.addEventListener('change',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.me==='pick')setPick(t.value)});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me)refresh(true)});
-window.ME={profile:showProfile,alerts:showAlerts,refresh};
+/* ---------- the simple driver screens: Home cards and My results ---------- */
+function fbLists(per,x,sv){
+  const t=targets(),my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
+  const etaBad=my.filter(r=>r.eta!=null&&r.eta!==''&&r.eta*100<t.etaG),ncDays=my.filter(r=>(+r.nc||0)>0),enqDays=my.filter(r=>(+r.enq||0)>0);
+  const good=[],need=[];
+  if(x){
+    if(!enqDays.length)good.push('No customer enquiries.');else need.push('A customer made an enquiry. Always knock first and leave a card.');
+    if(my.some(r=>r.eta!=null&&r.eta!=='')){if(!etaBad.length)good.push('2 hr ETA parcels on time.');else need.push('Some 2 hr parcels were late. Deliver 2 hr parcels first.')}
+    if(!ncDays.length)good.push('No NC scans.');else need.push('Scan every parcel at the door.');
+  }
+  if(sv&&sv.found){if(sv.avg*10>=70)good.push('Customers are happy with you.');else need.push('Be friendly and follow delivery instructions.')}
+  return{good,need}}
+function streaks(){
+  const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();const out=[];
+  let nc=0;for(let i=all.length-1;i>=0;i--){if((+myRow(data.days[all[i]].rows).nc||0)>0)break;nc++}
+  let en=0;for(let i=all.length-1;i>=0;i--){if((+(myRow(data.days[all[i]].rows).enq||0))>0)break;en++}
+  if(nc>=3)out.push(nc+' days in a row with no NC scans');if(en>=5)out.push(en+' days in a row with no enquiries');return out}
+function tiles4(x,sv,withFtd){const t=targets();
+  const T=[['2 hr ETA',x&&x.eta!=null?pctf(x.eta):null,x&&x.eta!=null?x.eta*100>=t.etaG:null,'Target '+t.etaG+'%'],
+    ['NC scans',x?String(Math.round(x.nc||0)):null,x?!(x.nc>0):null,'Target 0'],
+    ['Enquiries',x?String(Math.round(x.enq||0)):null,x?!(x.enq>0):null,'Target 0'],
+    ['Survey',sv&&sv.found&&sv.avg!=null?String(Math.round(sv.avg*100)/10):null,sv&&sv.found&&sv.avg!=null?sv.avg*10>=70:null,'Target 70']];
+  if(withFtd)T.push(['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%']);
+  return T}
+function tileHTML([l,v,ok,tg],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
+function moveTxt(r,p,lab){if(!r||!p)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
+async function homeCards(){
+  const box0=document.getElementById('dh_cards');if(!box0)return;
+  try{await load()}catch(e){}
+  const box=document.getElementById('dh_cards');if(!box||!me)return;
+  const L=build();badge(unread(L));
+  const todo=[],t=dayOf(new Date());
+  const b=data&&data.briefs[0];if(b&&data.sigs[b.id]===false)todo.push({ic:'brief',t:'Sign the team brief',s:'Read it, then tap Sign.',nav:'briefs'});
+  for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
+  const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
+    if(dd>=0&&dd<=7&&!sent)todo.push({ic:'money',t:'Send your invoice',s:'Due '+niceDay(due)+(dd===0?' (today)':dd===1?' (tomorrow)':'')+'.',nav:'invoices'})}
+  const k0=PWK,k1=PDAY;PWK=null;PDAY=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1}
+  const wd=P.week.dates,x=statsFor(wd),rk=x?resultsRank(wd):null,prk=x?resultsRank(wd.map(d=>addD(d,-7))):null;
+  const sv=mySurvey('weekly',P.cyc?{cs:P.cyc.cs,wk:(P.subW.find(z=>z.on)||{}).n}:null);
+  const T=tiles4(x,sv,false),hit=T.filter(z=>z[2]===true).length,have=T.filter(z=>z[2]!=null).length;
+  const wins=streaks();
+  const news=(S().notices||[]).slice().sort((a,c)=>String(c.postedAt||'').localeCompare(String(a.postedAt||''))).slice(0,2);
+  box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do" data-nav="${z.nav}"><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
+     :`<section class="dh-card dh-done"><b>✓ All done</b><span>Nothing to do right now.</span></section>`}
+   <button type="button" class="dh-card dh-week" data-nav="me">
+     <span class="hd"><b>This week</b><small>${esc(P.sh(wd[0]))} to ${esc(P.sh(addD(wd[0],5)))}</small></span>
+     ${x?`<span class="rk">${rk?`<b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:''}</span>${moveTxt(rk,prk,'last week')}
+     <span class="st4">${T.map(z=>`<span class="s ${z[2]==null?'none':z[2]?'ok':'bad'}"><small>${z[0]}</small><b>${z[1]==null?'–':esc(z[1])}</b><i>${z[2]==null?'':z[2]?'✓':'✗'}</i></span>`).join('')}</span>
+     <span class="msg ${have&&hit===have?'ok':''}">${have&&hit===have?'★ Great week. You hit every target.':have?`${hit} of ${have} on target`:''}</span>
+     ${wins.length?`<span class="win">★ ${esc(wins[0])}</span>`:''}`:`<span class="nores">No results for this week yet. They show here after the office loads them.</span>`}
+     <span class="go">See my results<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+   </button>
+   ${news.length?`<section class="dh-card dh-news"><div class="hd"><h2>Office news</h2><button type="button" data-nav="alerts">See all</button></div>${news.map(n=>`<button type="button" class="dh-n${n.important?' imp':''}" data-nav="updates">${n.important?'<em>Important</em>':''}<b>${esc(n.title||'')}</b><small>${esc(ago(n.edited||n.postedAt))}</small></button>`).join('')}</section>`:''}`;
+}
+function driverHTML(){
+  const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates);
+  const sv=mySurvey(PER==='cycle'?'cycle':'weekly',P.cyc?{cs:P.cyc.cs,wk:PER==='cycle'?null:(P.subW.find(z=>z.on)||{}).n}:null);
+  const rk=x?resultsRank(per.dates):null;
+  let prev=null,lab='';if(x){if(PER==='week'){prev=resultsRank(per.dates.map(d=>addD(d,-7)));lab='last week'}else if(PER==='cycle'){prev=resultsRank(per.dates.map(d=>addD(d,-28)));lab='last pay cycle'}else{const all=Object.keys(data.days).filter(k=>myRow(data.days[k].rows)).sort().filter(k=>k<per.dates[0]);if(all.length){prev=resultsRank([all[all.length-1]]);lab='your last day'}}}
+  const T=tiles4(x,sv,true),fb=fbLists(per,x,sv),run=myRun();
+  const when={day:'This day',week:'This week',cycle:'This pay cycle'}[PER];
+  return `<div class="dr">
+  <div class="dr-who"><b>${esc(tc(me.name||''))}</b>${run?`<span>Run ${esc(run.login||run.id)}${run.postcode?` · <em class="pcol dg-${esc(run.postcode)}">${esc(run.postcode)}</em>`:''}</span>`:''}</div>
+  <div class="me-seg dseg" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
+  ${subRowHTML(P)}
+  <section class="dr-rank"><small>${when} · ${esc(per.label.replace(/^Week \d of the pay cycle · /,''))}</small>
+   ${x&&rk?`<div class="rk"><b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span></div>${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
+  <div class="dr-tiles">${T.map((z,i)=>tileHTML(z,i===4)).join('')}</div>
+  ${fb.good.length||fb.need.length?`<section class="dr-fb">${fb.need.length?`<div class="need"><h3>Work on</h3><ul>${fb.need.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}${fb.good.length?`<div class="good"><h3>Going well</h3><ul>${fb.good.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}</section>`:''}
+  ${trendHTML(true)}
+  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf dr-said"><h2>What customers said</h2>${sv.said.slice(0,3).map(z=>`<p class="me-q">“${esc(z)}”</p>`).join('')}</section>`:''}
+  </div>`;
+}
+/* My pay: what this pay period looks like so far */
+async function paySummary(){
+  const el0=document.getElementById('iv_sum');if(!el0)return;
+  try{await load()}catch(e){}const el=document.getElementById('iv_sum');if(!el||!me)return;
+  const k0=PWK,k1=PDAY;PWK=null;PDAY=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1}
+  const D=P.cycle.dates,x=statsFor(D),h=clockedFor(D);const t=dayOf(new Date());
+  const sd=d=>{const z=fromIso(d);return DOW[z.getDay()]+' '+z.getDate()};
+  el.innerHTML=`<section class="ps"><div class="hd"><h2>This pay period so far</h2><small>${esc(P.sh(D[0]))} to ${esc(P.sh(D[D.length-1]))}</small></div>
+   <div class="ps-big" id="ps_earn"><b>…</b><span>Working it out</span></div>
+   <div class="ps-grid">
+    <div><small>Parcels</small><b>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'0'}</b></div>
+    <div><small>Days worked</small><b>${x?x.days:0}</b></div>
+    <div><small>Hours</small><b>${h.n?hrs(h.m):'–'}</b></div>
+    <div class="${h.miss.length?'bad':'ok'}"><small>Days not clocked</small><b>${h.miss.length}</b></div>
+   </div>
+   ${h.miss.length?`<p class="ps-miss">✗ No clock in or out on ${esc(h.miss.slice(0,5).map(sd).join(', '))}${h.miss.length>5?' and '+(h.miss.length-5)+' more days':''}. Always tap Start shift and Finish shift.</p>`:''}
+  </section>`;
+  if(!me.staff||!window.INVMAKE||!window.INVMAKE.pay){const e=document.getElementById('ps_earn');if(e)e.remove();return}
+  let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
+  const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
+  e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
+window.ME={profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -8021,7 +8242,8 @@ function render(){
   if(mode==='wait'){box.innerHTML='';return}
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
-  const tabs=!isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  if(!isMgr())setTimeout(()=>{if(window.ME&&window.ME.paySummary)window.ME.paySummary()},0);
+  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
   if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
   if(isMgr()&&ivtab==='mine')ivtab='make';
   if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
@@ -10919,7 +11141,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280850';
+const VERSION='202610280910';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
