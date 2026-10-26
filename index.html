@@ -3690,7 +3690,6 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt table.rsm tbody.rgh .rgn{font-weight:500;font-size:.78rem;color:var(--sh-muted)}
 #sh-main .rt table.rsm tbody.rgh i{margin-left:auto;font-style:normal;color:var(--sh-muted)}
 #sh-main .rt table.rsm tbody.rgh button:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
-#sh-main .rt table.rsm td.dr small .gp{display:none}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -5316,8 +5315,8 @@ async function saveXlsx(){
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
 /* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
 const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"name",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";o.grp="all";if(!["name","eta","nc","enq","pc","ftd","sv","days"].includes(o.sort)){o.sort="name";o.dir=1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"name",dir:1}}})();
-const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir,open:RT.open}))}catch(e){}};
+const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"eta",dir:-1},JSON.parse(localStorage.getItem("r1161_rt2")||"{}"),{q:""});o.st="all";o.grp="all";if(!["name","eta","nc","enq","sv","days"].includes(o.sort)){o.sort="eta";o.dir=-1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"eta",dir:-1}}})();
+const saveRT=()=>{try{localStorage.setItem("r1161_rt2",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir,open:RT.open}))}catch(e){}};
 /* the table is split into postcode groups that open and close */
 const RGRP=[["4214","4214",["4214"]],["4215","4215",["4215"]],["4217","4217",["4217"]],["4218","4218",["4218"]],["xr","XL and relief",["xl","relief"]],["of","Office and supervisors",["office","sup"]],["ot","Other",[""]]];
 const rgOf=g=>{const x=RGRP.find(([, ,m])=>m.includes(g||""));return x?x[0]:"ot"};
@@ -5376,7 +5375,7 @@ function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
   let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="full"?r.st==="full":r.rt[RT.st]==="b"))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
   const[f]=SORTS[RT.sort]||SORTS.name,d=RT.dir;
-  return out.slice().sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||(a.name||a.login).localeCompare(b.name||b.login)});
+  return out.slice().sort((a,b)=>{if(a.me!==b.me)return a.me?-1:1;const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||(a.name||a.login).localeCompare(b.name||b.login)});
 }
 const p1=v=>v==null?"n/a":(v>=.9995?"100":(Math.round(v*1000)/10).toFixed(1))+"%";
 const MK={g:"✓",w:"!",b:"✕","":""};
@@ -5395,11 +5394,7 @@ function rowHTML(r,multi){
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
   const tb=box.querySelector("table");tb.querySelectorAll("tbody").forEach(b=>b.remove());const cols=tb.tHead.rows[0].cells.length;
-  const me=rows.find(x=>x.me);const gs=[...new Set(F.map(x=>rgOf(x.grp)))];const OPEN=Array.isArray(RT.open)?RT.open:gs.length===1?gs:me?[rgOf(me.grp)]:[];
-  const all=!!RT.q.trim();
-  tb.insertAdjacentHTML("beforeend",F.length?RGRP.map(([k,l])=>{const L=F.filter(x=>rgOf(x.grp)===k);if(!L.length)return "";const op=all||OPEN.includes(k);
-    const pill=/^42/.test(k)?`<span class="gp dg-${k}">${l}</span>`:`<b>${l}</b>`;
-    return `<tbody class="rgh"><tr><td colspan="${cols}"><button type="button" data-rgo="${k}" aria-expanded="${op}">${pill}<span class="rgn">${L.length} driver${L.length===1?"":"s"}</span><i aria-hidden="true">${op?"\u25B4":"\u25BE"}</i></button></td></tr></tbody>${op?`<tbody>${L.map(r=>rowHTML(r,multi)).join("")}</tbody>`:""}`}).join(""):`<tbody><tr><td colspan="${cols}" class="none">No drivers match these filters.</td></tr></tbody>`);
+  tb.insertAdjacentHTML("beforeend",`<tbody>${F.length?F.map(r=>rowHTML(r,multi)).join(""):`<tr><td colspan="${cols}" class="none">No drivers match these filters.</td></tr>`}</tbody>`);
   const busy=RT.q||RT.grp!=="all";
   box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-rt="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-rs]").forEach(b=>{const on=b.dataset.rs===RT.sort;b.closest("th").setAttribute("aria-sort",on?(RT.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(RT.dir===1?"▲":"▼"):""});
@@ -10724,7 +10719,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280130';
+const VERSION='202610280140';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
