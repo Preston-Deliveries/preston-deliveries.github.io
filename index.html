@@ -5648,7 +5648,7 @@ const boxes=r=>r.map(x=>`<span class="b ${kind(x.s)}">${x.s}</span>`).join("");
 function summary(all){
   const N=all.length||1,P=all.filter(x=>x.s>=9).length,M=all.filter(x=>x.s>=7&&x.s<9).length,X=all.filter(x=>x.s<7).length;
   const pct=n=>(100*n/N).toFixed(2)+"%";
-  return `<div class="sum"><div class="big">${Math.round(100*(P-X)/N)}</div><div><div class="l">Team score<small>${P} of ${all.length} customers gave us 9 or 10</small></div>
+  return `<div class="sum">${(sc=>`<div class="big ${sc>=70?"svg":"svb"}">${sc}</div>`)(Math.round(100*(P-X)/N))}<div><div class="l">Team score<small>${P} of ${all.length} customers gave us 9 or 10</small></div>
    <div class="mix"><span style="width:${pct(P)};background:#1f8a4c"></span><span style="width:${pct(M)};background:#c27a00"></span><span style="width:${pct(X)};background:#c23b2e"></span></div>
    <div class="key"><span><i style="background:#1f8a4c"></i>9 or 10: ${P}</span><span><i style="background:#c27a00"></i>7 or 8: ${M}</span><span><i style="background:#c23b2e"></i>0 to 6: ${X}</span></div></div></div>`;
 }
@@ -5917,7 +5917,7 @@ function mountSV(box,drivers,emptyTxt){
   const th=(k,l,c)=>`<th class="${c||""}" scope="col"><button type="button" data-ss="${k}">${l}<i aria-hidden="true"></i></button></th>`;
   box.innerHTML=`<div class="rt-sum">
      <div><small>Surveys</small><b>${N}</b></div>
-     <div><small>Score</small><b>${N?Math.round(100*(P-X)/N):0}</b></div>
+     <div><small>Score</small>${(sc=>`<b class="${N?(sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?Math.round(100*(P-X)/N):0)}</div>
      <div class="sv-g"><small>9 or 10</small><b>${P}</b></div>
      <div class="sv-r"><small>0 to 6</small><b>${X}</b></div></div>
    <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
@@ -9115,7 +9115,7 @@ function driverHTML(C,k){
     return `<section class="card"><h2>Start and finish</h2><div class="tw"><table class="tb stk"><thead><tr><th>Day</th><th>Start</th><th>Finish</th><th class="r">Hours</th><th class="r">Km</th><th>2 loads</th><th class="r">Extra</th><th>Issues</th></tr></thead><tbody>${cr.map(r=>{const st=r.start||{},f=r.finish||{},h=st.min!=null&&f.min!=null&&f.min>st.min?((f.min-st.min)/60).toFixed(1):'',k=st.odo!=null&&f.odo!=null?f.odo-st.odo:'';const is=[st.safe==='No'?'Not roadworthy':'',f.faults==='Yes'?'New fault':'',f.left==='Yes'?'Parcels left in van':'',st.own==='No'?'Other vehicle '+(st.rego||''):''].filter(Boolean).join(', ');return `<tr><td>${esc(longD(r.date))}</td><td>${st.min!=null?hm(st.min):'<b class="miss">Missing</b>'}</td><td>${f.min!=null?hm(f.min):'<b class="miss">Missing</b>'}</td><td class="r">${h}</td><td class="r">${k}</td><td>${esc(f.two||'')}</td><td class="r">${f.extra||''}</td><td>${esc(is)}</td></tr>`}).join('')}</tbody></table></div></section>`})()+
    (()=>{const L=a.shifts.slice().sort((x,y)=>y.date.localeCompare(x.date));
     return `<section class="card"><h2>Shifts and hours</h2>${L.length?`<div class="tw"><table class="tb stk"><thead><tr><th>Day</th><th>Start</th><th>Finish</th><th class="r">Break</th><th class="r">Hours</th><th class="r">Extra parcels</th><th>2 loads</th><th>Held parcels</th><th>Note</th></tr></thead><tbody>${L.map(r=>`<tr><td>${esc(longD(r.date))}</td><td>${r.start?esc(nice(r.start)):'<b class="miss">Missing</b>'}</td><td>${r.finish?esc(nice(r.finish)):'<b class="miss">Missing</b>'}</td><td class="r">${r.brk?r.brk+' min':''}</td><td class="r"><b>${fmtH(r.hrs)}</b></td><td class="r">${r.xp??''}</td><td>${r.tl==null?'':r.tl?'Yes':'No'}</td><td>${r.hp==null?'':r.hp?`<b class="miss">Yes${r.hc?' ('+r.hc+')':''}</b>`:'No'}</td><td>${esc(r.note)}</td></tr>`).join('')}<tr class="tot"><td><b>Total</b></td><td></td><td></td><td></td><td class="r"><b>${fmtH(a.mins)||'0h 00m'}</b></td><td class="r"><b>${a.xp}</b></td><td>${a.tl?a.tl+(a.tl===1?' day':' days'):''}</td><td>${a.hp?a.hp+(a.hp===1?' day':' days'):''}</td><td></td></tr></tbody></table></div>`:'<div class="empty">No shifts clocked in this period.</div>'}</section>`})()+
-      `<section class="card"><h2>Customer survey</h2>${a.scores.length?`<p class="lead2">Score <b>${nps(a.scores)}</b> from ${a.scores.length} customer${a.scores.length===1?'':'s'}  ·  ${a.scores.filter(x=>x.s>=9).length} gave 9 or 10${a.scores.some(x=>x.s<=6)?`  ·  ${a.scores.filter(x=>x.s<=6).length} gave 6 or less`:''}</p>
+      `<section class="card"><h2>Customer survey</h2>${a.scores.length?`<p class="lead2">Score <b class="${nps(a.scores)>=70?'svg':'svb'}">${nps(a.scores)}</b> from ${a.scores.length} customer${a.scores.length===1?'':'s'}  ·  ${a.scores.filter(x=>x.s>=9).length} gave 9 or 10${a.scores.some(x=>x.s<=6)?`  ·  ${a.scores.filter(x=>x.s<=6).length} gave 6 or less`:''}</p>
     <ul class="cm">${a.scores.slice().sort((x,y)=>x.s-y.s).filter(x=>x.c).map(x=>`<li class="${x.s>=9?'good':x.s>=7?'warn':'bad'}"><b>${x.s}</b><span>${esc(x.c)}</span></li>`).join('')||'<li class="none"><span>No written comments.</span></li>'}</ul>`:'<div class="empty">No survey results for this period.</div>'}</section>`+
    `<section class="card"><h2>Enquiries</h2>${fullEnq.length?`<div class="tw"><table class="tb stk"><thead><tr><th>Date</th><th>Case</th><th>Address</th><th>Outcome</th></tr></thead><tbody>${fullEnq.map(e=>`<tr class="${e.date>=C.R.from&&e.date<=C.R.to?'inp':''}"><td>${esc(longD(e.date))}</td><td>${esc(e.caseNo||'')}</td><td>${esc(e.address||'')}</td><td>${e.fault==='yes'?'<span class="ft yes">At fault</span>':e.fault==='no'?'<span class="ft no">Not at fault</span>':''}</td></tr>`).join('')}</tbody></table></div><p class="hint">All enquiries on record. The ones in this period are highlighted.</p>`:'<div class="empty">No enquiries on record.</div>'}</section>`+
    (fullNcr.length?(()=>{const IS={sig:'Signature item signed by driver',drop:'Unsafe or wrong safe drop',damage:'Parcel thrown or damaged',card:'Not attempted or not carded',scan:'Scanning or GPS',ppe:'PPE or safety',conduct:'Driver conduct',other:'Other'};
@@ -10751,7 +10751,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280220';
+const VERSION='202610280230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
