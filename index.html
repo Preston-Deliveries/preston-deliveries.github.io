@@ -3361,6 +3361,13 @@ p.ck-alert{color:#5A3C00!important}
 </style><style id="navbadge">
 #sh-main .sh-li .bdg.nb,.sh-side .bdg.nb,.bdg.nb{position:static!important;margin-left:auto;box-shadow:none!important;flex:none}
 .sh-li .bdg.nb{margin-right:6px}
+</style><style id="pcsel">
+#sh-main .sel-done{display:none!important}
+#sh-main .pc-sel{display:inline-flex;align-items:center;gap:8px;margin:2px 0 8px}
+#sh-main .pc-sel>span{font:700 .72rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .pc-sel select{min-height:40px;min-width:150px;padding:7px 34px 7px 12px;border-radius:10px;border:1px solid var(--sh-line);background-color:var(--sh-surface);color:var(--sh-ink);font:600 .95rem var(--sh-body)}
+#sh-main .rt .pc-sel{margin:0}
+#sh-main #mod-runs .pc-sel{margin:0 8px 0 0}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3704,7 +3711,7 @@ const DLRE=/^(download|print|export|save image|import time)/i;
 function tagDl(){document.querySelectorAll('#sh-main .sh-sec :is(button,a.sh-btn,a.btn)').forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^print/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
   const parents=new Set([...document.querySelectorAll('#sh-main .sh-sec .dlb')].map(b=>b.parentNode));
   parents.forEach(p=>{const kids=[...p.children];const dl=kids.filter(k=>k.classList.contains('dlb'));if(!dl.length)return;const firstDl=kids.indexOf(dl[0]);const tail=kids.slice(firstDl);dl.sort((a,b)=>b.classList.contains('dl-in')-a.classList.contains('dl-in'));const want=kids.filter(k=>!k.classList.contains('dlb')).concat(dl);if(!p.matches('td,li,tr')&&want.some((k,i)=>kids[i]!==k))dl.forEach(b=>p.appendChild(b));dl.forEach((b,i)=>b.classList.toggle('dlb1',i===0));p.classList.add('has-dl')})}
-let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc();tagDl();try{applyNavBadges()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});
+let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc();tagDl();try{applyNavBadges()}catch(e){}try{selectify()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});
 let dupQ=false;new MutationObserver(()=>{if(dupQ)return;dupQ=true;requestAnimationFrame(()=>{dupQ=false;markDup()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
   renderPageHead();
@@ -3801,6 +3808,29 @@ function renderWa(){
       window.open('https://wa.me/?text='+encodeURIComponent(t.value),'_blank','noopener')});
     sec.insertAdjacentElement('afterend',box)}
   box.hidden=false}
+/* postcode and role buttons become one tidy dropdown; picking an option presses the matching (hidden) button */
+function selectify(){
+  document.querySelectorAll('#sh-main :is(.rt-chips.gr,.pcb,.chips.grpc,.scopes,#pcs)').forEach(box=>{
+    const btns=[...box.querySelectorAll(':scope>button')];if(btns.length<2)return;
+    box.classList.add('sel-done');box.__btns=btns;
+    let sel=box.nextElementSibling;
+    if(!sel||!sel.classList||!sel.classList.contains('pc-sel')){
+      const wrap=document.createElement('label');wrap.className='pc-sel';
+      wrap.innerHTML='<span>'+(box.matches('.rt-chips,.chips.grpc')?'Role':box.matches('.scopes')?'Postcode':'Postcode')+'</span><select></select>';
+      box.after(wrap);sel=wrap;
+      wrap.querySelector('select').addEventListener('change',e=>{const b=box.__btns&&box.__btns[+e.target.value];if(b)b.click()});
+    }
+    const cntEl=b=>b.querySelector(':scope>small')||[...b.querySelectorAll(':scope>span')].find(x=>/^\s*\d+\s*$/.test(x.textContent));
+    const cnt=b=>{const x=cntEl(b);return x?x.textContent.trim():''};
+    const lab=b=>{const x=cntEl(b);return [...b.childNodes].filter(n=>n!==x).map(n=>n.textContent).join('').trim()};
+    const sig=btns.map(b=>lab(b)+'|'+cnt(b)+'|'+b.getAttribute('aria-pressed')).join(';');
+    if(sel.__sig===sig)return;sel.__sig=sig;
+    const on=Math.max(0,btns.findIndex(b=>b.getAttribute('aria-pressed')==='true'));
+    const S2=sel.querySelector('select');
+    S2.innerHTML=btns.map((b,i)=>{let l=lab(b);if(l==='All')l=box.matches('.rt-chips,.chips.grpc')?'All roles':'All postcodes';const c=cnt(b);return `<option value="${i}">${l.replace(/[<&]/g,'')}${c?' ('+c+')':''}</option>`}).join('');
+    S2.value=String(on);
+  });
+}
 /* red count next to Feedback, Uniform and Reports for managers when something new comes in */
 window.__navN=window.__navN||{};
 function applyNavBadges(){const on=role==='mgr';for(const k of ['feedback','uniform','reports']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
@@ -10040,7 +10070,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270620';
+const VERSION='202610270630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
