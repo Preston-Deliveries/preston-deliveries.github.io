@@ -3628,6 +3628,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main #mod-lockers .tabs button,#sh-main#sh-main #mod-feedback .tabs button{flex:1 1 auto}
 </style>
 <style id="drvview">
+#mod-summary .smback{margin:0 0 10px;align-self:flex-start;width:auto}
 @media (max-width:700px){
 #sh-main #mod-summary .tw:has(table.ddt),#sh-main #mod-summary .tw:has(table.stk){overflow:visible}
 #sh-main #mod-summary table.ddt{table-layout:fixed;width:100%;min-width:0;font-size:.78rem}
@@ -8776,7 +8777,7 @@ const normName=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 
 let mode='wait',db=null,S={days:{},weeks:{},staff:{},runs:{},leave:{},enqlog:{},precards:{},lockers:{},settings:{},compliance:{},vchecks:{},timesheets:{},clock:{},uniorders:{}};
 let period=(()=>{try{return localStorage.getItem('sm_period')||'week'}catch(e){return 'week'}})();
-let anchor=null,scope={t:'all'},q='',sortBy='name',msg=null,pending=false;
+let anchor=null,scope={t:'all'},back=null,q='',sortBy='name',msg=null,pending=false;
 
 /* ---------- people ---------- */
 function people(){
@@ -8993,7 +8994,8 @@ function driverHTML(C,k){
   const ckT=p.sid?S.clock[TODAY+'_'+p.sid]:null;
   const prof=[['Driver number',p.nos.join(', ')],['Scanner login',p.login],['Clock in today',ckT?(ckT.finish?'Finished '+nice(ckT.finish):'On shift since '+nice(ckT.start)):'Not clocked in'],['Email',p.email],['Emergency contact',p.ec],[/^\d/.test(p.pc)?'Postcode':'Group',p.pc],['Role',p.role&&!/^42\d\d$/.test(p.role)?tc(p.role):''],['Mobile',p.mobile],['Parking bay',p.bay],['Van',p.van],['Streets on run',streets?String(streets):''],['Precard addresses',pre?String(pre):''],['Parcel lockers',lck?String(lck):''],['Leave this year',yrDays?yrDays+' weekday'+(yrDays===1?'':'s'):'None booked'],['Last van check',(()=>{const v=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&normName(r.driver)===normName(p.name)).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];return v?short(v.date)+' '+String(v.date).slice(0,4)+' · '+({pass:'Pass',minor:'Pass, fix needed',fail:'Fail'}[v.outcome]||'')+(v.checker?' · '+v.checker:''):''})()],['Next leave',next?short(next.from)+' to '+short(next.to)+' '+String(next.to).slice(0,4):'']].filter(x=>x[1]);
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
-  return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
+  const bl=back&&back.s.t==='pc'?'Drivers in '+back.s.v:'Whole contract';
+  return `<button type="button" class="sh-btn back smback" data-sm="back">‹ ${esc(bl)}</button><section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
    tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb ddt"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date).replace(/ \d{4}$/,''))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fmtPct(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${dot(grade('nc',r.nc))}${r.nc??'–'}</td><td class="r">${dot(grade('enq',+(r.enq||0)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
@@ -9044,7 +9046,7 @@ function renderSug(){
   el.hidden=false;el.innerHTML=M.map((m,i)=>`<button type="button" data-sm="pick" data-i="${i}"><b>${esc(m.label)}</b>${m.sub?`<span>${esc(m.sub)}</span>`:''}</button>`).join('');
   el._m=M;
 }
-function pick(m){if(!m)return;scope=m.t==='all'?{t:'all'}:{t:m.t,v:m.v};q='';render();window.scrollTo(0,0)}
+function pick(m){if(!m)return;if(m.t==='drv'&&scope.t!=='drv')back={s:scope,y:0};scope=m.t==='all'?{t:'all'}:{t:m.t,v:m.v};q='';render();window.scrollTo(0,0)}
 let dirty=false;
 const later=()=>{dirty=true;if(pending)return;pending=true;setTimeout(()=>{pending=false;const a=document.activeElement;if(a&&a.id==='sm_q')return;const sec=document.getElementById('mod-summary');if(sec&&sec.hidden)return;dirty=false;render()},60)};
 /* data that arrived while the page was hidden, or while typing in search, shows as soon as you come back */
@@ -9100,7 +9102,8 @@ document.addEventListener('click',e=>{
   if(a==='latest'){anchor=latestDay();render();return}
   if(a==='scope'){scope=v==='all'?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
   if(a==='pc'){scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
-  if(a==='drv'){scope={t:'drv',v};render();window.scrollTo(0,0);return}
+  if(a==='drv'){back=scope.t!=='drv'?{s:scope,y:window.scrollY}:back;scope={t:'drv',v};render();window.scrollTo(0,0);return}
+  if(a==='back'){const b=back||{s:{t:'all'},y:0};back=null;scope=b.s;render();window.scrollTo(0,b.y);return}
   if(a==='fbcopy'){const t=(window.__smFb||{})[v]||'';(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{el.textContent='Copied';setTimeout(()=>{el.textContent='Copy message'},1500)}).catch(()=>{prompt('Copy this message',t)});return}
   if(a==='pick'){const m=($('sug')||{})._m;pick(m&&m[+el.dataset.i]);return}
   if(a==='pdf'){pdf(el);return}
@@ -10636,7 +10639,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272230';
+const VERSION='202610272245';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
