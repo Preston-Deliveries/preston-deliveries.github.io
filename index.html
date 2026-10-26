@@ -2964,6 +2964,18 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #r_shareDrivers,#sh-main #r_previewDrivers,#sh-main #v_sharePanel,#sh-main [data-act="shareRuns"]{display:none!important}
 #sh-main#sh-main#sh-main .share:has([data-pc="share"],[data-lk="share"],[data-lv="share"]){display:none!important}
 #sh-main .row-actions:not(:has(>:not(#r_shareDrivers):not(#r_previewDrivers))){display:none!important}
+</style><style id="persub">
+/* the row of days or weeks under Day, Week, Month */
+#sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
+#sh-main .persub:empty{display:none}
+#sh-main .persub button{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1 1 0;min-width:0;padding:7px 2px;white-space:nowrap;border:1px solid var(--sh-line);border-radius:10px;background:var(--sh-surface);color:var(--sh-muted);font:inherit;cursor:pointer}
+#sh-main .persub button b{font:700 .95rem var(--sh-body);color:var(--sh-ink)}
+#sh-main .persub button small{font-size:.74rem}
+#sh-main .persub button:not(.has){opacity:.55}
+#sh-main .persub button.has small::after{content:" \2022";color:var(--g)}
+#sh-main .persub button[aria-pressed="true"]{background:var(--gs);border-color:var(--g);color:var(--g);opacity:1}
+#sh-main .persub button[aria-pressed="true"] b{color:var(--g)}
+#sh-main .persub .pc{font-size:.9rem;font-weight:600;color:var(--sh-muted);padding:4px 2px}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -3007,6 +3019,7 @@ p.ck-alert{color:#5A3C00!important}
     </div>
   </header>
   <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_dvTabs"></div>
+  <div class="persub" id="r_dvSub" role="group" aria-label="Choose"></div>
   <p class="hint" id="r_dvUpdated"></p>
   <div id="r_dvBoard"></div>
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
@@ -3047,6 +3060,7 @@ p.ck-alert{color:#5A3C00!important}
   </details>
 
   <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_perSeg"><button type="button" data-rv="day" aria-pressed="false">Day</button><button type="button" data-rv="week" aria-pressed="true">Week</button><button type="button" data-rv="cycle" aria-pressed="false">Month</button></div>
+  <div class="persub" id="r_perSub" role="group" aria-label="Choose"></div>
   <section class="card" id="r_stepShare">
     <h2><span class="step">3</span>Share with drivers</h2>
     <div class="row-actions">
@@ -4178,7 +4192,7 @@ function useSnapshot(){
 (function(){
 let SNAP=(window.APP&&APP.SNAP&&APP.SNAP.results)||null;
 let art=null,isEditor=false,dvKey=null;
-const DAYS=[["mon","Monday"],["tue","Tuesday"],["wed","Wednesday"],["thu","Thursday"],["fri","Friday"]];
+const DAYS=[["mon","Monday"],["tue","Tuesday"],["wed","Wednesday"],["thu","Thursday"],["fri","Friday"],["sat","Saturday"]];
 const CONTRACT=1161;
 const DEFAULT_TARGETS={etaG:98,etaA:95,ncG:0,ncA:1,enqG:0,enqA:0};
 const TARGET_LABELS=[["etaG","2HR ETA green at or above (%)"],["etaA","2HR ETA amber at or above (%)"],["ncG","Bad scans green at or below"],["ncA","Bad scans amber at or below"],["enqG","Enquiries green at or below"],["enqA","Enquiries amber at or below"]];
@@ -4186,7 +4200,7 @@ const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov",
 
 let db=null, downloads=null;
 let settings={names:{},targets:{...DEFAULT_TARGETS}};
-let weekId=null, week={days:{}};
+let weekId=null, week={days:{}}, dvSub=null;
 let selDay="mon", view="week";
 const $=id=>document.getElementById("r_"+id);
 
@@ -4289,7 +4303,7 @@ async function handleFiles(list){
   const dated=parsed.find(p=>p.type==="summary"&&p.date)||parsed.find(p=>p.date);
   let target=dated?dated.date:dayDate(selDay);
   let weekend=false;
-  if(target.getDay()===0||target.getDay()===6){weekend=true;target=dayDate(selDay)}
+  if(target.getDay()===0){weekend=true;target=dayDate(selDay)}
   const wId=iso(mondayOf(target));
   if(wId!==weekId)await openWeek(wId);
   const key=DAYS[(target.getDay()+6)%7][0]; selDay=key;
@@ -4345,7 +4359,7 @@ function ranked(rows){
 
 /* ---------- rendering: page ---------- */
 function renderWeekNav(){
-  const m=fromIso(weekId);const L=$("weekLabel");L.textContent=short(m)+" to "+short(addDays(m,4));
+  const m=fromIso(weekId);const L=$("weekLabel");L.textContent=short(m)+" to "+short(addDays(m,5));
   const sm=document.createElement("div");sm.style.cssText="font-size:14px;color:var(--muted);font-family:var(--body);font-weight:700";sm.textContent="Pay week "+cycleInfo(weekId).no+" of 4";L.append(sm);
 }
 function renderDays(){
@@ -4397,7 +4411,13 @@ function renderTargets(){
   for(const[k,lab]of TARGET_LABELS){const l=document.createElement("label");l.textContent=lab;const i=document.createElement("input");i.type="number";i.step="0.5";i.id="t_"+k;i.value=settings.targets[k];
     i.onchange=()=>{const v=num(i.value);if(v!=null){settings.targets[k]=v;saveSettings();renderAll()}};l.append(i);box.append(l)}
 }
-function renderAll(){renderWeekNav();renderDays();renderTable();renderClear();drawBoard();if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 5 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}}
+function renderSub(){
+  const box=document.getElementById("r_perSub");if(!box)return;
+  if(view==="day"){box.innerHTML=DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("");return}
+  if(view==="week"){const ci=cycleInfo(weekId);box.innerHTML=[1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("");return}
+  const cs=cycleInfo(weekId).start;box.innerHTML=`<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
+}
+function renderAll(){renderSub();renderWeekNav();renderDays();renderTable();renderClear();drawBoard();if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 6 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}}
 
 /* ---------- rendering: board picture ---------- */
 const C={ink:"#14213a",muted:"#5a6680",band:"#14213a",accent:"#1d4f91",signal:"#f2b705",paper:"#ffffff",alt:"#f1f4f9",line:"#dde3ec",good:"#1e8a4c",warn:"#d98b00",bad:"#c8352b",none:"#b7bfcc"};
@@ -4437,7 +4457,7 @@ function drawBoard(){
   g.fillStyle="#fff";g.font="800 72px "+FD;
   const m=fromIso(weekId);
   const cs=cycleInfo(weekId).start;
-  const title=isCycle?"PAY PERIOD "+short(cs).toUpperCase()+" TO "+short(addDays(cs,25)).toUpperCase():isWeek?"WEEK "+short(m).toUpperCase()+" TO "+short(addDays(m,4)).toUpperCase():DAYS.find(d=>d[0]===selDay)[1].toUpperCase()+" "+short(dayDate(selDay)).toUpperCase();
+  const title=isCycle?"PAY PERIOD "+short(cs).toUpperCase()+" TO "+short(addDays(cs,26)).toUpperCase():isWeek?"WEEK "+short(m).toUpperCase()+" TO "+short(addDays(m,5)).toUpperCase():DAYS.find(d=>d[0]===selDay)[1].toUpperCase()+" "+short(dayDate(selDay)).toUpperCase();
   for(let fs=72;fs>40&&g.measureText(title).width>W-96;fs-=2)g.font="800 "+fs+"px "+FD;
   g.fillText(fit(g,title,W-96),48,150);
   // team line
@@ -4510,7 +4530,7 @@ async function offer(filename,data,okText){
     const img=new Image();img.src=URL.createObjectURL(data);img.alt="Driver results board";const pv=document.querySelector("#mod-results .preview");pv.textContent="";pv.append(img);}
   else{sm.textContent="Saving files is not available in this view. Open the page in Claude to download.";sm.hidden=false;sm.classList.add("err")}
 }
-function savePng(){drawBoard();const m=fromIso(weekId);const cs=cycleInfo(weekId).start;const nm=view==="cycle"?"1161 results pay period "+short(cs)+" to "+short(addDays(cs,25)):view==="week"?"1161 results week "+short(m):"1161 results "+DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay));
+function savePng(){drawBoard();const m=fromIso(weekId);const cs=cycleInfo(weekId).start;const nm=view==="cycle"?"1161 results pay period "+short(cs)+" to "+short(addDays(cs,26)):view==="week"?"1161 results week "+short(m):"1161 results "+DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay));
   $("board").toBlob(b=>offer(nm+".png",b,"Result saved."),"image/png")}
 function sheetFrom(title,rows){
   const aoa=[[title],["LOGIN","P/C","ENQUIRY","NC SCAN","2HR ETA","FTD","POINTS","OUT OF"]];
@@ -4528,7 +4548,7 @@ async function saveXlsx(){
   for(const[k,name]of DAYS){if(!week.days[k])continue;any=true;XLSX.utils.book_append_sheet(wb,sheetFrom("1161 "+name.toUpperCase()+" "+ddmmyy(dayDate(k))+" PERFORMANCE",dayRows(k)),name)}
   if(!any){const sm=$("shareMsg");sm.textContent="There is no data for this week yet.";sm.hidden=false;return}
   const m=fromIso(weekId);
-  XLSX.utils.book_append_sheet(wb,sheetFrom("1161 WEEKLY "+ddmmyy(m)+" to "+ddmmyy(addDays(m,4))+" PERFORMANCE",weekRows()),"Weekly Performance");
+  XLSX.utils.book_append_sheet(wb,sheetFrom("1161 WEEKLY "+ddmmyy(m)+" to "+ddmmyy(addDays(m,5))+" PERFORMANCE",weekRows()),"Weekly Performance");
   const out=XLSX.write(wb,{bookType:"xlsx",type:"array"});
   offer("1161 Performance Report "+short(m)+".xlsx",new Blob([out]),"Excel report saved.");
 }
@@ -4539,9 +4559,15 @@ function showDriverView(owner){
   $("tool").hidden=true;$("driverView").hidden=false;$("dvOwner").hidden=!owner;
   const tabs=$("dvTabs"),boardBox=$("dvBoard");tabs.textContent="";boardBox.textContent="";
   if(!SNAP||!SNAP.boards||!SNAP.boards.length){$("dvUpdated").textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Results will show here once they are shared.";boardBox.append(e);return}
-  const b=SNAP.boards.find(x=>x.key===dvKey)||SNAP.boards.find(x=>x.key==="week")||SNAP.boards[0];dvKey=b.key;
-  const ORD={day:0,week:1,cycle:2},NM={day:'Day',week:'Week',cycle:'Month'};
-  for(const x of SNAP.boards.slice().sort((a,c)=>(ORD[a.key]??9)-(ORD[c.key]??9))){const t=document.createElement("button");t.type="button";t.textContent=NM[x.key]||x.label;t.setAttribute("aria-pressed",String(x.key===dvKey));t.onclick=()=>{dvKey=x.key;showDriverView(owner)};tabs.append(t)}
+  const B=SNAP.boards;const kinds=["day","week","cycle"].filter(k=>B.some(x=>x.key===k));
+  if(!kinds.includes(dvKey))dvKey=kinds.includes("week")?"week":kinds[0];
+  const ofK=B.filter(x=>x.key===dvKey);
+  if(dvSub==null||!ofK.some(x=>String(x.sub)===String(dvSub))){const c=ofK.find(x=>x.cur)||ofK[ofK.length-1];dvSub=c?c.sub:null}
+  const b=ofK.find(x=>String(x.sub)===String(dvSub))||ofK[0];
+  const NM={day:'Day',week:'Week',cycle:'Month'};
+  for(const k of kinds){const t=document.createElement("button");t.type="button";t.textContent=NM[k];t.setAttribute("aria-pressed",String(k===dvKey));t.onclick=()=>{dvKey=k;dvSub=null;showDriverView(owner)};tabs.append(t)}
+  const sub=$("dvSub");sub.innerHTML="";
+  if(ofK.length>1||(ofK[0]&&ofK[0].sub!=null)){for(const x of ofK){const t=document.createElement("button");t.type="button";t.setAttribute("aria-pressed",String(x===b));t.className="has";const nm=dvKey==="day"?(DAYS.find(d=>d[0]===x.sub)||["",String(x.sub)])[1].slice(0,3):"Week "+x.sub;t.innerHTML="<b>"+nm+"</b><small>"+(x.label.split(/ \u00b7 | /).slice(dvKey==="day"?1:2,dvKey==="day"?3:4).join(" "))+"</small>";t.onclick=()=>{dvSub=x.sub;showDriverView(owner)};sub.append(t)}}
   $("dvUpdated").textContent=(b.label?b.label+" \u00b7 ":"")+"Updated "+SNAP.updated;
   const img=new Image();img.src=b.img;img.alt=b.label+" results board";boardBox.append(img);
 }
@@ -4554,8 +4580,13 @@ function pageHtml(snap){
 function boardsNow(){
   const keep=view, out=[];
   const m=fromIso(weekId), cs=cycleInfo(weekId).start;
-  const defs=[["week","Week "+short(m)+" to "+short(addDays(m,4))],["day",DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay))],["cycle","Pay period "+short(cs)+" to "+short(addDays(cs,25))]];
-  for(const[k,label]of defs){view=k;drawBoard();out.push({key:k,label,img:$("board").toDataURL("image/png")})}
+  const keepDay=selDay,keepId=weekId,keepWeek=week,ci=cycleInfo(weekId);
+  const pic=()=>$("board").toDataURL("image/jpeg",0.86);
+  for(let n=1;n<=4;n++){const id=iso(addDays(ci.start,7*(n-1)));const w=id===keepId?keepWeek:cycleWeeks[id];if(!w||!Object.keys(w.days||{}).length)continue;
+    weekId=id;week=w;view="week";drawBoard();const wm=fromIso(id);out.push({key:"week",sub:n,label:"Week "+n+" \u00b7 "+short(wm)+" to "+short(addDays(wm,5)),img:pic(),cur:id===keepId});
+    if(id===keepId){for(const[k,nm]of DAYS){if(!w.days[k])continue;selDay=k;view="day";drawBoard();out.push({key:"day",sub:k,label:nm+" "+short(dayDate(k)),img:pic(),cur:k===keepDay})}}}
+  weekId=keepId;week=keepWeek;selDay=keepDay;
+  view="cycle";drawBoard();out.push({key:"cycle",label:"Pay period "+short(cs)+" to "+short(addDays(cs,26)),img:pic()});
   view=keep;drawBoard();
   return out;
 }
@@ -4593,7 +4624,8 @@ function wire(){
   ["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("over")}));
   ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("over")}));
   drop.addEventListener("drop",ev=>handleFiles(ev.dataTransfer.files));
-  const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv===v)));drawBoard()};
+  const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv===v)));renderSub();drawBoard()};
+  document.getElementById("r_perSub").addEventListener("click",async e=>{const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
   document.getElementById("r_perSeg").addEventListener("click",e=>{const b=e.target.closest("[data-rv]");if(b)setView(b.dataset.rv)});
   $("viewSel").onchange=e=>setView(e.target.value);$("viewWeek").onclick=()=>setView("week");$("viewDay").onclick=()=>setView("day");$("viewCycle").onclick=()=>setView("cycle");
   $("savePng").onclick=savePng;$("saveXlsx").onclick=saveXlsx;
@@ -9289,7 +9321,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261700';
+const VERSION='202610261730';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
