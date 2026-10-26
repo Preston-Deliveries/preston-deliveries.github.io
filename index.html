@@ -3706,6 +3706,7 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] .svg,:root[data-theme="dark"] #sh-main .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] .svb,:root[data-theme="dark"] #sh-main .tile.svb>b{color:#F48A8A!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}}
 :root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}
+#r_saveXlsx,#sh-main #r_saveXlsx{display:none!important}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -3810,7 +3811,7 @@ p.ck-alert{color:#5A3C00!important}
       <label class="viewsel" for="r_viewSel" hidden>Show<select id="r_viewSel"><option value="day">Day</option><option value="week" selected>Week</option><option value="cycle">Month (4 week pay cycle)</option></select></label>
       <div hidden><button id="r_viewWeek" aria-pressed="true">Whole week</button><button id="r_viewDay" aria-pressed="false">Selected day</button><button id="r_viewCycle" aria-pressed="false">4 week pay period</button></div>
       <button id="r_savePng">Download picture</button>
-      <button id="r_saveXlsx">Download Excel report</button>
+      <button id="r_saveXlsx" hidden>Download Excel report</button>
     </div>
     <div class="row-actions"><button class="primary" id="r_shareDrivers">Update the drivers’ link</button><button id="r_previewDrivers">See what drivers see</button></div>
     <div class="msg" id="r_shareMsg" hidden=""></div>
@@ -10741,7 +10742,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280200';
+const VERSION='202610280210';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
