@@ -3520,12 +3520,13 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}
 @media (max-width:600px){#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:1fr 1fr}#sh-main #mod-enquiries .eqx.nx .srch .tog{grid-column:1/-1;padding-bottom:0}}
 #mod-enquiries .rh{margin-top:0}
-#sh-main #mod-enquiries .eqx.nx>.nstat{order:3}#sh-main #mod-enquiries .eqx.nx>.srch{order:4}#sh-main #mod-enquiries .eqx.nx>.eres{order:5}#sh-main #mod-enquiries .eqx.nx>.ntr{order:4}#sh-main #mod-enquiries .eqx.nx>button.card,#sh-main #mod-enquiries .eqx.nx>.empty{order:5}
+#sh-main #mod-enquiries .eqx.nx>.nstat{order:3}#sh-main #mod-enquiries .eqx.nx>.srch{order:4}#sh-main #mod-enquiries .eqx.nx>.eres{order:5}#sh-main #mod-enquiries .eqx.nx>.ntr{order:6}#sh-main #mod-enquiries .eqx.nx>button.card,#sh-main #mod-enquiries .eqx.nx>.empty{order:5}
 </style>
 <style id="eqmore">
 #mod-enquiries .pcp{display:inline-block;font-size:.7rem;font-weight:800;padding:0 6px;border-radius:4px;line-height:1.6;background:var(--ps,#EEF2F7);color:var(--p,#5A6576);vertical-align:1px}
 @media (max-width:600px){#mod-enquiries .kv{grid-template-columns:1fr;gap:0}#mod-enquiries .kv dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;margin-top:8px}#mod-enquiries .kv dt:first-child{margin-top:0}}
-#sh-main #mod-enquiries .eqx.nx>.nimp{order:6;width:auto;align-self:flex-start}
+#sh-main #mod-enquiries .eqx.nx>.eres{order:5}
+#sh-main #mod-enquiries .eqx.nx>.nimp{order:7;width:auto;align-self:flex-start}
 #mod-enquiries .dno{font-size:.78rem;font-weight:700;color:var(--sh-muted);margin-left:4px}
 #mod-enquiries dd.wt{color:#C62828;font-weight:700}#mod-enquiries dd.wt small{font-weight:500}
 @media (max-width:600px){#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:1fr 1fr}#sh-main #mod-enquiries .eqx.nx .srch label.f:nth-child(3){grid-column:1}}
@@ -8314,7 +8315,7 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const nice=s=>{if(!s)return '';const[a,b,c]=s.split('-').map(Number);const d=new Date(a,b-1,c);return DOW[d.getDay()]+' '+c+' '+MON[b-1]+' '+a};
-let qPc='',tab='enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
+let nqD='',nqA='',nqP='',qPc='',tab='enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 /* ---------- people ---------- */
 function loadStaff(docs){staff=docs.map(p=>({name:tc([p.first,p.last].filter(Boolean).join(' ')),login:String(p.login||'').toUpperCase(),role:String(p.role||'').toUpperCase(),runs:(p.runs||[]).join(', ')})).filter(p=>p.name).sort((a,b)=>a.name.localeCompare(b.name))}
@@ -8368,13 +8369,18 @@ function tracker(){const from=addD(today(),-365),by={};for(const n of ncrs()){if
   return Object.values(by).map(d=>{const top=Object.entries(d.iss).sort((a,b)=>b[1]-a[1])[0];return{...d,max:top[1],issue:top[0],total:Object.values(d.iss).reduce((a,b)=>a+b,0)}}).sort((a,b)=>b.max-a.max||a.name.localeCompare(b.name))}
 const waiting=n=>[!n.spokeAt&&'driver spoken to',!n.signAt&&'driver to sign',!n.respAt&&'your response'].filter(Boolean);
 const dots=k=>`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=k?'on':''}"></i>`).join('')}</span>`;
+function ncrCards(){const L=ncrs(),d=nqD.trim().toLowerCase(),a=nqA.trim().toLowerCase();const F=L.filter(n=>(!nqP||pcOf(n)===nqP)&&(!d||[n.driver,n.login,dno(n.login)].join(' ').toLowerCase().includes(d))&&(!a||String(n.address||'').toLowerCase().includes(a)));
+  return `<span class="sub">${F.length} of ${L.length} NCR${L.length===1?'':'s'}</span>${F.length?F.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
+     <small>${pcTag(pcOf(n))} ${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
+     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
+     :`<div class="empty">${L.length?'Nothing matches that search.':'No NCRs recorded. When the facility manager sends one, press + Add NCR.'}</div>`}`}
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
   return `<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>String(n.issued).startsWith(yr)).length}</b><small>This year</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
    ${T.length?`<section class="card ntr"><span class="lbl">Drivers with NCRs, last 12 months</span>${T.map(d=>`<div class="drv"><div><b>${esc(d.name)}</b><small>${[dno(d.login),d.login].filter(Boolean).map(esc).join(' · ')} · ${esc(ISS[d.issue]||'')}${d.total>d.max?' · '+d.total+' in total':''}</small></div>${dots(d.max)}</div>`).join('')}<p class="sub">Three on the same issue means the Area Manager must be told.</p></section>`:''}
-   ${L.length?L.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
-     <small>${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
-     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
-     :'<div class="empty">No NCRs recorded. When the facility manager sends one, press + Add NCR.</div>'}`}
+   <div class="srch"><label class="f" for="eq_nqd">Driver<input type="search" id="eq_nqd" value="${esc(nqD)}" placeholder="Name or login" autocomplete="off"></label>
+    <label class="f" for="eq_nqa">Address<input type="search" id="eq_nqa" value="${esc(nqA)}" placeholder="Street or suburb" autocomplete="off"></label>
+    <label class="f" for="eq_nqp">Postcode<select id="eq_nqp"><option value="">All postcodes</option>${['4214','4215','4217','4218'].map(pc=>`<option ${nqP===pc?'selected':''}>${pc}</option>`).join('')}</select></label></div>
+   <div id="eq_nres" class="eres">${ncrCards()}</div>`}
 function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).by||'';
   return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="ncancel">‹ NCRs</button>
   <section class="card"><h2>${isNew?'Add an NCR':'Edit NCR'}</h2>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
@@ -8580,7 +8586,7 @@ document.addEventListener('click',async ev=>{
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
-document.addEventListener('input',ev=>{const el=ev.target;if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
+document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_nimp'&&el.files.length){const F=[...el.files];el.value='';importOld(F);return}
   if(el.id==='eq_nform'&&el.files[0]){const f=el.files[0];readN();msg={t:'Reading the NCR form…'};render();
@@ -8591,6 +8597,7 @@ document.addEventListener('change',async ev=>{const el=ev.target;
     catch(x){msg={err:true,t:'Couldn’t read that file. Make sure it is the NCR Word form (.docx), or fill it in by hand.'}}
     el.value='';render();return}
   if(el.id==='eq_nfile'&&el.files.length){readN();nNew=nNew.concat([...el.files]);el.value='';render();return}
+  if(el.id==='eq_nqp'){nqP=el.value;$('nres').innerHTML=ncrCards();return}
   if(el.id==='eq_qp'){qPc=el.value;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_of'){onlyFault=el.checked;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_pdf'&&el.files[0]){readForm();busy='Reading the case PDF…';render();
@@ -10477,7 +10484,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271745';
+const VERSION='202610271800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
