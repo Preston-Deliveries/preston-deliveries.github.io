@@ -5357,7 +5357,7 @@ function dlt(cur,prev,kind){if(cur==null||prev==null)return "";let d,t,g;
   else if(kind==="down"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d<0}
   else if(kind==="up"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d>0}
   else{if(!prev)return "";d=(cur-prev)/prev*100;t=Math.abs(d).toFixed(0)+"%";g=null}
-  if(Math.abs(d)<0.05)return "";
+  if(Math.abs(d)<0.05)return `<span class="rdl n">Same</span>`;
   return `<span class="rdl ${g==null?"n":g?"g":"b"}">${d>0?"▲":"▼"} ${t}</span>`}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
   return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
@@ -5380,8 +5380,8 @@ function rowHTML(r,multi){
    <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}${P?dlt(r.pc,P.pc,"n"):""}</td>
    <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
    <td class="r">${d(r.rt.eta)}${p1(r.eta)}${P?dlt(r.eta,P.eta,"pct"):""}</td>
-   <td class="r">${d(r.rt.nc)}${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
-   <td class="r">${d(r.rt.enq)}${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
+   <td class="r">${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
+   <td class="r">${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
    <td class="r sv">${r.sv==null?"–":r.sv+`<small class="svn">(${r.svN})</small>`}${P&&r.sv!=null?dlt(r.sv,P.sv,"up"):""}</td></tr>`;
 }
 function rtBody(box){
@@ -5413,7 +5413,7 @@ function rtHTML(rows,multi){
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
    <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("pc","Parcels","r c-pc")}${th("ftd","FTD","r c-ftd")}${th("eta","ETA","r c-eta")}${th("nc","NC","r c-nc")}${th("enq","Enq","r c-enq")}${th("sv","Survey","r c-sv")}</tr></thead><tbody></tbody></table></div>
-   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA, ${T().etaG}% or more. NC: NC scans, none. Enq: enquiries, none. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}, with the number of surveys in brackets.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
+   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>ETA on target (${T().etaG}% or more)</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA. NC: NC scans. Enq: enquiries. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}, with the number of surveys in brackets.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
 }
 function mountRT(box,rows,multi){
   box.classList.add("rt");box.__rows=rows;box.__multi=multi;
@@ -10710,7 +10710,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280035';
+const VERSION='202610280045';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
