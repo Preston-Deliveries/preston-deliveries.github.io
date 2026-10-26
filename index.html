@@ -2865,6 +2865,15 @@ p.ck-alert{color:#5A3C00!important}
 
 /* on the Drivers page, keep the column buttons navy so they never look like a role */
 #sh-main#sh-main#sh-main #mod-staff .chips:not(.grpc):not(.miss)>button[aria-pressed="true"]{background:var(--pds-navy)!important;border-color:var(--pds-navy)!important;color:#fff!important}
+</style><style id="pvseg">
+/* Driver Results and Survey Ranking: the same Day, Week, Month switch at the top */
+#sh-main#sh-main#sh-main .pvseg{display:inline-flex!important;align-self:flex-start!important;justify-self:start!important;max-width:max-content!important;gap:3px;padding:3px!important;margin:4px 0 14px!important;background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-radius:10px!important;width:auto!important}
+#sh-main#sh-main#sh-main .pvseg>button{border:0!important;border-radius:8px!important;margin:0!important;padding:9px 22px!important;font:700 1rem var(--sh-body)!important;letter-spacing:0!important;text-transform:none!important;color:var(--sh-ink)!important;background:transparent!important;min-width:84px}
+#sh-main#sh-main#sh-main .pvseg>button:hover{background:var(--gs)!important}
+#sh-main#sh-main#sh-main .pvseg>button:is([aria-pressed="true"],[aria-selected="true"]){background:var(--g)!important;color:#fff!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main#sh-main .pvseg>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}}
+:root[data-theme="dark"] #sh-main#sh-main#sh-main .pvseg>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}
+#sh-main#sh-main #r_driverView,#sh-main#sh-main #v_driverView{box-sizing:border-box;max-width:1180px!important;margin:0 auto!important;padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))!important}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -2907,7 +2916,7 @@ p.ck-alert{color:#5A3C00!important}
       <h1>Driver Results</h1>
     </div>
   </header>
-  <div class="seg" role="group" aria-label="Choose results" id="r_dvTabs"></div>
+  <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_dvTabs"></div>
   <p class="hint" id="r_dvUpdated"></p>
   <div id="r_dvBoard"></div>
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
@@ -2924,6 +2933,7 @@ p.ck-alert{color:#5A3C00!important}
       <button class="icon" id="r_nextWeek" aria-label="Next week">›</button>
     </div>
   </header>
+  <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_perSeg"><button type="button" data-rv="day" aria-pressed="false">Day</button><button type="button" data-rv="week" aria-pressed="true">Week</button><button type="button" data-rv="cycle" aria-pressed="false">Month</button></div>
 
   <section class="card" id="r_stepAdd">
     <h2><span class="step">1</span>Add the day's emails</h2>
@@ -2950,7 +2960,7 @@ p.ck-alert{color:#5A3C00!important}
   <section class="card" id="r_stepShare">
     <h2><span class="step">3</span>Share with drivers</h2>
     <div class="row-actions">
-      <label class="viewsel" for="r_viewSel">Show<select id="r_viewSel"><option value="day">Day</option><option value="week" selected>Week</option><option value="cycle">Month (4 week pay cycle)</option></select></label>
+      <label class="viewsel" for="r_viewSel" hidden>Show<select id="r_viewSel"><option value="day">Day</option><option value="week" selected>Week</option><option value="cycle">Month (4 week pay cycle)</option></select></label>
       <div hidden><button id="r_viewWeek" aria-pressed="true">Whole week</button><button id="r_viewDay" aria-pressed="false">Selected day</button><button id="r_viewCycle" aria-pressed="false">4 week pay period</button></div>
       <button class="primary" id="r_savePng">Result</button>
       <button id="r_saveXlsx">Download Excel report</button>
@@ -2976,7 +2986,7 @@ p.ck-alert{color:#5A3C00!important}
     <h1>Survey Ranking</h1>
     <p class="sub" id="v_dvUpdated"></p>
   </header>
-  <div class="tabs" role="tablist" id="v_dvTabs"></div>
+  <div class="tabs pvseg" role="tablist" id="v_dvTabs"></div>
   <div class="fit" id="v_dvFitW" hidden=""><div class="board bw" id="v_dvBoardW"></div></div>
   <div class="fit" id="v_dvFitC" hidden=""><div class="board b4" id="v_dvBoardC"></div></div>
   <div class="empty" id="v_dvEmpty" hidden=""><b>No results shared yet</b>The ranking will show here once it is shared.</div>
@@ -2988,9 +2998,9 @@ p.ck-alert{color:#5A3C00!important}
     <p class="sub">Pick the month and week, upload that week's Call Reason Drill sheet, then save the ranking as an image. Each week is kept for that month's report.</p>
   </header>
 
-  <div class="tabs" role="tablist">
-    <button type="button" role="tab" id="v_tabW" aria-selected="true" aria-controls="v_viewW">Weekly</button>
-    <button type="button" role="tab" id="v_tabC" aria-selected="false" aria-controls="v_viewC">Monthly</button>
+  <div class="tabs pvseg" role="tablist">
+    <button type="button" role="tab" id="v_tabW" aria-selected="true" aria-controls="v_viewW">Week</button>
+    <button type="button" role="tab" id="v_tabC" aria-selected="false" aria-controls="v_viewC">Month</button>
   </div>
 
   <div class="panel" id="v_sharePanel">
@@ -2999,7 +3009,7 @@ p.ck-alert{color:#5A3C00!important}
       <button id="v_previewDrivers" type="button">See what drivers see</button>
       <span class="status" id="v_shareStatus" role="status"></span>
     </div>
-    <div class="hint">Saves the week showing on the Weekly tab and the month picked on the Monthly tab, so drivers can see them on this page’s link without signing in.</div>
+    <div class="hint">Saves the week showing on the Week tab and the month picked on the Month tab, so drivers can see them on this page’s link without signing in.</div>
   </div>
 
   <div class="view" id="v_viewW" role="tabpanel" aria-labelledby="v_tabW">
@@ -4432,9 +4442,10 @@ function showDriverView(owner){
   $("tool").hidden=true;$("driverView").hidden=false;$("dvOwner").hidden=!owner;
   const tabs=$("dvTabs"),boardBox=$("dvBoard");tabs.textContent="";boardBox.textContent="";
   if(!SNAP||!SNAP.boards||!SNAP.boards.length){$("dvUpdated").textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Results will show here once they are shared.";boardBox.append(e);return}
-  const b=SNAP.boards.find(x=>x.key===dvKey)||SNAP.boards[0];dvKey=b.key;
-  for(const x of SNAP.boards){const t=document.createElement("button");t.textContent=x.label;t.setAttribute("aria-pressed",String(x.key===dvKey));t.onclick=()=>{dvKey=x.key;showDriverView(owner)};tabs.append(t)}
-  $("dvUpdated").textContent="Updated "+SNAP.updated;
+  const b=SNAP.boards.find(x=>x.key===dvKey)||SNAP.boards.find(x=>x.key==="week")||SNAP.boards[0];dvKey=b.key;
+  const ORD={day:0,week:1,cycle:2},NM={day:'Day',week:'Week',cycle:'Month'};
+  for(const x of SNAP.boards.slice().sort((a,c)=>(ORD[a.key]??9)-(ORD[c.key]??9))){const t=document.createElement("button");t.type="button";t.textContent=NM[x.key]||x.label;t.setAttribute("aria-pressed",String(x.key===dvKey));t.onclick=()=>{dvKey=x.key;showDriverView(owner)};tabs.append(t)}
+  $("dvUpdated").textContent=(b.label?b.label+" \u00b7 ":"")+"Updated "+SNAP.updated;
   const img=new Image();img.src=b.img;img.alt=b.label+" results board";boardBox.append(img);
 }
 function showTool(){$("driverView").hidden=true;$("tool").hidden=false}
@@ -4481,7 +4492,8 @@ function wire(){
   ["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("over")}));
   ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("over")}));
   drop.addEventListener("drop",ev=>handleFiles(ev.dataTransfer.files));
-  const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));drawBoard()};
+  const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv===v)));drawBoard()};
+  document.getElementById("r_perSeg").addEventListener("click",e=>{const b=e.target.closest("[data-rv]");if(b)setView(b.dataset.rv)});
   $("viewSel").onchange=e=>setView(e.target.value);$("viewWeek").onclick=()=>setView("week");$("viewDay").onclick=()=>setView("day");$("viewCycle").onclick=()=>setView("cycle");
   $("savePng").onclick=savePng;$("saveXlsx").onclick=saveXlsx;
   $("shareDrivers").onclick=shareDrivers;$("previewDrivers").onclick=()=>{showDriverView(true);window.scrollTo(0,0)};$("dvBack").onclick=showTool;
@@ -4784,7 +4796,7 @@ function showDriverView(owner){
   $("dvEmpty").hidden=!!has;$("dvTabs").innerHTML="";$("dvFitW").hidden=true;$("dvFitC").hidden=true;
   if(!has){$("dvUpdated").textContent="";return}
   if(dvTab==="w"&&!SNAP.weekly)dvTab="c";if(dvTab==="c"&&!SNAP.cycle)dvTab="w";
-  [["w",SNAP.weekly,"Weekly"],["c",SNAP.cycle,"Monthly"]].forEach(([k,v,l])=>{if(!v)return;const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");b.textContent=l;b.setAttribute("aria-selected",String(k===dvTab));b.onclick=()=>{dvTab=k;showDriverView(owner)};$("dvTabs").append(b)});
+  [["w",SNAP.weekly,"Week"],["c",SNAP.cycle,"Month"]].forEach(([k,v,l])=>{if(!v)return;const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");b.textContent=l;b.setAttribute("aria-selected",String(k===dvTab));b.onclick=()=>{dvTab=k;showDriverView(owner)};$("dvTabs").append(b)});
   $("dvUpdated").textContent="Updated "+SNAP.updated;
   if(dvTab==="w"){$("dvBoardW").innerHTML=SNAP.weekly.html;$("dvFitW").hidden=false;fit("dvFitW","dvBoardW",1280)}
   else{$("dvBoardC").innerHTML=SNAP.cycle.html;$("dvFitC").hidden=false;fit("dvFitC","dvBoardC",1000)}
@@ -9166,7 +9178,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261520';
+const VERSION='202610261540';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
