@@ -3496,6 +3496,24 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .pcl{font-size:.78rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--gs);color:var(--g)}
 #mod-roster .ro-shot{display:flex;flex-direction:column;gap:8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px}
 #mod-roster .ro-shot img{width:100%;max-width:560px;height:auto;border:1px solid var(--sh-line);border-radius:6px;align-self:center}
+#mod-roster .ro-nice{background:#fff;color:#0F1B2D;border:1px solid var(--sh-line);border-radius:10px;overflow:hidden}
+#mod-roster .ro-nice .nh{background:#0F2A44;color:#fff;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+#mod-roster .ro-nice .nh small{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#FFB27A}
+#mod-roster .ro-nice .nh b{font-size:1.45rem;line-height:1.15}
+#mod-roster .ro-nice .nh span{color:#D6E0EC;font-size:1rem}
+#mod-roster .ro-nice table{width:100%;border-collapse:collapse;font-size:.95rem;line-height:1.3}
+#sh-main #mod-roster .ro-nice thead th{background:#EEF2F7;color:#4A5A70!important;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;text-align:left;padding:8px 12px;font-weight:700}
+#mod-roster .ro-nice td{padding:9px 12px;border-bottom:1px solid #E3E8EF;vertical-align:top}
+#mod-roster .ro-nice td b{display:block;font-weight:800}
+#mod-roster .ro-nice td small{display:block;font-size:.76rem;color:#5B6B80;margin-top:1px}
+#mod-roster .ro-nice td.cv{font-weight:600}
+#mod-roster .ro-nice .need{color:#C0392B;font-weight:700}
+#mod-roster .ro-nice .ns{color:#8A97A8}
+#mod-roster .ro-nice tr.dy td{background:#F5F7FA;padding:7px 12px}
+#mod-roster .ro-nice tr.dy button{border:0;background:none;padding:0;font:800 .92rem var(--sh-body);color:#0F2A44;cursor:pointer;text-decoration:underline;text-decoration-color:#C9D3DF;text-underline-offset:3px}
+#mod-roster .ro-nice .nf{margin:0;padding:9px 12px 11px;font-size:.8rem;color:#5B6B80}
+@media (max-width:420px){#mod-roster .ro-nice td,#sh-main #mod-roster .ro-nice thead th{padding-left:9px;padding-right:9px}#mod-roster .ro-nice table{font-size:.9rem}}
+@media print{body.ro-print .ro-wk,body.ro-print .ro-shotb,body.ro-print .ro-note{display:none!important}}
 #mod-roster .ro-prev{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--sh-line)}
 #mod-roster .ro-prev h3{margin:0;font:700 .78rem var(--sh-body);text-transform:uppercase;letter-spacing:.06em;color:var(--sh-muted)}
 #mod-roster .ro-pv{overflow:hidden;border-radius:8px;border:1px solid var(--sh-line);background:#fff}
@@ -9525,10 +9543,16 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
     ${used.size?`<span>Busy: ${[...used].sort(byShort).map(f=>esc(short(f))).join(', ')}</span>`:''}
     ${lvF.length?`<span>On leave: ${lvF.map(f=>esc(short(f))).join(', ')}</span>`:''}
     ${notw.length?`<span>Not their day: ${notw.map(f=>esc(short(f))).join(', ')}</span>`:''}</div>
-   ${imgHTML([d])?`<section class="ro-prev"><h3>How it looks for drivers</h3><div class="ro-pv">${imgHTML([d])}</div><div class="ro-shotb"><button type="button" class="sh-btn" data-ro="shareimg2">Share picture</button><button type="button" class="sh-btn" data-ro="saveimg2">Save picture</button></div>${shotBusy?'<p class="ro-note">Making the picture…</p>':''}</section>`:''}`}
+   ${niceRows([d]).length?`<section class="ro-prev"><h3>Ready to send</h3>${niceHTML([d])}${sendBtns()}</section>`:''}`}
 
 /* ---------- week list, like the paper roster ---------- */
 function weekDays(n){const m=fromIso(TODAY);m.setDate(m.getDate()-((m.getDay()+6)%7));const L=[];for(let i=0;i<7*(n||1);i++){const x=new Date(m);x.setDate(m.getDate()+i);if(x.getDay()!==0)L.push(iso(x))}return L}
+function weekMgrHTML(){const W=weekDays(weeks);
+  return `<div id="ro_week" class="ro-week">${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${niceRows(W).length?niceHTML(W):`<div class="empty">Nobody is off ${weeks>1?'in these '+weeks+' weeks':'this week'} (${esc(headOf(W))}).</div>`}
+   <p class="ro-note">Tap a day to change it.</p>
+   <div class="ro-wk"><button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}<button type="button" class="sh-btn" data-ro="print">Print</button></div>
+   ${niceRows(W).length?sendBtns():''}</div>`}
 function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!drv);const rows=D.map(d=>{const pb=(ros[d]||{}).pub||{};const its=drv?(pb.items||[]):pubOf(itemsFor(d)),xl=drv?(Array.isArray(pb.xl)?{}:pb.xl||{}):xlPub(d);return{d,its,xl}}).filter(r=>r.its.length||Object.keys(r.xl).length);
   const mine=s=>me&&s===me.staff;
   const nm=L=>L.length?L.map(o=>`<span class="${mine(o.sid)?'me':''}">${esc(o.name)}</span>`).join(', '):'<span class="nd">Needs cover</span>';
@@ -9541,6 +9565,27 @@ function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!dr
     :`<div class="empty">${drv?'Nothing on the roster yet. When the manager sends it, it shows here.':'Nobody is off '+(weeks>1?'in these '+weeks+' weeks':'this week')+'.'}</div>`}
   ${drv?'':`<div class="ro-wk"><button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}</div>`}
   </div>`}
+
+/* ---------- the roster laid out neatly, to send to drivers ---------- */
+function niceRows(dates){return dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})).filter(r=>r.its.length||XLP.some(pc=>r.xl[pc].length))}
+const headOf=dates=>dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]);
+function niceHTML(dates){const rows=niceRows(dates),multi=dates.length>1;if(!rows.length)return '';
+  const nm=L=>L.length?L.map(k=>esc(short(k))).join(', '):'<span class="need">Needs cover</span>';
+  return `<div class="ro-nice"><div class="nh"><small>Preston Delivery Service · Contract 1161</small><b>Roster</b><span>${esc(headOf(dates))}</span></div>
+   <table><thead><tr><th>Driver off</th><th>Covered by</th><th>Sorting</th></tr></thead><tbody>
+   ${rows.map(r=>`${multi?`<tr class="dy"><td colspan="3"><button type="button" data-ro="goday" data-v="${r.d}">${esc(longD(r.d))}</button></td></tr>`:''}
+    ${r.its.map(x=>`<tr><td><b>${esc(short(x.sid)||x.name)}</b><small>${[x.run,x.pc,avg[x.sid]?Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
+    ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td><b>XL parcels</b><small>${pc}</small></td><td class="cv">${nm(r.xl[pc])}</td><td></td></tr>`).join('')}`).join('')}
+   </tbody></table><p class="nf">Everyone not listed is on their usual run.</p></div>`}
+function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Roster '+headOf(dates)+'*'];
+  for(const r of rows){if(multi)L.push('','*'+longD(r.d)+'*');
+    for(const x of r.its)L.push(`${short(x.sid)||x.name} (${[x.run,x.pc].filter(Boolean).join(', ')}): ${x.cover.length?x.cover.map(short).join(', '):'needs cover'}${x.sort.length?'. Sorting: '+x.sort.map(short).join(', '):''}`);
+    for(const pc of XLP)if(r.xl[pc].length)L.push(`XL ${pc}: ${r.xl[pc].map(short).join(', ')}`)}
+  L.push('','Everyone not listed is on their usual run.');return L.join('\n')}
+const sendBtns=()=>`<div class="ro-shotb"><button type="button" class="sh-btn primary" data-ro="sharetxt">Share</button><button type="button" class="sh-btn" data-ro="copytxt">Copy</button></div><p class="ro-note">Share opens WhatsApp, Connecteam or messages with the roster typed out. Copy lets you paste it anywhere. You can also screenshot the table.</p>`;
+const shownDates=()=>tab==='week'?weekDays(weeks):[day];
+async function copyTxt(){const t=niceText(shownDates());try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;left:-9999px';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(x){}a.remove()}msg={t:'Copied. Paste it into the group chat.'};render()}
+async function shareTxt(){const t=niceText(shownDates());if(navigator.share){try{await navigator.share({text:t});return}catch(e){if(e&&e.name==='AbortError')return}}copyTxt()}
 
 /* ---------- picture to post to drivers ---------- */
 function imgHTML(dates){const rows=dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})).filter(r=>r.its.length||XLP.some(pc=>r.xl[pc].length));if(!rows.length)return '';
@@ -9605,7 +9650,7 @@ function render(){mountHome();const box=$('root');if(!box)return;
   if(mode==='drv'){const m=myDays().map(([d,l,x])=>`<div class="ro-mine"><i>${l}</i><span>${x.join('<br>')}</span></div>`).join('');box.innerHTML=`<div class="rox">${m}${weekHTML(true)}</div>`;return}
   if(!loaded.staff){box.innerHTML='<div class="empty">Opening…</div>';return}
   box.innerHTML=`<div class="rox"><div class="tabs" role="group" aria-label="Roster">${[['plan','Plan a day'],['week','Week'],['fl','Floaters']].map(([k,l])=>`<button type="button" data-ro="tab" data-v="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</div>
-   ${tab==='plan'?planHTML():tab==='week'?weekHTML(false):flHTML()}</div>`;
+   ${tab==='plan'?planHTML():tab==='week'?weekMgrHTML():flHTML()}</div>`;
   fitPrev();pushStat()}
 function fitPrev(){document.querySelectorAll('#mod-roster .ro-pv').forEach(el=>{const c=el.firstElementChild;if(!c)return;const k=Math.min(1,el.clientWidth/720);c.style.transformOrigin='0 0';c.style.transform='scale('+k+')';el.style.height=Math.ceil(c.offsetHeight*k)+'px'})}
 window.addEventListener('resize',()=>{if(mode==='mgr')fitPrev()});
@@ -9617,6 +9662,9 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   const a=el.dataset.ro,v=el.dataset.v,sid=el.dataset.sid,who=el.dataset.who;
   if(a==='tab'){tab=v;msg=null;shot=null;render();return}
   if(a==='shareimg'){shareShot();return}
+  if(a==='sharetxt'){shareTxt();return}
+  if(a==='copytxt'){copyTxt();return}
+  if(a==='goday'){tab='plan';day=v;msg=null;render();window.scrollTo(0,0);return}
   if(a==='shareimg2'||a==='saveimg2'){makeImage([day],true).then(()=>a==='shareimg2'?shareShot():saveShot());return}
   if(a==='saveimg'){saveShot();return}
   if(a==='closeimg'){shot=null;render();return}
@@ -10506,7 +10554,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271100';
+const VERSION='202610271130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
