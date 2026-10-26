@@ -3090,7 +3090,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .sv-t{min-width:860px}
 @media (max-width:560px){#sh-main .rt .sv-t{min-width:760px}}
 </style><style id="smcolour">
-#sh-main #mod-summary tr.smr td:first-child{box-shadow:inset 5px 0 0 var(--d,transparent)}
+#sh-main #mod-summary .smrk{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--sh-sunk);font:800 .85rem var(--sh-body);color:var(--sh-ink)}
+#sh-main #mod-summary .smrk.t1{background:#F2C94C;color:#3A2A00}#sh-main #mod-summary .smrk.t2{background:#CBD5E1;color:#1E293B}#sh-main #mod-summary .smrk.t3{background:#E0A36B;color:#3B1E05}
 #sh-main #mod-summary tr.smr td:nth-child(2) b{color:var(--sh-ink)}
 #sh-main #mod-summary tr.smr .smg{display:inline-block;font:800 .68rem var(--sh-body);letter-spacing:.04em;padding:1px 7px;border-radius:999px;background:var(--ds);color:var(--d);white-space:nowrap}
 #sh-main #mod-summary tr.smr .sml{font-size:.78rem;color:var(--sh-muted)}
@@ -8052,8 +8053,9 @@ function grpCls(p){const pc=String(p.pc||'');if(/^42\d\d$/.test(pc))return 'dg-'
 function grpLbl(p){const c=grpCls(p);return{'dg-xl':'XL','dg-relief':'Relief','dg-sup':'Supervisor','dg-office':'Office'}[c]||p.pc}
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
+  const byTp=rows.slice().sort((x,y)=>totPts(y.a)-totPts(x.a)),rk=new Map();byTp.forEach((r,i)=>{const p=byTp[i-1];rk.set(r,p&&totPts(p.a)===totPts(r.a)?rk.get(p):i+1)});
   return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th class="r ptsh"><abbr title="Total points">TP</abbr></th><th class="r"><abbr title="Results points">RP</abbr></th><th class="r"><abbr title="Survey points">SP</abbr></th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
-  ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="n">${i+1}</td><td class="smd"><b>${esc(p.name)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
+  ${rows.map((row,i)=>{const{p,a}=row,R=rk.get(row);const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="n"><span class="smrk${R<=3?' t'+R:''}">${R}</span></td><td class="smd"><b>${esc(p.name)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
    <td class="r pts"><b>${fmtN(totPts(a))}</b></td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?`${sgn(svPts(a))} <span class="sub in">(${a.scores.length})</span>`:'–'}</td><td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint smk">TP total points · RP results points · SP survey points · ETA 2 hr ETA · NC NC scans · Enq enquiries</p>`;
 }
@@ -9727,7 +9729,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262250';
+const VERSION='202610262300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
