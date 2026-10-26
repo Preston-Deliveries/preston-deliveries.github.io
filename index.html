@@ -3669,12 +3669,12 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt i.rd.r-g{background:#1E8A4C}#sh-main .rt i.rd.r-a,#sh-main .rt i.rd.r-w{background:#D98B00}#sh-main .rt i.rd.r-b{background:#C8352B}
 #sh-main .rt .rsk{font-size:.8rem;color:var(--sh-muted);margin-top:8px}#sh-main .rt .rsk i.rd{margin-left:2px}
 @media (max-width:700px){
-#sh-main .rt table.rsm{font-size:1.08rem}
+#sh-main .rt table.rsm{font-size:.98rem}
 #sh-main .rt table.rsm th button{padding:10px 2px 10px 6px;font-size:.74rem;letter-spacing:.03em}
-#sh-main .rt table.rsm td{padding:12px 2px}
+#sh-main .rt table.rsm td{padding:11px 2px}
 #sh-main .rt table.rsm :is(th,td):first-child{padding-left:8px}#sh-main .rt table.rsm :is(th,td):last-child{padding-right:8px}
 #sh-main .rt table.rsm th.dr{width:27%}
-#sh-main .rt table.rsm td.dr b{font-size:1.1rem}
+#sh-main .rt table.rsm td.dr b{font-size:1.05rem}
 #sh-main .rt table.rsm .dy{display:none}
 #sh-main .rt table.rsm th.dr{width:31%}#sh-main .rt table.rsm th.c-eta{width:22%}#sh-main .rt table.rsm th.c-nc{width:12%}#sh-main .rt table.rsm th.c-enq{width:12%}#sh-main .rt table.rsm th.c-sv{width:23%}
 #sh-main .rt i.rd{width:6px;height:6px;margin-right:3px}
@@ -3699,7 +3699,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .rtk .td{font-size:.76rem;font-weight:700}#sh-main .rt .rtk .td .rdl{display:inline;margin:0}#sh-main .rt .rtk .td .vs{display:inline;font-size:.7rem;font-weight:600;color:var(--sh-muted);text-transform:none;letter-spacing:0}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.b{color:#F48A8A}}
 :root[data-theme="dark"] #sh-main .rt .rtk .tk b.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rtk .tk b.b{color:#F48A8A}
-@media (max-width:700px){#sh-main .rt .rt-sum.rtk{grid-template-columns:1fr 1fr}#sh-main .rt .rtk .tk b{font-size:1.3rem}}
+@media (max-width:700px){#sh-main .rt .rt-sum.rtk{grid-template-columns:repeat(4,minmax(0,1fr))}#sh-main#sh-main .rt .rtk .tk b{font-size:1rem;line-height:1.15}#sh-main .rt .rtk .ts{display:none}#sh-main .rt .rtk .td{font-size:.66rem;white-space:nowrap}#sh-main .rt .rtk .td .vs{display:none}}
 </style>
 <style id="svcol">
 #r_saveXlsx,#sh-main #r_saveXlsx{display:none!important}
@@ -5484,7 +5484,7 @@ function rtHTML(rows,multi){
      ${tl("2 hr ETA",p1(te),"Target "+T().etaG+"%",PA?dlt(te,pe,"pct"):"",te==null?"":te*100>=T().etaG?"g":"b")}
      ${tl("NC scans",tn==null?"0":Math.round(tn),"Target 0",PA?dlt(tn,pn,"down"):"",(tn||0)>0?"b":"g")}
      ${tl("Enquiries",String(Math.round(te2||0)),"Target 0",PA?dlt(te2||0,pq||0,"down"):"",(te2||0)>0?"b":"g")}
-     ${tl("Survey score",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"",ST?(ST.n>=70?"g":"b"):"")}</div>
+     ${tl("Survey",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"",ST?(ST.n>=70?"g":"b"):"")}</div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="sv">Survey</option></select></label></div>
@@ -10809,7 +10809,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280610';
+const VERSION='202610280620';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
