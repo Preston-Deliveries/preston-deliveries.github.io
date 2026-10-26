@@ -8075,14 +8075,18 @@ const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)
 function contractHTML(C){
   const keys=Object.keys(C.P),all=sumOf(keys,C.per),worked=keys.filter(k=>C.per[k]&&C.per[k].days).length;
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
-  const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>{const a=sumOf(x.keys,C.per);return{...x,tp:totPts(a),pd:a.days?totPts(a)/a.days:null}}).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||((b.pd??-1e9)-(a.pd??-1e9))||b.tp-a.tp);
+  const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>{const a=sumOf(x.keys,C.per);return{...x,a,tp:totPts(a),pd:a.days?totPts(a)/a.days:null}}).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
   return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)])+
-  `<section class="card"><h2>By postcode and group</h2><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r ptsh"><abbr title="Total points per driver day">Per day</abbr></th><th class="r"><abbr title="Total points">TP</abbr></th><th class="r"><abbr title="Results points">RP</abbr></th><th class="r"><abbr title="Survey points">SP</abbr></th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
+  `<section class="card"><div class="ch"><h2>By postcode and group</h2>${pcSortSel()}</div><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r ptsh"><abbr title="Total points per driver day">Per day</abbr></th><th class="r"><abbr title="Total points">TP</abbr></th><th class="r"><abbr title="Results points">RP</abbr></th><th class="r"><abbr title="Survey points">SP</abbr></th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r pts"><b>${a.days?(totPts(a)/a.days).toFixed(2):'–'}</b></td><td class="r">${fmtN(totPts(a))}</td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?sgn(svPts(a)):'–'}</td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.nc}</td><td class="r">${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Per day is total points divided by the driver days worked, so a postcode with more drivers isn't ahead just for being bigger. The best possible is 3 a day plus any survey points. Tap a postcode to see just its drivers.</p></section>`+attention(rows)+
   `<section class="card"><div class="ch"><h2>Drivers</h2>${sortSel()}</div>${driverTable(rows)}<p class="hint">Tap a driver to see everything about them.</p></section>`;
 }
+let pcSort=(()=>{try{return localStorage.getItem('sm_pcsort')||'perday'}catch(e){return 'perday'}})();
+function pcCmp(x,y){const e=a=>pct(a.etaW,a.etaN)??-1,sv=a=>nps(a.scores)??-999;
+  const f={perday:()=>((y.pd??-1e9)-(x.pd??-1e9))||y.tp-x.tp,total:()=>y.tp-x.tp,parcels:()=>y.a.pc-x.a.pc,eta:()=>e(y.a)-e(x.a),survey:()=>sv(y.a)-sv(x.a),name:()=>String(x.pc).localeCompare(String(y.pc))}[pcSort]||(()=>0);return f()}
+function pcSortSel(){return `<label class="mini" for="sm_pcsort">Sort<select id="sm_pcsort">${[['perday','Points per day'],['total','Total points'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey'],['name','Name']].map(([k,l])=>`<option value="${k}" ${k===pcSort?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_sort">${[['points','Total points'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey'],['name','Name']].map(([k,l])=>`<option value="${k}" ${k===sortBy?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
@@ -8220,6 +8224,7 @@ document.addEventListener('input',e=>{if(e.target.id==='sm_q'){q=e.target.value;
 document.addEventListener('change',e=>{
   if(e.target.id==='sm_per'){period=e.target.value;try{localStorage.setItem('sm_period',period)}catch(x){}render();return}
   if(e.target.id==='sm_sort'){sortBy=e.target.value;render();return}
+  if(e.target.id==='sm_pcsort'){pcSort=e.target.value;try{localStorage.setItem('sm_pcsort',pcSort)}catch(x){}render();return}
 });
 document.addEventListener('focusout',e=>{if(e.target.id==='sm_q')setTimeout(()=>{const s=$('sug');if(s&&!s.contains(document.activeElement))s.hidden=true},150)});
 async function start(role){
@@ -9730,7 +9735,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262310';
+const VERSION='202610262320';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
