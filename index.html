@@ -3496,6 +3496,9 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .pcl{font-size:.78rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--gs);color:var(--g)}
 #mod-roster .ro-shot{display:flex;flex-direction:column;gap:8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px}
 #mod-roster .ro-shot img{width:100%;max-width:560px;height:auto;border:1px solid var(--sh-line);border-radius:6px;align-self:center}
+#mod-roster .ro-prev{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--sh-line)}
+#mod-roster .ro-prev h3{margin:0;font:700 .78rem var(--sh-body);text-transform:uppercase;letter-spacing:.06em;color:var(--sh-muted)}
+#mod-roster .ro-pv{overflow:hidden;border-radius:8px;border:1px solid var(--sh-line);background:#fff}
 #mod-roster .ro-shotb{display:flex;gap:6px;flex-wrap:wrap}
 #mod-roster .ro-head .sh-btn+.sh-btn{margin-left:0}
 #mod-roster .ro-tk{display:flex;gap:6px;flex-wrap:wrap}
@@ -9511,8 +9514,7 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
   const regs=runList().filter(r=>r.sid&&!its.some(x=>x.sid===r.sid));const rm=(doc.removed||[]).filter(s=>leaveSids(d).has(s));
   return `${dayBtns()}
    <div class="ro-head"><div><h2>${esc(longD(d))}</h2><p>${p?(ch?'<b class="chg">Changed since you sent it</b>':'Sent '+esc(when(p.at))):'Not sent yet'}${need?` · <b class="nd">${need} still ${need>1?'need':'needs'} cover</b>`:''}</p></div>
-    <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${p?'Send changes':'Send to drivers'}</button>${p&&!ch?'<button type="button" class="sh-btn" data-ro="img">Picture</button>':''}</div>
-   ${shotHTML()}
+    <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${!p?'Send to drivers':ch?'Send changes':'Sent ✓'}</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${its.length?its.map(x=>itemHTML(x,d,its)).join(''):`<div class="empty">Nobody is off on ${esc(longD(d))}. Add someone below if they call in sick, or put floaters on XL parcels.</div>`}
    <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL ${pc}</span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
@@ -9522,7 +9524,8 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
     <span>${free.length?'Free: '+free.map(f=>esc(short(f))).join(', '):'No floaters free'}</span>
     ${used.size?`<span>Busy: ${[...used].sort(byShort).map(f=>esc(short(f))).join(', ')}</span>`:''}
     ${lvF.length?`<span>On leave: ${lvF.map(f=>esc(short(f))).join(', ')}</span>`:''}
-    ${notw.length?`<span>Not their day: ${notw.map(f=>esc(short(f))).join(', ')}</span>`:''}</div>`}
+    ${notw.length?`<span>Not their day: ${notw.map(f=>esc(short(f))).join(', ')}</span>`:''}</div>
+   ${imgHTML([d])?`<section class="ro-prev"><h3>How it looks for drivers</h3><div class="ro-pv">${imgHTML([d])}</div><div class="ro-shotb"><button type="button" class="sh-btn" data-ro="shareimg2">Share picture</button><button type="button" class="sh-btn" data-ro="saveimg2">Save picture</button></div>${shotBusy?'<p class="ro-note">Making the picture…</p>':''}</section>`:''}`}
 
 /* ---------- week list, like the paper roster ---------- */
 function weekDays(n){const m=fromIso(TODAY);m.setDate(m.getDate()-((m.getDay()+6)%7));const L=[];for(let i=0;i<7*(n||1);i++){const x=new Date(m);x.setDate(m.getDate()+i);if(x.getDay()!==0)L.push(iso(x))}return L}
@@ -9547,13 +9550,13 @@ function imgHTML(dates){const rows=dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})
    <div style="background:#0F2A44;color:#fff;padding:22px 24px 20px"><div style="font-size:12px;letter-spacing:.14em;font-weight:700;color:#FFB27A">PRESTON DELIVERY SERVICE · CONTRACT 1161</div>
     <div style="font-size:30px;font-weight:800;margin-top:6px;line-height:1.1">Roster</div><div style="font-size:19px;margin-top:4px;color:#D6E0EC">${esc(head)}</div></div>
    <table style="width:100%;border-collapse:collapse;font-size:17px;line-height:1.35">
-    <thead><tr style="background:#EEF2F7;color:#4A5A70;font-size:12px;letter-spacing:.08em;text-transform:uppercase"><th style="text-align:left;padding:9px 14px 9px 24px;width:38%">Driver off</th><th style="text-align:left;padding:9px 14px">Covered by</th><th style="text-align:left;padding:9px 24px 9px 14px;width:24%">Sorting</th></tr></thead>
+    <thead><tr style="background:#EEF2F7;color:#4A5A70;font-size:12px;letter-spacing:.08em;text-transform:uppercase"><th style="text-align:left;color:#4A5A70;padding:9px 14px 9px 24px;width:38%">Driver off</th><th style="text-align:left;color:#4A5A70;padding:9px 14px">Covered by</th><th style="text-align:left;color:#4A5A70;padding:9px 24px 9px 14px;width:24%">Sorting</th></tr></thead>
     <tbody>${rows.map(r=>`${dates.length>1?`<tr><td colspan="3" style="padding:12px 24px 4px;font-weight:800;color:#0F2A44;font-size:16px;border-bottom:1px solid #E3E8EF">${esc(longD(r.d))}</td></tr>`:''}
      ${r.its.map(x=>`<tr><td style="${td};padding-left:24px"><div style="font-weight:800">${esc(short(x.sid)||x.name)}</div><div style="font-size:13px;color:#5B6B80;margin-top:2px">${[x.run,x.pc,avg[x.sid]?'about '+Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</div></td><td style="${td};font-weight:600">${nm(x.cover)}</td><td style="${td};padding-right:24px">${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span style="color:#8A97A8">Not set</span>'}</td></tr>`).join('')}
      ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td style="${td};padding-left:24px"><div style="font-weight:800">XL parcels</div><div style="font-size:13px;color:#5B6B80;margin-top:2px">${pc}</div></td><td style="${td};font-weight:600">${nm(r.xl[pc])}</td><td style="${td};padding-right:24px"></td></tr>`).join('')}`).join('')}</tbody></table>
    <div style="padding:12px 24px 16px;font-size:13px;color:#5B6B80">Everyone not listed is on their usual run. Questions? Call the office.</div></div>`}
-async function makeImage(dates){const html=imgHTML(dates);if(!html){msg={err:true,t:'Nothing to put in the picture yet.'};render();return}
-  shotBusy=true;shot=null;render();const box=document.createElement('div');box.style.cssText='position:fixed;left:-10000px;top:0;z-index:-1';box.innerHTML=html;document.body.appendChild(box);
+async function makeImage(dates,quiet){const html=imgHTML(dates);if(!html){msg={err:true,t:'Nothing to put in the picture yet.'};render();return}
+  shotBusy=true;shot=null;if(!quiet)render();const box=document.createElement('div');box.style.cssText='position:fixed;left:-10000px;top:0;z-index:-1';box.innerHTML=html;document.body.appendChild(box);
   try{if(!window.html2canvas&&window.loadH2C)await window.loadH2C();if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     const c=await window.html2canvas(box.firstElementChild,{scale:2,backgroundColor:'#ffffff',logging:false});const blob=await new Promise(r=>c.toBlob(r,'image/png'));
     if(shot&&shot.url)URL.revokeObjectURL(shot.url);shot={blob,url:URL.createObjectURL(blob),name:'Roster '+(dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]))+'.png'}}
@@ -9603,7 +9606,9 @@ function render(){mountHome();const box=$('root');if(!box)return;
   if(!loaded.staff){box.innerHTML='<div class="empty">Opening…</div>';return}
   box.innerHTML=`<div class="rox"><div class="tabs" role="group" aria-label="Roster">${[['plan','Plan a day'],['week','Week'],['fl','Floaters']].map(([k,l])=>`<button type="button" data-ro="tab" data-v="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</div>
    ${tab==='plan'?planHTML():tab==='week'?weekHTML(false):flHTML()}</div>`;
-  pushStat()}
+  fitPrev();pushStat()}
+function fitPrev(){document.querySelectorAll('#mod-roster .ro-pv').forEach(el=>{const c=el.firstElementChild;if(!c)return;const k=Math.min(1,el.clientWidth/720);c.style.transformOrigin='0 0';c.style.transform='scale('+k+')';el.style.height=Math.ceil(c.offsetHeight*k)+'px'})}
+window.addEventListener('resize',()=>{if(mode==='mgr')fitPrev()});
 function pushStat(){if(mode!=='mgr'||!window.APP||!APP.stat)return;const d=nextWork(TODAY),its=itemsFor(d),need=its.filter(x=>!x.cover.length).length,p=(ros[d]||{}).pub;
   APP.stat('roster',its.length?`${d===addD(TODAY,1)?'Tomorrow':DOW[fromIso(d).getDay()]}: ${its.length} off${need?', '+need+' need cover':''}${p?(changed(d,its)?', changes not sent':', sent'):', not sent'}`:'')}
 
@@ -9612,6 +9617,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   const a=el.dataset.ro,v=el.dataset.v,sid=el.dataset.sid,who=el.dataset.who;
   if(a==='tab'){tab=v;msg=null;shot=null;render();return}
   if(a==='shareimg'){shareShot();return}
+  if(a==='shareimg2'||a==='saveimg2'){makeImage([day],true).then(()=>a==='shareimg2'?shareShot():saveShot());return}
   if(a==='saveimg'){saveShot();return}
   if(a==='closeimg'){shot=null;render();return}
   if(a==='img'){makeImage([day]);return}
@@ -9625,7 +9631,7 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   if(a==='kn'){const k=know(sid,v);setFl(sid,{know:{...(flc(sid).know||{}),[v]:(k+1)%3}});render();return}
   if(a==='unfl'){setFl(sid,{off:true});open=null;render();return}
   const d=day,its=itemsFor(d),x=its.find(i=>i.sid===sid);msg=null;
-  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg){msg={t:'Sent. Drivers see it on their home screen and on the Roster page. Here is a picture to post to the group.'};makeImage([d])}else render()});return}
+  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Sent. Drivers see it on their home screen and on the Roster page. The picture to post is at the bottom.'};render()});return}
   if(a==='rm'&&String(sid).startsWith('_xl')){const o=xlOf(d),pc=sid.slice(3);o[pc]=o[pc].filter(k=>k!==who);saveDay(d,its,{xl:o});return}
   if(a==='rm'&&x){x[el.dataset.k]=x[el.dataset.k].filter(k=>k!==who);saveDay(d,its);return}
   if(a==='addc'&&x){if(!x.cover.includes(who))x.cover.push(who);saveDay(d,its);return}
@@ -10500,7 +10506,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271030';
+const VERSION='202610271100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
