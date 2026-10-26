@@ -8853,7 +8853,7 @@ function bossNotes(C,all,pa,pcs){
   const hiEnq=R.filter(x=>x.enq).sort((x,y)=>y.enq-x.enq)[0];if(hiEnq&&R.filter(x=>x.enq).length>1)watch.push(`Most enquiries came from ${hiEnq.pc} (${hiEnq.enq}).`);
   if(all.leave)good.push(`${fmtN(all.leave)} day${all.leave===1?'':'s'} of leave covered.`);
   const head=!watch.length?'A strong period for the contract.':watch.length<good.length?'A good period overall, with a few things to watch.':watch.length===good.length?'A mixed period. Some areas need attention.':'A tough period. Several areas are below where they should be.';
-  return `<section class="card notes"><div class="ch"><h2>Notes for the boss</h2></div><p class="lead2"><b>${esc(head)}</b> ${esc(vol)}</p>
+  return `<section class="card notes"><div class="ch"><h2>Report</h2></div><p class="lead2"><b>${esc(head)}</b> ${esc(vol)}</p>
    ${good.length?`<div class="ng"><h4>Going well</h4><ul>${good.map(x=>`<li class="ok">${esc(x)}</li>`).join('')}</ul></div>`:''}
    ${watch.length?`<div class="ng"><h4>To watch</h4><ul>${watch.map(x=>`<li class="no">${esc(x)}</li>`).join('')}</ul></div>`:''}</section>`;
 }
@@ -10532,7 +10532,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271845';
+const VERSION='202610271900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
