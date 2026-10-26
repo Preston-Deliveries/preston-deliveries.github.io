@@ -4500,10 +4500,10 @@ function renderResults(){
   const drv=allIds().filter(id=>{const r=S.runs[id];const nm=normName(r.driver||''),lg=String(r.login||'').toUpperCase().replace(/\s+/g,'');return(r.driver&&r.driver!=='Unassigned'&&(nm.startsWith(t)||nm.split(' ').some(w=>w.startsWith(t))))||(tk.length>=2&&lg===tk)}).slice(0,12);
   const colD=colourMap();
   const drvHTML=drv.length?`<div class="lk-drv"><h3 class="lk-h">Drivers</h3>${drv.map(id=>{const r=S.runs[id],st=[...new Set((r.streets||[]).map(x=>String(x.name||'').trim()).filter(Boolean))];return `<div class="lk-st"><div class="lk-top"><i class="cdot" style="background:${colD[id]}"></i><span class="lk-name">${esc(r.driver)}</span><span class="lk-pc">${esc(r.postcode)}</span>${r.login?`<span class="rg">${esc(r.login)}</span>`:''}<button type="button" class="go" data-act="openRun" data-v="${esc(id)}">Run sheet</button></div><div class="lk-sts">${st.length?st.slice(0,40).map(n=>`<span>${esc(n)}</span>`).join('')+(st.length>40?`<span>and ${st.length-40} more</span>`:''):'<span>No streets yet</span>'}</div></div>`}).join('')}</div>`:'';
-  /* this postcode first; if the street isn't here, look in every postcode */
+  /* every postcode, with this postcode's streets listed first */
   const hit=g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t);
-  let res=idx.filter(g=>g.pc===S.pc&&hit(g));S.allPc=!res.length;if(S.allPc)res=idx.filter(hit);
-  res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||(b.pc===S.pc)-(a.pc===S.pc)||a.n.localeCompare(b.n));
+  let res=idx.filter(hit);S.allPc=res.some(g=>g.pc!==S.pc);
+  res.sort((a,b)=>((b.pc===S.pc)-(a.pc===S.pc))||(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));
   const shown=res.slice(0,60);
   cnt.textContent=[drv.length?`${drv.length} driver${drv.length===1?'':'s'}`:'',res.length?`${res.length} street${res.length===1?'':'s'}${S.allPc?' across all postcodes':' in '+S.pc}${res.length>60?', showing the first 60':''}`:''].filter(Boolean).join(' and ');
   box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res">${shown.map(g=>`<div class="lk-st"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="go edst" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}">Edit</button>`:''}</div>
@@ -10040,7 +10040,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270610';
+const VERSION='202610270620';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
