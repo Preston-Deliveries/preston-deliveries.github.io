@@ -5444,8 +5444,13 @@ function filtRows(rows){
 const p1=v=>v==null?"n/a":(v>=.9995?"100":(Math.round(v*1000)/10).toFixed(1))+"%";
 const MK={g:"✓",w:"!",b:"✕","":""};
 function cell(c,txt){return `<span class="rt-v ${c?"r-"+c:"r-n"}">${c?`<i aria-hidden="true">${MK[c]}</i>`:""}${txt}</span>`}
+/* first name only, plus the first letter of the last name when two people share a first name */
+function shortName(full){const w=String(full||"").trim().split(/\s+/).filter(Boolean);if(!w.length)return "";
+  const N=Object.values(window.__runNames||{}).map(n=>String(n||"").trim().split(/\s+/)[0].toLowerCase());const f=w[0].toLowerCase();
+  const dup=new Set(Object.values(window.__runNames||{}).filter(n=>String(n||"").trim().split(/\s+/)[0].toLowerCase()===f).map(n=>String(n).trim().toLowerCase())).size>1;
+  return dup&&w.length>1?w[0]+" "+w[w.length-1][0].toUpperCase()+".":w[0]}
 function rowHTML(r,multi){
-  const nm=(r.name?String(r.name).trim().split(/\s+/)[0]:"")||r.login,sub=r.name?r.login:"";
+  const nm=shortName(r.name)||r.login,sub=r.name?r.login:"";
   const d=c=>`<i class="rd ${c?"r-"+c:"r-n"}" aria-hidden="true"></i>`,P=r.prev;
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
    <td class="dr"><b>${escR(nm)}</b><small>${r.me?'<em class="you">You</em> ':""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
@@ -9073,10 +9078,13 @@ function drvRows(keys,C){
 function grpCls(p){const pc=String(p.pc||'');if(/^42\d\d$/.test(pc))return 'dg-'+pc;const r=String(p.role||'').toUpperCase();
   if(/\bXL\b/.test(r))return 'dg-xl';if(/RELIEF/.test(r))return 'dg-relief';if(/SUPER/.test(r))return 'dg-sup';if(pc===ADM||/ADMIN|OFFICE|MANAGER|PRINCIP|COORD/.test(r))return 'dg-office';if(pc===XLR)return 'dg-relief';return ''}
 function grpLbl(p){const c=grpCls(p);return{'dg-xl':'XL','dg-relief':'Relief','dg-sup':'Supervisor','dg-office':'Office'}[c]||p.pc}
+let FN=null;function shortNm(full){const w=String(full||'').trim().split(/\s+/).filter(Boolean);if(!w.length)return '';const f=w[0].toLowerCase();
+  if(!FN){FN={};for(const x of Object.values(people()))if(x&&x.name){const k=String(x.name).trim().split(/\s+/)[0].toLowerCase();(FN[k]=FN[k]||new Set()).add(String(x.name).trim().toLowerCase())}setTimeout(()=>{FN=null},0)}
+  const n=FN[f]?FN[f].size:0;return n>1&&w.length>1?w[0]+' '+w[w.length-1][0].toUpperCase()+'.':w[0]}
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
   return `<div class="tw"><table class="tb pct dtb"><thead><tr><th>Driver</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-  ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(String(p.name||"").trim().split(/\s+/)[0]||p.login)}</b><span class="smm">${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
+  ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(shortNm(p.name)||p.login)}</b><span class="smm">${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
    <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fsp(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${n==null?'–':`<span class="${n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint smk">ETA: 2 hr ETA. NC: NC scans. Enq: enquiries.</p>`;
 }
@@ -10801,7 +10809,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280550';
+const VERSION='202610280600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
