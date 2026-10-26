@@ -3512,6 +3512,9 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .pcp[class*="dg-"]{background:var(--ps);color:var(--p);border-color:transparent;align-self:flex-start}
 #mod-roster .ro-rg small.pcp{font-size:.74rem;padding:1px 7px;border-radius:5px}
 #mod-roster .ro-nice small .pcp{display:inline-block;font-style:normal;font-weight:800;font-size:.7rem;padding:0 6px;border-radius:4px;margin-right:6px;line-height:1.5}
+#mod-roster .ro-nice tr.xlr td{padding-top:5px;padding-bottom:5px}
+#mod-roster .ro-nice tr.xlr td b{display:inline;margin-right:6px}#mod-roster .ro-nice tr.xlr td small{display:inline}
+#mod-roster .ro-nice .me{background:var(--gs);color:var(--g);border-radius:4px;padding:0 3px}
 #mod-roster .ro-nice .nf{margin:0;font-size:.8rem;color:var(--sh-muted)}
 @media (max-width:420px){#mod-roster .ro-nice td,#sh-main #mod-roster .ro-nice thead th{padding-left:9px;padding-right:9px}#mod-roster .ro-nice table{font-size:.9rem}}
 @media print{body.ro-print .ro-wk,body.ro-print .ro-shotb,body.ro-print .ro-note{display:none!important}}
@@ -9506,11 +9509,11 @@ const usedSet=(its,d)=>{const s=new Set();for(const x of its)for(const c of x.co
 const xlPub=d=>{const o=xlOf(d),r={};for(const pc of XLP)if(o[pc].length)r[pc]=o[pc].map(s=>({sid:s,name:short(s)}));return r};
 function suggest(x,d,its){const off=offSet(d,its),used=usedSet(its,d),n=avg[x.sid]||0;
   return floaters().filter(f=>!off.has(f)&&!used.has(f)&&works(f,d)).map(f=>{const k=know(f,x.run),mx=+flc(f).max||0,over=!!(mx&&n&&n>mx);return{f,k,over,s:k*10-(over?5:0)}}).filter(o=>o.k>0||o.s>=0).sort((a,b)=>b.s-a.s||byShort(a.f,b.f)).slice(0,3)}
-const pubOf=its=>its.map(x=>({sid:x.sid,name:short(x.sid)||x.name||'',run:x.run||'',pc:x.pc||'',cover:x.cover.map(s=>({sid:s,name:short(s)})),sort:x.sort.map(s=>({sid:s,name:short(s)}))}));
+const pubOf=its=>its.map(x=>({sid:x.sid,name:short(x.sid)||x.name||'',run:x.run||'',pc:x.pc||'',p:avg[x.sid]?Math.round(avg[x.sid]):0,cover:x.cover.map(s=>({sid:s,name:short(s)})),sort:x.sort.map(s=>({sid:s,name:short(s)}))}));
 const clean=its=>its.map(x=>({sid:x.sid,name:x.name||short(x.sid)||'',run:x.run||'',pc:x.pc||'',why:x.why||'',cover:x.cover||[],sort:x.sort||[]}));
 async function saveDay(d,its,extra){const doc={...(ros[d]||{}),date:d,items:clean(its),updatedAt:new Date().toISOString(),...(extra||{})};ros[d]=doc;render();
   try{await db.doc('roster/'+d).set(doc)}catch(e){msg={err:true,t:'Could not save just now. Check your connection.'};render()}}
-function changed(d,its){const p=(ros[d]||{}).pub;return !!p&&(JSON.stringify(p.items||[])!==JSON.stringify(pubOf(its))||JSON.stringify(Array.isArray(p.xl)?{}:p.xl||{})!==JSON.stringify(xlPub(d)))}
+function changed(d,its){const p=(ros[d]||{}).pub;const np=L=>JSON.stringify((L||[]).map(({p,...r})=>r));return !!p&&(np(p.items)!==np(pubOf(its))||JSON.stringify(Array.isArray(p.xl)?{}:p.xl||{})!==JSON.stringify(xlPub(d)))}
 
 /* ---------- manager: plan a day ---------- */
 function dayBtns(){const L=[];let d=fromIso(TODAY).getDay()===0?nextWork(TODAY):TODAY;for(let i=0;i<6;i++){L.push(d);d=nextWork(d)}if(!L.includes(day))L.push(day);
@@ -9572,22 +9575,24 @@ function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!dr
   </div>`}
 
 /* ---------- the roster laid out neatly, to send to drivers ---------- */
-function niceRows(dates){return dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})).filter(r=>r.its.length||XLP.some(pc=>r.xl[pc].length))}
 const pcc=pc=>'dg-'+String(pc||'other').toLowerCase().replace(/[^a-z0-9]/g,'');
 const pz=pc=>pc?`<i class="pcp ${pcc(pc)}">${esc(pc)}</i>`:'';
 const headOf=dates=>dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]);
-function niceHTML(dates){const rows=niceRows(dates),multi=dates.length>1;if(!rows.length)return '';
-  const nm=L=>L.length?L.map(k=>esc(short(k))).join(', '):'<span class="need">Needs cover</span>';
+function dayData(d,pub){if(pub){const pb=(ros[d]||{}).pub;if(!pb)return null;return{d,its:pb.items||[],xl:pb.xl&&!Array.isArray(pb.xl)?pb.xl:{}}}return{d,its:pubOf(itemsFor(d)),xl:xlPub(d)}}
+function niceRows(dates,pub){return dates.map(d=>dayData(d,pub)).filter(r=>r&&(r.its.length||XLP.some(pc=>(r.xl[pc]||[]).length)))}
+function niceHTML(dates,pub){const rows=niceRows(dates,pub),multi=dates.length>1;if(!rows.length)return '';
+  const who=o=>`<span class="${me&&o.sid===me.staff?'me':''}">${esc(o.name)}</span>`;
+  const nm=L=>L.length?L.map(who).join(', '):'<span class="need">Needs cover</span>';
   return `<div class="ro-nice"><h3 class="nh">Roster · ${esc(headOf(dates))}</h3>
    <table><thead><tr><th>Driver off</th><th>Covered by</th><th>Sorting</th></tr></thead><tbody>
-   ${rows.map(r=>`${multi?`<tr class="dy"><td colspan="3"><button type="button" data-ro="goday" data-v="${r.d}">${esc(longD(r.d))}</button></td></tr>`:''}
-    ${r.its.map(x=>`<tr><td><b>${esc(short(x.sid)||x.name)}</b><small>${pz(x.pc)}${[x.run,avg[x.sid]?Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
-    ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td><b>XL parcels</b><small>${pz(pc)}</small></td><td class="cv">${nm(r.xl[pc])}</td><td></td></tr>`).join('')}`).join('')}
+   ${rows.map(r=>`${multi?`<tr class="dy"><td colspan="3">${pub?`<b>${esc(longD(r.d))}</b>`:`<button type="button" data-ro="goday" data-v="${r.d}">${esc(longD(r.d))}</button>`}</td></tr>`:''}
+    ${r.its.map(x=>`<tr><td><b class="${me&&x.sid===me.staff?'me':''}">${esc(x.name)}</b><small>${pz(x.pc)}${[x.run,x.p?x.p+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(who).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
+    ${XLP.map(pc=>{const L=r.xl[pc]||[];return `<tr class="xlr"><td><b>XL</b><small>${pz(pc)}</small></td><td class="cv">${L.length?L.map(who).join(', '):'<span class="ns">None</span>'}</td><td></td></tr>`}).join('')}`).join('')}
    </tbody></table><p class="nf">Everyone not listed is on their usual run.</p></div>`}
 function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Roster '+headOf(dates)+'*'];
   for(const r of rows){if(multi)L.push('','*'+longD(r.d)+'*');
-    for(const x of r.its)L.push(`${short(x.sid)||x.name} (${[x.run,x.pc].filter(Boolean).join(', ')}): ${x.cover.length?x.cover.map(short).join(', '):'needs cover'}${x.sort.length?'. Sorting: '+x.sort.map(short).join(', '):''}`);
-    for(const pc of XLP)if(r.xl[pc].length)L.push(`XL ${pc}: ${r.xl[pc].map(short).join(', ')}`)}
+    for(const x of r.its)L.push(`${x.name} (${[x.run,x.pc].filter(Boolean).join(', ')}): ${x.cover.length?x.cover.map(o=>o.name).join(', '):'needs cover'}${x.sort.length?'. Sorting: '+x.sort.map(o=>o.name).join(', '):''}`);
+    L.push('XL: '+XLP.map(pc=>pc+' '+((r.xl[pc]||[]).map(o=>o.name).join(' and ')||'none')).join(', '))}
   L.push('','Everyone not listed is on their usual run.');return L.join('\n')}
 const sendBtns=()=>`<div class="ro-shotb"><button type="button" class="sh-btn primary" data-ro="sharetxt">Share</button><button type="button" class="sh-btn" data-ro="copytxt">Copy</button></div><p class="ro-note">Share opens WhatsApp, Connecteam or messages with the roster typed out. Copy lets you paste it anywhere. You can also screenshot the table.</p>`;
 const shownDates=()=>tab==='week'?weekDays(weeks):[day];
@@ -9654,7 +9659,7 @@ function mountHome(){const el=document.getElementById('sh-roster');if(el)el.inne
 
 function render(){mountHome();const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='<div class="empty">Opening…</div>';return}
-  if(mode==='drv'){const m=myDays().map(([d,l,x])=>`<div class="ro-mine"><i>${l}</i><span>${x.join('<br>')}</span></div>`).join('');box.innerHTML=`<div class="rox">${m}${weekHTML(true)}</div>`;return}
+  if(mode==='drv'){const m=myDays().map(([d,l,x])=>`<div class="ro-mine"><i>${l}</i><span>${x.join('<br>')}</span></div>`).join('');const D=weekDays(2).filter(d=>d>=TODAY);box.innerHTML=`<div class="rox">${m}${niceRows(D,true).length?niceHTML(D,true):'<div class="empty">Nothing on the roster yet. When the manager sends it, it shows here.</div>'}</div>`;return}
   if(!loaded.staff){box.innerHTML='<div class="empty">Opening…</div>';return}
   box.innerHTML=`<div class="rox"><div class="tabs" role="group" aria-label="Roster">${[['plan','Plan a day'],['week','Week'],['fl','Floaters']].map(([k,l])=>`<button type="button" data-ro="tab" data-v="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</div>
    ${tab==='plan'?planHTML():tab==='week'?weekMgrHTML():flHTML()}</div>`;
@@ -10561,7 +10566,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271215';
+const VERSION='202610271230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
