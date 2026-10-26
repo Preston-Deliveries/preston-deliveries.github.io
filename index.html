@@ -2758,7 +2758,7 @@ p.ck-alert{color:#5A3C00!important}
 /* One colour scheme everywhere: each page uses its section colour (blue on the road, amber news and guides, purple performance, green team, orange admin, teal overview) */
 #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}
 /* page tabs look like the By week buttons: one rounded box, the chosen tab filled in */
-#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs{display:inline-flex!important;align-self:flex-start;max-width:100%;overflow-x:auto;flex-wrap:nowrap!important;gap:3px;padding:3px!important;background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-radius:10px!important;margin:0 0 4px!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs{display:inline-flex!important;align-self:flex-start;max-width:100%;overflow:visible;flex-wrap:wrap!important;gap:3px;padding:3px!important;background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-radius:10px!important;margin:0 0 4px!important}
 #sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button{border:0!important;border-radius:8px!important;margin:0!important;padding:8px 14px!important;color:var(--sh-ink)!important;font:600 .95rem var(--sh-body)!important;background:transparent!important}
 #sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:hover{background:var(--gs)!important}
 #sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){background:var(--g)!important;color:#fff!important}
@@ -3574,6 +3574,57 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-invoices table.tb.days tr.tk td:first-child{box-shadow:none}
 
 }
+</style>
+<style id="sweepfix">
+/* timesheets: each entry as a block on anything narrower than a big screen */
+@media (max-width:1400px){
+#sh-main #mod-timesheets table.tsd,#sh-main #mod-timesheets table.tsd tbody{display:block;width:100%;min-width:0}
+#sh-main #mod-timesheets table.tsd thead{display:none}
+#sh-main #mod-timesheets .tw:has(table.tsd){overflow:visible}
+#sh-main #mod-timesheets table.tsd tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:6px 10px;padding:10px 12px;border-bottom:1px solid var(--sh-line);align-items:end}
+#sh-main #mod-timesheets table.tsd td{display:block;padding:0;border:0;min-width:0}
+#sh-main #mod-timesheets table.tsd td:nth-child(1){grid-column:1/3;grid-row:1;align-self:start}
+#sh-main #mod-timesheets table.tsd td:nth-child(11){grid-column:3;grid-row:1;align-self:start}
+#sh-main #mod-timesheets table.tsd td:nth-child(3){grid-column:1;grid-row:2}
+#sh-main #mod-timesheets table.tsd td:nth-child(4){grid-column:2;grid-row:2}
+#sh-main #mod-timesheets table.tsd td:nth-child(6){grid-column:3;grid-row:2;text-align:right;padding-bottom:10px}
+#sh-main #mod-timesheets table.tsd td:nth-child(5){grid-column:1;grid-row:3}
+#sh-main #mod-timesheets table.tsd td:nth-child(7){grid-column:2;grid-row:3}
+#sh-main #mod-timesheets table.tsd td:nth-child(8){grid-column:1;grid-row:4}
+#sh-main #mod-timesheets table.tsd td:nth-child(9){grid-column:2;grid-row:4}
+#sh-main #mod-timesheets table.tsd td:nth-child(10){grid-column:1/-1;grid-row:5}
+#sh-main #mod-timesheets table.tsd td:nth-child(n+3):nth-child(-n+10):not(:nth-child(6))::before{display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
+#sh-main #mod-timesheets table.tsd td:nth-child(3)::before{content:'Start'}#sh-main #mod-timesheets table.tsd td:nth-child(4)::before{content:'Finish'}#sh-main #mod-timesheets table.tsd td:nth-child(5)::before{content:'Break (min)'}
+#sh-main #mod-timesheets table.tsd td:nth-child(7)::before{content:'Extra'}#sh-main #mod-timesheets table.tsd td:nth-child(8)::before{content:'2 loads'}#sh-main #mod-timesheets table.tsd td:nth-child(9)::before{content:'Held'}#sh-main #mod-timesheets table.tsd td:nth-child(10)::before{content:'Note'}
+#sh-main #mod-timesheets table.tsd td input,#sh-main #mod-timesheets table.tsd td select{width:100%;max-width:100%;box-sizing:border-box;min-width:0}
+#sh-main #mod-timesheets table.tsd td:nth-child(6)::before{content:'Hours';display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
+}
+@media (max-width:1400px){#sh-main #mod-timesheets table.tsd td:nth-child(2){display:none}#sh-main #mod-timesheets table.tsd td:nth-child(1) small{display:inline;margin-left:6px}}
+/* summary: postcode table as blocks on phones */
+@media (max-width:700px){
+#sh-main #mod-summary table.pct,#sh-main #mod-summary table.pct tbody{display:block;width:100%}
+#sh-main #mod-summary table.pct thead{display:none}
+#sh-main #mod-summary .tw:has(table.pct){overflow:visible}
+#sh-main #mod-summary table.pct tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 10px;padding:10px 4px;border-bottom:1px solid var(--sh-line)}
+#sh-main #mod-summary table.pct td{display:block;padding:0;border:0;text-align:left;min-width:0}
+#sh-main #mod-summary table.pct td:nth-child(1){grid-column:1/3}
+#sh-main #mod-summary table.pct td:nth-child(2){grid-column:3;text-align:right}
+#sh-main #mod-summary table.pct td:nth-child(2)::before{content:'Drivers ';color:var(--sh-muted);font-size:.8rem}
+#sh-main #mod-summary table.pct td:nth-child(n+3)::before{display:block;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main #mod-summary table.pct td:nth-child(3)::before{content:'Parcels'}#sh-main #mod-summary table.pct td:nth-child(4)::before{content:'FTD'}#sh-main #mod-summary table.pct td:nth-child(5)::before{content:'2HR ETA'}
+#sh-main #mod-summary table.pct td:nth-child(6)::before{content:'NC scans'}#sh-main #mod-summary table.pct td:nth-child(7)::before{content:'Enquiries'}#sh-main #mod-summary table.pct td:nth-child(8)::before{content:'Survey'}
+}
+/* results admin check table fits a phone */
+@media (max-width:700px){
+#sh-main #mod-results #r_tbl{table-layout:fixed;width:100%;min-width:0;font-size:.82rem}
+#sh-main #mod-results #r_tbl th,#sh-main #mod-results #r_tbl td{padding:6px 3px;white-space:normal;word-break:break-word}
+#sh-main #mod-results #r_tbl th:first-child,#sh-main #mod-results #r_tbl td:first-child{width:28%}
+#sh-main #mod-results #r_tbl input{width:100%;min-width:0;box-sizing:border-box;padding:4px}
+#sh-main #mod-results .tablebox{overflow:visible}
+}
+/* tab rows wrap instead of running off the screen */
+#sh-main#sh-main #mod-lockers .tabs,#sh-main#sh-main #mod-feedback .tabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important}
+#sh-main#sh-main #mod-lockers .tabs button,#sh-main#sh-main #mod-feedback .tabs button{flex:1 1 auto}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -8890,7 +8941,7 @@ function contractHTML(C){
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
   return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
-  `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
+  `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
 }
@@ -9342,7 +9393,7 @@ function weekHTML(){
     let dt=0,dm=0;for(const r of R){const e=eff(r);if(e.hrs!=null){dt+=e.hrs;tot+=e.hrs}else{dm++;miss++}seen.add(r.key)}
     return `<details class="card day" data-day="${d}" ${open.has(d)?'open':''}><summary class="dh"><h3>${esc(longD(d))}</h3><span class="sub">${R.length} driver${R.length===1?'':'s'} · ${fmtH(dt)||'0h 00m'}${dm?` · <b class="mi">${dm} missing a time</b>`:''}</span><span class="tg" aria-hidden="true"></span></summary>
     <div class="dbody"><div class="dtools">${addFor===d?`<span class="addp"><select id="ts_addsel" aria-label="Who worked"><option value="">Who worked?</option>${Object.values(people()).filter(p=>p.id&&!R.some(r=>r.key===p.id)).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select><button type="button" class="sh-btn sm primary" data-ts="addok" data-v="${d}">Add</button><button type="button" class="sh-btn sm" data-ts="addno">Cancel</button></span>`:`<button type="button" class="sh-btn sm" data-ts="addp" data-v="${d}">+ Add someone</button>`}</div>
-    <div class="tw"><table class="tb">${THEAD('Driver')}<tbody>${R.map(r=>rowHTML(r,false)).join('')}</tbody></table></div></div></details>`}).join('');
+    <div class="tw"><table class="tb tsd">${THEAD('Driver')}<tbody>${R.map(r=>rowHTML(r,false)).join('')}</tbody></table></div></div></details>`}).join('');
   return {secs:secs||`<div class="empty">No one has clocked in this week yet. Each shift shows here as soon as a driver taps Start shift.</div>`,miss,tot,n:seen.size,label:short(f)+' to '+short(dd[dd.length-1])+' '+fromIso(dd[dd.length-1]).getFullYear()};
 }
 /* ---------- one person's timesheet ---------- */
@@ -9357,7 +9408,7 @@ function personHTML(){
     <label class="daysel" for="ts_per">Show<select id="ts_per">${PER.map(([k,l])=>`<option value="${k}" ${per===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <button type="button" class="sh-btn" data-ts="px">Download Excel</button><button type="button" class="sh-btn primary" data-ts="pp">Download PDF</button></div>
     <div class="tiles"><div class="tile"><span>Days worked</span><b>${R.length}</b></div><div class="tile"><span>Total hours</span><b>${fmtH(tot)||'0h 00m'}</b></div><div class="tile"><span>Extra parcels</span><b>${xp}</b></div><div class="tile"><span>2 load days</span><b>${tl}</b></div><div class="tile ${hp?'warn':''}"><span>Held parcels</span><b>${hp}</b></div><div class="tile ${miss?'warn':'good'}"><span>Missing a time</span><b>${miss}</b></div></div>
-    ${R.length?`<section class="card day"><div class="tw"><table class="tb">${THEAD('Date')}<tbody>${R.map(r=>rowHTML(r,true)).join('')}</tbody></table></div></section>`:'<div class="empty">No entries for this period.</div>'}</div>`;
+    ${R.length?`<section class="card day"><div class="tw"><table class="tb tsd">${THEAD('Date')}<tbody>${R.map(r=>rowHTML(r,true)).join('')}</tbody></table></div></section>`:'<div class="empty">No entries for this period.</div>'}</div>`;
 }
 function searchHTML(){
   const t=sq.trim().toLowerCase();
@@ -10559,7 +10610,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272000';
+const VERSION='202610272030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
