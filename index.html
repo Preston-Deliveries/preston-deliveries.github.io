@@ -2786,7 +2786,18 @@ p.ck-alert{color:#5A3C00!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .dno,:root:not([data-theme="light"]) #sh-main .sh-sec.pg .sheet .sh-no,:root:not([data-theme="light"]) #sh-main .sh-sec.pg .secno{color:#0B1320!important}}
 :root[data-theme="dark"] #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .dno,:root[data-theme="dark"] #sh-main .sh-sec.pg .sheet .sh-no,:root[data-theme="dark"] #sh-main .sh-sec.pg .secno{color:#0B1320!important}
 #sh-main .sh-sec.pg #lk_root tbody tr td.ty{font-weight:700}
-</style><style id="pc-colours">
+</style><style id="pc-all">
+.pcz-4214,.pc-4214,.pr-4214{--p:#1D5FD1;--ps:#E0EAFB}.pcz-4215,.pc-4215,.pr-4215{--p:#0B7A6E;--ps:#D8F0EC}.pcz-4217,.pc-4217,.pr-4217{--p:#B86E00;--ps:#FDEFD6}.pcz-4218,.pc-4218,.pr-4218{--p:#C2185B;--ps:#FBE1EC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :is(.pcz-4214,.pc-4214,.pr-4214){--p:#7FA8F5;--ps:#1B2A47}:root:not([data-theme="light"]) :is(.pcz-4215,.pc-4215,.pr-4215){--p:#4FD1BF;--ps:#12332F}:root:not([data-theme="light"]) :is(.pcz-4217,.pc-4217,.pr-4217){--p:#F2B24A;--ps:#3A2C10}:root:not([data-theme="light"]) :is(.pcz-4218,.pc-4218,.pr-4218){--p:#F48FB1;--ps:#3D1A28}}
+:root[data-theme="dark"] :is(.pcz-4214,.pc-4214,.pr-4214){--p:#7FA8F5;--ps:#1B2A47}:root[data-theme="dark"] :is(.pcz-4215,.pc-4215,.pr-4215){--p:#4FD1BF;--ps:#12332F}:root[data-theme="dark"] :is(.pcz-4217,.pc-4217,.pr-4217){--p:#F2B24A;--ps:#3A2C10}:root[data-theme="dark"] :is(.pcz-4218,.pc-4218,.pr-4218){--p:#F48FB1;--ps:#3D1A28}
+#sh-main#sh-main#sh-main button.pcz{color:var(--p)!important;background:var(--ps)!important;border-color:transparent!important;font-weight:700}
+#sh-main#sh-main#sh-main button.pcz:is([aria-pressed="true"],[aria-selected="true"]){background:var(--p)!important;color:#fff!important;border-color:var(--p)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main#sh-main button.pcz:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}}
+:root[data-theme="dark"] #sh-main#sh-main#sh-main button.pcz:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}
+#sh-main :is(.lk-pc,td:first-child>b).pcz{display:inline-block;background:var(--ps)!important;color:var(--p)!important;border-radius:999px;padding:2px 9px;font-weight:700}
+#sh-main tr.pcr>td:first-child{box-shadow:inset 4px 0 0 var(--p)}
+</style>
+<style id="pc-colours">
 /* a colour for each postcode, the same as the Directory */
 #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#1D5FD1;--ps:#E0EAFB}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#0B7A6E;--ps:#D8F0EC}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#B86E00;--ps:#FDEFD6}#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,#sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#C2185B;--ps:#FBE1EC}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4214,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4214{--p:#7FA8F5;--ps:#1B2A47}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4215,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4215{--p:#4FD1BF;--ps:#12332F}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4217,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4217{--p:#F2B24A;--ps:#3A2C10}:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pc-4218,:root:not([data-theme="light"]) #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pr-4218{--p:#F48FB1;--ps:#3D1A28}}
@@ -3109,6 +3120,10 @@ function markDup(){
   const sec=document.getElementById(MOD[cur]);if(!sec||cur==='home')return;const want=normT(NAMES[cur]);
   sec.querySelectorAll('h1').forEach(h=>{const dup=normT(h.textContent)===want;if(h.classList.contains('sh-dup')!==dup)h.classList.toggle('sh-dup',dup)});
 }
+/* Postcode colours everywhere: 4214 blue, 4215 teal, 4217 amber, 4218 pink */
+const PCRE=/^42(14|15|17|18)$/;
+function tagPc(){document.querySelectorAll('#sh-main :is(button,.lk-pc,td:first-child>b):not(.pcz)').forEach(el=>{const t=el.textContent.trim();if(PCRE.test(t)){el.classList.add('pcz','pcz-'+t);if(el.matches('td>b')){const r=el.closest('tr');if(r)r.classList.add('pcr','pr-'+t)}}})}
+let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc()})}).observe(document.body,{childList:true,subtree:true});
 let dupQ=false;new MutationObserver(()=>{if(dupQ)return;dupQ=true;requestAnimationFrame(()=>{dupQ=false;markDup()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
   renderPageHead();
@@ -9086,7 +9101,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261420';
+const VERSION='202610261430';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
