@@ -1049,7 +1049,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-leave .legend .lim{margin-left:auto;font-weight:700;color:var(--sh-ink)}
 #mod-leave .k{display:inline-block;width:14px;height:14px;border-radius:4px}
 #mod-leave .k{border:1.5px solid}#mod-leave .k.open{background:var(--lv-open-bg);border-color:var(--lv-open-bd)}#mod-leave .k.one{background:var(--lv-one-bg);border-color:var(--lv-one-bd)}#mod-leave .k.full{background:var(--lv-full-bg);border-color:var(--lv-full-bd)}#mod-leave .k.bo{background:repeating-linear-gradient(135deg,var(--lv-bo1) 0 4px,var(--lv-bo2) 4px 8px);border-color:#8A9692}
-#mod-leave .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+#mod-leave .cal{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
 #mod-leave .dow{text-align:center;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted);padding:2px 0}
 #mod-leave .day{min-height:112px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:6px;border:1px solid var(--sh-line);border-radius:8px;background:var(--sh-surface);color:var(--sh-ink);cursor:pointer;font:inherit;text-align:left;min-width:0;overflow:hidden;border-left-width:5px}
 #mod-leave .day:focus-visible{outline:2px solid var(--sh-accent);outline-offset:1px}
@@ -7674,8 +7674,8 @@ function monthHTML(){
   const det=sel?dayDetail(sel,m[sel]):'';
   return `<div class="calbar"><button type="button" class="sh-btn" data-lv="prev" aria-label="Previous month">‹</button><h2>${MON[month.getMonth()]} ${month.getFullYear()}</h2><button type="button" class="sh-btn" data-lv="next" aria-label="Next month">›</button><button type="button" class="sh-btn" data-lv="today">Today</button></div>
    ${legendHTML()}
-   <div class="cal" role="grid" aria-label="${MON[month.getMonth()]} ${month.getFullYear()}">${DOW.map(d=>`<div class="dow">${d}</div>`).join('')}
-   ${cells.map(d=>{const k=iso(d),o=m[k],st=status(k,o),out=d.getMonth()!==month.getMonth();
+   <div class="cal" role="grid" aria-label="${MON[month.getMonth()]} ${month.getFullYear()}">${DOW.slice(0,5).map(d=>`<div class="dow">${d}</div>`).join('')}
+   ${cells.filter(d=>d.getDay()!==0&&d.getDay()!==6).map(d=>{const k=iso(d),o=m[k],st=status(k,o),out=d.getMonth()!==month.getMonth();
      const names=showNames&&o?o.names.map(x=>({x,c:''})).concat(isMgr()?o.office.map(x=>({x,c:'of'})):[]):[];
      return `<button type="button" class="day ${st.k} ${out?'out':''} ${k===today?'now':''} ${k===sel?'sel':''}" data-lv="day" data-v="${k}" aria-label="${niceShort(k)}: ${st.t}${o&&o.n?`, ${o.n} off`:''}"><span class="dn">${d.getDate()}</span>${st.k!=='wk'&&o&&o.n?`<span class="st">${o.n} off</span>`:''}
        ${names.length?`<span class="nm">${names.slice(0,4).map(p=>`<em class="${p.c}">${esc(isMgr()?shortName(p.x):p.x.split(' ')[0])}</em>`).join('')}${names.length>4?`<em class="more">+${names.length-4} more</em>`:''}</span>`:''}</button>`}).join('')}</div>
@@ -10811,7 +10811,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280640';
+const VERSION='202610280650';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
