@@ -3669,14 +3669,20 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .rsk{font-size:.8rem;color:var(--sh-muted);margin-top:8px}#sh-main .rt .rsk i.rd{margin-left:2px}
 @media (max-width:700px){
 #sh-main .rt table.rsm{font-size:.74rem}
-#sh-main .rt table.rsm th button{padding:8px 2px;font-size:.56rem;letter-spacing:.02em}
+#sh-main .rt table.rsm th button{padding:8px 2px 8px 6px;font-size:.54rem;letter-spacing:.01em}
 #sh-main .rt table.rsm td{padding:8px 2px}
 #sh-main .rt table.rsm :is(th,td):first-child{padding-left:8px}#sh-main .rt table.rsm :is(th,td):last-child{padding-right:8px}
 #sh-main .rt table.rsm th.dr{width:27%}
 #sh-main .rt table.rsm td.dr b{font-size:.78rem}
 #sh-main .rt table.rsm .dy{display:none}
+#sh-main .rt table.rsm th.dr{width:22%}#sh-main .rt table.rsm th.c-pc{width:15%}#sh-main .rt table.rsm th.c-ftd{width:15%}#sh-main .rt table.rsm th.c-eta{width:15%}#sh-main .rt table.rsm th.c-nc{width:8%}#sh-main .rt table.rsm th.c-enq{width:9%}#sh-main .rt table.rsm th.c-sv{width:16%}
 #sh-main .rt i.rd{width:6px;height:6px;margin-right:3px}
 }
+#sh-main .rt table.rsm .rdl{display:block;font-size:.66rem;font-weight:700;margin-top:2px;white-space:nowrap}
+#sh-main .rt .rdl.g{color:#14804A}#sh-main .rt .rdl.b{color:#C62828}#sh-main .rt .rdl.n{color:var(--sh-muted)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt .rdl.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .rt .rdl.b{color:#F48A8A}}
+:root[data-theme="dark"] #sh-main .rt .rdl.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rdl.b{color:#F48A8A}
+@media (max-width:700px){#sh-main .rt table.rsm .rdl{font-size:.58rem}}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -5097,7 +5103,7 @@ function weekRows(weeks){
   return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc==null||r.nc===""?0:+r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq));
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),nc,enq,ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*3}});
 }
-function dayRows(key){const d=week.days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
+function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
 function scoreSort(rows){
   return rows.map(r=>({...r,star:r.points===r.max})).sort((a,b)=>cmp(a,b)||a.login.localeCompare(b.login));
 }
@@ -5321,10 +5327,40 @@ function addRanks(rows){
   const put=(key,val,desc)=>{const L=rows.filter(r=>val(r)!=null).sort((a,b)=>desc?val(b)-val(a):val(a)-val(b));L.forEach((r,i)=>{const p=L[i-1];r[key]=p&&Math.abs(val(p)-val(r))<1e-9?p[key]:i+1});rows.forEach(r=>{r[key+"Of"]=L.length})};
   put("etaRk",r=>r.eta,true);put("ncRk",r=>r.nc==null?null:+r.nc,false);return rows;
 }
-function liveRows(){return addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))))}
+function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))));const P=prevMap();if(P)R.forEach(x=>{x.prev=P[x.key]||null});
+  const sv=svFor(weekId,view),pv=view==="day"?null:svFor(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);
+  R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});return R}
+/* customer survey: score per driver for the same week (or the 4 weeks of the pay period) */
+let SVC=null,svAsked=false;
+function svCycles(){if(SVC)return SVC;
+  if(!svAsked&&db&&window.APP&&APP.role==="mgr"&&!window.__UV){svAsked=true;db.collection("weeks").get().then(q=>{const c={};q.docs.forEach(d=>{const w=d.data()||{};if(!w.cycleStart)return;const n=+w.week||+(String(d.id).split("_w")[1])||1;(c[w.cycleStart]=c[w.cycleStart]||{})[n]=w.drivers||{}});SVC=c;rerenderRT()}).catch(()=>{})}
+  const s=window.APP&&APP.SNAP&&APP.SNAP.survey;return(s&&s.cycles)||{}}
+function svFor(id,v){const C=svCycles(),ci=cycleInfo(id),cs=iso(ci.start),cy=C[cs]||{};const by={};
+  const wks=v==="cycle"?[1,2,3,4]:[ci.no];
+  for(const n of wks)for(const[l,arr]of Object.entries(cy[n]||cy[String(n)]||{}))for(const x of arr||[]){const k=String(l).toUpperCase().replace(/\s+/g,"");(by[k]=by[k]||[]).push(+x.s)}
+  const out={};for(const[k,a]of Object.entries(by)){const pr=a.filter(x=>x>=9).length,de=a.filter(x=>x<=6).length;out[k]={n:Math.round((pr-de)/a.length*100),c:a.length}}return out}
+/* the period before, so each number can show if it went up or down */
+const PW={};
+function pwGet(id){if(id===weekId)return week;if(cycleWeeks&&cycleWeeks[id])return cycleWeeks[id];if(PW[id]&&PW[id]!=="l")return PW[id];
+  if(!PW[id]){PW[id]="l";loadWeekDocs(id).then(w=>{PW[id]=w;rerenderRT()}).catch(()=>{PW[id]={days:{}}})}return null}
+function rerenderRT(){clearTimeout(rerenderRT.t);rerenderRT.t=setTimeout(()=>{try{if(!$("tool").hidden)renderRTAdmin();else if(LIVE&&!$("driverView").hidden)showDriverView(!$("dvOwner").hidden)}catch(e){console.warn(e)}},60)}
+function prevMap(){let rows=null;const ks=DAYS.map(d=>d[0]);
+  if(view==="day"){const i=ks.indexOf(selDay);for(let j=i-1;j>=0&&!rows;j--)if(week.days[ks[j]])rows=dayRows(ks[j]);
+    if(!rows){const pw=pwGet(iso(addDays(fromIso(weekId),-7)));if(!pw)return null;for(let j=ks.length-1;j>=0&&!rows;j--)if(pw.days&&pw.days[ks[j]])rows=dayRows(ks[j],pw)}}
+  else if(view==="week"){const pw=pwGet(iso(addDays(fromIso(weekId),-7)));if(!pw)return null;rows=weekRows([pw])}
+  else{const st=cycleInfo(weekId).start;const ws=[0,1,2,3].map(i=>pwGet(iso(addDays(st,7*(i-4)))));if(ws.some(x=>!x))return null;rows=weekRows(ws)}
+  const m={};for(const x of rows||[])m[String(x.login).toUpperCase().replace(/\s+/g,"")]=x;return m}
+const PLAB={day:"the day before",week:"last week",cycle:"last pay period"};
+function dlt(cur,prev,kind){if(cur==null||prev==null)return "";let d,t,g;
+  if(kind==="pct"){d=(cur-prev)*100;t=Math.abs(d).toFixed(1)+" pts";g=d>0}
+  else if(kind==="down"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d<0}
+  else if(kind==="up"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d>0}
+  else{if(!prev)return "";d=(cur-prev)/prev*100;t=Math.abs(d).toFixed(0)+"%";g=null}
+  if(Math.abs(d)<0.05)return "";
+  return `<span class="rdl ${g==null?"n":g?"g":"b"}">${d>0?"▲":"▼"} ${t}</span>`}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
   return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
-const SORTS={name:[r=>(r.name||r.login).toLowerCase(),1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1],days:[r=>r.days||0,-1]};
+const SORTS={name:[r=>(r.name||r.login).toLowerCase(),1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1],days:[r=>r.days||0,-1],sv:[r=>r.sv??-999,-1]};
 function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
   let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="full"?r.st==="full":r.rt[RT.st]==="b"))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
@@ -5335,16 +5371,17 @@ const p1=v=>v==null?"n/a":(v>=.9995?"100":(Math.round(v*1000)/10).toFixed(1))+"%
 const MK={g:"✓",w:"!",b:"✕","":""};
 function cell(c,txt){return `<span class="rt-v ${c?"r-"+c:"r-n"}">${c?`<i aria-hidden="true">${MK[c]}</i>`:""}${txt}</span>`}
 function rowHTML(r,multi){
-  const nm=r.name||r.login,sub=r.name?r.login:"";
-  const d=c=>`<i class="rd ${c?"r-"+c:"r-n"}" aria-hidden="true"></i>`;
+  const nm=(r.name?String(r.name).trim().split(/\s+/)[0]:"")||r.login,sub=r.name?r.login:"";
+  const d=c=>`<i class="rd ${c?"r-"+c:"r-n"}" aria-hidden="true"></i>`,P=r.prev;
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
    <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    ${multi?`<td class="r dy">${r.days||""}</td>`:""}
-   <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
-   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
-   <td class="r">${d(r.rt.eta)}${p1(r.eta)}</td>
-   <td class="r">${d(r.rt.nc)}${r.nc==null?"n/a":Math.round(r.nc)}</td>
-   <td class="r">${d(r.rt.enq)}${r.enq==null?"0":Math.round(r.enq)}</td></tr>`;
+   <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}${P?dlt(r.pc,P.pc,"n"):""}</td>
+   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}${P?dlt(r.ftd,P.ftd,"pct"):""}</td>
+   <td class="r">${d(r.rt.eta)}${p1(r.eta)}${P?dlt(r.eta,P.eta,"pct"):""}</td>
+   <td class="r">${d(r.rt.nc)}${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
+   <td class="r">${d(r.rt.enq)}${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
+   <td class="r sv">${r.sv==null?"–":r.sv}${P&&r.sv!=null?dlt(r.sv,P.sv,"up"):""}</td></tr>`;
 }
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
@@ -5369,13 +5406,13 @@ function rtHTML(rows,multi){
      <div><small>FTD</small><b>${p1(tf)}</b></div></div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
-       <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option></select></label></div>
+       <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option><option value="sv">Survey</option></select></label></div>
      
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("pc","Parcels","r")}${th("ftd","FTD","r")}${th("eta","ETA","r")}${th("nc","NC","r")}${th("enq","Enq","r")}</tr></thead><tbody></tbody></table></div>
-   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA, ${T().etaG}% or more. NC: NC scans, none. Enq: enquiries, none. Tap a heading to sort.</p>`;
+   <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("pc","Parcels","r c-pc")}${th("ftd","FTD","r c-ftd")}${th("eta","ETA","r c-eta")}${th("nc","NC","r c-nc")}${th("enq","Enq","r c-enq")}${th("sv","Survey","r c-sv")}</tr></thead><tbody></tbody></table></div>
+   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA, ${T().etaG}% or more. NC: NC scans, none. Enq: enquiries, none. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
 }
 function mountRT(box,rows,multi){
   box.classList.add("rt");box.__rows=rows;box.__multi=multi;
@@ -8947,7 +8984,7 @@ function grpLbl(p){const c=grpCls(p);return{'dg-xl':'XL','dg-relief':'Relief','d
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
   return `<div class="tw"><table class="tb pct dtb"><thead><tr><th>Driver</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-  ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(p.name)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
+  ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(String(p.name||"").trim().split(/\s+/)[0]||p.login)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
    <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint smk">ETA: 2 hr ETA. NC: NC scans. Enq: enquiries.</p>`;
 }
@@ -10671,7 +10708,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272300';
+const VERSION='202610272345';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
