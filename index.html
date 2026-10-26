@@ -3607,8 +3607,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary table.pct th,#sh-main #mod-summary table.pct td{padding:7px 2px;white-space:nowrap;overflow:hidden;text-overflow:clip}
 #sh-main #mod-summary table.pct th{font-size:.56rem;letter-spacing:.02em}
 #sh-main #mod-summary table.pct th:nth-child(2),#sh-main #mod-summary table.pct td:nth-child(2){display:none}
-#sh-main #mod-summary table.pct th:nth-child(1){width:18%}#sh-main #mod-summary table.pct th:nth-child(3){width:17%}#sh-main #mod-summary table.pct th:nth-child(4){width:14%}#sh-main #mod-summary table.pct th:nth-child(5){width:18%}
-#sh-main #mod-summary table.pct th:nth-child(6){width:10%}#sh-main #mod-summary table.pct th:nth-child(7){width:10%}#sh-main #mod-summary table.pct th:nth-child(8){width:13%}
+#sh-main #mod-summary table.pct th:nth-child(1){width:16%}#sh-main #mod-summary table.pct th:nth-child(3){width:16%}#sh-main #mod-summary table.pct th:nth-child(4){width:17%}#sh-main #mod-summary table.pct th:nth-child(5){width:17%}
+#sh-main #mod-summary table.pct th:nth-child(6){width:9%}#sh-main #mod-summary table.pct th:nth-child(7){width:10%}#sh-main #mod-summary table.pct th:nth-child(8){width:15%}#sh-main #mod-summary table.pct .dlt{font-size:.56rem!important;letter-spacing:-.01em}
 #sh-main #mod-summary table.pct td:first-child{padding-left:4px;white-space:normal}
 #sh-main #mod-summary table.pct td:first-child b{font-size:.74rem}
 #sh-main #mod-summary table.pct.dtb th:nth-child(1){width:24%}#sh-main #mod-summary table.pct.dtb td:first-child b{display:block;white-space:normal;line-height:1.2}#sh-main #mod-summary table.pct.dtb .smm{display:block;font-size:.6rem;white-space:normal}
@@ -5377,7 +5377,7 @@ function rowHTML(r,multi){
    <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    ${multi?`<td class="r dy">${r.days||""}</td>`:""}
    <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}${P?dlt(r.pc,P.pc,"n"):""}</td>
-   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}${P?dlt(r.ftd,P.ftd,"pct"):""}</td>
+   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
    <td class="r">${d(r.rt.eta)}${p1(r.eta)}${P?dlt(r.eta,P.eta,"pct"):""}</td>
    <td class="r">${d(r.rt.nc)}${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
    <td class="r">${d(r.rt.enq)}${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
@@ -9035,7 +9035,7 @@ function contractHTML(C){
   const rows=drvRows(keys,C);
   return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
+   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}${pa&&n!=null?dl(n,nps(pa.scores),'nps',L):''}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
 }
 let pcSort='none';
@@ -10708,7 +10708,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272345';
+const VERSION='202610280005';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
