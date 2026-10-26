@@ -7436,23 +7436,23 @@ function statsHTML(per,x,sv,own){
   }
   const fbHTML=`${good.length?`<div class="fbg"><h4>Going well</h4><ul>${good.map(t=>`<li class="ok">${esc(t)}</li>`).join('')}</ul></div>`:''}
     <div class="fbn"><h4>Needs improvement</h4>${need.length?`<ul>${need.map(t=>`<li class="no">${esc(t)}</li>`).join('')}</ul>`:'<p class="ms-good">Nothing to work on. Keep it up.</p>'}</div>`;
-  const row=(l,v,cls,note)=>`<div class="ms-r"><span class="l">${l}${note?`<small>${note}</small>`:''}</span><b class="${cls||''}">${v}</b></div>`;
+  const row=(l,v,cls,note,tg)=>`<div class="ms-r"><span class="l">${l}${tg!=null?`<small class="tg">Target ${tg}</small>`:''}${note?`<small>${note}</small>`:''}</span><b class="${cls||''}">${v}</b></div>`;
   const ok=(bad,txt)=>bad?txt:'';
   const svb=sv&&sv.found?sv.scores.map(n=>`<i class="${n>=9?'g':n>=7?'w':'b'}">${n}</i>`).join(''):'';
   return `<section class="ms">
    <div class="ms-sec"><h3>Driver results</h3>
     ${x?[
       row('Days worked',String(x.days)),
-      row('FTD',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':Math.round(x.ftd*1000)/10>=92?'g':'b'),
-      row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
-      row('NC scans',String(Math.round(x.nc||0))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'nc'))),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
-      row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}`))].join('')
+      row('First time delivery (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
+      row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`),t.etaG+'%'),
+      row('Non compliant scans (NC)',String(Math.round(x.nc||0))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'nc'))),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`),'0'),
+      row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}`),'0')].join('')
      :`<p class="ms-none">No results ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]} yet.</p>`}
    </div>
    <div class="ms-sec"><h3>Customer surveys${PER==='day'?' <span class="ms-q">this week</span>':''}</h3>
     ${sv&&sv.found?[
       row('Surveys',`<span class="ms-bx">${svb}</span>`),
-      row('Average score',sv.avg!=null?sv.avg.toFixed(1):'–',sv.avg>=9?'g':sv.avg<7?'b':'')].join('')
+      row('Score',sv.avg!=null?(Math.round(sv.avg*100)/10).toFixed(1).replace(/\.0$/,''):'–',sv.avg==null?'':sv.avg*10>=70?'g':'b','','70')].join('')
      :`<p class="ms-none">No customer surveys ${PER==='cycle'?'this month':'this week'} yet.</p>`}
    </div>
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280330';
+const VERSION='202610280340';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
