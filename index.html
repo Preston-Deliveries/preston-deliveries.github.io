@@ -3700,6 +3700,13 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #sh-main .rt .rtk .tk b.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rtk .tk b.b{color:#F48A8A}
 @media (max-width:700px){#sh-main .rt .rt-sum.rtk{grid-template-columns:1fr 1fr}#sh-main .rt .rtk .tk b{font-size:1.3rem}}
 </style>
+<style id="svcol">
+.svg,#sh-main .tile.svg>b,#sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#14804A!important}.svb,#sh-main .tile.svb>b,#sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#C62828!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .svg,:root:not([data-theme="light"]) #sh-main .tile.svg>b{color:#5CCB8E!important}:root:not([data-theme="light"]) .svb,:root:not([data-theme="light"]) #sh-main .tile.svb>b{color:#F48A8A!important}}
+:root[data-theme="dark"] .svg,:root[data-theme="dark"] #sh-main .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] .svb,:root[data-theme="dark"] #sh-main .tile.svb>b{color:#F48A8A!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}}
+:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -5401,7 +5408,7 @@ function rowHTML(r,multi){
    <td class="r">${d(r.rt.eta)}${p1(r.eta)}${P?dlt(r.eta,P.eta,"pct"):""}</td>
    <td class="r">${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
    <td class="r">${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
-   <td class="r sv">${r.sv==null?"–":r.sv+`<small class="svn">(${r.svN})</small>`}${P&&r.sv!=null?dlt(r.sv,P.sv,"up"):""}</td></tr>`;
+   <td class="r sv">${r.sv==null?"–":`<span class="${r.sv>=70?"svg":"svb"}">${r.sv}</span><small class="svn">(${r.svN})</small>`}${P&&r.sv!=null?dlt(r.sv,P.sv,"up"):""}</td></tr>`;
 }
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
@@ -5427,7 +5434,7 @@ function rtHTML(rows,multi){
      ${tl("2 hr ETA",p1(te),"Target "+T().etaG+"%",PA?dlt(te,pe,"pct"):"",te==null?"":te*100>=T().etaG?"g":"b")}
      ${tl("NC scans",tn==null?"0":Math.round(tn),"Lower is better",PA?dlt(tn,pn,"down"):"")}
      ${tl("Enquiries",String(Math.round(te2||0)),"Lower is better",PA?dlt(te2||0,pq||0,"down"):"")}
-     ${tl("Survey score",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"")}</div>
+     ${tl("Survey score",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"",ST?(ST.n>=70?"g":"b"):"")}</div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="sv">Survey</option></select></label></div>
@@ -8992,7 +8999,7 @@ function tiles(a,extra,pa){
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',grade('eta',eta)],
    ['Scan errors',fmtN(a.nc),'Lower is better',a.days?(a.nc===0?'good':a.nc<=Math.max(1,Math.round(a.days*0.05))?'warn':'bad'):'none'],
    ['Enquiries',fmtN(a.enq),a.fault?`${a.fault} at fault in the log`:'From Driver Results',a.days?(a.enq?'bad':'good'):'none'],
-   ['Survey score',n==null?'–':String(n),a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'No survey for this period',n==null?'none':n>=70?'good':n>=50?'warn':'bad'],
+   ['Survey score',n==null?'–':String(n),a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'No survey for this period',n==null?'none':n>=70?'good svg':'bad svb'],
    ...(extra||[])];
   const L=PC&&PC.R?PC.R.lab:'',pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
   const D=pa&&PC?[dl(a.pc,pa.days?pa.pc:null,'chg',L),dl(ftd,pf,'pct',L),dl(eta,pe,'pct',L),dl(a.nc,pa.days?pa.nc:null,'down',L),dl(a.enq,pa.days?pa.enq:null,'down',L),dl(n,pn,'nps',L)]:[];
@@ -9011,7 +9018,7 @@ function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
   return `<div class="tw"><table class="tb pct dtb"><thead><tr><th>Driver</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
   ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(String(p.name||"").trim().split(/\s+/)[0]||p.login)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
-   <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
+   <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td><td class="r">${n==null?'–':`<span class="${n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint smk">ETA: 2 hr ETA. NC: NC scans. Enq: enquiries.</p>`;
 }
 function attention(rows){
@@ -9061,7 +9068,7 @@ function contractHTML(C){
   const rows=drvRows(keys,C);
   return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}${pa&&n!=null?dl(n,nps(pa.scores),'nps',L):''}</td></tr>`}).join('')}
+   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':`<span class="${n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}${pa&&n!=null?dl(n,nps(pa.scores),'nps',L):''}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
 }
 let pcSort='none';
@@ -10734,7 +10741,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280150';
+const VERSION='202610280200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
