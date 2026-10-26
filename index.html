@@ -3600,19 +3600,19 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-timesheets table.tsd td:nth-child(6)::before{content:'Hours';display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
 }
 @media (max-width:1400px){#sh-main #mod-timesheets table.tsd td:nth-child(2){display:none}#sh-main #mod-timesheets table.tsd td:nth-child(1) small{display:inline;margin-left:6px}}
-/* summary: postcode table as blocks on phones */
+/* summary: postcode table stays a table on phones, squeezed to fit so postcodes line up */
 @media (max-width:700px){
-#sh-main #mod-summary table.pct,#sh-main #mod-summary table.pct tbody{display:block;width:100%}
-#sh-main #mod-summary table.pct thead{display:none}
 #sh-main #mod-summary .tw:has(table.pct){overflow:visible}
-#sh-main #mod-summary table.pct tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 10px;padding:10px 4px;border-bottom:1px solid var(--sh-line)}
-#sh-main #mod-summary table.pct td{display:block;padding:0;border:0;text-align:left;min-width:0}
-#sh-main #mod-summary table.pct td:nth-child(1){grid-column:1/3}
-#sh-main #mod-summary table.pct td:nth-child(2){grid-column:3;text-align:right}
-#sh-main #mod-summary table.pct td:nth-child(2)::before{content:'Drivers ';color:var(--sh-muted);font-size:.8rem}
-#sh-main #mod-summary table.pct td:nth-child(n+3)::before{display:block;font-size:.64rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted)}
-#sh-main #mod-summary table.pct td:nth-child(3)::before{content:'Parcels'}#sh-main #mod-summary table.pct td:nth-child(4)::before{content:'FTD'}#sh-main #mod-summary table.pct td:nth-child(5)::before{content:'2HR ETA'}
-#sh-main #mod-summary table.pct td:nth-child(6)::before{content:'NC scans'}#sh-main #mod-summary table.pct td:nth-child(7)::before{content:'Enquiries'}#sh-main #mod-summary table.pct td:nth-child(8)::before{content:'Survey'}
+#sh-main #mod-summary table.pct{table-layout:fixed;width:100%;min-width:0;font-size:.74rem}
+#sh-main #mod-summary table.pct th,#sh-main #mod-summary table.pct td{padding:7px 2px;white-space:nowrap;overflow:hidden;text-overflow:clip}
+#sh-main #mod-summary table.pct th{font-size:.56rem;letter-spacing:.02em}
+#sh-main #mod-summary table.pct th:nth-child(2),#sh-main #mod-summary table.pct td:nth-child(2){display:none}
+#sh-main #mod-summary table.pct th:nth-child(1){width:18%}#sh-main #mod-summary table.pct th:nth-child(3){width:17%}#sh-main #mod-summary table.pct th:nth-child(4){width:14%}#sh-main #mod-summary table.pct th:nth-child(5){width:18%}
+#sh-main #mod-summary table.pct th:nth-child(6){width:10%}#sh-main #mod-summary table.pct th:nth-child(7){width:10%}#sh-main #mod-summary table.pct th:nth-child(8){width:13%}
+#sh-main #mod-summary table.pct td:first-child{padding-left:4px;white-space:normal}
+#sh-main #mod-summary table.pct td:first-child b{font-size:.74rem}
+#sh-main #mod-summary table.pct .dlt{display:block;font-size:.6rem;margin-top:1px;white-space:nowrap}
+#sh-main #mod-summary table.pct .dlt.same,#sh-main #mod-summary table.pct .dlt small,#sh-main #mod-summary table.pct .sub.in,#sh-main #mod-summary table.pct .dt{display:none}
 }
 /* results admin check table fits a phone */
 @media (max-width:700px){
@@ -8866,7 +8866,7 @@ function dl(cur,prev,kind,lab){
   else if(kind==='nps'){d=cur-prev;txt=String(Math.abs(d));good=d>0}
   else if(kind==='down'){d=cur-prev;txt=fmtN(Math.abs(d));good=d<0}
   else{if(!prev)return '';d=(cur-prev)/prev*100;txt=Math.abs(d).toFixed(0)+'%';good=null}
-  if(Math.abs(d)<0.05)return `<span class="dlt neu">Same <small>as ${lab}</small></span>`;
+  if(Math.abs(d)<0.05)return `<span class="dlt neu same">Same <small>as ${lab}</small></span>`;
   return `<span class="dlt ${good==null?'neu':good?'good':'bad'}">${d>0?'\u25B2':'\u25BC'} ${txt} <small>vs ${lab}</small></span>`;
 }
 function tiles(a,extra,pa){
@@ -10613,7 +10613,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272115';
+const VERSION='202610272130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
