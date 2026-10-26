@@ -3193,6 +3193,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .sv-t td.m-av{text-align:right}
 #sh-main .rt .sv-t td.cm{grid-column:1/-1;min-width:0;max-width:none;border-top:1px dashed var(--sh-line)!important;padding-top:8px!important}
 }
+#sh-main .rt .rt-t small.rk2{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--sh-sunk);color:var(--sh-muted);font:700 .72rem var(--sh-body);vertical-align:middle}
+@media (max-width:600px){#sh-main .rt .rt-t small.rk2{display:block;width:max-content;margin:5px auto 0}}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -4801,9 +4803,14 @@ function tblRows(src){
     const st=r.points===r.max&&r.max?"full":"part";
     return{...r,key:k,name:N[k]||"",grp:G[k]||"",rt,st,me:!!me&&k===me}});
 }
-function liveRows(){return tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay))))}
+/* where each driver sits for 2 hr ETA (highest first) and NC scans (fewest first); equal values share a place */
+function addRanks(rows){
+  const put=(key,val,desc)=>{const L=rows.filter(r=>val(r)!=null).sort((a,b)=>desc?val(b)-val(a):val(a)-val(b));L.forEach((r,i)=>{const p=L[i-1];r[key]=p&&Math.abs(val(p)-val(r))<1e-9?p[key]:i+1});rows.forEach(r=>{r[key+"Of"]=L.length})};
+  put("etaRk",r=>r.eta,true);put("ncRk",r=>r.nc==null?null:+r.nc,false);return rows;
+}
+function liveRows(){return addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))))}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
-  return tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq})))}
+  return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
 const SORTS={name:[r=>(r.name||r.login).toLowerCase(),1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1],days:[r=>r.days||0,-1]};
 function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
@@ -4819,8 +4826,8 @@ function rowHTML(r,multi){
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
    <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    
-   <td class="m-k" data-l="2 hr ETA">${cell(r.rt.eta,p1(r.eta))}</td>
-   <td class="m-k" data-l="NC scans">${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}</td>
+   <td class="m-k" data-l="2 hr ETA">${cell(r.rt.eta,p1(r.eta))}${r.etaRk?`<small class="rk2">${r.etaRk}/${r.etaRkOf}</small>`:""}</td>
+   <td class="m-k" data-l="NC scans">${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}${r.ncRk?`<small class="rk2">${r.ncRk}/${r.ncRkOf}</small>`:""}</td>
    <td class="m-k" data-l="Enquiries">${cell(r.rt.enq,r.enq==null?"0":Math.round(r.enq))}</td>
    <td class="num m-i" data-l="Parcels">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
    <td class="num mu m-i" data-l="FTD">${r.ftd==null?"n/a":p1(r.ftd)}</td>${multi?`<td class="num m-i" data-l="Days">${r.days||""}</td>`:""}</tr>`;
@@ -9851,7 +9858,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270130';
+const VERSION='202610270140';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
