@@ -8993,8 +8993,7 @@ function driverHTML(C,k){
   const ckT=p.sid?S.clock[TODAY+'_'+p.sid]:null;
   const prof=[['Driver number',p.nos.join(', ')],['Scanner login',p.login],['Clock in today',ckT?(ckT.finish?'Finished '+nice(ckT.finish):'On shift since '+nice(ckT.start)):'Not clocked in'],['Email',p.email],['Emergency contact',p.ec],[/^\d/.test(p.pc)?'Postcode':'Group',p.pc],['Role',p.role&&!/^42\d\d$/.test(p.role)?tc(p.role):''],['Mobile',p.mobile],['Parking bay',p.bay],['Van',p.van],['Streets on run',streets?String(streets):''],['Precard addresses',pre?String(pre):''],['Parcel lockers',lck?String(lck):''],['Leave this year',yrDays?yrDays+' weekday'+(yrDays===1?'':'s'):'None booked'],['Last van check',(()=>{const v=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&normName(r.driver)===normName(p.name)).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];return v?short(v.date)+' '+String(v.date).slice(0,4)+' · '+({pass:'Pass',minor:'Pass, fix needed',fail:'Fail'}[v.outcome]||'')+(v.checker?' · '+v.checker:''):''})()],['Next leave',next?short(next.from)+' to '+short(next.to)+' '+String(next.to).slice(0,4):'']].filter(x=>x[1]);
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
-  return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div>
-   <dl class="facts">${prof.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></section>`+
+  return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
    tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb ddt"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date).replace(/ \d{4}$/,''))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fmtPct(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${dot(grade('nc',r.nc))}${r.nc??'–'}</td><td class="r">${dot(grade('enq',+(r.enq||0)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
@@ -10637,7 +10636,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272215';
+const VERSION='202610272230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
