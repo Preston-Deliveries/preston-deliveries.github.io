@@ -2964,6 +2964,101 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #r_shareDrivers,#sh-main #r_previewDrivers,#sh-main #v_sharePanel,#sh-main [data-act="shareRuns"]{display:none!important}
 #sh-main#sh-main#sh-main .share:has([data-pc="share"],[data-lk="share"],[data-lv="share"]){display:none!important}
 #sh-main .row-actions:not(:has(>:not(#r_shareDrivers):not(#r_previewDrivers))){display:none!important}
+</style><style id="rtable">
+/* driver results table */
+#sh-main .rt{--rg:#14804A;--rgs:#DDF2E5;--rw:#A85F00;--rws:#FDEBC8;--rb:#C62828;--rbs:#FCE1E1;--gold:#B7791F;--golds:#FEF3C7;display:flex;flex-direction:column;gap:12px;margin-top:4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt{--rg:#5CCB8E;--rgs:#14321F;--rw:#F2B24A;--rws:#3A2C10;--rb:#F48A8A;--rbs:#3D1A1A;--gold:#F2C94C;--golds:#3A300E}}
+:root[data-theme="dark"] #sh-main .rt{--rg:#5CCB8E;--rgs:#14321F;--rw:#F2B24A;--rws:#3A2C10;--rb:#F48A8A;--rbs:#3D1A1A;--gold:#F2C94C;--golds:#3A300E}
+#sh-main .rt .rt-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#sh-main .rt .rt-sum div{background:var(--sh-surface);border:1px solid var(--sh-line);border-top:3px solid var(--g);border-radius:12px;padding:10px 12px;min-width:0}
+#sh-main .rt .rt-sum small{display:block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sh-main .rt .rt-sum b{display:block;font:800 1.25rem var(--sh-body);color:var(--sh-ink);margin-top:2px}
+#sh-main .rt .rt-swipe{display:none;margin:-6px 0 0;font-size:.8rem;color:var(--sh-muted)}
+#sh-main .rt .rt-f{display:flex;flex-direction:column;gap:10px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:12px}
+#sh-main .rt .rt-row{display:flex;gap:8px;flex-wrap:wrap}
+#sh-main .rt .rt-q{flex:1 1 220px;display:flex;align-items:center;gap:8px;background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:10px;padding:0 12px;min-height:44px}
+#sh-main .rt .rt-q:focus-within{border-color:var(--g);box-shadow:0 0 0 3px var(--gs)}
+#sh-main .rt .rt-q svg{width:18px;height:18px;flex:none;fill:none;stroke:var(--sh-muted);stroke-width:2.2;stroke-linecap:round}
+#sh-main .rt .rt-q input{flex:1;min-width:0;border:0;background:transparent;font:500 16px var(--sh-body);color:var(--sh-ink);outline:0;padding:10px 0}
+#sh-main .rt .rt-so{display:flex;align-items:center;gap:8px;flex:0 1 auto}
+#sh-main .rt .rt-so span{font:700 .74rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .rt .rt-so select{min-height:44px;font:600 15px var(--sh-body);color:var(--sh-ink);background:var(--sh-sunk);border:1px solid var(--sh-line);border-radius:10px;padding:8px 10px}
+#sh-main .rt .rt-chips{display:flex;gap:6px;flex-wrap:wrap}
+#sh-main .rt .rt-chips button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:600 .88rem var(--sh-body);cursor:pointer}
+#sh-main .rt .rt-chips button small{font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
+#sh-main .rt .rt-chips button[aria-pressed="true"]{background:var(--g);border-color:var(--g);color:#fff}
+#sh-main .rt .rt-chips button[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:#fff}
+#sh-main .rt .rt-chips .c-g{--c:var(--rg)}#sh-main .rt .rt-chips .c-w{--c:var(--rw)}#sh-main .rt .rt-chips .c-b{--c:var(--rb)}#sh-main .rt .rt-chips .c-full{--c:var(--gold)}#sh-main .rt .rt-chips .c-me{--c:var(--g)}
+#sh-main .rt .rt-chips :is(.c-g,.c-w,.c-b,.c-full,.c-me){border-color:var(--c);color:var(--c)}
+#sh-main .rt .rt-chips :is(.c-g,.c-w,.c-b,.c-full,.c-me)[aria-pressed="true"]{background:var(--c);color:#fff}
+#sh-main .rt .rt-chips.gr [class*="dg-"]{border-color:var(--d);color:var(--d)}
+#sh-main .rt .rt-chips.gr [class*="dg-"][aria-pressed="true"]{background:var(--d);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt .rt-chips button[aria-pressed="true"]{color:#0B1320}:root:not([data-theme="light"]) #sh-main .rt .rt-chips button[aria-pressed="true"] small{color:#0B1320}}
+:root[data-theme="dark"] #sh-main .rt .rt-chips button[aria-pressed="true"],:root[data-theme="dark"] #sh-main .rt .rt-chips button[aria-pressed="true"] small{color:#0B1320}
+#sh-main .rt .rt-n{margin:0;font-size:.9rem;color:var(--sh-muted)}
+#sh-main .rt .rt-n b{color:var(--sh-ink)}
+#sh-main .rt .rt-n button{border:0;background:none;color:var(--g);font:700 .9rem var(--sh-body);padding:6px 2px;margin-left:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#sh-main .rt .rt-tw{overflow-x:auto;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface);-webkit-overflow-scrolling:touch}
+#sh-main .rt .rt-t{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;font-size:.95rem}
+#sh-main .rt .rt-t th{position:sticky;top:0;background:var(--sh-sunk);text-align:left;padding:0;border-bottom:1px solid var(--sh-line);white-space:nowrap}
+#sh-main .rt .rt-t th button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:4px;width:100%;padding:10px 10px;font:700 .74rem var(--sh-body);letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted);cursor:pointer}
+#sh-main .rt .rt-t th[aria-sort="ascending"] button,#sh-main .rt .rt-t th[aria-sort="descending"] button{color:var(--g)}
+#sh-main .rt .rt-t th button i{font-style:normal;font-size:.62rem}
+#sh-main .rt .rt-t th.num button{justify-content:flex-end}
+#sh-main .rt .rt-t td{padding:9px 10px;border-bottom:1px solid var(--sh-line);vertical-align:middle;white-space:nowrap}
+#sh-main .rt .rt-t tbody tr:last-child td{border-bottom:0}
+#sh-main .rt .rt-t :is(th,td).rk{position:sticky;left:0;z-index:1;width:44px;background:var(--sh-surface)}
+#sh-main .rt .rt-t :is(th,td).dr{position:sticky;left:44px;z-index:1;background:var(--sh-surface);box-shadow:1px 0 0 var(--sh-line);min-width:150px;max-width:210px}
+#sh-main .rt .rt-t th:is(.rk,.dr){background:var(--sh-sunk);z-index:2}
+#sh-main .rt .rt-t td.rk .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--sh-sunk);font:800 .85rem var(--sh-body);color:var(--sh-ink)}
+#sh-main .rt .rt-t td.rk .n.t1{background:#F2C94C;color:#3A2A00}#sh-main .rt .rt-t td.rk .n.t2{background:#CBD5E1;color:#1E293B}#sh-main .rt .rt-t td.rk .n.t3{background:#E0A36B;color:#3B1E05}
+#sh-main .rt .rt-t td.dr b{display:block;font-weight:700;color:var(--sh-ink);overflow:hidden;text-overflow:ellipsis}
+#sh-main .rt .rt-t td.dr small{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--sh-muted);margin-top:2px}
+#sh-main .rt .rt-t .gp{font-size:.68rem;font-weight:800;letter-spacing:.04em;padding:1px 7px;border-radius:999px;background:var(--ds);color:var(--d)}
+#sh-main .rt .rt-t .you{font-style:normal;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:var(--g);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;vertical-align:2px}
+#sh-main .rt .rt-t tr.me td{background:var(--gs)}
+#sh-main .rt .rt-t tr.flash td{animation:rtflash 1.4s ease}
+@keyframes rtflash{0%,40%{background:var(--golds)}}
+#sh-main .rt .rt-v{display:inline-flex;align-items:center;gap:5px;min-width:64px;padding:4px 9px;border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums}
+#sh-main .rt .rt-v i{font-style:normal;font-weight:900;font-size:.8rem}
+#sh-main .rt .r-g{background:var(--rgs);color:var(--rg)}#sh-main .rt .r-w{background:var(--rws);color:var(--rw)}#sh-main .rt .r-b{background:var(--rbs);color:var(--rb)}#sh-main .rt .r-n{color:var(--sh-muted)}
+#sh-main .rt .rt-p{display:inline-flex;align-items:baseline;gap:3px;padding:4px 10px;border-radius:8px;background:var(--sh-sunk);font:800 1rem var(--sh-body);color:var(--sh-ink);font-variant-numeric:tabular-nums}
+#sh-main .rt .rt-p small{font-size:.78rem;font-weight:700;color:var(--sh-muted)}
+#sh-main .rt .rt-p.full{background:var(--golds);color:var(--gold)}
+#sh-main .rt .rt-p i{font-style:normal;margin-right:2px}
+#sh-main .rt .dd{display:block;font-size:.74rem;color:var(--sh-muted);margin-top:2px}
+#sh-main .rt .rt-t td.num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+#sh-main .rt .rt-t td.mu{color:var(--sh-muted)}
+#sh-main .rt .rt-t td.none{text-align:center;color:var(--sh-muted);padding:28px 10px;white-space:normal}
+#sh-main .rt .rt-how{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;padding:10px 14px;font-size:.9rem;color:var(--sh-muted)}
+#sh-main .rt .rt-how summary{font-weight:700;color:var(--sh-ink);cursor:pointer}
+#sh-main .rt .rt-how p{margin:8px 0 0;line-height:1.5}
+#sh-main .rt .rt-how .rt-v{min-width:0}
+#sh-main .rt .empty{padding:28px;text-align:center;color:var(--sh-muted);background:var(--sh-surface);border:1px dashed var(--sh-line);border-radius:14px}
+@media (max-width:560px){
+#sh-main .rt .rt-sum{gap:6px}
+#sh-main .rt .rt-sum div{padding:8px 8px;border-radius:10px}
+#sh-main .rt .rt-sum small{font-size:.62rem}
+#sh-main .rt .rt-sum b{font-size:1rem}
+#sh-main .rt .rt-f{padding:10px;gap:8px;margin:0 -2px}
+#sh-main .rt .rt-row{flex-wrap:nowrap}
+#sh-main .rt .rt-q{flex:1 1 auto;min-width:0}
+#sh-main .rt .rt-so span{display:none}
+#sh-main .rt .rt-so select{max-width:120px}
+#sh-main .rt .rt-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px}
+#sh-main .rt .rt-chips::-webkit-scrollbar{display:none}
+#sh-main .rt .rt-chips button{flex:none;min-height:34px;padding:5px 11px;font-size:.84rem}
+#sh-main .rt .rt-t{min-width:560px;font-size:.88rem}
+#sh-main .rt .rt-t td{padding:8px 6px}
+#sh-main .rt .rt-t th button{padding:9px 6px;font-size:.66rem}
+#sh-main .rt .rt-t :is(th,td).rk{width:36px}
+#sh-main .rt .rt-t :is(th,td).dr{left:36px;min-width:112px;max-width:132px}
+#sh-main .rt .rt-t td.rk .n{width:24px;height:24px;font-size:.78rem}
+#sh-main .rt .rt-t td.dr b{font-size:.9rem}
+#sh-main .rt .rt-v{min-width:0;padding:3px 7px}
+#sh-main .rt .rt-p{padding:3px 8px;font-size:.92rem}
+#sh-main .rt .rt-swipe{display:block}
+}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3067,14 +3162,14 @@ p.ck-alert{color:#5A3C00!important}
     <div class="row-actions">
       <label class="viewsel" for="r_viewSel" hidden>Show<select id="r_viewSel"><option value="day">Day</option><option value="week" selected>Week</option><option value="cycle">Month (4 week pay cycle)</option></select></label>
       <div hidden><button id="r_viewWeek" aria-pressed="true">Whole week</button><button id="r_viewDay" aria-pressed="false">Selected day</button><button id="r_viewCycle" aria-pressed="false">4 week pay period</button></div>
-      <button class="primary" id="r_savePng">Result</button>
+      <button id="r_savePng">Download picture</button>
       <button id="r_saveXlsx">Download Excel report</button>
     </div>
     <div class="row-actions"><button class="primary" id="r_shareDrivers">Update the drivers’ link</button><button id="r_previewDrivers">See what drivers see</button></div>
     <div class="msg" id="r_shareMsg" hidden=""></div>
-    <div class="preview"><canvas id="r_board" width="1080" height="800" aria-label="Driver results board"></canvas></div>
-    <p class="hint">Green means on target, amber is close, red needs work. Each day scores up to 6 points and the week adds them up. Drivers with full points get a star.</p>
-  </section>
+    <div id="r_rtAdmin"></div>
+    <div class="preview" hidden><canvas id="r_board" width="1080" height="800" aria-label="Driver results board"></canvas></div>
+    </section>
 
   <details class="card" id="r_settings">
     <summary>Targets</summary>
@@ -3233,8 +3328,9 @@ SNAP.updated=SNAP.updated||{};
 const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
+window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
 window.__runNamesFrom=list=>{const m={};for(const p of list||[]){const nm=String(p.name||'').trim();if(!nm)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=nm})}return m};
-try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length)window.__runNames=window.__runNamesFrom(SNAP.directory)}catch(e){}
+try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length){window.__runNames=window.__runNamesFrom(SNAP.directory);window.__runGrp=window.__runGrpFrom(SNAP.directory)}}catch(e){}
 setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
@@ -4442,7 +4538,8 @@ function icon(g,kind,cx,cy,color){
   g.restore();
 }
 function fit(g,text,maxW){if(g.measureText(text).width<=maxW)return text;let t=text;while(t.length>1&&g.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…"}
-function drawBoard(){
+function renderRTAdmin(){const b=$("rtAdmin");if(b&&!LIVE)mountRT(b,liveRows(),view!=="day")}
+function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   const cv=$("board");const g=cv.getContext("2d");
   const isWeek=view==="week", isCycle=view==="cycle";
   const rows=ranked(scoreSort(isCycle?weekRows(cycleList()):isWeek?weekRows():dayRows(selDay)));
@@ -4556,6 +4653,96 @@ async function saveXlsx(){
 
 
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
+/* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
+const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const RT=(()=>{try{return Object.assign({q:"",grp:"all",st:"all",sort:"rank",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""})}catch(e){return{q:"",grp:"all",st:"all",sort:"rank",dir:1}}})();
+const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir}))}catch(e){}};
+const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
+const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
+const myLogin=()=>{let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}return String(window.__myLogin||(w&&w.login)||"").toUpperCase().replace(/\s+/g,"")};
+const RC={good:"g",warn:"w",bad:"b",none:""};
+function tblRows(src){
+  const N=window.__runNames||{},G=window.__runGrp||{},me=myLogin();
+  return src.map(r=>{const k=String(r.login).toUpperCase().replace(/\s+/g,"");
+    const rt={eta:RC[rate("eta",r.eta)],nc:RC[rate("nc",r.ncAvg)],enq:RC[rate("enq",r.enqAvg)]};
+    const L=[rt.eta,rt.nc,rt.enq];
+    const st=r.points===r.max&&r.max?"full":L.includes("b")?"bad":L.includes("w")?"warn":"good";
+    return{...r,key:k,name:N[k]||"",grp:G[k]||"",rt,st,me:!!me&&k===me}});
+}
+function liveRows(){return tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay))))}
+function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
+  return tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq})))}
+const SORTS={rank:[r=>r.rank,1],name:[r=>(r.name||r.login).toLowerCase(),1],points:[r=>r.max?r.points/r.max:-1,-1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1]};
+function filtRows(rows){
+  const q=RT.q.trim().toLowerCase();
+  let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="good"?(r.st==="good"||r.st==="full"):r.st===RT.st))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
+  const[f]=SORTS[RT.sort]||SORTS.rank,d=RT.dir;
+  return out.slice().sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||a.rank-b.rank});
+}
+const p1=v=>v==null?"n/a":(v>=.9995?"100":(Math.round(v*1000)/10).toFixed(1))+"%";
+const MK={g:"✓",w:"!",b:"✕","":""};
+function cell(c,txt){return `<span class="rt-v ${c?"r-"+c:"r-n"}">${c?`<i aria-hidden="true">${MK[c]}</i>`:""}${txt}</span>`}
+function rowHTML(r,multi){
+  const nm=r.name||r.login,sub=r.name?r.login:"";
+  return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
+   <td class="rk"><span class="n${r.rank<=3?" t"+r.rank:""}">${r.rank}</span></td>
+   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
+   <td class="pt"><span class="rt-p${r.st==="full"?" full":""}">${r.st==="full"?'<i aria-hidden="true">★</i>':""}${r.points}<small>/${r.max}</small></span>${multi&&r.days?`<small class="dd">${r.days} day${r.days===1?"":"s"}</small>`:""}</td>
+   <td>${cell(r.rt.eta,p1(r.eta))}</td>
+   <td>${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}</td>
+   <td>${cell(r.rt.enq,r.enq==null?"0":Math.round(r.enq))}</td>
+   <td class="num">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
+   <td class="num mu">${r.ftd==null?"n/a":p1(r.ftd)}</td></tr>`;
+}
+function rtBody(box){
+  const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
+  box.querySelector("tbody").innerHTML=F.length?F.map(r=>rowHTML(r,multi)).join(""):`<tr><td colspan="8" class="none">No drivers match these filters.</td></tr>`;
+  const busy=RT.q||RT.grp!=="all"||RT.st!=="all";
+  box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-rt="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
+  box.querySelectorAll("thead [data-rs]").forEach(b=>{const on=b.dataset.rs===RT.sort;b.closest("th").setAttribute("aria-sort",on?(RT.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(RT.dir===1?"▲":"▼"):""});
+  box.querySelectorAll("[data-rg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rg===RT.grp)));
+  box.querySelectorAll("[data-rf]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rf===RT.st)));
+  const so=box.querySelector("[data-rt=sort]");if(so)so.value=RT.sort;
+}
+function rtHTML(rows,multi){
+  const tp=sum(rows.map(r=>r.pc)),tf=avg(rows.map(r=>r.ftd)),te=avg(rows.map(r=>r.eta));
+  const gs=GRPO.filter(g=>rows.some(r=>r.grp===g));
+  const n=f=>rows.filter(f).length;
+  const chip=(a,v,l,c,cls)=>`<button type="button" ${a}="${v}" class="${cls||""}"><span>${l}</span>${c!=null?`<small>${c}</small>`:""}</button>`;
+  const th=(k,l,cls)=>`<th class="${cls||""}" scope="col"><button type="button" data-rs="${k}">${l}<i aria-hidden="true"></i></button></th>`;
+  return `<div class="rt-sum">
+     <div><small>Drivers</small><b>${rows.length}</b></div>
+     <div><small>Parcels</small><b>${tp==null?"n/a":Math.round(tp).toLocaleString("en-AU")}</b></div>
+     <div><small>2 hr ETA</small><b>${p1(te)}</b></div>
+     <div><small>FTD</small><b>${p1(tf)}</b></div></div>
+   <div class="rt-f">
+     <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
+       <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="rank">Rank</option><option value="points">Points</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option><option value="name">Name</option></select></label></div>
+     <div class="rt-chips st" role="group" aria-label="Show">${chip("data-rf","all","Everyone",rows.length)}${chip("data-rf","full","★ Full points",n(r=>r.st==="full"),"c-full")}${chip("data-rf","good","On target",n(r=>r.st==="good"||r.st==="full"),"c-g")}${chip("data-rf","warn","Close",n(r=>r.st==="warn"),"c-w")}${chip("data-rf","bad","Needs work",n(r=>r.st==="bad"),"c-b")}${rows.some(r=>r.me)?chip("data-rf","me","Just me",null,"c-me"):""}</div>
+     ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role">${chip("data-rg","all","All roles",null)}${gs.map(g=>chip("data-rg",g,GRPN[g]||g,n(r=>r.grp===g),"dg-"+g)).join("")}</div>`:""}
+   </div>
+   <p class="rt-n" role="status"></p>
+   <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
+   <div class="rt-tw"><table class="rt-t"><thead><tr>${th("rank","#","rk")}${th("name","Driver","dr")}${th("points","Points","pt")}${th("eta","2 hr ETA")}${th("nc","NC scans")}${th("enq","Enquiries")}${th("pc","Parcels","num")}${th("ftd","FTD","num")}</tr></thead><tbody></tbody></table></div>
+   <details class="rt-how"><summary>How points work</summary><p><span class="rt-v r-g"><i>✓</i>2 points</span> <span class="rt-v r-w"><i>!</i>1 point</span> <span class="rt-v r-b"><i>✕</i>0 points</span></p>
+     <p>Every day you score points for 2 hr ETA, NC scans and enquiries. A perfect day is 6 points and the week adds up every day you worked. Green: 2 hr ETA ${T().etaG}% or more, ${T().ncG} NC scans, ${T().enqG} enquiries. Amber: 2 hr ETA ${T().etaA}% or more, ${T().ncA} NC scan${T().ncA===1?"":"s"}. Delivered first time and parcels are for information only. Drivers on equal points are split by fewer NC scans, then fewer enquiries, then better 2 hr ETA.</p></details>`;
+}
+function mountRT(box,rows,multi){
+  box.classList.add("rt");box.__rows=rows;box.__multi=multi;
+  if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet.</div>`;return}
+  box.innerHTML=rtHTML(rows,multi);rtBody(box);
+  if(box.__wired)return;box.__wired=true;
+  box.addEventListener("input",e=>{if(e.target.dataset.rt==="q"){RT.q=e.target.value;rtBody(box)}});
+  box.addEventListener("change",e=>{if(e.target.dataset.rt==="sort"){RT.sort=e.target.value;RT.dir=SORTS[RT.sort][1];saveRT();rtBody(box)}});
+  box.addEventListener("click",e=>{
+    const s=e.target.closest("[data-rs]");if(s){const k=s.dataset.rs;if(RT.sort===k)RT.dir=-RT.dir;else{RT.sort=k;RT.dir=SORTS[k][1]}saveRT();rtBody(box);return}
+    const g=e.target.closest("[data-rg]");if(g){RT.grp=g.dataset.rg;saveRT();rtBody(box);return}
+    const f=e.target.closest("[data-rf]");if(f){RT.st=RT.st===f.dataset.rf&&f.dataset.rf!=="all"?"all":f.dataset.rf;saveRT();rtBody(box);return}
+    const a=e.target.closest("[data-rt]");if(!a)return;
+    if(a.dataset.rt==="clear"){RT.q="";RT.grp="all";RT.st="all";saveRT();const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}
+    if(a.dataset.rt==="find"){if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
+  });
+}
 let LIVE=false;
 async function goLive(){
   try{
@@ -4579,31 +4766,26 @@ function liveView(owner){
   const keep=view;view=dvKey;
   const sub=$("dvSub");sub.innerHTML=subHTML();
   sub.onclick=async e=>{const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;showDriverView(owner);return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);const f=DAYS.map(x=>x[0]).filter(k=>week.days[k]);if(!week.days[selDay]&&f.length)selDay=f[f.length-1];showDriverView(owner)}};
-  drawBoard();
   const m=fromIso(weekId),ci=cycleInfo(weekId);
   const label=dvKey==="day"?DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay)):dvKey==="week"?"Week "+ci.no+" \u00b7 "+short(m)+" to "+short(addDays(m,5)):"Pay period "+short(ci.start)+" to "+short(addDays(ci.start,26));
   const has=dvKey==="day"?!!week.days[selDay]:dvKey==="week"?Object.keys(week.days).length>0:true;
   $("dvUpdated").textContent=label;
-  if(!has){const e=document.createElement("div");e.className="empty";e.textContent="No results for "+(dvKey==="day"?"this day":"this week")+" yet.";boardBox.append(e)}
-  else{const img=new Image();img.src=$("board").toDataURL("image/png");img.alt=label+" results board";boardBox.append(img)}
-  view=keep;if(!$("tool").hidden)drawBoard();
+  mountRT(boardBox,has?liveRows():[],dvKey!=="day");
+  view=keep;
 }
 function showDriverView(owner){
   $("tool").hidden=true;$("driverView").hidden=false;$("dvOwner").hidden=!owner;
   const tabs=$("dvTabs"),boardBox=$("dvBoard");tabs.textContent="";boardBox.textContent="";
   if(LIVE)return liveView(owner);
-  if(!SNAP||!SNAP.boards||!SNAP.boards.length){$("dvUpdated").textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Results will show here once they are shared.";boardBox.append(e);return}
-  const B=SNAP.boards;const kinds=["day","week","cycle"].filter(k=>B.some(x=>x.key===k));
+  const has=k=>SNAP&&SNAP.mine&&SNAP.mine[k]&&SNAP.mine[k].length;
+  const kinds=["day","week","cycle"].filter(has);
+  if(!kinds.length){$("dvSub").innerHTML="";$("dvUpdated").textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Results will show here once they are shared.";boardBox.append(e);return}
   if(!kinds.includes(dvKey))dvKey=kinds.includes("week")?"week":kinds[0];
-  const ofK=B.filter(x=>x.key===dvKey);
-  if(dvSub==null||!ofK.some(x=>String(x.sub)===String(dvSub))){const c=ofK.find(x=>x.cur)||ofK[ofK.length-1];dvSub=c?c.sub:null}
-  const b=ofK.find(x=>String(x.sub)===String(dvSub))||ofK[0];
   const NM={day:'Day',week:'Week',cycle:'Month'};
-  for(const k of kinds){const t=document.createElement("button");t.type="button";t.textContent=NM[k];t.setAttribute("aria-pressed",String(k===dvKey));t.onclick=()=>{dvKey=k;dvSub=null;showDriverView(owner)};tabs.append(t)}
-  const sub=$("dvSub");sub.innerHTML="";
-  if(ofK.length>1||(ofK[0]&&ofK[0].sub!=null)){for(const x of ofK){const t=document.createElement("button");t.type="button";t.setAttribute("aria-pressed",String(x===b));t.className="has";const nm=dvKey==="day"?(DAYS.find(d=>d[0]===x.sub)||["",String(x.sub)])[1].slice(0,3):"Week "+x.sub;t.innerHTML="<b>"+nm+"</b><small>"+(x.label.split(/ \u00b7 | /).slice(dvKey==="day"?1:2,dvKey==="day"?3:4).join(" "))+"</small>";t.onclick=()=>{dvSub=x.sub;showDriverView(owner)};sub.append(t)}}
-  $("dvUpdated").textContent=(b.label?b.label+" \u00b7 ":"")+"Updated "+SNAP.updated;
-  const img=new Image();img.src=b.img;img.alt=b.label+" results board";boardBox.append(img);
+  for(const k of kinds){const t=document.createElement("button");t.type="button";t.textContent=NM[k];t.setAttribute("aria-pressed",String(k===dvKey));t.onclick=()=>{dvKey=k;showDriverView(owner)};tabs.append(t)}
+  $("dvSub").innerHTML="";
+  $("dvUpdated").textContent="Updated "+SNAP.updated;
+  const keep=view;view=dvKey;mountRT(boardBox,snapRows(dvKey),dvKey!=="day");view=keep;
 }
 function showTool(){$("driverView").hidden=true;$("tool").hidden=false}
 function pageHtml(snap){
@@ -4628,14 +4810,14 @@ function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({
 window.RESULTS={share:async()=>{
   if(!week||!Object.keys(week.days||{}).length)throw new Error("nothing to share");
   const now=new Date();
-  await APP.publish({results:{updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow(),targets:{...T()}}})}};
+  await APP.publish({results:{updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),mine:mineNow(),targets:{...T()}}})}};
 async function shareDrivers(){
   const sm=$("shareMsg"),btn=$("shareDrivers");
   const say=(t,err)=>{sm.textContent=t;sm.hidden=false;sm.classList.toggle("err",!!err)};
   if(!art){say("Updating the drivers’ link is not available in this view. Open the page in Claude while signed in.",true);return}
   if(!Object.keys(week.days).length){say("There is no data for this week yet, so there is nothing to share.",true);return}
   const now=new Date();
-  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow(),targets:{...T()}};
+  const snap={updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),mine:mineNow(),targets:{...T()}};
   btn.disabled=true;say("Updating the drivers’ link…");
   try{await APP.publish({results:snap});say("Done. Drivers now see these results on the same link. The page is reloading.")}
   catch(e){btn.disabled=false;const c=e&&e.code;
@@ -4672,6 +4854,7 @@ async function boot(){
   let u=null;
   try{if(window.claude&&claude.use){[db,downloads,art,u]=await Promise.all([claude.use("db"),claude.use("downloads"),claude.use("artifact"),claude.use("user")])}}catch(e){}
   try{isEditor=!!(u&&await u.canEdit())&&!window.__UV}catch(e){isEditor=false}
+  window.addEventListener('runnames',()=>{if(!$("driverView").hidden)showDriverView(!$("dvOwner").hidden);else if(!$("tool").hidden)renderRTAdmin()});
   if(!isEditor){showDriverView(false);goLive();return}
   showTool();
   const s=await loadDoc("settings/main");if(s){settings={names:s.names||{},targets:{...DEFAULT_TARGETS,...(s.targets||{})}}}
@@ -6192,7 +6375,7 @@ async function who(){
   if(m.staff&&(!m.login||!m.phone)&&db){try{const d=await db.doc('staff/'+m.staff).get();if(d.exists){const v=window.__D(d)||{};m.login=m.login||dkey(v.login);m.run=m.run||(v.runs||[]).filter(Boolean).join(', ');m.phone=v.phone||v.mobile||'';m.role=v.role||'';if(!m.name)m.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
   const R=S().runs||{};
   if(!m.login&&m.name){const id=Object.keys(R).find(k=>dkey(R[k].driver)===dkey(m.name));if(id)m.login=dkey(R[id].login)}
-  m.name=tc(m.name);
+  m.name=tc(m.name);try{if(m.login)window.__myLogin=m.login}catch(e){}
   return m;
 }
 async function fetchData(m){
@@ -6957,7 +7140,7 @@ async function start(role){
   try{const c=await db.doc('dircfg/main').get();if(c.exists)hide=new Set(__D(c).hide||[])}catch(e){}
   db.collection('staff').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=__D(d);people=o;
     if(window.APP)APP.stat('directory',Object.keys(o).length+' people');
-    liveSync();try{window.__runNames=window.__runNamesFrom(fromStaff().map(x=>({name:x.name,no:x.no,login:(people[x.id]||{}).login})));window.dispatchEvent(new Event('runnames'))}catch(e){}
+    liveSync();try{const L0=fromStaff().map(x=>({name:x.name,no:x.no,grp:x.grp,login:(people[x.id]||{}).login}));window.__runNames=window.__runNamesFrom(L0);window.__runGrp=window.__runGrpFrom(L0);window.dispatchEvent(new Event('runnames'))}catch(e){}
     const a=document.activeElement;if(a&&a.id==='dy_q'){$('list').innerHTML=listHTML(list());return}render()},()=>{msg={err:true,t:'Could not load the driver list.'};render()});
 }
 window.DIRECTORY={share};
@@ -9372,7 +9555,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261820';
+const VERSION='202610261930';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
