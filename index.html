@@ -2514,6 +2514,12 @@ p.ck-alert{color:#5A3C00!important}
 .me-who{min-width:0}
 .me-who h1{margin:0;font:700 1.4rem/1.2 var(--sh-body);color:#fff}
 .me-who p{margin:2px 0 0;color:#C9D6E6;font-weight:600}
+.me-who{flex:1}
+.me-run{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.15)}
+.me-run span small{display:block;font:700 .66rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;color:#9FB3CB}
+.me-run span b{font:800 1rem var(--sh-body);color:#fff}
+.me-rbtn{margin-left:auto;min-height:38px;padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;font:700 .9rem var(--sh-body);cursor:pointer}
+.me-rbtn:hover{background:rgba(255,255,255,.2)}
 .me-who small{display:block;margin-top:2px;color:#AEBCCF;font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .me-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .me-st{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;box-shadow:inset 0 3px 0 var(--g);color:var(--sh-ink);font:inherit;text-align:left;cursor:pointer;min-width:0}
@@ -6832,13 +6838,13 @@ function profileHTML(){
     `<b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span class="sb">Average score ${sv.avg.toFixed(1)} out of 10</span>`:''}`;
   return `<section class="me-card">
     <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
-    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
+    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}
+    ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b>${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}<button type="button" class="me-rbtn" data-me="run" data-login="${esc(me.login)}">${my('My run sheet','Run sheet')}</button></div>`:''}</div>
   </section>
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
   ${statsHTML(per,x,sv,own)}
-  ${run?`<section class="me-box g-road"><h2>${my('My run','Run')}</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run" data-login="${esc(me.login)}">${my('Open my run sheet','Open their run sheet')}</button></section>`:''}
   <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
   ${data&&data.inv.length?`<section class="me-box g-admin"><h2>${my('My invoices','Invoices')}</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
@@ -9823,7 +9829,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270100';
+const VERSION='202610270110';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
