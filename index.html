@@ -3219,6 +3219,51 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-lockers tbody tr:focus{outline:none}
 #sh-main #mod-lockers tbody tr:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
 #mod-lockers tbody tr{-webkit-tap-highlight-color:transparent}
+</style><style id="compact">
+/* the period label sits beside the Day, Week, Month switch */
+#sh-main .sv-top{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px}
+#sh-main .sv-top .sv-lab{margin:0 0 0 auto!important;text-align:right;font-size:.86rem}
+#sh-main .persub{margin:10px 0 12px!important}
+/* phones: smaller gaps and headers so the content shows sooner */
+@media (max-width:600px){
+#sh-main#sh-main .sh-ph .in{padding:10px 16px 9px}
+#sh-main#sh-main .sh-ph .eb{font-size:.62rem}
+#sh-main#sh-main .sh-ph h1{font-size:1.4rem;margin:3px 0 0}
+#sh-main#sh-main .sh-ph p{display:none}
+#sh-main#sh-main #r_driverView,#sh-main#sh-main #v_driverView{padding-top:10px!important;padding-bottom:20px!important}
+#sh-main#sh-main :is(.pcx,.dyx){padding-top:10px}
+#sh-main#sh-main#sh-main .pvseg{margin:0!important}
+#sh-main#sh-main#sh-main .pvseg>button{padding:7px 14px!important;font-size:.9rem!important}
+#sh-main .sv-top{flex-wrap:nowrap;column-gap:8px}
+#sh-main .sv-top .sv-lab{flex:1 1 0;min-width:0;max-width:none;font-size:.72rem;line-height:1.25}
+#sh-main#sh-main#sh-main .sv-top .pvseg>button{padding:7px 12px!important}
+#sh-main .sv-month{min-height:34px;padding:4px 8px;font-size:.85rem}
+#sh-main#sh-main .persub{margin:8px 0 8px!important;gap:5px}
+#sh-main#sh-main .persub button{padding:4px 2px;border-radius:8px}
+#sh-main#sh-main .persub button b{font-size:.82rem}
+#sh-main#sh-main .persub button small{font-size:.64rem}
+#sh-main#sh-main .rt{gap:7px}
+#sh-main#sh-main .rt .rt-sum{gap:5px}
+#sh-main#sh-main .rt .rt-sum div{padding:5px 7px;border-top-width:2px}
+#sh-main#sh-main .rt .rt-sum small{font-size:.56rem}
+#sh-main#sh-main .rt .rt-sum b{font-size:.92rem;margin:0}
+#sh-main#sh-main .rt .sv-mix{height:5px}
+#sh-main#sh-main .rt .rt-f{padding:0;border:0;background:transparent;gap:6px;margin:0}
+#sh-main#sh-main .rt .rt-q{min-height:40px}
+#sh-main#sh-main .rt .rt-q input{padding:7px 0}
+#sh-main#sh-main .rt .rt-so select{min-height:40px;padding:6px 8px}
+#sh-main#sh-main .rt .rt-chips{margin:0;padding:0}
+#sh-main#sh-main .rt .rt-chips button{min-height:30px;padding:3px 10px;font-size:.8rem}
+#sh-main#sh-main .rt .rt-n{font-size:.8rem;margin:0}
+#sh-main#sh-main .rt .rt-n button{padding:2px;font-size:.8rem}
+#sh-main#sh-main .rt .rt-t tbody{gap:6px}
+#sh-main#sh-main .rt .rt-t tbody tr{padding:10px;gap:6px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:2px 0 8px;gap:5px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb::-webkit-scrollbar{display:none}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb button{flex:none;min-height:32px;padding:3px 11px;font-size:.85rem}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .bar{margin:0 0 6px;gap:6px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .q{min-height:40px;padding:7px 12px}
+}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3274,9 +3319,8 @@ p.ck-alert{color:#5A3C00!important}
       <h1>Driver Results</h1>
     </div>
   </header>
-  <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_dvTabs"></div>
+  <div class="sv-top"><div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_dvTabs"></div><p class="hint sv-lab" id="r_dvUpdated"></p></div>
   <div class="persub" id="r_dvSub" role="group" aria-label="Choose"></div>
-  <p class="hint" id="r_dvUpdated"></p>
   <div id="r_dvBoard"></div>
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
 </div>
@@ -3345,9 +3389,8 @@ p.ck-alert{color:#5A3C00!important}
   <header>
     <h1>Survey Ranking</h1>
   </header>
-  <div class="sv-top"><div class="seg pvseg" role="group" aria-label="Week or month" id="v_dvTabs"></div><select id="v_dvMonth" class="sv-month" aria-label="Month" hidden></select></div>
+  <div class="sv-top"><div class="seg pvseg" role="group" aria-label="Week or month" id="v_dvTabs"></div><select id="v_dvMonth" class="sv-month" aria-label="Month" hidden></select><p class="hint sv-lab" id="v_dvUpdated"></p></div>
   <div class="persub" id="v_dvSub" role="group" aria-label="Choose a week"></div>
-  <p class="hint sv-lab" id="v_dvUpdated"></p>
   <div id="v_dvTbl"></div>
   <div class="dvbar" id="v_dvOwner" hidden=""><button type="button" id="v_dvBack">Back to the ranking tool</button><span class="hint">Only you see this button.</span></div>
 </div>
@@ -9883,7 +9926,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270220';
+const VERSION='202610270240';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
