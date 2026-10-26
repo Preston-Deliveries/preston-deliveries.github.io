@@ -3143,6 +3143,14 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .ms-none{margin:4px 0 10px;color:var(--sh-muted);font-size:.9rem}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .ms-r b.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .ms-r b.b{color:#F48A8A}:root:not([data-theme="light"]) #sh-main .ms-r b.gd{color:#F2C94C}:root:not([data-theme="light"]) #sh-main .ms-bx i.g{background:#14321F;color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .ms-bx i.w{background:#3A2C10;color:#F2B24A}:root:not([data-theme="light"]) #sh-main .ms-bx i.b{background:#3D1A1A;color:#F48A8A}}
 :root[data-theme="dark"] #sh-main .ms-r b.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .ms-r b.b{color:#F48A8A}:root[data-theme="dark"] #sh-main .ms-r b.gd{color:#F2C94C}:root[data-theme="dark"] #sh-main .ms-bx i.g{background:#14321F;color:#5CCB8E}:root[data-theme="dark"] #sh-main .ms-bx i.w{background:#3A2C10;color:#F2B24A}:root[data-theme="dark"] #sh-main .ms-bx i.b{background:#3D1A1A;color:#F48A8A}
+#sh-main .ms-top>span em{display:block;font:800 1.05rem var(--sh-body);font-style:normal;color:var(--sh-ink);margin-bottom:2px}
+#sh-main .ms-top>span em small{display:inline;font:700 .82rem var(--sh-body);letter-spacing:0;text-transform:none;color:var(--sh-muted)}
+#sh-main .ms-top>span em.gd{color:#B7791F}
+#sh-main .ms-fb ul{list-style:none;margin:2px 0 10px;padding:0;display:flex;flex-direction:column;gap:8px}
+#sh-main .ms-fb li{position:relative;padding:2px 0 2px 16px;font-size:.92rem;line-height:1.45;color:var(--sh-ink)}
+#sh-main .ms-fb li::before{content:'';position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--c)}
+#sh-main .ms-fb li.enq{--c:#C62828}#sh-main .ms-fb li.eta{--c:#D98B00}#sh-main .ms-fb li.nc{--c:#C2410C}#sh-main .ms-fb li.sv{--c:#B7356B}
+#sh-main .ms-good{margin:4px 0 10px;color:#14804A;font-weight:600}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -6642,9 +6650,10 @@ function mySurvey(which,opt){
     L.forEach((x,i)=>{const p=L[i-1];x.rank=p&&p.pts===x.pts&&Math.abs(p.avg-x.avg)<1e-9?p.rank:i+1});
     const keys=[...myKeys(),dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
     const row=L.find(x=>keys.includes(dkey(x.id)));
-    if(!row)return{found:false,of:L.length,sub:''};
+    const all=Object.fromEntries(L.map(x=>[dkey(x.id),x.pts]));
+    if(!row)return{found:false,of:L.length,sub:'',all};
     const sc=row.r.map(x=>x.s);
-    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),of:L.length};
+    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),low:row.r.filter(x=>x.s<7),of:L.length,all};
   }const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
   let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
@@ -6766,6 +6775,8 @@ const pctf=v=>v==null?'n/a':(v>=.9995?'100':(v*100).toFixed(1).replace(/\.0$/,''
 function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
 /* minimal stats: total points, driver results, survey ranking, parcels */
 function dayP(r){const t=targets();const e=r.enq==null||r.enq===''?0:+r.enq,n=+r.nc||0;return(r.eta==null||r.eta===''?1:(r.eta*100>=t.etaG?1:0))+(n>0?0:1)+(e>0?-1:1)}
+function rankIn(by){const K=myKeys(),L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&L[rk-2][1]===L[i][1])rk--;return{rank:rk,of:L.length}}
+function resultsBy(dates){const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}return by}
 function resultsRank(dates){
   const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}
   const K=myKeys(),L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(([k])=>K.has(k));if(i<0)return null;
@@ -6776,11 +6787,17 @@ function statsHTML(per,x,sv,own){
   const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
   const etaBad=my.filter(r=>r.eta!=null&&r.eta!==''&&r.eta*100<t.etaG),ncDays=my.filter(r=>(+r.nc||0)>0),enqDays=my.filter(r=>(+r.enq||0)>0);
   const rp=x?x.points:0,spv=sv&&sv.found?sv.pts:0,rr=x?resultsRank(per.dates):null;
+  const tb=resultsBy(per.dates);for(const[k,v]of Object.entries((sv&&sv.all)||{}))tb[k]=(tb[k]||0)+v;const tr=(x||(sv&&sv.found))?rankIn(tb):null;
+  const fb=[];
+  if(enqDays.length)fb.push(['enq',`${Math.round(x.enq)} customer enquir${Math.round(x.enq)===1?'y':'ies'} (${enqDays.map(r=>sh(r.dt)).join(', ')}). Each one costs a point, so take extra care with safe drops and cards.`]);
+  if(etaBad.length)fb.push(['eta',`2 hr ETA under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)+' '+pctf(r.eta)).join(', ')}. Deliver 2 hr ETA parcels first.`]);
+  if(ncDays.length)fb.push(['nc',`${Math.round(x.nc)} NC scan${Math.round(x.nc)===1?'':'s'} (${ncDays.map(r=>sh(r.dt)+': '+r.nc).join(', ')}). Scan every parcel at the door.`]);
+  if(sv&&sv.found&&sv.low&&sv.low.length)fb.push(['sv',`${sv.low.length} customer survey score${sv.low.length>1?'s':''} of 0 to 6${sv.low.some(z=>z.c)?': '+sv.low.filter(z=>z.c).map(z=>'\u201c'+z.c+'\u201d').join(' '):''}.`]);
   const row=(l,v,cls,note)=>`<div class="ms-r"><span class="l">${l}${note?`<small>${note}</small>`:''}</span><b class="${cls||''}">${v}</b></div>`;
   const ok=(bad,txt)=>bad?txt:'';
   const svb=sv&&sv.found?sv.scores.map(n=>`<i class="${n>=9?'g':n>=7?'w':'b'}">${n}</i>`).join(''):'';
   return `<section class="ms">
-   <div class="ms-top"><div><small>Total points</small><b>${(x||(sv&&sv.found))?rp+spv:'–'}</b></div><span>${x?rp:0} results ${spv<0?'−':'+'} ${Math.abs(spv)} survey</span></div>
+   <div class="ms-top"><div><small>Total points</small><b>${(x||(sv&&sv.found))?rp+spv:'–'}</b></div><span>${tr?`<em class="${tr.rank<=3?'gd':''}">Rank ${tr.rank} <small>of ${tr.of}</small></em>`:''}${x?rp:0} results ${spv<0?'−':'+'} ${Math.abs(spv)} survey</span></div>
    <div class="ms-sec"><h3>Driver results<em>${x?`${x.points} <small>/ ${x.max}</small>`:'–'}</em></h3>
     ${x?[
       rr?row('Rank',`${rr.rank} <small>of ${rr.of}</small>`,rr.rank<=3?'gd':''):'',
@@ -6800,6 +6817,7 @@ function statsHTML(per,x,sv,own){
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
     ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):'',x.ftd!=null?row('Delivered first time',pctf(x.ftd)):''].join(''):''}
    </div>
+   ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fb.length?`<ul>${fb.map(([k,txt])=>`<li class="${k}">${esc(txt)}</li>`).join('')}</ul>`:`<p class="ms-good">Great work. Nothing to work on ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]}.</p>`}</div>`:''}
   </section>`;
 }
 function profileHTML(){
@@ -9808,7 +9826,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270000';
+const VERSION='202610270010';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
