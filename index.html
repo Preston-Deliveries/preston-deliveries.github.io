@@ -2744,6 +2744,13 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .row .ph .tel.ico svg{display:block;width:20px;height:20px;fill:#fff}
 #sh-main #mod-directory .row .ph .wa{width:42px;height:42px}
 #sh-main #mod-directory .row .ph{gap:10px}
+/* call is a blue ring, WhatsApp a green ring: easy to tell apart, not bright */
+#sh-main#sh-main #mod-directory .row .ph .tel.ico{--c:#1D5FD1;background:transparent;border:2px solid var(--c);box-sizing:border-box}
+#sh-main#sh-main #mod-directory .row .ph .tel.ico svg{fill:var(--c)}
+#sh-main#sh-main #mod-directory .row .ph .wa{--c:#1E8A4C;background:transparent;border:2px solid var(--c);color:var(--c);box-sizing:border-box}
+#sh-main#sh-main #mod-directory .row .ph :is(.tel.ico,.wa):active{background:color-mix(in srgb,var(--c) 14%,transparent);filter:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-directory .row .ph .tel.ico{--c:#7FA8F5}:root:not([data-theme="light"]) #sh-main#sh-main #mod-directory .row .ph .wa{--c:#5CCB8E}}
+:root[data-theme="dark"] #sh-main#sh-main #mod-directory .row .ph .tel.ico{--c:#7FA8F5}:root[data-theme="dark"] #sh-main#sh-main #mod-directory .row .ph .wa{--c:#5CCB8E}
 </style><style id="theme-all">
 /* One colour scheme everywhere: each page uses its section colour (blue on the road, amber news and guides, purple performance, green team, orange admin, teal overview) */
 #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}
@@ -9938,7 +9945,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270310';
+const VERSION='202610270320';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
