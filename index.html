@@ -5113,7 +5113,10 @@ function subHTML(){
   if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
   const cs=cycleInfo(weekId).start;return `<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
 }
-function renderAll(){renderSub();renderWeekNav();renderDays();renderTable();renderClear();drawBoard();if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 6 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}}
+let rDirty=false;
+try{const sec=document.getElementById('mod-results');if(sec)new MutationObserver(()=>{if(!sec.hidden&&rDirty){rDirty=false;renderAll()}}).observe(sec,{attributes:true,attributeFilter:['hidden']})}catch(e){}
+function renderAll(){const sec=document.getElementById('mod-results');if(sec&&sec.hidden){rDirty=true;if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 6 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}return}
+  renderSub();renderWeekNav();renderDays();renderTable();renderClear();drawBoard();if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 6 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}}
 
 /* ---------- rendering: board picture ---------- */
 const C={ink:"#14213a",muted:"#5a6680",band:"#14213a",accent:"#1d4f91",signal:"#f2b705",paper:"#ffffff",alt:"#f1f4f9",line:"#dde3ec",good:"#1e8a4c",warn:"#d98b00",bad:"#c8352b",none:"#b7bfcc"};
@@ -10610,7 +10613,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272030';
+const VERSION='202610272100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10910,7 +10913,9 @@ function startApp(snap){
   const c=document.body.cloneNode(true);c.querySelectorAll('[data-web],script[type="text/x-mod"]').forEach(n=>n.remove());
   window.__PRISTINE=c.innerHTML;
   gate.hidden=true;document.body.classList.add('web-ready');
+  const ADMIN_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
   for(const s of [...document.querySelectorAll('script[type="text/x-mod"]')]){
+    if(ROLE!=='admin'&&ADMIN_ONLY.includes(s.dataset.mod)){s.remove();continue}
     const n=document.createElement('script');if(s.dataset.mod)n.dataset.mod=s.dataset.mod;n.textContent=s.textContent;s.replaceWith(n);
   }
   addSignOut();
@@ -10941,7 +10946,10 @@ async function boot(){
 /* user view preview inside the app: the parent page gives it data */
 window.__webVersion=VERSION;
 /* Always run the newest version: if a newer one has been published, load it */
+let vLast=0,vTag=null;
 async function checkVersion(){
+  if(Date.now()-vLast<3*60e3)return;vLast=Date.now();
+  try{const h=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});const tag=h.ok?(h.headers.get('etag')||h.headers.get('last-modified')||''):'';if(tag&&vTag===tag)return;vTag=tag||null}catch(e){}
   try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);
     if(m&&m[1]!==VERSION&&m[1]>VERSION){const k='c1161_v_'+m[1];try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+m[1]+location.hash)}}catch(e){}
 }
