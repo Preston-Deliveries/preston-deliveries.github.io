@@ -4292,7 +4292,7 @@ let art=null,isEditor=false,dvKey=null;
 const DAYS=[["mon","Monday"],["tue","Tuesday"],["wed","Wednesday"],["thu","Thursday"],["fri","Friday"],["sat","Saturday"]];
 const CONTRACT=1161;
 const DEFAULT_TARGETS={etaG:98,etaA:95,ncG:0,ncA:1,enqG:0,enqA:0};
-const TARGET_LABELS=[["etaG","2HR ETA green at or above (%)"],["etaA","2HR ETA amber at or above (%)"],["ncG","Bad scans green at or below"],["ncA","Bad scans amber at or below"],["enqG","Enquiries green at or below"],["enqA","Enquiries amber at or below"]];
+const TARGET_LABELS=[["etaG","2 hr ETA earns a point at or above (%)"]];
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 let db=null, downloads=null;
@@ -4422,9 +4422,9 @@ const T=()=>settings.targets;
 function rate(kind,v){
   if(v==null)return"none"; const t=T();
   if(kind==="ftd")return v*100>=t.ftdG?"good":v*100>=t.ftdA?"warn":"bad";
-  if(kind==="eta")return v*100>=t.etaG?"good":v*100>=t.etaA?"warn":"bad";
-  if(kind==="nc")return v<=t.ncG?"good":v<=t.ncA?"warn":"bad";
-  if(kind==="enq")return v<=t.enqG?"good":v<=t.enqA?"warn":"bad";
+  if(kind==="eta")return v*100>=t.etaG?"good":"bad";
+  if(kind==="nc")return v<=0?"good":"bad";
+  if(kind==="enq")return v<=0?"good":"bad";
 }
 const avg=a=>{const b=a.filter(x=>x!=null);return b.length?b.reduce((s,x)=>s+x,0)/b.length:null};
 const sum=a=>{const b=a.filter(x=>x!=null);return b.length?b.reduce((s,x)=>s+x,0):null};
@@ -4434,22 +4434,22 @@ function cycleInfo(id){const n=((Math.round((fromIso(id)-CYCLE_ANCHOR)/864e5/7)%
 let cycleWeeks={};
 async function loadCycle(){const s=cycleInfo(weekId).start;const o={};await Promise.all([0,1,2,3].map(async i=>{const id=iso(addDays(s,7*i));o[id]=id===weekId?null:await loadWeekDocs(id)}));cycleWeeks=o}
 function cycleList(){return Object.keys(cycleWeeks).sort().map(id=>id===weekId?week:cycleWeeks[id])}
-/* Points: every day each scored result earns green 2, amber 1, red 0, no data 0 (max 6 a day).
-   A week or pay period adds up every day worked. FTD is information only and never scored. */
-const PTS={good:2,warn:1,bad:0,none:0};
-function dayPts(r){return PTS[rate("eta",r.eta)]+PTS[rate("nc",r.nc)]+PTS[rate("enq",r.enq==null?0:r.enq)]}
+/* Points, every day worked: 2 hr ETA at target or above +1, no NC scans +1, no enquiries +1 but any enquiry -1.
+   A perfect day is 3. A week or pay period adds up every day worked. FTD is information only and never scored. */
+const PTS={good:1,bad:0,none:0};
+function dayPts(r){const e=r.enq==null?0:+r.enq;return PTS[rate("eta",r.eta)]+PTS[rate("nc",r.nc)]+(e>0?-1:1)}
 function weekRows(weeks){
   const by={};
   for(const w of(weeks||[week]))for(const[k]of DAYS){const d=w&&w.days&&w.days[k];if(!d)continue;for(const l in d.rows){(by[l]=by[l]||[]).push(d.rows[l])}}
   return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq));
-    return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),nc,enq,ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*6}});
+    return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),nc,enq,ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*3}});
 }
-function dayRows(key){const d=week.days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:6}))}
+function dayRows(key){const d=week.days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
 function scoreSort(rows){
   return rows.map(r=>({...r,star:r.points===r.max})).sort((a,b)=>cmp(a,b)||a.login.localeCompare(b.login));
 }
-/* ranking: most points, then fewer scan errors, fewer enquiries, better ETA; parcels never count; exact ties share a rank */
-function cmp(a,b){return b.points-a.points||(a.nc??0)-(b.nc??0)||(a.enq??0)-(b.enq??0)||(b.eta??-1)-(a.eta??-1)}
+/* ranking: most points, then fewer enquiries, better ETA, fewer NC scans; parcels never count; exact ties share a rank */
+function cmp(a,b){return b.points-a.points||(a.enq??0)-(b.enq??0)||(b.eta??-1)-(a.eta??-1)||(a.nc??0)-(b.nc??0)}
 function ranked(rows){
   rows.forEach((r,i)=>{r.rank=i&&cmp(rows[i-1],r)===0?rows[i-1].rank:i+1});return rows;
 }
@@ -4563,7 +4563,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   g.font="700 28px "+FB;g.fillStyle="#c9d6ea";
   g.fillText("Team: "+(tp!=null?tp.toLocaleString("en-AU")+" parcels":"")+(tf!=null?"   ·   FTD "+pct(tf)+"%":"")+(te!=null?"   ·   ETA "+pct(te)+"%":""),48,198);
   // legend
-  let y=HEAD+22;const items=[["good","GOOD"],["warn","CLOSE"],["bad","NEEDS WORK"]];
+  let y=HEAD+22;const items=[["good","POINT"],["bad","MISSED"]];
   let x=48;g.font="700 28px "+FD;
   for(const[k,lab]of items){const w=g.measureText(lab).width+84;g.fillStyle=C[k];rr(x,y,w,54,27);g.fill();g.fillStyle="#fff";g.beginPath();g.arc(x+29,y+27,18,0,7);g.fill();mark(g,k,x+29,y+27,24,C[k]);g.fillStyle="#fff";g.fillText(lab,x+56,y+37);x+=w+16}
   star(g,x+22,y+27,20,C.signal);g.fillStyle=C.ink;g.fillText("FULL POINTS",x+50,y+37);
@@ -4608,12 +4608,12 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   g.font="400 24px "+FB;g.fillStyle=C.muted;fy+=40;
   g.fillText("Every day you score points for On time, Scan errors and Enquiries:",48,fy);
   fy+=22;let lx=48;g.font="700 24px "+FD;
-  for(const[k,lab]of[["good","2 POINTS"],["warn","1 POINT"],["bad","0 POINTS"]]){const w=g.measureText(lab).width+66;g.fillStyle=C[k];rr(lx,fy,w,46,23);g.fill();mark(g,k,lx+24,fy+23,20,"#fff");g.fillStyle="#fff";g.fillText(lab,lx+46,fy+32);lx+=w+14}
+  for(const[k,lab]of[["good","+1 POINT"],["bad","0 POINTS"]]){const w=g.measureText(lab).width+66;g.fillStyle=C[k];rr(lx,fy,w,46,23);g.fill();mark(g,k,lx+24,fy+23,20,"#fff");g.fillStyle="#fff";g.fillText(lab,lx+46,fy+32);lx+=w+14}
   const lines=[
-    ["700","A perfect day is 6 points."+(isWeek||isCycle?" Your total adds up every day you worked.":"")],
-    ["400","Green: on time "+t.etaG+"% or more  ·  "+t.ncG+" scan errors  ·  "+t.enqG+" enquiries"],
-    ["400","Amber: on time "+t.etaA+"% or more  ·  "+(t.ncA>t.ncG+1?(t.ncG+1)+" to "+t.ncA:t.ncA)+(t.ncA===1?" scan error":" scan errors")+(t.enqA>t.enqG?"  ·  "+(t.enqA>t.enqG+1?(t.enqG+1)+" to "+t.enqA:t.enqA)+(t.enqA===1?" enquiry":" enquiries"):"")],
-    ["400","Red: anything below amber"+(t.enqA<=t.enqG?", and any enquiry":"")+".  Grey means no data and scores 0 points."],
+    ["700","A perfect day is 3 points."+(isWeek||isCycle?" Your total adds up every day you worked.":"")],
+    ["400","2 hr ETA: 1 point at "+t.etaG+"% or more, 0 points below."],
+    ["400","NC scans: 1 point for no NC scans, 0 points for any."],
+    ["400","Enquiries: 1 point for no enquiries, minus 1 point for any enquiry."],
     ["400","Delivered first time is for information only and is not scored."]];
   if(isWeek||isCycle)lines.push(["400","Colours show your average day. Numbers show your totals."]);
   fy+=46;
@@ -4655,7 +4655,7 @@ async function saveXlsx(){
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
 /* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
 const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const RT=(()=>{try{return Object.assign({q:"",grp:"all",st:"all",sort:"rank",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""})}catch(e){return{q:"",grp:"all",st:"all",sort:"rank",dir:1}}})();
+const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"rank",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});if(!["all","full","enq","eta","nc","me"].includes(o.st))o.st="all";return o}catch(e){return{q:"",grp:"all",st:"all",sort:"rank",dir:1}}})();
 const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir}))}catch(e){}};
 const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
 const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
@@ -4666,7 +4666,7 @@ function tblRows(src){
   return src.map(r=>{const k=String(r.login).toUpperCase().replace(/\s+/g,"");
     const rt={eta:RC[rate("eta",r.eta)],nc:RC[rate("nc",r.ncAvg)],enq:RC[rate("enq",r.enqAvg)]};
     const L=[rt.eta,rt.nc,rt.enq];
-    const st=r.points===r.max&&r.max?"full":L.includes("b")?"bad":L.includes("w")?"warn":"good";
+    const st=r.points===r.max&&r.max?"full":"part";
     return{...r,key:k,name:N[k]||"",grp:G[k]||"",rt,st,me:!!me&&k===me}});
 }
 function liveRows(){return tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay))))}
@@ -4675,7 +4675,7 @@ function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
 const SORTS={rank:[r=>r.rank,1],name:[r=>(r.name||r.login).toLowerCase(),1],points:[r=>r.max?r.points/r.max:-1,-1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1]};
 function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
-  let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="good"?(r.st==="good"||r.st==="full"):r.st===RT.st))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
+  let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="full"?r.st==="full":r.rt[RT.st]==="b"))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
   const[f]=SORTS[RT.sort]||SORTS.rank,d=RT.dir;
   return out.slice().sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||a.rank-b.rank});
 }
@@ -4718,14 +4718,17 @@ function rtHTML(rows,multi){
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="rank">Rank</option><option value="points">Points</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option><option value="name">Name</option></select></label></div>
-     <div class="rt-chips st" role="group" aria-label="Show">${chip("data-rf","all","Everyone",rows.length)}${chip("data-rf","full","★ Full points",n(r=>r.st==="full"),"c-full")}${chip("data-rf","good","On target",n(r=>r.st==="good"||r.st==="full"),"c-g")}${chip("data-rf","warn","Close",n(r=>r.st==="warn"),"c-w")}${chip("data-rf","bad","Needs work",n(r=>r.st==="bad"),"c-b")}${rows.some(r=>r.me)?chip("data-rf","me","Just me",null,"c-me"):""}</div>
+     <div class="rt-chips st" role="group" aria-label="Show">${chip("data-rf","all","Everyone",rows.length)}${chip("data-rf","full","\u2605 Full points",n(r=>r.st==="full"),"c-full")}${chip("data-rf","enq","Had an enquiry",n(r=>r.rt.enq==="b"),"c-b")}${chip("data-rf","eta","ETA under "+T().etaG+"%",n(r=>r.rt.eta==="b"),"c-w")}${chip("data-rf","nc","Had NC scans",n(r=>r.rt.nc==="b"),"c-w")}${rows.some(r=>r.me)?chip("data-rf","me","Just me",null,"c-me"):""}</div>
      ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role">${chip("data-rg","all","All roles",null)}${gs.map(g=>chip("data-rg",g,GRPN[g]||g,n(r=>r.grp===g),"dg-"+g)).join("")}</div>`:""}
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
    <div class="rt-tw"><table class="rt-t"><thead><tr>${th("rank","#","rk")}${th("name","Driver","dr")}${th("points","Points","pt")}${th("eta","2 hr ETA")}${th("nc","NC scans")}${th("enq","Enquiries")}${th("pc","Parcels","num")}${th("ftd","FTD","num")}</tr></thead><tbody></tbody></table></div>
-   <details class="rt-how"><summary>How points work</summary><p><span class="rt-v r-g"><i>✓</i>2 points</span> <span class="rt-v r-w"><i>!</i>1 point</span> <span class="rt-v r-b"><i>✕</i>0 points</span></p>
-     <p>Every day you score points for 2 hr ETA, NC scans and enquiries. A perfect day is 6 points and the week adds up every day you worked. Green: 2 hr ETA ${T().etaG}% or more, ${T().ncG} NC scans, ${T().enqG} enquiries. Amber: 2 hr ETA ${T().etaA}% or more, ${T().ncA} NC scan${T().ncA===1?"":"s"}. Delivered first time and parcels are for information only. Drivers on equal points are split by fewer NC scans, then fewer enquiries, then better 2 hr ETA.</p></details>`;
+   <details class="rt-how"><summary>How points work</summary><p>Every day you work you earn points:</p>
+     <p><span class="rt-v r-g"><i>\u2713</i>+1</span> 2 hr ETA of ${T().etaG}% or more</p>
+     <p><span class="rt-v r-g"><i>\u2713</i>+1</span> No NC scans</p>
+     <p><span class="rt-v r-g"><i>\u2713</i>+1</span> No enquiries, but <span class="rt-v r-b"><i>\u2715</i>\u22121</span> if you get any enquiry</p>
+     <p>A perfect day is 3 points and your total adds up every day you work. Delivered first time and parcels are for information only. Drivers on equal points are split by fewer enquiries, then better 2 hr ETA, then fewer NC scans.</p></details>`;
 }
 function mountRT(box,rows,multi){
   box.classList.add("rt");box.__rows=rows;box.__multi=multi;
@@ -6517,18 +6520,18 @@ const isoL=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Str
 const addD=(s,n)=>{const d=fromIso(s);d.setDate(d.getDate()+n);return isoL(d)};
 const targets=()=>Object.assign({},DEFT,(S().results&&S().results.targets)||{},(data&&data.tg)||{});
 function rate(kind,v){if(v==null)return '';const t=targets();
-  if(kind==='eta')return v*100>=t.etaG?'g':v*100>=t.etaA?'w':'b';
-  if(kind==='nc')return v<=t.ncG?'g':v<=t.ncA?'w':'b';
-  return v<=t.enqG?'g':v<=t.enqA?'w':'b'}
-const PT={g:2,w:1,b:0,'':0};
+  if(kind==='eta')return v*100>=t.etaG?'g':'b';
+  if(kind==='nc')return v<=0?'g':'b';
+  return v<=0?'g':'b'}
+const PT={g:1,b:0,'':0};
 function myRow(rows){if(!rows)return null;const K=myKeys();const k=Object.keys(rows).find(x=>K.has(dkey(x)));return k?rows[k]:null}
 function statsFor(dates){
   const rs=[];for(const dt of dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)rs.push(r)}
   if(!rs.length)return null;const n=rs.length;
   const nn=a=>a.filter(x=>x!=null&&x!=='');const sum=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0):null};const avg=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0)/b.length:null};
   const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
-  const points=rs.reduce((s,r)=>s+PT[rate('eta',r.eta)]+PT[rate('nc',r.nc)]+PT[rate('enq',r.enq==null?0:r.enq)],0);
-  return{days:n,pc,eta,nc,enq,points,max:n*6,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
+  const points=rs.reduce((s,r)=>s+PT[rate('eta',r.eta)]+PT[rate('nc',r.nc)]+((r.enq==null?0:+r.enq)>0?-1:1),0);
+  return{days:n,pc,eta,nc,enq,points,max:n*3,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
 }
 const CYC0='2026-10-05';
 function periods(){
@@ -6569,7 +6572,7 @@ function profileHTML(){
   const when={day:'that day',week:'this week',cycle:'this pay cycle'}[PER];
   const own=!(pickSubj&&me===pickSubj),my=(a,b)=>own?a:b;
   const card=(g,ic,lab,val,sub,rt)=>`<div class="me-c g-${g}${rt?' r-'+rt:''}"><span class="ic">${ICON[ic]}</span><small>${lab}</small><b>${val}</b>${sub?`<span class="sb">${sub}</span>`:''}</div>`;
-  const rtTxt={g:'On target',w:'Close to target',b:'Below target','':''};
+  const rtTxt={g:'On target',w:'',b:'Missed target','':''};
   const svBody=!sv||!sv.found?`<b>No surveys</b><span class="sb">No customer surveys for you ${PER==='cycle'?'this month':'this week'} yet.</span>`:
     `<b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span class="sb">Average score ${sv.avg.toFixed(1)} out of 10</span>`:''}`;
   return `<section class="me-card">
@@ -6579,13 +6582,13 @@ function profileHTML(){
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
-  ${x?`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.round(100*x.points/x.max):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
+  ${x?`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.max(0,Math.round(100*x.points/x.max)):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
      :`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
   <div class="me-grid">
     ${card('road','box','Parcels',x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–',x&&x.days>1?'about '+Math.round(x.pc/x.days).toLocaleString('en-AU')+' a day':'')}
     ${card('perf','eta','2 hr ETA',x?pctf(x.eta):'–',x?rtTxt[x.r.eta]:'',x&&x.r.eta)}
     ${card('perf','scan','NC scans',x&&x.nc!=null?Math.round(x.nc):'–',x?rtTxt[x.r.nc]:'',x&&x.r.nc)}
-    ${card('perf','enq','Enquiries',x?Math.round(x.enq):'–',x?rtTxt[x.r.enq]:'',x&&x.r.enq)}
+    ${card('perf','enq','Enquiries',x?Math.round(x.enq):'–',x?(x.r.enq==='b'?'Minus 1 point each day':'On target'):'',x&&x.r.enq)}
   </div>
   <div class="me-c me-wide g-perf me-sv"><span class="ic">${ICON.survey}</span><small>Customer survey${PER==='day'?' (weekly)':PER==='cycle'?' (monthly)':''}</small>${svBody}</div>
   <div class="me-grid">
@@ -7811,17 +7814,17 @@ function step(n){
 /* ---------- scoring ---------- */
 function targets(){const t=(S.settings.main&&S.settings.main.targets)||{};return{etaG:98,etaA:95,ncG:0,ncA:1,enqG:0,enqA:0,...t}}
 function grade(kind,v){const t=targets();if(v==null||v===''||isNaN(v))return 'none';
-  if(kind==='eta'){const p=v*100;return p>=t.etaG?'good':p>=t.etaA?'warn':'bad'}
-  if(kind==='nc')return v<=t.ncG?'good':v<=t.ncA?'warn':'bad';
-  if(kind==='enq')return v<=t.enqG?'good':v<=t.enqA?'warn':'bad';return 'none'}
-const PTS={good:2,warn:1,bad:0,none:0};
-function dayPoints(r){return PTS[grade('eta',r.eta)]+PTS[grade('nc',r.nc)]+PTS[grade('enq',+(r.enq||0))]}
+  if(kind==='eta'){const p=v*100;return p>=t.etaG?'good':'bad'}
+  if(kind==='nc')return v<=0?'good':'bad';
+  if(kind==='enq')return v<=0?'good':'bad';return 'none'}
+const PTS={good:1,bad:0,none:0};
+function dayPoints(r){return PTS[grade('eta',r.eta)]+PTS[grade('nc',r.nc)]+((+(r.enq||0))>0?-1:1)}
 /* ---------- aggregate ---------- */
 function blank(){return{days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
 function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
   if(r.ftd!=null&&r.ftd!==''){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
-  a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);const p=dayPoints(r);a.pts+=p;a.max+=6;a.list.push({date,...r,p})}
+  a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);const p=dayPoints(r);a.pts+=p;a.max+=3;a.list.push({date,...r,p})}
 function nps(sc){if(!sc.length)return null;const pr=sc.filter(x=>x.s>=9).length,de=sc.filter(x=>x.s<=6).length;return Math.round((pr-de)/sc.length*100)}
 function compute(){
   const P=people(),R=range(),per={};
@@ -9555,7 +9558,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261930';
+const VERSION='202610262000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
