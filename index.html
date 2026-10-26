@@ -2959,6 +2959,11 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-guide .gd-cat .gd-row:hover{background:var(--ks)}
 #sh-main #mod-guide .gd.gc-delivery .gd-eb,#sh-main #mod-guide .gd.gc-scanner .gd-eb,#sh-main #mod-guide .gd.gc-safety .gd-eb,#sh-main #mod-guide .gd.gc-conduct .gd-eb,#sh-main #mod-guide .gd.gc-contract .gd-eb{color:var(--k)}
 #sh-main #mod-guide .gd[class*="gc-"]{box-shadow:inset 0 4px 0 var(--k)}
+</style><style id="no-page-share">
+/* sending to drivers happens once, from Home */
+#sh-main #r_shareDrivers,#sh-main #r_previewDrivers,#sh-main #v_sharePanel,#sh-main [data-act="shareRuns"]{display:none!important}
+#sh-main#sh-main#sh-main .share:has([data-pc="share"],[data-lk="share"],[data-lv="share"]){display:none!important}
+#sh-main .row-actions:not(:has(>:not(#r_shareDrivers):not(#r_previewDrivers))){display:none!important}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -3426,7 +3431,7 @@ function renderHome(){
   <section class="sh-panel" aria-labelledby="sh-dl">
     <h2 id="sh-dl">Drivers’ link</h2>
     <p>After you make changes, send them so drivers see the latest.</p>
-    <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, leave calendar, precards, lockers and directory in one go.</span></div>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
+    <div class="sh-all"><button type="button" class="sh-btn primary" data-sh="shareAll">Send latest of everything to drivers</button><span>Sort and run sheets, driver results, survey ranking, leave calendar, precards, lockers and directory in one go.</span></div>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}
   </section>`;  if(window.CLOCK)window.CLOCK.mount();bkInfo();
@@ -3467,7 +3472,7 @@ async function backup(btn){if(!window.__backup||btn.disabled)return;const old=bt
   btn.disabled=false;btn.textContent=old}
 async function shareAll(btn){
   btn.disabled=true;homeMsg={t:'Sending everything to drivers\u2026'};renderHome();
-  const parts=[['sort and run sheets',window.RUNS],['leave calendar',window.LEAVE],['precard list',window.PRECARDS],['locker list',window.LOCKERS],['directory',window.DIRECTORY]];
+  const parts=[['sort and run sheets',window.RUNS],['driver results',window.RESULTS],['survey ranking',window.SURVEY],['leave calendar',window.LEAVE],['precard list',window.PRECARDS],['locker list',window.LOCKERS],['directory',window.DIRECTORY]];
   const missed=[];window.__collect={};
   try{for(const [nm,m] of parts){try{if(m&&m.share)await m.share();else missed.push(nm)}catch(e){missed.push(nm)}}}finally{}
   const patch=window.__collect;window.__collect=null;
@@ -4029,7 +4034,7 @@ function edSave(){
     if(p.to!==p.run){const to=S.runs[p.to];r.streets=r.streets.filter(st=>!mine.includes(st));mine.forEach(st=>{st.section=null;st.off='';to.streets.push(st)});touched.add(p.to)}
   }
   touched.forEach(id=>markDirty(id));S.ed=null;renderEd();renderResults();
-  toast(`${nm} saved. Tap Send latest to drivers when you are done.`);
+  toast(`${nm} saved. Send it to drivers from Home when you are done.`);
 }
 document.addEventListener('input',e=>{const el=e.target;if(!S.ed||!el.dataset||!el.dataset.ed)return;const k=el.dataset.ed;if(k==='nm'){S.ed.nm=el.value;return}const p=S.ed.parts[+el.dataset.i];if(!p)return;p[k]=el.value;if(k==='to')renderEd()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.ed){S.ed=null;renderEd()}});
@@ -4548,6 +4553,10 @@ function boardsNow(){
   return out;
 }
 function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,nc:r.nc,enq:r.enq,ftd:r.ftd,r:{eta:c(rate('eta',r.eta)),nc:c(rate('nc',r.ncAvg)),enq:c(rate('enq',r.enqAvg))}});try{return{week:ranked(scoreSort(weekRows())).map(f),day:ranked(scoreSort(dayRows(selDay))).map(f),cycle:ranked(scoreSort(weekRows(cycleList()))).map(f)}}catch(e){return null}}
+window.RESULTS={share:async()=>{
+  if(!week||!Object.keys(week.days||{}).length)throw new Error("nothing to share");
+  const now=new Date();
+  await APP.publish({results:{updated:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()]+" "+short(now)+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),boards:boardsNow(),mine:mineNow(),targets:{...T()}}})}};
 async function shareDrivers(){
   const sm=$("shareMsg"),btn=$("shareDrivers");
   const say=(t,err)=>{sm.textContent=t;sm.hidden=false;sm.classList.toggle("err",!!err)};
@@ -4911,6 +4920,14 @@ $("shareDrivers").addEventListener("click",async()=>{
 });
 $("previewDrivers").addEventListener("click",()=>{showDriverView(true);scrollTo(0,0)});
 $("dvBack").addEventListener("click",showTool);
+/* used by Send latest of everything on Home */
+window.SURVEY={share:async()=>{try{renderWeek();renderCycle()}catch(e){}
+  const old=(window.APP&&APP.SNAP&&APP.SNAP.survey)||{};
+  const weekly=cur?{html:$("board").innerHTML}:(old.weekly||null);
+  const cycle=$("cycle")&&$("cycle").value&&$("board4").innerHTML.trim()?{html:$("board4").innerHTML}:(old.cycle||null);
+  if(!weekly&&!cycle)throw new Error("nothing to share");
+  const now=new Date();
+  await APP.publish({survey:{updated:now.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short"})+" at "+now.toLocaleTimeString("en-AU",{hour:"numeric",minute:"2-digit"}),weekly,cycle}})}};
 // Start
 renderWeek(); renderCycle();
 if(SNAP)showDriverView(false);
@@ -9264,7 +9281,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261615';
+const VERSION='202610261630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
