@@ -3782,11 +3782,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-staff .rgrow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;width:100%;padding:8px 0;border-top:1px solid var(--sh-line);font-size:.9rem}
 #sh-main #mod-staff .rgrow span{font-size:.82rem;color:var(--sh-muted)}
 </style>
-<style id="mepay">
-#sh-main .me-pay .pbig{display:flex;align-items:baseline;gap:8px;margin:6px 0 10px}#sh-main .me-pay .pbig b{font:800 1.7rem var(--sh-body);color:var(--sh-ink)}#sh-main .me-pay .pbig small{color:var(--sh-muted);font-size:.8rem}
-#sh-main .me-pay .pr{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--sh-line);font-size:.92rem}#sh-main .me-pay .pr b{font-weight:700}
-#sh-main .me-pay .me-note2{margin:8px 0 0;font-size:.76rem;color:var(--sh-muted)}
-</style>
+
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -7323,18 +7319,14 @@ function renderProfile(){
   if(PICK&&pickSubj&&pickData){const m0=me,d0=data;me=pickSubj;data=Object.assign({},pickData,{tg:d0&&d0.tg});
     try{box.innerHTML=pick+profileHTML()}finally{me=m0;data=d0}}
   else box.innerHTML=pick+profileHTML();
-  fillPay();
+  fillEarn();
 }
-async function fillPay(){if(!document.getElementById('me_pay')||!window.INVMAKE||!window.INVMAKE.pay)return;
-  let r=null;try{r=await window.INVMAKE.pay()}catch(e){}const box=document.getElementById('me_pay');if(!box)return;
-  if(!r){box.remove();return}
-  const m=n=>'$'+Math.round(+n||0).toLocaleString('en-AU');
-  const ds=s=>{const[a,b,c]=String(s).split('-').map(Number);return c+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][b-1]};
-  const row=(l,v)=>`<div class="pr"><span>${l}</span><b>${v}</b></div>`;
-  box.innerHTML=`<h2>Approx earned so far</h2><p class="me-line">This pay period, ${ds(r.from)} to ${ds(r.to)}</p>
-   <div class="pbig"><b>about ${m(r.total)}</b><small>${r.gstReg?'including GST':''}</small></div>
-   ${row('Days worked',r.days)}${r.hourly?row('Hours',Math.round(r.hr*10)/10):row('Parcels',(r.l1+r.l2).toLocaleString('en-AU'))}${r.xp?row('Extra parcels',r.xp):''}
-   <p class="me-note2">A rough guide from your Driver Results and clock ins at your rates. Your invoice is the final amount.</p>`}
+async function fillEarn(){const el=document.getElementById('me_earn');if(!el||!window.INVMAKE||!window.INVMAKE.pay)return;
+  const sid=el.dataset.sid,a=el.dataset.a,b=el.dataset.b;let r=null;try{r=await window.INVMAKE.pay(sid,a,b)}catch(e){}
+  const x=document.getElementById('me_earn');if(!x||x.dataset.a!==a||x.dataset.b!==b)return;
+  if(!r){x.remove();return}
+  x.querySelector('b').textContent='about $'+Math.round(r.total).toLocaleString('en-AU');
+  const sm=x.querySelector('small');if(sm)sm.textContent=(r.gstReg?'Incl GST. ':'')+'Rough guide, your invoice is final.'}
 async function setPick(id){
   PICK=id||'';try{sessionStorage.setItem('me1161_pick',PICK)}catch(e){}
   const box=document.getElementById('me_box');
@@ -7574,6 +7566,7 @@ function statsHTML(per,x,sv,own){
    </div>
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
     ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):''].join(''):''}
+    ${x&&me&&me.staff&&per.dates&&per.dates.length?`<div class="ms-r" id="me_earn" data-sid="${esc(me.staff)}" data-a="${esc([...per.dates].sort()[0])}" data-b="${esc([...per.dates].sort().slice(-1)[0])}"><span class="l">Approx earned<small>Working it out…</small></span><b>…</b></div>`:''}
    </div>
    ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fbHTML}</div>`:''}
   </section>`;
@@ -7600,7 +7593,6 @@ function profileHTML(){
   ${statsHTML(per,x,sv,own)}
   ${trendHTML(own)}
   <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
-  ${own&&APP.role!=='mgr'?`<section class="me-box g-admin me-pay" id="me_pay"><h2>Approx earned so far</h2><p class="me-line">Working it out…</p></section>`:''}
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
   ${data&&data.inv.length?`<section class="me-box g-admin"><h2>${my('My invoices','Invoices')}</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
   ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>${my('What your customers said','What customers said')}</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}</section>`:''}
@@ -10242,18 +10234,19 @@ async function loadDrv(){if(role!=='drv'||!sid||!from||!to||to<from)return;const
   const ds=[];for(let d=from;d<=to;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
   await Promise.all(ds.map(async d=>{try{const x=await db.doc('clock/'+d+'_'+sid).get();if(x.exists)clock[d+'_'+sid]=__D(x)}catch(e){}try{const x=await db.doc('timesheets/'+d+'_'+sid).get();if(x.exists)ts[d+'_'+sid]=__D(x)}catch(e){}}));paint()}
 const loaded=new Set();
-async function loadRange(a,b){const key=a+b;if(loaded.has(key))return;loaded.add(key);
+async function loadRange(a,b,id){id=id||sid;const key=a+b+id;if(loaded.has(key))return;loaded.add(key);
   try{const c=db.collection('days');const q=c.range?await c.range(a,add(b,1)):await c.get();for(const d of q.docs){const v=__D(d);if(v&&v.rows)days[v.date||d.id]=v}}catch(e){}
   const ds=[];for(let d=a;d<=b;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
-  await Promise.all(ds.map(async d=>{const k=d+'_'+sid;if(!clock[k])try{const x=await db.doc('clock/'+k).get();if(x.exists)clock[k]=__D(x)}catch(e){}if(!ts[k])try{const x=await db.doc('timesheets/'+k).get();if(x.exists)ts[k]=__D(x)}catch(e){}}))}
-/* a driver's approximate earnings so far this pay period, for the Profile page */
-async function payNow(){await init('drv');if(!db||role!=='drv'||!sid)return null;if(!cfg)cfg=mergeCfg(sid);
-  const[ps,pe0]=period(0),pe=TODAY<pe0?TODAY:pe0;await loadRange(ps,pe);
-  const t={l1:0,l2:0,xp:0,hr:0},seen=new Set();
-  for(let d=ps;d<=pe;d=add(d,1)){if(fromIso(d).getDay()===0)continue;const a=dayData(d);if(!a)continue;seen.add(d);
-    if(cfg.hourly)t.hr+=num(a.hrs);else if(a.pc!=null){if(a.tl)t.l2+=a.pc;else t.l1+=a.pc}if(a.xp)t.xp+=num(a.xp)}
-  const sub=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh,gst=cfg.gst?Math.round(sub*10)/100:0;
-  return{from:ps,to:pe0,days:seen.size,...t,hourly:!!cfg.hourly,gstReg:!!cfg.gst,sub:Math.round(sub*100)/100,total:Math.round((sub+gst)*100)/100}}
+  await Promise.all(ds.map(async d=>{const k=d+'_'+id;if(!clock[k])try{const x=await db.doc('clock/'+k).get();if(x.exists)clock[k]=__D(x)}catch(e){}if(!ts[k])try{const x=await db.doc('timesheets/'+k).get();if(x.exists)ts[k]=__D(x)}catch(e){}}))}
+/* approximate earnings for one person over some dates, for the Profile page */
+async function payFor(id,a,b){await init(window.APP&&APP.role==='mgr'?'mgr':'drv');if(!db||!id||!a||!b)return null;if(role==='drv'&&id!==sid)return null;
+  if(role==='mgr'){let t=0;while((!staff[id]||!Object.keys(cfgs).length)&&t<20){await new Promise(r=>setTimeout(r,150));t++}if(!staff[id])return null}
+  await loadRange(a,b,id);
+  const ks=sid,kc=cfg;sid=id;cfg=mergeCfg(id);
+  try{const t={l1:0,l2:0,xp:0,hr:0};for(let d=a;d<=b;d=add(d,1)){if(fromIso(d).getDay()===0)continue;const x=dayData(d);if(!x)continue;
+      if(cfg.hourly)t.hr+=num(x.hrs);else if(x.pc!=null){if(x.tl)t.l2+=x.pc;else t.l1+=x.pc}if(x.xp)t.xp+=num(x.xp)}
+    const sub=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh,gst=cfg.gst?Math.round(sub*10)/100:0;
+    return{gstReg:!!cfg.gst,hourly:!!cfg.hourly,total:Math.round((sub+gst)*100)/100}}finally{sid=ks;cfg=kc}}
 function need(){if(role==='drv'){loadDrv();return}if(from&&window.needHist)window.needHist(from,['days','clock','timesheets'])}
 
 /* ---------- work out each day ---------- */
@@ -10559,7 +10552,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;const cur=rows().find(r=>r.d===d);const base=cur?{...cur.v}:{l1:'',l2:'',xp:'',hr:''};ov[d]={...base,...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
 document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('cfg')&&inMe(e.target))showCfg=e.target.open},true);
 
-window.INVMAKE={pay:payNow,async mount(v,r){view=v||'make';await init(r);if(role==='drv'&&sid&&!cfg){cfg=mergeCfg(sid)}need();paint()}};
+window.INVMAKE={pay:payFor,async mount(v,r){view=v||'make';await init(r);if(role==='drv'&&sid&&!cfg){cfg=mergeCfg(sid)}need();paint()}};
 })();
 
 </script>
@@ -10919,7 +10912,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280800';
+const VERSION='202610280810';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
