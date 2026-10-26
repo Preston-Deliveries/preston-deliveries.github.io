@@ -5907,7 +5907,7 @@ function matchesQ(p){
   return [p.first,p.last,p.login,p.mobile,p.email,p.rego,p.van,p.role,runsOf(p).join(' '),p.ecName].join(' ').toLowerCase().replace(/\s+/g,'').includes(t);
 }
 function roleTag(r){r=String(r||'');const c=r==='RELIEF'||r==='XL RELIEF'?'relief':OFFICE.includes(r)?'office':'';return `<span class="role ${c}">${esc(r==='PRINCIPLE'?'Principal':r==='RELIEF'?'Relief':title(r).replace(/^Xl/,'XL'))}</span>`}
-let miss='',sortBy=(()=>{try{return localStorage.getItem('dm_sort')||'name'}catch(e){return 'name'}})();
+let miss='',sortBy='name';
 const MISS=[['mobile','No mobile',p=>!p.mobile],['login','No login',p=>!p.login],['email','No email',p=>!p.email],['van','No van or rego',p=>!p.van&&!p.rego],['ec','No emergency contact',p=>!p.ecName&&!p.ecPhone],['run','No driver number',p=>!runsOf(p).length]];
 function matchesMiss(p){if(!miss)return true;const m=MISS.find(x=>x[0]===miss);return m?m[2](p):true}
 const runKey=p=>{const r=runsOf(p)[0]||'';const m=/(\d+)/.exec(r);return m?r.replace(/\d+/,'')+String(+m[1]).padStart(4,'0'):'~'};
@@ -5955,9 +5955,7 @@ function render(){
       <div class="act"><button type="button" class="sh-btn primary" data-dm="add">Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
-      <div class="chips grpc" role="group" aria-label="Group">${FILTERS.map(([k,l])=>`<button type="button" class="${k==='all'?'all':'dg-'+k}" data-dm="filter" data-v="${k}" aria-pressed="${k===filter}">${l}<small>${c[k]}</small></button>`).join('')}</div></div>
-    <div class="dm-bar"><span class="lbl">Missing</span><div class="chips miss" role="group" aria-label="Missing details">${MISS.map(([k,l,f])=>{const n=Object.values(people).filter(p=>matchesFilter(p)&&f(p)).length;return `<button type="button" data-dm="miss" data-v="${k}" aria-pressed="${k===miss}">${l}<small>${n}</small></button>`}).join('')}</div>
-      <label class="dm-sort"><span class="lbl">Sort</span><select id="dm_sort" aria-label="Sort by"><option value="name"${sortBy==='name'?' selected':''}>Name</option><option value="run"${sortBy==='run'?' selected':''}>Driver number</option><option value="login"${sortBy==='login'?' selected':''}>Login</option></select></label></div>
+</div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
     <div class="dm-bar"><span class="lbl">Show</span><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
     ${list.length?(()=>{let n=0;const nc=4+COLS.filter(([k])=>shown.has(k)).length;return `<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([k,l])=>`<th class="h-${k}">${l}</th>`).join('')}</tr></thead><tbody>
@@ -10104,7 +10102,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270710';
+const VERSION='202610270720';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
