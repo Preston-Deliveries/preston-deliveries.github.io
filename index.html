@@ -2635,6 +2635,7 @@ p.ck-alert{color:#5A3C00!important}
 #mod-timesheets .ckc>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:4px}
 #mod-timesheets .ckc>summary::-webkit-details-marker{display:none}
 #mod-timesheets .ckc>summary h3{margin:0;font:700 .9rem var(--sh-body);color:var(--kt)}
+#mod-timesheets .ckc .np{display:block;font-size:.78rem;color:var(--sh-muted);margin-top:-2px}#mod-timesheets .ckg{align-items:start}
 #mod-timesheets .ckc>summary::after{content:'Tap to show names';font-size:.74rem;color:var(--sh-muted)}#mod-timesheets .ckc[open]>summary::after{content:none}
 #mod-timesheets .ckc>summary .nn{font:800 1.9rem/1 var(--sh-body);color:var(--kt);font-variant-numeric:tabular-nums}
 #mod-timesheets .ckc.in{--k:#1D5FD1;--ks:#E0EAFB;--kt:#1D5FD1}#mod-timesheets .ckc.out{--k:#1E8A4C;--ks:#E3F4EA;--kt:#14804A}
@@ -9405,16 +9406,16 @@ function checkHTML(){
   const n=k=>A.reduce((s,r)=>s+r[k].length,0);
   const chip=(r,extra)=>`<button type="button" class="ckp" data-ts="pick" data-v="${esc(r.p.id)}"><b>${esc(r.p.name)}</b>${r.p.no?`<small>${esc(r.p.no)}</small>`:''}${extra?`<em>${esc(extra)}</em>`:''}</button>`;
   const days=L=>L.map(x=>dshort(x.d)).join(', ');
-  const box=(cls,title,count,people,extra,empty,open)=>`<details class="ckc ${cls}" ${open?'open':''}><summary><h3>${title}</h3><span class="nn">${count}</span></summary>${people.length?`<div class="ckl">${people.map(r=>chip(r,extra(r))).join('')}</div>`:`<p class="none">${empty}</p>`}</details>`;
+  const box=(cls,title,count,people,extra,empty,open)=>`<details class="ckc ${cls}" ${open?'open':''}><summary><h3>${title}</h3><span class="nn">${count}</span><small class="np">${count===1?'person':'people'}</small></summary>${people.length?`<div class="ckl">${people.map(r=>chip(r,extra(r))).join('')}</div>`:`<p class="none">${empty}</p>`}</details>`;
   const unit=day?'':' shifts';
   return `<section class="card ckk"><div class="ckh"><h2>Clock in check</h2>
      <div class="ckseg" role="tablist">${[['day','Day'],['week','Week'],['month','Month']].map(([k,l])=>`<button type="button" role="tab" data-ts="ckper" data-v="${k}" aria-selected="${k===ckPer}">${l}</button>`).join('')}</div></div>
    <div class="ckd"><button type="button" class="sh-btn sm" data-ts="ckprev" aria-label="Back">‹</button><b>${esc(R.label)}</b><button type="button" class="sh-btn sm" data-ts="cknext" aria-label="Forward" ${R.cur?'disabled':''}>›</button>${R.cur?'':'<button type="button" class="sh-btn sm" data-ts="cktoday">Now</button>'}</div>
    <div class="ckg">
-    ${box('in','Clocked in',n('ins'),ins,r=>day?'in '+nice12(r.ins[0].t):r.ins.length+' day'+(r.ins.length===1?'':'s'),'No one has clocked in.',false)}
-    ${box('out','Clocked out',n('outs'),outs,r=>day?'out '+nice12(r.outs[0].t):r.outs.length+' day'+(r.outs.length===1?'':'s'),'No one has clocked out.',false)}
-    ${box('bad','Not clocked in',n('noIn'),ni,r=>day?'':days(r.noIn),'Everyone expected clocked in.',true)}
-    ${box('warn','Not clocked out',n('noOut'),no,r=>day?'in '+nice12(r.noOut[0].t)+(r.noOut[0].now?', still on':''):days(r.noOut),'No open shifts.',true)}
+    ${box('in','Clocked in',ins.length,ins,r=>day?'in '+nice12(r.ins[0].t):r.ins.length+' day'+(r.ins.length===1?'':'s'),'No one has clocked in.',false)}
+    ${box('out','Clocked out',outs.length,outs,r=>day?'out '+nice12(r.outs[0].t):r.outs.length+' day'+(r.outs.length===1?'':'s'),'No one has clocked out.',false)}
+    ${box('bad','Not clocked in',ni.length,ni,r=>day?'':days(r.noIn),'Everyone expected clocked in.',false)}
+    ${box('warn','Not clocked out',n('noOut'),no,r=>day?'in '+nice12(r.noOut[0].t)+(r.noOut[0].now?', still on':''):days(r.noOut),'No open shifts.',false)}
    </div>
    <div class="ckwa"><button type="button" class="sh-btn ckgo" data-ts="ckwa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm5.3 13.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>Share on WhatsApp</button><button type="button" class="sh-btn" data-ts="ckcopy">Copy message</button><span class="ok" id="ts_ckok" role="status"></span></div>
    <p class="ckn">Shares everyone who hasn’t clocked in or out for ${esc(day?'this day':ckPer==='week'?'this week':'this month')}. Expected each weekday: drivers with a run on the Drivers page, plus anyone in that day’s results, unless they are on leave. Tap a name to fix their times.</p></section>`;
@@ -10532,7 +10533,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271930';
+const VERSION='202610271945';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
