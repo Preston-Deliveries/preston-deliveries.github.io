@@ -2805,6 +2805,25 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .sh-sec.pg :is(#pc_root,#lk_root) .pcc{display:inline-block;background:var(--ps,var(--gs));color:var(--p,var(--g));border-radius:999px;padding:2px 9px;font-weight:700;font-size:.85rem}
 @media (min-width:600px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"] td:first-child{box-shadow:inset 4px 0 0 var(--p,transparent)}}
 @media (max-width:599.98px){#sh-main .sh-sec.pg :is(#pc_root,#lk_root) tbody tr[class^="pr-"]{box-shadow:inset 4px 0 0 var(--p,var(--g))!important}}
+</style><style id="dl-right">
+/* Download and print buttons: far right, with an icon */
+#sh-main .sh-sec .has-dl{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#sh-main .sh-sec :is(.head,.dm-head)>.act.has-dl{flex:1 1 100%;width:100%;margin-left:0!important;display:flex!important;grid-template-columns:none!important}
+#sh-main .sh-sec .has-dl>*{margin-left:0!important;order:0!important}
+#sh-main .sh-sec .has-dl>.dlb1{margin-left:auto!important}
+#sh-main .sh-sec :is(.head,.dm-head):has(>.act.has-dl)>.cnt{order:3!important;flex:1 1 100%;text-align:right;margin:-6px 0 0!important}
+#sh-main .sh-sec .dlb{display:inline-flex!important;align-items:center;gap:7px;white-space:nowrap;width:auto!important}
+#sh-main .sh-sec .dlb::before{content:"";flex:none;width:16px;height:16px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+#sh-main .sh-sec .dl-down{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11M7 10l5 5 5-5M5 20h14'/%3E%3C/svg%3E")}
+#sh-main .sh-sec .dl-print{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z'/%3E%3C/svg%3E")}
+#sh-main .sh-sec .dl-in{--ic:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V4M7 9l5-5 5 5M5 20h14'/%3E%3C/svg%3E")}
+#sh-main .sh-sec .dlb:not(.primary){background:var(--sh-surface);border:1px solid var(--sh-line);color:var(--sh-ink)}
+#sh-main .sh-sec .dlb:not(.primary):hover{border-color:var(--g,var(--sh-accent))}
+@media (max-width:599.98px){
+#sh-main#sh-main .sh-sec :is(.head,.dm-head)>.act.has-dl{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px}
+#sh-main#sh-main .sh-sec :is(.head,.dm-head)>.act.has-dl>*{width:100%!important;justify-content:center;margin:0!important}
+#sh-main#sh-main .sh-sec :is(.head,.dm-head)>.act.has-dl>:not(.dlb){grid-column:1/-1}
+#sh-main#sh-main .sh-sec :is(.head,.dm-head)>.act.has-dl>.dlb1:last-child{grid-column:1/-1}}
 </style><div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -3123,7 +3142,12 @@ function markDup(){
 /* Postcode colours everywhere: 4214 blue, 4215 teal, 4217 amber, 4218 pink */
 const PCRE=/^42(14|15|17|18)$/;
 function tagPc(){document.querySelectorAll('#sh-main :is(button,.lk-pc,td:first-child>b):not(.pcz)').forEach(el=>{const t=el.textContent.trim();if(PCRE.test(t)){el.classList.add('pcz','pcz-'+t);if(el.matches('td>b')){const r=el.closest('tr');if(r)r.classList.add('pcr','pr-'+t)}}})}
-let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc()})}).observe(document.body,{childList:true,subtree:true});
+/* Download, print and import buttons always sit together on the far right, with an icon */
+const DLRE=/^(download|print|export|save image|import time)/i;
+function tagDl(){document.querySelectorAll('#sh-main .sh-sec :is(button,a.sh-btn,a.btn)').forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^print/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
+  const parents=new Set([...document.querySelectorAll('#sh-main .sh-sec .dlb')].map(b=>b.parentNode));
+  parents.forEach(p=>{const kids=[...p.children];const dl=kids.filter(k=>k.classList.contains('dlb'));if(!dl.length)return;const firstDl=kids.indexOf(dl[0]);const tail=kids.slice(firstDl);dl.sort((a,b)=>b.classList.contains('dl-in')-a.classList.contains('dl-in'));const want=kids.filter(k=>!k.classList.contains('dlb')).concat(dl);if(!p.matches('td,li,tr')&&want.some((k,i)=>kids[i]!==k))dl.forEach(b=>p.appendChild(b));dl.forEach((b,i)=>b.classList.toggle('dlb1',i===0));p.classList.add('has-dl')})}
+let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc();tagDl()})}).observe(document.body,{childList:true,subtree:true});
 let dupQ=false;new MutationObserver(()=>{if(dupQ)return;dupQ=true;requestAnimationFrame(()=>{dupQ=false;markDup()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
   renderPageHead();
@@ -5285,7 +5309,7 @@ function render(){
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
-   </tbody></table></div>${isMgr()?`<button type="button" class="sh-btn primary addmore" data-pc="add">+ Add an address</button>`:''}`:`${isMgr()?`<button type="button" class="sh-btn primary addmore" data-pc="add">+ Add an address</button>`:''}<div class="tw"><div class="empty">${all.length?(tab==='review'?'Nothing under review right now. Add an address and set it to Under review while you check it.':'No address matches that search.'):(isMgr()?'No precards yet.':'The precard list has not been shared yet.')}</div></div>`}
+   </tbody></table></div>`:`<div class="tw"><div class="empty">${all.length?(tab==='review'?'Nothing under review right now. Add an address and set it to Under review while you check it.':'No address matches that search.'):(isMgr()?'No precards yet.':'The precard list has not been shared yet.')}</div></div>`}
   </div>`;
 }
 function detailHTML(){
@@ -5420,7 +5444,7 @@ function render(){
   if(openId!==null&&isMgr()){box.innerHTML=detailHTML();return}
   const all=Object.values(items),cnt=s=>all.filter(p=>(p.type||'building')===s).length;
   const l=list(),shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.lockers;
-  const add=isMgr()?`<button type="button" class="sh-btn primary addmore" data-lk="add">+ Add a locker</button>`:'';
+  const add='';
   box.innerHTML=`<div class="pcx">
    <div class="head"><h1>Parcel lockers</h1><span class="cnt">${cnt('building')} building, ${cnt('auspost')} Australia Post</span>
      <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-lk="add">+ Add a locker</button>`:''}<button type="button" class="sh-btn" data-lk="pdf">Download PDF</button>${isMgr()?`<button type="button" class="sh-btn" data-lk="xlsx">Download Excel</button>`:''}</div></div>
@@ -9101,7 +9125,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261430';
+const VERSION='202610261455';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
