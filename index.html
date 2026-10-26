@@ -3206,6 +3206,19 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-precards tbody tr:focus{outline:none}
 #sh-main #mod-precards tbody tr:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
 #mod-lockers tbody tr{-webkit-tap-highlight-color:transparent}
+
+#sh-main #mod-lockers .pcb{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+#sh-main #mod-lockers .pcb button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:700 .92rem var(--sh-body);cursor:pointer}
+#sh-main #mod-lockers .pcb button small{font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
+#sh-main #mod-lockers .pcb button[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:inherit}
+#sh-main#sh-main #mod-lockers .pcb button[class*="pr-"]{border-color:var(--p)!important;color:var(--p)!important;background:var(--ps)!important}
+#sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{background:var(--p)!important;color:#fff!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}}
+:root[data-theme="dark"] #sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}
+#sh-main #mod-lockers tbody tr{-webkit-tap-highlight-color:transparent}
+#sh-main #mod-lockers tbody tr:focus{outline:none}
+#sh-main #mod-lockers tbody tr:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+#mod-lockers tbody tr{-webkit-tap-highlight-color:transparent}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -6099,11 +6112,12 @@ function render(){
   const add='';
   box.innerHTML=`<div class="pcx">
    <div class="head"><h1>Parcel lockers</h1><span class="cnt">${cnt('building')} building, ${cnt('auspost')} Australia Post</span>
-     <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-lk="add">+ Add a locker</button>`:''}<button type="button" class="sh-btn" data-lk="pdf">Download PDF</button>${isMgr()?`<button type="button" class="sh-btn" data-lk="xlsx">Download Excel</button>`:''}</div></div>
+     <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-lk="add">+ Add a locker</button>`:''}${isMgr()?`<button type="button" class="sh-btn" data-lk="pdf">Download PDF</button><button type="button" class="sh-btn" data-lk="xlsx">Download Excel</button>`:''}</div></div>
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lk="share">Send latest to drivers</button></div>`:`<p class="lead">${tab==='building'?'Lockers inside apartment buildings on our runs. Read the note before you go in.':'Public Australia Post lockers you can card parcels to.'}</p>`}
    <div class="tabs" role="group" aria-label="Locker type">${Object.entries(TYPES).map(([k,v])=>`<button type="button" data-lk="tab" data-v="${k}" aria-pressed="${tab===k}">${v} <small>${cnt(k)}</small></button>`).join('')}</div>
    <div class="bar"><input type="search" id="lk_q" class="q" placeholder="Search name, address, suburb or driver" value="${esc(q)}" autocomplete="off" aria-label="Search lockers">
-     <label class="sort" for="lk_pcf">Postcode<select id="lk_pcf">${['all','4214','4215','4217','4218'].map(k=>`<option value="${k}" ${k===pcf?'selected':''}>${k==='all'?'All postcodes':k}</option>`).join('')}</select></label></div>
+</div>
+   <div class="pcs pcb" role="group" aria-label="Postcode">${['all','4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.type||'building')===tab&&(k==='all'||String(p.postcode).trim()===k)).length;return `<button type="button" data-lk="pcf" data-v="${k}" aria-pressed="${k===pcf}" class="${k==='all'?'':'pr-'+k}">${k==='all'?'All':k}<small>${n}</small></button>`}).join('')}</div>
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Locker</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.name)}</b></td><td class="aa">${esc(p.address)}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
@@ -9869,7 +9883,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270210';
+const VERSION='202610270220';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
