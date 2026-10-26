@@ -6151,7 +6151,7 @@ function render(){
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-pc="share">Send latest to drivers</button></div>`:`<p class="lead">Card these addresses to the Post Office instead of attempting delivery. Tap an address for the reason.</p>`}
    ${isMgr()?`<div class="tabs" role="group" aria-label="List"><button type="button" data-pc="tab" data-v="approved" aria-pressed="${tab==='approved'}">Approved <small>${cnt('approved')}</small></button><button type="button" data-pc="tab" data-v="review" aria-pressed="${tab==='review'}">Under review <small>${cnt('review')}</small></button></div>`:''}
    <div class="bar"><input type="search" id="pc_q" class="q" placeholder="Search address, suburb, driver or reason" value="${esc(q)}" autocomplete="off" aria-label="Search precards">
-     ${isMgr()?`<label class="sort" for="pc_sort">Sort<select id="pc_sort"><option value="street" ${sortBy==='street'?'selected':''}>By street</option><option value="date" ${sortBy==='date'?'selected':''}>Newest first</option></select></label>`:''}</div>
+</div>
    <div class="pcs pcb" role="group" aria-label="Postcode">${['all','4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.status||'approved')===tab&&(k==='all'||String(p.postcode).trim()===k)).length;return `<button type="button" data-pc="pcf" data-v="${k}" aria-pressed="${k===pcf}" class="${k==='all'?'':'pr-'+k}">${k==='all'?'All':k}<small>${n}</small></button>`}).join('')}</div>
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
@@ -10104,7 +10104,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270700';
+const VERSION='202610270710';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
