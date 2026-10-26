@@ -2744,6 +2744,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-directory .row .ph .tel.ico svg{display:block;width:20px;height:20px;fill:#fff}
 #sh-main #mod-directory .row .ph .wa{width:42px;height:42px}
 #sh-main #mod-directory .row .ph{gap:10px}
+#sh-main#sh-main #mod-directory .row .nm{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+#sh-main#sh-main #mod-directory .row .nm .rl{flex-basis:auto}
 /* call is a blue ring, WhatsApp a green ring: easy to tell apart, not bright */
 #sh-main#sh-main #mod-directory .row .ph .tel.ico{--c:#1D5FD1;background:transparent;border:1.5px solid var(--c);box-sizing:border-box}
 #sh-main#sh-main #mod-directory .row .ph .tel.ico svg{fill:var(--c)}
@@ -9945,7 +9947,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270330';
+const VERSION='202610270340';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
