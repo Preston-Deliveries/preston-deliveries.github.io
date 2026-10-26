@@ -3264,6 +3264,15 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) .bar{margin:0 0 6px;gap:6px}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) .q{min-height:40px;padding:7px 12px}
 }
+</style><style id="grpchips">
+/* role and postcode buttons look the same everywhere: coloured outline, small count, filled when picked */
+#sh-main#sh-main :is(#mod-directory .jump,#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:5px 12px;border-radius:999px;border:1px solid var(--d,var(--sh-line));background:var(--sh-surface);color:var(--d,var(--sh-ink));font:700 .86rem var(--sh-body)}
+#sh-main#sh-main :is(#mod-directory .jump,#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button>:is(span,small){margin:0;font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
+#sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{background:var(--d,var(--g));border-color:var(--d,var(--g));color:#fff}
+#sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]>:is(span,small){background:rgba(255,255,255,.25);color:inherit}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}}
+:root[data-theme="dark"] #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}
+@media (max-width:600px){#sh-main#sh-main #mod-directory .jump{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px}#sh-main#sh-main #mod-directory .jump::-webkit-scrollbar{display:none}#sh-main#sh-main #mod-directory .jump>button{flex:none;min-height:32px;padding:3px 11px;font-size:.84rem}}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -5789,7 +5798,7 @@ function optCells(p){
    +cell('ec','Emergency contact',(p.ecName||p.ecPhone)?`${esc(title(p.ecName))}${p.ecPhone?`<span class="sub num">${esc(p.ecPhone)}</span>`:''}`:'');
 }
 /* list laid out like the Directory: a colour for each group, initials, run tags and a call button */
-const DGROUPS=[['office','Office and management'],['sup','Supervisors'],['4214','Drivers 4214'],['4215','Drivers 4215'],['4217','Drivers 4217'],['4218','Drivers 4218'],['xl','XL drivers'],['relief','Relief drivers'],['other','Others']];
+const DGROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
 const dgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return DGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 const telOf=p=>{const d=String(p||'').replace(/[^\d+]/g,'');return d};
 const phoneTxt=p=>{const d=String(p||'').replace(/\D/g,'');return d.length===10&&d[0]==='0'?d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7):String(p||'')};
@@ -7409,7 +7418,7 @@ const $=id=>document.getElementById('dy_'+id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
 const ROLE={MANAGER:'Contract Manager',PRINCIPLE:'Principal',PRINCIPAL:'Principal',ADMIN:'Office Coordinator',SUPERVISOR:'Supervisor',RELIEF:'Relief driver',XL:'XL driver','XL RELIEF':'XL relief driver'};
-const GROUPS=[['office','Office and management'],['sup','Supervisors'],['4214','Drivers 4214'],['4215','Drivers 4215'],['4217','Drivers 4217'],['4218','Drivers 4218'],['xl','XL drivers'],['relief','Relief drivers'],['other','Others']];
+const GROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
 const grpOf=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return GROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 const grpFromText=t=>{t=String(t||'');const m=t.match(/^Driver, (\d{4})$/);if(m)return GROUPS.some(g=>g[0]===m[1])?m[1]:'other';if(/Manager|Principal|Coordinator/.test(t))return 'office';if(t==='Supervisor')return 'sup';if(t==='XL driver')return 'xl';if(/relief/i.test(t))return 'relief';return 'other'};
 const ORDER=['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN','SUPERVISOR'];
@@ -8475,7 +8484,7 @@ const fails=r=>ITEMS.filter(([k])=>r.items&&r.items[k]==='fix');
 function badge(o){const v=OUT[o];return v?`<span class="ob ${v[1]}">${esc(v[0])}</span>`:''}
 
 /* ---------- views ---------- */
-const VGROUPS=[['4214','Drivers 4214'],['4215','Drivers 4215'],['4217','Drivers 4217'],['4218','Drivers 4218'],['xl','XL drivers'],['relief','Relief drivers'],['office','Office and management'],['sup','Supervisors'],['other','Others']];
+const VGROUPS=[['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['office','Office'],['sup','Supervisors'],['other','Others']];
 const vgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return VGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 function statusHTML(){
   const all=checks(),t=q.trim().toLowerCase();
@@ -9926,7 +9935,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270240';
+const VERSION='202610270250';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
