@@ -3171,6 +3171,28 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .lk-drv .lk-top .go{margin-left:auto}
 #sh-main .lk-sts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 #sh-main .lk-sts span{font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--sh-sunk);color:var(--sh-ink)}
+</style><style id="rtmobile">
+/* phones: each driver becomes a tidy block, no sideways scrolling */
+@media (max-width:600px){
+#sh-main .rt .rt-swipe{display:none!important}
+#sh-main .rt .rt-tw{overflow:visible;border:0;background:transparent}
+#sh-main .rt .rt-t,#sh-main .rt .rt-t.nork,#sh-main .rt .rt-t.sv-t.nork{min-width:0!important;width:100%;display:block;font-size:.92rem}
+#sh-main .rt .rt-t thead{display:none}
+#sh-main .rt .rt-t tbody{display:flex;flex-direction:column;gap:8px}
+#sh-main .rt .rt-t tbody tr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;padding:12px}
+#sh-main .rt .rt-t tbody tr.me{background:var(--gs);border-color:var(--g)}
+#sh-main .rt .rt-t tbody td{display:block;padding:0!important;border:0!important;background:transparent!important;white-space:normal;position:static!important;box-shadow:none!important;min-width:0!important;max-width:none!important}
+#sh-main .rt .rt-t td.dr{grid-column:1/-1}
+#sh-main .rt .rt-t td.dr b{font-size:1rem;white-space:normal}
+#sh-main .rt .rt-t td[data-l]::before{content:attr(data-l);display:block;font:700 .64rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
+#sh-main .rt .rt-t td.m-k .rt-v{width:100%;justify-content:center;box-sizing:border-box}
+#sh-main .rt .rt-t td.m-i{text-align:left;font-size:.88rem}
+#sh-main .rt .rt-t td.none{grid-column:1/-1;text-align:center}
+#sh-main .rt .sv-t td.m-sc{grid-column:1/3}
+#sh-main .rt .sv-t td.m-sc .sv-bx{max-width:none}
+#sh-main .rt .sv-t td.m-av{text-align:right}
+#sh-main .rt .sv-t td.cm{grid-column:1/-1;min-width:0;max-width:none;border-top:1px dashed var(--sh-line)!important;padding-top:8px!important}
+}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -4797,11 +4819,11 @@ function rowHTML(r,multi){
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
    <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    
-   <td>${cell(r.rt.eta,p1(r.eta))}</td>
-   <td>${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}</td>
-   <td>${cell(r.rt.enq,r.enq==null?"0":Math.round(r.enq))}</td>
-   <td class="num">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
-   <td class="num mu">${r.ftd==null?"n/a":p1(r.ftd)}</td>${multi?`<td class="num">${r.days||""}</td>`:""}</tr>`;
+   <td class="m-k" data-l="2 hr ETA">${cell(r.rt.eta,p1(r.eta))}</td>
+   <td class="m-k" data-l="NC scans">${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}</td>
+   <td class="m-k" data-l="Enquiries">${cell(r.rt.enq,r.enq==null?"0":Math.round(r.enq))}</td>
+   <td class="num m-i" data-l="Parcels">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
+   <td class="num mu m-i" data-l="FTD">${r.ftd==null?"n/a":p1(r.ftd)}</td>${multi?`<td class="num m-i" data-l="Days">${r.days||""}</td>`:""}</tr>`;
 }
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
@@ -5275,8 +5297,8 @@ function svRowHTML(r){
   const said=r.r.filter(x=>x.c);
   return `<tr class="${r.me?"me":""}" data-k="${esc(r.key)}">
    <td class="dr"><b>${esc(r.name||r.id)}${r.me?' <em class="you">You</em>':""}</b><small>${r.name?esc(r.id):""}${r.grp?`<span class="gp dg-${esc(r.grp)}">${esc(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
-   <td><div class="sv-bx">${r.r.map(x=>`<span class="sv-b ${kind(x.s)}">${x.s}</span>`).join("")}</div></td>
-   <td class="num">${r.avg.toFixed(1)}</td>
+   <td class="m-sc"><div class="sv-bx">${r.r.map(x=>`<span class="sv-b ${kind(x.s)}">${x.s}</span>`).join("")}</div></td>
+   <td class="num m-av" data-l="Average">${r.avg.toFixed(1)}</td>
    <td class="cm">${said.length?said.map(x=>`<p class="sv-c ${kind(x.s)}"><span class="sv-b sm ${kind(x.s)}">${x.s}</span><span>“${esc(x.c)}”</span></p>`).join(""):'<span class="mu">No comment</span>'}</td></tr>`;
 }
 function svBody(box){
@@ -9829,7 +9851,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270120';
+const VERSION='202610270130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
