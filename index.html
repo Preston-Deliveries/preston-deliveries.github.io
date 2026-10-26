@@ -3765,6 +3765,10 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .me-trend .tr-wins{margin-top:10px;display:flex;flex-direction:column;gap:4px}#sh-main .me-trend .tr-wins p{margin:0;font-weight:700;color:#D98B00;font-size:.9rem}
 @media (max-width:420px){#sh-main .me-trend .tr-row{grid-template-columns:80px 1fr}#sh-main .me-trend .tr-wk{grid-template-columns:80px repeat(4,1fr);column-gap:6px;font-size:.6rem}}
 #sh-main .me-trend .tr-h small{font-size:.64rem;color:var(--sh-muted);line-height:1.2}
+#sh-main .me-trend .tr-bars{height:62px!important}
+#sh-main .me-trend .tr-c{flex-direction:column;justify-content:flex-end;align-items:stretch;gap:2px}
+#sh-main .me-trend .tr-c em{font-style:normal;font-size:.68rem;font-weight:700;color:var(--sh-ink);text-align:center;white-space:nowrap;line-height:1}
+#sh-main .me-trend .tr-c i{max-height:calc(100% - 14px)}
 </style>
 <style id="smtrend">
 #sh-main #mod-summary .sm-trend .tr-row{grid-template-columns:120px 1fr}#sh-main #mod-summary .sm-trend .tr-wk{grid-template-columns:120px repeat(4,1fr)}
@@ -7440,7 +7444,7 @@ function trendHTML(own){
     ['Enquiries','Target 0, shorter is better',st.map(x=>x?x.enq:null),v=>v<=0,v=>String(v),null],
     ['Survey','Target 70',sv,v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
   const bars=([l,tg,vals,ok,fmt,h])=>{const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1];
-    return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${tg}</small><b class="${cur==null?'':ok(cur)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><i class="${v==null?'na':ok(v)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
+    return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${tg}</small><b class="${cur==null?'':ok(cur)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><em>${v==null?'':fmt(v)}</em><i class="${v==null?'na':ok(v)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
   /* streaks, counted back from the latest day */
   let ncRun=0;for(let i=all.length-1;i>=0;i--){const r=myRow(data.days[all[i]].rows);if((+r.nc||0)>0)break;ncRun++}
   let enqRun=0;for(let i=all.length-1;i>=0;i--){const r=myRow(data.days[all[i]].rows);if((+(r.enq||0))>0)break;enqRun++}
@@ -9187,7 +9191,7 @@ function smTrend(keys,who){
     ['Survey','Target 70',A.map(a=>nps(a.scores)),v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
   const row=([l,tg,vals,ok,fmt,h])=>{const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1],pv=vals[vals.length-2];
     const isOk=(v,i)=>ok(v,vals.slice(0,i).filter(x=>x!=null).pop());
-    return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${keys.length===1&&/fewer/.test(tg)?'Target 0, shorter is better':tg}</small><b class="${cur==null?'':isOk(cur,vals.length-1)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><i class="${v==null?'na':isOk(v,i)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
+    return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${keys.length===1&&/fewer/.test(tg)?'Target 0, shorter is better':tg}</small><b class="${cur==null?'':isOk(cur,vals.length-1)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><em>${v==null?'':fmt(v)}</em><i class="${v==null?'na':isOk(v,i)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
   return `<section class="card me-trend sm-trend"><h2>Last 4 weeks${who?' · '+esc(who):''}</h2><p class="me-line">One bar a week, the newest on the right.</p>${L.map(row).join('')}<div class="tr-wk">${W.map(m=>`<span>${sh(m)}</span>`).join('')}</div></section>`;
 }
 function contractHTML(C){
@@ -9195,7 +9199,7 @@ function contractHTML(C){
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
-  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+smTrend(keys,'Contract 1161')+
+  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fsp(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':`<span class="${n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}${pa&&n!=null?dl(n,nps(pa.scores),'nps',L):''}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
@@ -9207,7 +9211,7 @@ function pcSortSel(){return `<label class="mini" for="sm_pcsort">Sort<select id=
 function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_sort">${[['name','Name'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey']].map(([k,l])=>`<option value="${k}" ${k===sortBy?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
-  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)],PC?sumOf(keys,PC.per):null)+smTrend(keys,pc)+
+  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)],PC?sumOf(keys,PC.per):null)+
    `<section class="card" id="sm_pcdrv"><button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}<button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button></section>`;
 }
 function driverHTML(C,k){
@@ -9227,7 +9231,7 @@ function driverHTML(C,k){
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
   const bl=back&&back.s.t==='pc'?'Drivers in '+back.s.v:'Whole contract';
   return `<button type="button" class="sh-btn back smback" data-sm="back">‹ ${esc(bl)}</button><section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
-   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+smTrend([k],'')+
+   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb ddt"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date).replace(/ \d{4}$/,''))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fsp(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${dot(grade('nc',r.nc))}${r.nc??'–'}</td><td class="r">${dot(grade('enq',+(r.enq||0)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -9268,6 +9272,7 @@ function render0(){
    <div class="scopes" role="group" aria-label="Show">${[['all','Whole contract'],...GRPS.map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${body}
+   ${(()=>{try{return scope.t==='all'?smTrend(Object.keys(C.P),'Contract 1161'):scope.t==='pc'?smTrend(Object.keys(C.P).filter(k=>C.P[k].pc===scope.v),scope.v):smTrend([scope.v],'')}catch(e){return ''}})()}
   </div>`;
 }
 function renderSug(){
@@ -10872,7 +10877,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280730';
+const VERSION='202610280740';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
