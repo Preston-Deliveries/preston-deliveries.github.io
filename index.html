@@ -3377,6 +3377,37 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #sh-main #mod-summary .dlt.good{color:#5CCB8E}:root[data-theme="dark"] #sh-main #mod-summary .dlt.bad{color:#F48A8A}
 #sh-main #mod-summary td .dlt{display:block;font-size:.7rem;font-weight:700;margin-top:1px}
 #sh-main #mod-summary td .dlt small{display:none}
+</style><style id="vcmobile">
+/* phones: vehicle checks fit the screen, no sideways scrolling */
+@media (max-width:640px){
+#sh-main#sh-main #mod-vchecks .tw{overflow:visible}
+#sh-main#sh-main #mod-vchecks table.tb{min-width:0!important;width:100%;display:block}
+#sh-main#sh-main #mod-vchecks table.tb thead{display:none}
+#sh-main#sh-main #mod-vchecks table.tb tbody{display:block}
+#sh-main#sh-main #mod-vchecks table.tb tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;border-bottom:1px solid var(--sh-line)}
+#sh-main#sh-main #mod-vchecks table.tb tr.grow{display:block;padding:0}
+#sh-main#sh-main #mod-vchecks table.tb tr.grow th{display:block}
+#sh-main#sh-main #mod-vchecks table.tb td{display:block;padding:0!important;border:0!important;white-space:normal;min-width:0;font-size:.88rem}
+#sh-main#sh-main #mod-vchecks table.tb td:empty{display:none}
+/* drivers and vans: name and number, due on the right, then van, last check, who and result */
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(1){grid-column:1;grid-row:1;font-size:.98rem}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(2){grid-column:1;grid-row:2;color:var(--sh-muted);font-size:.8rem}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(7){grid-column:2;grid-row:1/span 2;align-self:center;text-align:right}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(n+3):nth-child(-n+6){grid-column:1/-1}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(3)::before{content:'Van: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(4)::before{content:'Last check: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(5)::before{content:'Checked by: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-drv td:nth-child(6)::before{content:'Result: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-drv td .sub{display:inline;margin-left:4px}
+/* all checks: date and driver, result on the right, then van, odometer, who and fixes */
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(1){grid-column:1;grid-row:1;font-weight:700}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(2){grid-column:1;grid-row:2}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(6){grid-column:2;grid-row:1/span 2;align-self:center;text-align:right}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(3),#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(4),#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(5),#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(7),#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(8){grid-column:1/-1}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(4)::before{content:'Odometer: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(5)::before{content:'Checked by: ';color:var(--sh-muted)}
+#sh-main#sh-main #mod-vchecks .vc-all td:nth-child(7)::before{content:'Needs fixing: ';color:var(--sh-muted)}
+}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8652,8 +8683,8 @@ function statusHTML(){
   const cnt={never:rows.filter(x=>!x.last).length,over:rows.filter(x=>x.last&&x.due<0).length,fail:rows.filter(x=>x.last&&x.last.outcome==='fail').length,fix:rows.filter(x=>x.last&&x.last.outcome==='minor').length,ok:rows.filter(x=>x.last&&x.due>=0&&x.last.outcome==='pass').length};
   return `<div class="tiles"><div class="tile bad"><span>Failed, do not drive</span><b>${cnt.fail}</b></div><div class="tile warn"><span>Fix needed</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none"><span>No check in 4 months</span><b>${cnt.never}</b></div><div class="tile good"><span>Up to date</span><b>${cnt.ok}</b></div></div>
   <div class="bar"><input type="search" id="vc_q" placeholder="Search driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts">Sort<select id="vc_sorts">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every">Check every<select id="vc_every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>${n} days</option>`).join('')}</select></label></div>
-  <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
-  ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span></td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
+  <div class="tw"><table class="tb vc-drv"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
+  ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
    <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
   </tbody></table></div><p class="hint">Tap a driver to see their checks or add a new one. Office and supervisor roles are left out of this list.</p>`;
 }
@@ -8663,7 +8694,7 @@ function allHTML(){
   if(mf!=='all'&&!months.includes(mf))mf='all';
   const L=allC.filter(r=>(mf==='all'||String(r.date).startsWith(mf))&&(!t||hay(r).includes(t)));if(sortA==='oldest')L.reverse();
   return `<div class="bar"><input type="search" id="vc_q" placeholder="Search driver, rego, checker, date or problem" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_mf">Month<select id="vc_mf"><option value="all">All months</option>${months.map(k=>`<option value="${k}" ${k===mf?'selected':''}>${monthLabel(k)}</option>`).join('')}</select></label><label class="mini" for="vc_sorta">Sort<select id="vc_sorta"><option value="newest" ${sortA==='newest'?'selected':''}>Newest first</option><option value="oldest" ${sortA==='oldest'?'selected':''}>Oldest first</option></select></label><span class="sub">${L.length} check${L.length===1?'':'s'}</span></div>
-  ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th><th></th></tr></thead><tbody>
+  ${L.length?`<div class="tw"><table class="tb vc-all"><thead><tr><th>Date</th><th>Driver</th><th>Vehicle</th><th>Odometer</th><th>Checked by</th><th>Result</th><th>Needs fixing</th><th></th></tr></thead><tbody>
   ${L.map(r=>`<tr data-vc="open" data-v="${esc(r.id)}" tabindex="0"><td class="dt">${esc(nice(r.date))}</td><td><b>${esc(r.driver)}</b></td><td>${esc(r.rego)}<span class="sub">${esc(r.vehicle||'')}</span></td><td>${r.odo!=null&&r.odo!==''?Number(r.odo).toLocaleString('en-AU'):''}</td><td>${esc(r.checker)}</td><td>${badge(r.outcome)}</td><td>${esc(fails(r).map(i=>i[1]).join(', '))}</td><td class="pr"><button type="button" class="sh-btn vc-pr" data-vc="pdfr" data-v="${esc(r.id)}">Print</button></td></tr>`).join('')}
   </tbody></table></div>`:`<div class="empty">No vehicle checks in this list. Tap New check to add one.</div>`}${window.histFrom&&window.histFrom('vchecks')?`<div class="older"><button type="button" class="sh-btn" data-vc="older">${olderBusy?'Loading older checks…':'Show older checks'}</button></div>`:''}`;
 }
@@ -10102,7 +10133,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270720';
+const VERSION='202610270730';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
