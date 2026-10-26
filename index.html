@@ -3539,6 +3539,15 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.8fr) auto}
 @media (max-width:600px){#sh-main #mod-enquiries .eqx.nx .srch{grid-template-columns:1fr 1fr}}
 </style>
+<style id="bossnotes">
+#mod-summary .notes{gap:8px}
+#mod-summary .notes .lead2{margin:0;font-size:.98rem;line-height:1.5;color:var(--sh-ink)}
+#mod-summary .notes h4{margin:6px 0 4px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-summary .notes ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#mod-summary .notes li{position:relative;padding-left:16px;font-size:.93rem;line-height:1.45}
+#mod-summary .notes li::before{content:'';position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%;background:#1E8A4C}
+#mod-summary .notes li.no::before{background:#D98B00}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8715,13 +8724,13 @@ function compute(R0){
   for(const d of Object.values(S.days)){if(!d||!d.date||d.date<R.from||d.date>R.to)continue;for(const[l,r]of Object.entries(d.rows||{}))addRow(get(dkey(l)),d.date,r||{})}
   const sw=[];for(const w of Object.values(S.weeks)){if(!w||!w.cycleStart)continue;const n=+w.week||+(String(w._id||'').split('_w')[1])||1;const f=add(w.cycleStart,(n-1)*7),t=add(f,6);if(t<R.from||f>R.to)continue;sw.push({f,t,n});
     for(const[l,arr]of Object.entries(w.drivers||{}))for(const x of arr||[])get(dkey(l)).scores.push({s:+x.s,c:x.c||'',wk:f})}
-  for(const e of Object.values(S.enqlog)){if(!e||!e.date||e.date<R.from||e.date>R.to)continue;const a=get(dkey(e.login));a.enqRecs.push(e);if(e.fault==='yes')a.fault++}
+  const ncr=[];for(const e of Object.values(S.enqlog)){if(!e||!e.date||e.date<R.from||e.date>R.to)continue;if(e.kind==='ncr'){ncr.push(e);continue}const a=get(dkey(e.login));a.enqRecs.push(e);if(e.fault==='yes')a.fault++}
   const byName={};for(const p of Object.values(P))byName[normName(p.name)]=p.key;
   for(const b of Object.values(S.leave)){if(!b)continue;const k=byName[normName(b.name)];if(!k)continue;const n=(b.days||[]).filter(x=>x>=R.from&&x<=R.to&&![0,6].includes(fromIso(x).getDay())).length;if(n)get(k).leave+=n}
   const bySid={};for(const p of Object.values(P))if(p.sid)bySid[p.sid]=p.key;
   const ids=new Set();for(const id of Object.keys(S.clock))ids.add(id);for(const id of Object.keys(S.timesheets))if(/^\d{4}-\d{2}-\d{2}_/.test(id))ids.add(id);
   for(const id of ids){const date=id.slice(0,10),sid=id.slice(11);if(date<R.from||date>R.to)continue;const k=bySid[sid];if(!k)continue;const sh=shiftOf(id);if(!sh)continue;const a=get(k);a.shifts.push(sh);a.wd++;if(sh.hrs!=null)a.mins+=sh.hrs;a.xp+=+sh.xp||0;if(sh.tl)a.tl++;if(sh.hp)a.hp++}
-  return{P,R,per,surveyWeeks:sw};
+  return{P,R,per,surveyWeeks:sw,ncr};
 }
 const bneHM=v=>{try{const p={};for(const x of new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(v)))p[x.type]=x.value;return p.hour+':'+p.minute}catch(e){return ''}};
 const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null};
@@ -8826,12 +8835,34 @@ function attention(rows){
    <ul class="att fbl">${L.map(({p,I})=>{const g=grpCls(p);return `<li data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="${g}"><span class="smrk" title="Things to work on">${I.length}</span><span class="fbn"><b>${esc(p.name)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(grpLbl(p))}</span>`:''}</span></span><span class="fbs">${I.map(i=>`<span class="fbc ${i.k}" title="${esc(i.d)}">${esc(SHORT[i.k](i))}</span>`).join('')}</span></li>`}).join('')}</ul></details>`;
 }
 const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
+function bossNotes(C,all,pa,pcs){
+  const t=targets(),L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&all.days;
+  const eta=pct(all.etaW,all.etaN),ftd=pct(all.ftdW,all.ftdN),n=nps(all.scores),pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
+  const P=v=>(v*100).toFixed(1)+'%',chg=(c,p,unit)=>{if(!ok||c==null||p==null)return '';const d=c-p;if(Math.abs(d)<(unit==='pts'?.0005:.5))return ', the same as '+L;return unit==='pts'?`, ${d>0?'up':'down'} ${(Math.abs(d)*100).toFixed(1)} points on ${L}`:`, ${fmtN(Math.abs(d))} ${d>0?'more':'fewer'} than ${L}`};
+  if(!all.days)return '';
+  const good=[],watch=[];
+  const vol=`${fmtN(all.pc)} parcels over ${fmtN(all.days)} driver days`+(ok&&pa.pc?`, ${all.pc>=pa.pc?'up':'down'} ${Math.abs(Math.round((all.pc-pa.pc)/pa.pc*100))}% on ${L}`:'')+'.';
+  if(eta!=null)(eta*100>=t.etaG?good:watch).push(`2 hr ETA ${P(eta)} against a ${t.etaG}% target${chg(eta,pe,'pts')}.`);
+  if(ftd!=null)(pf!=null&&ok&&ftd<pf-.005?watch:good).push(`Delivered first time ${P(ftd)}${chg(ftd,pf,'pts')}.`);
+  (all.nc===0?good:watch).push(all.nc===0?'No NC scans.':`${fmtN(all.nc)} NC scan${all.nc===1?'':'s'}${chg(all.nc,pa&&pa.days?pa.nc:null)}.`);
+  const fault=all.fault;(all.enq===0?good:watch).push(all.enq===0?'No customer enquiries.':`${fmtN(all.enq)} customer enquir${all.enq===1?'y':'ies'}${fault?`, ${fault} found at fault`:''}${chg(all.enq,pa&&pa.days?pa.enq:null)}.`);
+  if(n!=null)(n>=50?good:watch).push(`Customer survey score ${n} from ${all.scores.length} customer${all.scores.length===1?'':'s'}${ok&&pn!=null&&n!==pn?`, ${n>pn?'up':'down'} ${Math.abs(n-pn)} on ${L}`:''}.`);
+  if(C.ncr&&C.ncr.length)watch.push(`${C.ncr.length} NCR${C.ncr.length===1?'':'s'} from the facility manager: ${[...new Set(C.ncr.map(x=>x.driver||x.login))].join(', ')}.`);
+  const R=pcs.filter(x=>x.pc&&GRPS.includes(x.pc)).map(x=>({pc:x.pc,eta:pct(x.a.etaW,x.a.etaN),enq:x.a.enq,nc:x.a.nc})).filter(x=>x.eta!=null);
+  if(R.length>1){const b=[...R].sort((x,y)=>y.eta-x.eta);if(b[0].eta-b[b.length-1].eta>=.003)good.push(`${b[0].pc} has the best 2 hr ETA (${P(b[0].eta)}). ${b[b.length-1].pc} is the lowest (${P(b[b.length-1].eta)}).`)}
+  const hiEnq=R.filter(x=>x.enq).sort((x,y)=>y.enq-x.enq)[0];if(hiEnq&&R.filter(x=>x.enq).length>1)watch.push(`Most enquiries came from ${hiEnq.pc} (${hiEnq.enq}).`);
+  if(all.leave)good.push(`${fmtN(all.leave)} day${all.leave===1?'':'s'} of leave covered.`);
+  const head=!watch.length?'A strong period for the contract.':watch.length<good.length?'A good period overall, with a few things to watch.':watch.length===good.length?'A mixed period. Some areas need attention.':'A tough period. Several areas are below where they should be.';
+  return `<section class="card notes"><div class="ch"><h2>Notes for the boss</h2></div><p class="lead2"><b>${esc(head)}</b> ${esc(vol)}</p>
+   ${good.length?`<div class="ng"><h4>Going well</h4><ul>${good.map(x=>`<li class="ok">${esc(x)}</li>`).join('')}</ul></div>`:''}
+   ${watch.length?`<div class="ng"><h4>To watch</h4><ul>${watch.map(x=>`<li class="no">${esc(x)}</li>`).join('')}</ul></div>`:''}</section>`;
+}
 function contractHTML(C){
   const keys=Object.keys(C.P),all=sumOf(keys,C.per),worked=keys.filter(k=>C.per[k]&&C.per[k].days).length;
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
-  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
+  return bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs)+tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`;
@@ -10501,7 +10532,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271830';
+const VERSION='202610271845';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
