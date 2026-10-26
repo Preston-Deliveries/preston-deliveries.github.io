@@ -3493,7 +3493,7 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .ro-mine{display:flex;gap:10px;align-items:baseline;background:var(--gs);border-radius:8px;padding:10px 12px}
 #mod-roster .ro-mine i{font-style:normal;font-weight:700;color:var(--g);min-width:84px}
 #mod-roster .ro-lead{margin:0;color:var(--sh-muted);font-size:.9rem}
-#mod-roster .pcl{font-size:.78rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--gs);color:var(--g)}
+#mod-roster .pcl{font-size:.78rem;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--sh-sunk,#EEF2F7);color:var(--sh-ink);border:1px solid var(--sh-line)}
 #mod-roster .ro-shot{display:flex;flex-direction:column;gap:8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:8px;padding:10px}
 #mod-roster .ro-shot img{width:100%;max-width:560px;height:auto;border:1px solid var(--sh-line);border-radius:6px;align-self:center}
 #mod-roster .ro-nice{background:#fff;color:#0F1B2D;border:1px solid var(--sh-line);border-radius:10px;overflow:hidden}
@@ -3507,6 +3507,10 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .ro-nice td b{display:block;font-weight:800}
 #mod-roster .ro-nice td small{display:block;font-size:.76rem;color:#5B6B80;margin-top:1px}
 #mod-roster .ro-nice td.cv{font-weight:600}
+#mod-roster .pcp[class*="dg-"]{background:var(--ps);color:var(--p);border-color:transparent;align-self:flex-start}
+#mod-roster .ro-rg small.pcp{font-size:.74rem;padding:1px 7px;border-radius:5px}
+#mod-roster .ro-nice .pz{display:inline-block;font-style:normal;font-size:.7rem;font-weight:800;padding:0 6px;border-radius:4px;margin-right:6px;line-height:1.5;background:#E8ECF1;color:#5A6576}
+#mod-roster .ro-nice .pz-4214{background:#E0EAFB;color:#1D5FD1}#mod-roster .ro-nice .pz-4215{background:#FFF3C4;color:#A87400}#mod-roster .ro-nice .pz-4217{background:#DDF2E5;color:#1E8A4C}#mod-roster .ro-nice .pz-4218{background:#FDE2E1;color:#C62828}#mod-roster .ro-nice .pz-xl{background:#FFE7D3;color:#D9600B}
 #mod-roster .ro-nice .need{color:#C0392B;font-weight:700}
 #mod-roster .ro-nice .ns{color:#8A97A8}
 #mod-roster .ro-nice tr.dy td{background:#F5F7FA;padding:7px 12px}
@@ -9522,7 +9526,7 @@ function pplSel(kind,x,d,its){const off=offSet(d,its),used=usedSet(its,d),taken=
 function chips(kind,x){return x[kind].map(k=>`<button type="button" class="ro-p" data-ro="rm" data-k="${kind}" data-sid="${esc(x.sid)}" data-who="${esc(k)}" aria-label="Take ${esc(short(k))} off">${esc(short(k)||'Unknown')}<span aria-hidden="true">×</span></button>`).join('')}
 function itemHTML(x,d,its){const n=avg[x.sid],sg=suggest(x,d,its),mxs=x.cover.map(k=>+flc(k).max||0),cap=mxs.every(Boolean)?mxs.reduce((a,b)=>a+b,0):0;
   return `<article class="ro-it ${x.cover.length?'':'need'}">
-   <div class="ro-top"><b>${esc(short(x.sid)||x.name)}</b>${n?`<span class="pcl" title="Average parcels a day over the last 4 weeks">${Math.round(n)} parcels</span>`:''}${x.pc?`<span class="pcp">${esc(x.pc)}</span>`:''}${x.run?`<span class="rn">${esc(x.run)}</span>`:''}${x.cover.length?'':'<span class="ndt">Needs cover</span>'}<span class="sp"></span><small>${x.leave?'On leave':'Off'}</small>
+   <div class="ro-top"><b>${esc(short(x.sid)||x.name)}</b>${x.pc?`<span class="pcp ${pcc(x.pc)}">${esc(x.pc)}</span>`:''}${x.run?`<span class="rn">${esc(x.run)}</span>`:''}${n?`<span class="pcl" title="Average parcels a day over the last 4 weeks">${Math.round(n)} parcels</span>`:''}${x.cover.length?'':'<span class="ndt">Needs cover</span>'}<span class="sp"></span><small>${x.leave?'On leave':'Off'}</small>
     <button type="button" class="ro-x" data-ro="drop" data-sid="${esc(x.sid)}" aria-label="Not needed">×</button></div>
    <div class="ro-row"><span class="lab">Covered by</span><div class="ppl">${chips('cover',x)}${pplSel('cover',x,d,its)}</div></div>
    ${sg.length&&x.cover.length<3?`<div class="ro-sug"><span>Suggested</span>${sg.map(o=>`<button type="button" data-ro="addc" data-sid="${esc(x.sid)}" data-who="${esc(o.f)}">${esc(short(o.f))} <i class="k${o.k}">${o.over?'over limit':KN[o.k].toLowerCase()}</i></button>`).join('')}</div>`:''}
@@ -9539,7 +9543,7 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
     <button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${!p?'Send to drivers':ch?'Send changes':'Sent ✓'}</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${its.length?its.map(x=>itemHTML(x,d,its)).join(''):`<div class="empty">Nobody is off on ${esc(longD(d))}. Add someone below if they call in sick, or put floaters on XL parcels.</div>`}
-   <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL ${pc}</span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
+   <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL <span class="pcp ${pcc(pc)}">${pc}</span></span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
    <label class="ro-off"><span>Someone else off or sick?</span><select id="ro_add"><option value="">Pick the driver</option>${regs.map(r=>`<option value="${esc(r.sid)}">${esc(r.name)} · ${esc(r.run)}${r.pc?' · '+esc(r.pc):''}</option>`).join('')}</select></label>
    ${rm.length?`<p class="ro-note">Taken off this day: ${rm.map(s=>`<button type="button" class="lnk" data-ro="undrop" data-sid="${esc(s)}">${esc(short(s))} (put back)</button>`).join(', ')}</p>`:''}
    <div class="ro-free"><b>Floaters</b>
@@ -9565,21 +9569,23 @@ function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!dr
    <div class="ro-wh"><h2>Leave and cover roster</h2><p>${esc(niceD(a))} to ${esc(niceD(b))}</p>${drv?'':'<span class="ro-whb"><button type="button" class="sh-btn" data-ro="wimg">Picture</button><button type="button" class="sh-btn" data-ro="print">Print</button></span>'}</div>${drv?'':shotHTML()}
    ${rows.length?`<div class="ro-wt"><div class="hd"><span>Driver off</span><span>Covered by</span><span>Sorting</span></div>
     ${rows.map(r=>`<section class="dy ${r.d===TODAY?'tdy':''}"><h3>${esc(longD(r.d))}${!drv&&!(ros[r.d]||{}).pub?' <small>not sent</small>':!drv&&changed(r.d,itemsFor(r.d))?' <small>changed, not sent</small>':''}</h3>
-     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.run?` <small>${esc(x.run)}</small>`:''}${!drv&&avg[x.sid]?` <small>· ${Math.round(avg[x.sid])}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${Object.entries(r.xl).map(([pc,L])=>`<div class="rw"><span class="off"><b>XL ${esc(pc)}</b></span><span>${nm(L)}</span><span></span></div>`).join('')}</section>`).join('')}</div>`
+     ${r.its.map(x=>`<div class="rw"><span class="off ${mine(x.sid)?'me':''}"><b>${esc(x.name)}</b>${x.pc?` <span class="pcp ${pcc(x.pc)}">${esc(x.pc)}</span>`:''}${x.run?` <small>${esc(x.run)}</small>`:''}${!drv&&avg[x.sid]?` <small>· ${Math.round(avg[x.sid])}</small>`:''}</span><span>${nm(x.cover)}</span><span>${x.sort.length?nm(x.sort):'<span class="sub">Not set</span>'}</span></div>`).join('')}${Object.entries(r.xl).map(([pc,L])=>`<div class="rw"><span class="off"><b>XL</b> <span class="pcp ${pcc(pc)}">${esc(pc)}</span></span><span>${nm(L)}</span><span></span></div>`).join('')}</section>`).join('')}</div>`
     :`<div class="empty">${drv?'Nothing on the roster yet. When the manager sends it, it shows here.':'Nobody is off '+(weeks>1?'in these '+weeks+' weeks':'this week')+'.'}</div>`}
   ${drv?'':`<div class="ro-wk"><button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}</div>`}
   </div>`}
 
 /* ---------- the roster laid out neatly, to send to drivers ---------- */
 function niceRows(dates){return dates.map(d=>({d,its:itemsFor(d),xl:xlOf(d)})).filter(r=>r.its.length||XLP.some(pc=>r.xl[pc].length))}
+const pcc=pc=>'dg-'+String(pc||'other').toLowerCase().replace(/[^a-z0-9]/g,'');
+const pz=pc=>pc?`<i class="pz pz-${String(pc).toLowerCase()}">${esc(pc)}</i>`:'';
 const headOf=dates=>dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]);
 function niceHTML(dates){const rows=niceRows(dates),multi=dates.length>1;if(!rows.length)return '';
   const nm=L=>L.length?L.map(k=>esc(short(k))).join(', '):'<span class="need">Needs cover</span>';
   return `<div class="ro-nice"><div class="nh"><small>Preston Delivery Service · Contract 1161</small><b>Roster</b><span>${esc(headOf(dates))}</span></div>
    <table><thead><tr><th>Driver off</th><th>Covered by</th><th>Sorting</th></tr></thead><tbody>
    ${rows.map(r=>`${multi?`<tr class="dy"><td colspan="3"><button type="button" data-ro="goday" data-v="${r.d}">${esc(longD(r.d))}</button></td></tr>`:''}
-    ${r.its.map(x=>`<tr><td><b>${esc(short(x.sid)||x.name)}</b><small>${[x.run,x.pc,avg[x.sid]?Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
-    ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td><b>XL parcels</b><small>${pc}</small></td><td class="cv">${nm(r.xl[pc])}</td><td></td></tr>`).join('')}`).join('')}
+    ${r.its.map(x=>`<tr><td><b>${esc(short(x.sid)||x.name)}</b><small>${pz(x.pc)}${[x.run,avg[x.sid]?Math.round(avg[x.sid])+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(k=>esc(short(k))).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
+    ${XLP.filter(pc=>r.xl[pc].length).map(pc=>`<tr><td><b>XL parcels</b><small>${pz(pc)}</small></td><td class="cv">${nm(r.xl[pc])}</td><td></td></tr>`).join('')}`).join('')}
    </tbody></table><p class="nf">Everyone not listed is on their usual run.</p></div>`}
 function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Roster '+headOf(dates)+'*'];
   for(const r of rows){if(multi)L.push('','*'+longD(r.d)+'*');
@@ -9630,7 +9636,7 @@ function flHTML(){const fl=floaters(),R=runList(),G={};for(const r of R)(G[r.pc|
     <div class="ro-f"><span>Runs they know</span>
      <div class="ro-tk"><button type="button" class="sh-btn sm" data-ro="tick" data-sid="${esc(f)}" data-v="2">Tick all</button><button type="button" class="sh-btn sm ghost" data-ro="tick" data-sid="${esc(f)}" data-v="0">Clear all</button></div>
      <div class="ro-key"><span class="k0">Never</span><span class="k1">Knows some</span><span class="k2">Knows it</span><small>Tap a run to change it.</small></div>
-     ${Object.entries(G).map(([pc,L])=>`<div class="ro-rg"><small>${esc(pc)}</small><div>${L.map(r=>{const k=know(f,r.run);return `<button type="button" class="k${k}" data-ro="kn" data-sid="${esc(f)}" data-v="${esc(r.run)}" title="${KN[k]}"><b>${esc(r.run)}</b> ${esc(r.name)}</button>`}).join('')}</div></div>`).join('')||'<p class="sub">No runs on the Drivers page yet.</p>'}</div>
+     ${Object.entries(G).map(([pc,L])=>`<div class="ro-rg"><small class="pcp ${pcc(pc)}">${esc(pc)}</small><div>${L.map(r=>{const k=know(f,r.run);return `<button type="button" class="k${k}" data-ro="kn" data-sid="${esc(f)}" data-v="${esc(r.run)}" title="${KN[k]}"><b>${esc(r.run)}</b> ${esc(r.name)}</button>`}).join('')}</div></div>`).join('')||'<p class="sub">No runs on the Drivers page yet.</p>'}</div>
     <button type="button" class="sh-btn sm ghost" data-ro="unfl" data-sid="${esc(f)}">Take ${esc(short(f))} off the floater list</button>
    </div>`:'<div class="empty">No floaters yet. Anyone with the Relief role on the Drivers page shows here, or add someone above.</div>'}`}
 function saveCfg(){clearTimeout(cfgT);cfgT=setTimeout(async()=>{try{await db.doc('settings/roster').set(cfg)}catch(e){msg={err:true,t:'Could not save the floater details. Check your connection.'};render()}},400)}
@@ -10558,7 +10564,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271145';
+const VERSION='202610271200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
