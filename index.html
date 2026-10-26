@@ -1095,7 +1095,7 @@ body.sh-uv-on{overflow:hidden}
 #mod-leave .danger{color:#B3261E}#mod-leave .danger.arm{background:#B3261E;color:#fff;border-color:#B3261E}
 #mod-leave .sm{padding:4px 10px;font-size:.82rem;margin-left:auto}
 #mod-leave .back{align-self:flex-start}
-#mod-leave .cvbar{display:flex}
+#mod-leave .cvbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}#mod-leave .cvbar .cvact{margin:0!important;width:auto!important;align-self:stretch}
 #mod-leave .week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 #mod-leave .wd{display:flex;flex-direction:column;gap:8px;background:var(--sh-surface);border:1px solid var(--sh-line);border-top:6px solid var(--bd,#8A9692);border-radius:8px;padding:10px;min-width:0}
 #mod-leave .wd.bo{background:repeating-linear-gradient(135deg,var(--lv-bo1) 0 6px,var(--lv-bo2) 6px 12px)}
@@ -7610,7 +7610,7 @@ function drvReqHTML(){const mine=reqList();let form='';
     <label class="f" for="lv_rqn">Anything the manager should know? (optional)<input type="text" id="lv_rqn" maxlength="300" value="${esc(rq.note)}"></label>
     <div class="foot"><button type="button" class="sh-btn primary" data-lv="rqsend" ${ok&&(!lg||rq.ack)&&!rqBusy?'':'disabled'}>${rqBusy?'Sending…':'Send request'}</button><button type="button" class="sh-btn" data-lv="rqcancel">Cancel</button></div>
     ${ok&&lg&&!rq.ack?'<p class="sub">Tick the box above to send the request.</p>':''}</section>`}
-  return `${rqOpen?'':`<button type="button" class="sh-btn primary rq-btn" data-lv="rqopen">Request time off</button>`}${form}
+  return `${form}
    ${mine.length?`<section class="card rq-mine"><h2>My requests</h2>${mine.map(r=>`<div class="rq-row"><div><b>${esc(niceShort(r.from))}${r.to!==r.from?' to '+esc(niceShort(r.to)):''}</b><small>${(r.days||[]).length} working day${(r.days||[]).length===1?'':'s'}${r.long?' · own cover: '+esc(r.cover||'not given'):''}</small>${r.reply?`<small class="rp">Manager: ${esc(r.reply)}</small>`:''}</div><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.status==='pending'?`<button type="button" class="sh-btn sm ghost" data-lv="rqdel" data-v="${esc(r.id)}">Cancel</button>`:''}</div>`).join('')}</section>`:''}`}
 function mgrReqHTML(){const L=reqList(),pend=L.filter(r=>r.status==='pending').sort((a,b)=>String(a.from).localeCompare(String(b.from))),done=L.filter(r=>r.status!=='pending').slice(0,10);
   const row=r=>{const days=r.days||[],cl=clashes(days);return `<article class="card rq-item"><div class="rq-top"><b>${esc(r.name)}</b><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.long?'<span class="rq-lg">Over 3 weeks</span>':''}</div>
@@ -7640,7 +7640,7 @@ function render(){
   if(isMgr()&&window.needHist){if(view==='tot')window.needHist('',['leave']);else{const s0=cv==='week'&&wk?wk:month;if(s0)window.needHist(iso(s0),['leave'])}}
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.leave;
   box.innerHTML=`<div class="lvx">
-   <div class="head"><h1>Leave calendar</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-lv="add">+ Add leave</button><button type="button" class="sh-btn" data-lv="pdf" title="One page PDF of the month showing">Download PDF</button></div>`:''}</div>
+   <div class="head"><h1>Leave calendar</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn" data-lv="pdf" title="One page PDF of the month showing">Download PDF</button></div>`:''}</div>
    <p class="lead">${isMgr()?'Everyone’s booked leave, with how many drivers are off each day against your limit.':'Check a day before you ask for time off. Green days have room, amber has one spot left, red is full.'}</p>
    ${!isMgr()?drvReqHTML():''}
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the calendar from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lv="share">Send latest to drivers</button></div>`:''}
@@ -7651,7 +7651,7 @@ function render(){
   </div>`;
 }
 function calHTML(){
-  return `<div class="cvbar"><div class="tabs" role="group" aria-label="Calendar view"><button type="button" data-lv="cv" data-v="week" aria-pressed="${cv==='week'}">Week</button><button type="button" data-lv="cv" data-v="month" aria-pressed="${cv==='month'}">Month</button></div></div>`+(cv==='week'?weekHTML():monthHTML());
+  return `<div class="cvbar"><div class="tabs" role="group" aria-label="Calendar view"><button type="button" data-lv="cv" data-v="week" aria-pressed="${cv==='week'}">Week</button><button type="button" data-lv="cv" data-v="month" aria-pressed="${cv==='month'}">Month</button></div>${isMgr()?'<button type="button" class="sh-btn primary cvact" data-lv="add">+ Add leave</button>':rqOpen?'':'<button type="button" class="sh-btn primary cvact" data-lv="rqopen">Request time off</button>'}</div>`+(cv==='week'?weekHTML():monthHTML());
 }
 function legendHTML(){const L=config().limit||3;return `<div class="legend"><span><i class="k open"></i>Room for leave</span><span><i class="k one"></i>1 spot left</span><span><i class="k full"></i>Full</span><span><i class="k bo"></i>No leave period</span><span class="lim">Up to ${L} driver${L===1?'':'s'} off a day</span></div>`}
 function weekHTML(){
@@ -7857,7 +7857,7 @@ async function share(){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-lv]');if(!el||!document.getElementById('mod-leave').contains(el))return;
   const a=el.dataset.lv,v=el.dataset.v;if(a!=='del')armDel=false;
-  if(a==='rqopen'){rqOpen=true;msg=null;render();const f=$('rqf');if(f)f.focus();return}
+  if(a==='rqopen'){rqOpen=true;msg=null;render();const f=$('rqf');if(f)f.focus();const c=document.querySelector('#mod-leave .card.rq');if(c)c.scrollIntoView({block:'start',behavior:'smooth'});return}
   if(a==='rqcancel'){rqOpen=false;msg=null;render();return}
   if(a==='rqsend'){rqSend();return}
   if(a==='rqdel'){try{await db.doc('leavereq/'+v).delete();delete reqs[v];msg={t:'Request cancelled.'}}catch(x){msg={err:true,t:'Could not cancel just now.'}}render();return}
@@ -10811,7 +10811,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280630';
+const VERSION='202610280640';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
