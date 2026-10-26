@@ -9593,12 +9593,12 @@ function niceHTML(dates,pub){const rows=niceRows(dates,pub),multi=dates.length>1
    <table><thead><tr><th>Driver off</th><th>Covered by</th><th>Sorting</th></tr></thead><tbody>
    ${rows.map(r=>`${multi?`<tr class="dy"><td colspan="3">${pub?`<b>${esc(longD(r.d))}</b>`:`<button type="button" data-ro="goday" data-v="${r.d}">${esc(longD(r.d))}</button>`}</td></tr>`:''}
     ${r.its.map(x=>`<tr><td><b class="${me&&x.sid===me.staff?'me':''}">${esc(x.name)}</b><small>${pz(x.pc)}${[x.run,x.p?x.p+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></td><td class="cv">${nm(x.cover)}</td><td>${x.sort.length?x.sort.map(who).join(', '):'<span class="ns">Not set</span>'}</td></tr>`).join('')}
-    ${XLP.map(pc=>{const L=r.xl[pc]||[];return `<tr class="xlr"><td><b>XL</b><small>${pz(pc)}</small></td><td class="cv">${L.length?L.map(who).join(', '):'<span class="ns">None</span>'}</td><td></td></tr>`}).join('')}`).join('')}
+    ${XLP.filter(pc=>(r.xl[pc]||[]).length).map(pc=>{const L=r.xl[pc]||[];return `<tr class="xlr"><td><b>XL</b><small>${pz(pc)}</small></td><td class="cv">${L.length?L.map(who).join(', '):'<span class="ns">None</span>'}</td><td></td></tr>`}).join('')}`).join('')}
    </tbody></table><p class="nf">Everyone not listed is on their usual run.</p></div>`}
 function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Roster '+headOf(dates)+'*'];
   for(const r of rows){if(multi)L.push('','*'+longD(r.d)+'*');
     for(const x of r.its)L.push(`${x.name} (${[x.run,x.pc].filter(Boolean).join(', ')}): ${x.cover.length?x.cover.map(o=>o.name).join(', '):'needs cover'}${x.sort.length?'. Sorting: '+x.sort.map(o=>o.name).join(', '):''}`);
-    L.push('XL: '+XLP.map(pc=>pc+' '+((r.xl[pc]||[]).map(o=>o.name).join(' and ')||'none')).join(', '))}
+    for(const pc of XLP)if((r.xl[pc]||[]).length)L.push(`XL ${pc}: ${r.xl[pc].map(o=>o.name).join(', ')}`)}
   L.push('','Everyone not listed is on their usual run.');return L.join('\n')}
 const sendBtns=()=>`<div class="ro-shotb"><button type="button" class="sh-btn primary" data-ro="sharetxt">Share</button><button type="button" class="sh-btn" data-ro="copytxt">Copy</button></div><p class="ro-note">Share opens WhatsApp, Connecteam or messages with the roster typed out. Copy lets you paste it anywhere. You can also screenshot the table.</p>`;
 const shownDates=()=>tab==='week'?weekDays(weeks):[day];
@@ -10573,7 +10573,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271245';
+const VERSION='202610271300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
