@@ -10350,7 +10350,7 @@ function mgrListHTML(){
   const show=L.filter(r=>(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))&&(kf==='all'||r.kind===kf)&&(!t||[person(r).name,r.f&&r.f.where,r.f&&r.f.type,r.f&&r.f.desc,KINDS[r.kind].t].join(' ').toLowerCase().includes(t)));
   const yr=new Date().getFullYear()+'';const Y=L.filter(r=>(r.f&&r.f.date||'').startsWith(yr));
   return `<div class="tabs" role="group" aria-label="Show">${[['new','New'],['open','Open'],['all','All']].map(([k,l])=>`<button type="button" data-rp="tab" data-v="${k}" aria-pressed="${tab===k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
-   <div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file">+ New report</button><button type="button" class="sh-btn" data-rp="xls">Download register (Excel)</button></div></div>
+   <div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file">+ New report</button></div></div>
    <div class="tiles"><div class="tile ${cnt('new')?'warn':''}"><span>New</span><b>${cnt('new')}</b></div><div class="tile"><span>Open</span><b>${cnt('open')}</b></div>
    ${Object.entries(KINDS).map(([k,o])=>`<div class="tile ${o.c}"><span>${o.t}s this year</span><b>${Y.filter(r=>r.kind===k).length}</b></div>`).join('')}</div>
    <div class="bar"><label class="mini">Type<select id="rp_kf"><option value="all">All reports</option>${Object.entries(KINDS).map(([k,o])=>`<option value="${k}" ${kf===k?'selected':''}>${o.t}</option>`).join('')}</select></label>
@@ -10360,7 +10360,7 @@ function mgrListHTML(){
      <span class="k">${esc(KINDS[r.kind].t)}</span><span class="m"><b>${esc(F.type||'')}</b><small>${esc(p.name)} · ${esc(niceD(F.date))}${F.time?' '+esc(niceT(F.time)):''}${F.where||F.whereType?' · '+esc(F.where||F.whereType):''}</small>
      <span class="fl">${r.status==='new'?'<i class="nw">New</i>':`<i class="stt">${esc(STAT[r.status]||'')}</i>`}${flags(r).map(([c,l])=>`<i class="${c}">${esc(l)}</i>`).join('')}${(r.photos||[]).length?`<i class="pc">${r.photos.length} photo${r.photos.length===1?'':'s'}</i>`:''}</span></span></button><button type="button" class="sh-btn sm lp" data-rp="lpdf" data-v="${esc(r.id)}" aria-label="PDF of this report">PDF</button></div>`}).join('')}</div>`
    :`<div class="empty">${L.length?'No reports here. Try another tab or type.':'No reports yet. When a driver sends an incident, vehicle accident or safety hazard report, it shows up here.'}</div>`}
-   <p class="hint">Keep incident records for at least 5 years. The Excel register and the backup on Home both include them.</p>`;
+   <p class="hint">Keep incident records for at least 5 years. The backup on Home includes them.</p>`;
 }
 const row=(l,v)=>v===undefined||v===null||v===''||(Array.isArray(v)&&!v.length)?'':`<div><dt>${esc(l)}</dt><dd>${esc(Array.isArray(v)?v.join(', '):v===true?'Yes':v===false?'No':v)}</dd></div>`;
 function factsOf(r){const F=r.f||{},p=person(r);const R=[[r.by?'Driver':'Reported by',p.name+(p.no?' ('+p.no+')':'')],...(r.by&&r.by.name?[['Entered by',r.by.name]]:[]),['Date',niceD(F.date)+(F.time?' at '+niceT(F.time):'')],['What happened',F.type],['Where',[F.whereType,F.where].filter(Boolean).join(': ')]];
@@ -10532,7 +10532,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271915';
+const VERSION='202610271930';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
