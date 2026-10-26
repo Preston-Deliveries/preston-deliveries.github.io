@@ -4655,7 +4655,7 @@ async function saveXlsx(){
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
 /* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
 const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"rank",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});if(!["all","full","enq","eta","nc","me"].includes(o.st))o.st="all";return o}catch(e){return{q:"",grp:"all",st:"all",sort:"rank",dir:1}}})();
+const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"rank",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";return o}catch(e){return{q:"",grp:"all",st:"all",sort:"rank",dir:1}}})();
 const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir}))}catch(e){}};
 const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
 const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
@@ -4672,7 +4672,7 @@ function tblRows(src){
 function liveRows(){return tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay))))}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
   return tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq})))}
-const SORTS={rank:[r=>r.rank,1],name:[r=>(r.name||r.login).toLowerCase(),1],points:[r=>r.max?r.points/r.max:-1,-1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1]};
+const SORTS={rank:[r=>r.rank,1],name:[r=>(r.name||r.login).toLowerCase(),1],points:[r=>r.points??-1e9,-1],eta:[r=>r.eta??-1,-1],nc:[r=>r.ncAvg??1e9,1],enq:[r=>r.enqAvg??1e9,1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1]};
 function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
   let out=rows.filter(r=>(RT.grp==="all"||r.grp===RT.grp)&&(RT.st==="all"||(RT.st==="me"?r.me:RT.st==="full"?r.st==="full":r.rt[RT.st]==="b"))&&(!q||(r.name+" "+r.login).toLowerCase().includes(q)));
@@ -4697,7 +4697,7 @@ function rowHTML(r,multi){
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
   box.querySelector("tbody").innerHTML=F.length?F.map(r=>rowHTML(r,multi)).join(""):`<tr><td colspan="8" class="none">No drivers match these filters.</td></tr>`;
-  const busy=RT.q||RT.grp!=="all"||RT.st!=="all";
+  const busy=RT.q||RT.grp!=="all";
   box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-rt="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-rs]").forEach(b=>{const on=b.dataset.rs===RT.sort;b.closest("th").setAttribute("aria-sort",on?(RT.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(RT.dir===1?"▲":"▼"):""});
   box.querySelectorAll("[data-rg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rg===RT.grp)));
@@ -4718,7 +4718,7 @@ function rtHTML(rows,multi){
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="rank">Rank</option><option value="points">Points</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option><option value="name">Name</option></select></label></div>
-     <div class="rt-chips st" role="group" aria-label="Show">${chip("data-rf","all","Everyone",rows.length)}${chip("data-rf","full","\u2605 Full points",n(r=>r.st==="full"),"c-full")}${chip("data-rf","enq","Had an enquiry",n(r=>r.rt.enq==="b"),"c-b")}${chip("data-rf","eta","ETA under "+T().etaG+"%",n(r=>r.rt.eta==="b"),"c-w")}${chip("data-rf","nc","Had NC scans",n(r=>r.rt.nc==="b"),"c-w")}${rows.some(r=>r.me)?chip("data-rf","me","Just me",null,"c-me"):""}</div>
+     
      ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role">${chip("data-rg","all","All roles",null)}${gs.map(g=>chip("data-rg",g,GRPN[g]||g,n(r=>r.grp===g),"dg-"+g)).join("")}</div>`:""}
    </div>
    <p class="rt-n" role="status"></p>
@@ -9558,7 +9558,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262000';
+const VERSION='202610262010';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
