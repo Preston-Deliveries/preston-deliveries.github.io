@@ -3347,6 +3347,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main #mod-leave .day{border-left-width:1px!important}
 </style><style id="rundrv">
 /* run sheets: every driver as a button on one screen, no sideways scrolling */
+#sh-main#sh-main #mod-runs .top{position:static!important}
 #sh-main#sh-main #mod-runs .drivers{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;overflow:visible!important;padding:0}
 #sh-main#sh-main #mod-runs .drivers .chip{min-width:0;width:100%;box-sizing:border-box;padding:6px 9px;border-radius:9px}
 #sh-main#sh-main #mod-runs .drivers .chip b{font-size:.86rem;line-height:1.2;white-space:normal;overflow-wrap:anywhere;max-width:100%}
@@ -10026,7 +10027,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270520';
+const VERSION='202610270530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
