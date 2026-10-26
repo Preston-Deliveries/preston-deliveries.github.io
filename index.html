@@ -3690,6 +3690,15 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt table.rsm tbody.rgh .rgn{font-weight:500;font-size:.78rem;color:var(--sh-muted)}
 #sh-main .rt table.rsm tbody.rgh i{margin-left:auto;font-style:normal;color:var(--sh-muted)}
 #sh-main .rt table.rsm tbody.rgh button:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+#sh-main .rt .rt-cap{margin:0 0 6px;font:700 .72rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .rt .rtk .tk{display:flex;flex-direction:column;gap:2px}
+#sh-main .rt .rtk .tk b{font-size:1.5rem;line-height:1.1}
+#sh-main .rt .rtk .tk b.g{color:#14804A}#sh-main .rt .rtk .tk b.b{color:#C62828}
+#sh-main .rt .rtk .ts{font-size:.76rem;color:var(--sh-muted)}
+#sh-main .rt .rtk .td{font-size:.76rem;font-weight:700}#sh-main .rt .rtk .td .rdl{display:inline;margin:0}#sh-main .rt .rtk .td .vs{display:inline;font-size:.7rem;font-weight:600;color:var(--sh-muted);text-transform:none;letter-spacing:0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.b{color:#F48A8A}}
+:root[data-theme="dark"] #sh-main .rt .rtk .tk b.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rtk .tk b.b{color:#F48A8A}
+@media (max-width:700px){#sh-main .rt .rt-sum.rtk{grid-template-columns:1fr 1fr}#sh-main .rt .rtk .tk b{font-size:1.3rem}}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -5339,7 +5348,10 @@ function addRanks(rows){
 }
 function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))));const P=prevMap();if(P)R.forEach(x=>{x.prev=P[x.key]||null});
   const sv=svFor(weekId,view),pv=view==="day"?null:svFor(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);
-  R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});return R}
+  R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});
+  R.prevAll=P?Object.values(P):null;R.svT=svTeam(weekId,view);R.svTp=view==="day"?null:svTeam(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);return R}
+function svTeam(id,v){const C=svCycles(),ci=cycleInfo(id),cy=C[iso(ci.start)]||{},a=[];for(const n of(v==="cycle"?[1,2,3,4]:[ci.no]))for(const arr of Object.values(cy[n]||cy[String(n)]||{}))for(const x of arr||[])if(!isNaN(+x.s))a.push(+x.s);
+  if(!a.length)return null;return{n:Math.round((a.filter(x=>x>=9).length-a.filter(x=>x<=6).length)/a.length*100),c:a.length}}
 /* customer survey: score per driver for the same week (or the 4 weeks of the pay period) */
 let SVC=null,svAsked=false;
 function svCycles(){if(SVC)return SVC;
@@ -5408,11 +5420,14 @@ function rtHTML(rows,multi){
   const n=f=>rows.filter(f).length;
   const chip=(a,v,l,c,cls)=>`<button type="button" ${a}="${v}" class="${cls||""}"><span>${l}</span>${c!=null?`<small>${c}</small>`:""}</button>`;
   const th=(k,l,cls)=>`<th class="${cls||""}" scope="col"><button type="button" data-rs="${k}">${l}<i aria-hidden="true"></i></button></th>`;
-  return `<div class="rt-sum">
-     <div><small>Drivers</small><b>${rows.length}</b></div>
-     <div><small>Parcels</small><b>${tp==null?"n/a":Math.round(tp).toLocaleString("en-AU")}</b></div>
-     <div><small>2 hr ETA</small><b>${p1(te)}</b></div>
-     <div><small>FTD</small><b>${p1(tf)}</b></div></div>
+  const PA=rows.prevAll,pe=PA?avg(PA.map(r=>r.eta)):null,tn=sum(rows.map(r=>r.nc==null?0:+r.nc)),te2=sum(rows.map(r=>+(r.enq||0)));
+  const pn=PA?sum(PA.map(r=>r.nc==null?0:+r.nc)):null,pq=PA?sum(PA.map(r=>+(r.enq||0))):null,ST=rows.svT,SP=rows.svTp;
+  const vs=`<small class="vs">vs ${PLAB[view]||"last week"}</small>`,tl=(h,v,sub,dd,cls)=>`<div class="tk"><small>${h}</small><b class="${cls||""}">${v}</b><span class="ts">${sub}</span>${dd?`<span class="td">${dd} ${vs}</span>`:""}</div>`;
+  return `<p class="rt-cap">How the contract is going</p><div class="rt-sum rtk">
+     ${tl("2 hr ETA",p1(te),"Target "+T().etaG+"%",PA?dlt(te,pe,"pct"):"",te==null?"":te*100>=T().etaG?"g":"b")}
+     ${tl("NC scans",tn==null?"0":Math.round(tn),"Lower is better",PA?dlt(tn,pn,"down"):"")}
+     ${tl("Enquiries",String(Math.round(te2||0)),"Lower is better",PA?dlt(te2||0,pq||0,"down"):"")}
+     ${tl("Survey score",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"")}</div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="sv">Survey</option></select></label></div>
@@ -10719,7 +10734,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280140';
+const VERSION='202610280150';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
