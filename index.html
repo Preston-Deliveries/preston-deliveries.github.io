@@ -3725,6 +3725,21 @@ p.ck-alert{color:#5A3C00!important}
 @media (max-width:700px){#sh-main table .svg::before,#sh-main table .svb::before{width:6px;height:6px;margin-right:3px;vertical-align:1px}}
 #sh-main .pcol{color:var(--p,var(--d))!important}
 </style>
+<style id="smper">
+#sh-main #mod-summary .pseg2{display:inline-flex!important;gap:4px;padding:4px!important;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface);width:auto}
+#sh-main #mod-summary .pseg2 button{all:unset;cursor:pointer;padding:9px 18px!important;border-radius:10px!important;font:700 .95rem var(--sh-body);color:var(--sh-ink)!important;background:transparent!important;text-align:center}
+#sh-main #mod-summary .pseg2 button[aria-pressed="true"]{background:var(--g)!important;color:#0B1220!important}
+#sh-main #mod-summary .pchips{display:flex!important;align-items:stretch;gap:8px;margin-top:4px;width:100%;flex-basis:100%;grid-column:1/-1}
+#sh-main #mod-summary .pchs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;flex:1;min-width:0}
+#sh-main #mod-summary .pchs button{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px!important;border:1px solid var(--sh-line)!important;border-radius:12px!important;background:var(--sh-surface)!important;min-width:0;text-align:center}
+#sh-main #mod-summary .pchs button b{font:700 .92rem var(--sh-body);color:var(--sh-ink);white-space:nowrap}
+#sh-main #mod-summary .pchs button small{font-size:.74rem;color:var(--sh-muted);white-space:nowrap}
+#sh-main #mod-summary .pchs button.dim b,#sh-main #mod-summary .pchs button.dim small{opacity:.55}
+#sh-main #mod-summary .pchs button[aria-pressed="true"]{border-color:var(--g)!important;background:var(--gs)!important}
+#sh-main #mod-summary .pchs button[aria-pressed="true"] b,#sh-main #mod-summary .pchs button[aria-pressed="true"] small{color:var(--g)!important;opacity:1}
+#sh-main #mod-summary .pnav{all:unset;cursor:pointer;display:grid!important;place-items:center;width:30px;border-radius:10px!important;border:1px solid var(--sh-line)!important;color:var(--sh-muted)!important;font-size:1.2rem;background:transparent!important}
+@media (max-width:700px){#sh-main #mod-summary .pseg2{display:flex!important;width:100%;box-sizing:border-box}#sh-main #mod-summary .pseg2 button{flex:1;padding:9px 0!important}#sh-main #mod-summary .pchs{gap:5px}#sh-main #mod-summary .pchs button{padding:7px 2px!important}#sh-main #mod-summary .pchs button b{font-size:.8rem}#sh-main #mod-summary .pchs button small{font-size:.66rem}#sh-main #mod-summary .pnav{width:24px}#sh-main #mod-summary .pchips{gap:5px}}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8913,6 +8928,19 @@ function people(){
   return out;
 }
 /* ---------- period ---------- */
+/* Day, Week, Month, Year tabs and a row of chips, the same as Driver Results */
+function perHTML(){
+  const have=new Set(Object.values(S.days).map(d=>d&&d.date).filter(Boolean));
+  const hasIn=(f,t)=>{for(const d of have)if(d>=f&&d<=t)return true;return false};
+  const chip=(v,on,b,sm,dot,dim)=>`<button type="button" data-sm="chip" data-v="${v}" aria-pressed="${on}" class="${dim?'dim':''}"><b>${b}</b><small>${sm}${dot?' •':''}</small></button>`;
+  let chips='';
+  if(period==='day'){const m=monday(anchor);chips=[0,1,2,3,4,5].map(i=>{const d=add(m,i);const x=fromIso(d);return chip(d,d===anchor,DOW[x.getDay()],x.getDate()+' '+MON[x.getMonth()].slice(0,3),have.has(d),!have.has(d))}).join('')}
+  else if(period==='week'){const cs=cycleStart(anchor),cur=monday(anchor);chips=[0,1,2,3].map(i=>{const f=add(cs,7*i),x=fromIso(f),h=hasIn(f,add(f,6));return chip(f,f===cur,'Week '+(i+1),x.getDate()+' '+MON[x.getMonth()].slice(0,3),h,!h)}).join('')}
+  else if(period==='month'){const cs=cycleStart(anchor);chips=[-3,-2,-1,0].map(k=>add(cs,28*k)).map(f=>{const h=hasIn(f,add(f,27)),n=monthName(f);return chip(f,f===cs,n.split(' ')[0],n.split(' ')[1],h,!h)}).join('')}
+  else{const d=fromIso(anchor),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;chips=[y-2,y-1,y].map(k=>{const f=k+'-07-01',t=(k+1)+'-06-30',h=hasIn(f,t);return chip(f,k===y,'FY '+k+'/'+String(k+1).slice(2),'Jul to Jun',h,!h)}).join('')}
+  return `<div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['month','Month'],['year','Year']].map(([v,l])=>`<button type="button" data-sm="per" data-v="${v}" aria-pressed="${period===v}">${l}</button>`).join('')}</div>
+    <div class="pchips"><button type="button" class="pnav" data-sm="prev" aria-label="Earlier">‹</button><div class="pchs">${chips}</div><button type="button" class="pnav" data-sm="next" aria-label="Later">›</button></div>`;
+}
 function latestDay(){const ds=Object.values(S.days).map(d=>d&&d.date).filter(Boolean).sort();return ds.length?ds[ds.length-1]:TODAY}
 function range(){
   if(period==='day')return{from:anchor,to:anchor,label:longD(anchor),sub:'Day'};
@@ -9153,8 +9181,7 @@ function render0(){
    <div class="head"><h1>Summary</h1><div class="act"><button type="button" class="sh-btn primary" data-sm="pdf">Download PDF</button></div></div>
    <div class="ctl">
     <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
-    <label class="mini" for="sm_per">Show<select id="sm_per"><option value="day" ${period==='day'?'selected':''}>Day</option><option value="week" ${period==='week'?'selected':''}>Week</option><option value="month" ${period==='month'?'selected':''}>Month (pay cycle)</option><option value="year" ${period==='year'?'selected':''}>Year (financial)</option></select></label>
-    <div class="nav"><button type="button" class="sh-btn" data-sm="prev" aria-label="Previous">‹</button><div class="lab"><b>${esc(R.label)}</b><small>${esc(R.sub)}</small></div><button type="button" class="sh-btn" data-sm="next" aria-label="Next">›</button><button type="button" class="sh-btn" data-sm="latest">Latest</button></div>
+    ${perHTML()}
    </div>
    <div class="scopes" role="group" aria-label="Show">${[['all','Whole contract'],...GRPS.map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
@@ -9221,6 +9248,8 @@ document.addEventListener('click',e=>{
   const a=el.dataset.sm,v=el.dataset.v;msg=null;
   if(a==='prev'||a==='next'){step(a==='prev'?-1:1);render();return}
   if(a==='latest'){anchor=latestDay();render();return}
+  if(a==='per'){period=v;try{localStorage.setItem('sm_period',period)}catch(x){}render();return}
+  if(a==='chip'){anchor=v;render();return}
   if(a==='scope'){scope=v==='all'?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
   if(a==='pc'){scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
   if(a==='drv'){back=scope.t!=='drv'?{s:scope,y:window.scrollY}:back;scope={t:'drv',v};render();window.scrollTo(0,0);return}
@@ -10760,7 +10789,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280450';
+const VERSION='202610280500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
