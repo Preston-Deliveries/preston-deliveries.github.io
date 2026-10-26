@@ -3527,7 +3527,11 @@ p.ck-alert{color:#5A3C00!important}
 #mod-roster .ro-pv{overflow:hidden;border-radius:8px;border:1px solid var(--sh-line);background:#fff}
 #mod-roster .ro-shotb{display:flex;gap:6px;flex-wrap:wrap}
 #mod-roster .ro-head .sh-btn+.sh-btn{margin-left:0}
-#mod-roster .ro-pub{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+#sh-main #mod-roster .ro-pub{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}
+#sh-main #mod-roster .ro-pub .sh-btn,#sh-main #mod-roster .ro-wk .sh-btn{width:auto;flex:0 0 auto;min-height:0;padding:7px 12px;font-size:.88rem}
+#sh-main #mod-roster .ro-head>div:first-child{flex:1 1 180px}
+#sh-main #mod-roster .ro-head>.ro-pub{flex:0 1 auto}
+#sh-main #mod-roster .ro-nice .emp{margin:0;padding:9px 14px;font-size:.86rem;color:var(--sh-muted)}
 #mod-roster .ro-tk{display:flex;gap:6px;flex-wrap:wrap}
 #mod-roster .ro-wk{display:flex;gap:8px;flex-wrap:wrap}
 #mod-roster .ro-pick select{font-weight:700;font-size:1.05rem}
@@ -9669,7 +9673,7 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
   const regs=runList().filter(r=>r.sid&&!its.some(x=>x.sid===r.sid));const rm=(doc.removed||[]).filter(s=>leaveSids(d).has(s));
   return `${dayBtns()}
    <div class="ro-head"><div><h2>${esc(longD(d))}</h2><p>${p?(ch?'<b class="chg">Changed since you published it</b>':'Published '+esc(when(p.at))):'Not published yet'}${need?` · <b class="nd">${need} still ${need>1?'need':'needs'} cover</b>`:''}</p></div>
-    <div class="ro-pub"><button type="button" class="sh-btn primary" data-ro="send" ${(!p||ch)&&(its.length||xl.xl.length)?'':'disabled'}>${!p?'Publish this day':ch?'Publish changes':'Published ✓'}</button>${pubAllBtn()}</div></div>
+    <div class="ro-pub"><button type="button" class="sh-btn sm primary" data-ro="send" ${!p||ch?'':'disabled'}>${!p?'Publish this day':ch?'Publish changes':'Day published ✓'}</button>${pubWeekBtn(weekOf(d),'Publish this week')}</div></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${its.length?its.map(x=>itemHTML(x,d,its)).join(''):`<div class="empty">Nobody is off on ${esc(longD(d))}. Add someone below if they call in sick, or put floaters on XL parcels.</div>`}
    <article class="ro-it"><div class="ro-top"><b>XL parcels</b><span class="sp"></span><small>Floaters doing XL instead of a run</small></div>${XLP.map(pc=>{const x={sid:'_xl'+pc,xl:xo[pc]};return `<div class="ro-row"><span class="lab">XL <span class="pcp ${pcc(pc)}">${pc}</span></span><div class="ppl">${chips('xl',x)}${pplSel('xl',x,d,its)}</div></div>`}).join('')}</article>
@@ -9686,9 +9690,9 @@ function planHTML(){const d=day,its=itemsFor(d),doc=ros[d]||{},p=doc.pub,ch=chan
 function weekDays(n){const m=fromIso(TODAY);m.setDate(m.getDate()-((m.getDay()+6)%7));const L=[];for(let i=0;i<7*(n||1);i++){const x=new Date(m);x.setDate(m.getDate()+i);if(x.getDay()!==0)L.push(iso(x))}return L}
 function weekMgrHTML(){const W=weekDays(weeks);
   return `<div id="ro_week" class="ro-week">${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${niceRows(W).length?niceHTML(W):`<div class="empty">Nobody is off ${weeks>1?'in these '+weeks+' weeks':'this week'} (${esc(headOf(W))}).</div>`}
+   ${niceHTML(W)}
    <p class="ro-note">Tap a day to change it.</p>
-   <div class="ro-wk">${pubAllBtn()}<button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}<button type="button" class="sh-btn" data-ro="print">Print</button></div>
+   <div class="ro-wk">${pubWeekBtn(W.filter(d=>d>=TODAY),weeks>1?'Publish these weeks':'Publish this week')}<button type="button" class="sh-btn" data-ro="addwk">Add a week</button>${weeks>1?'<button type="button" class="sh-btn ghost" data-ro="rmwk">Remove a week</button>':''}<button type="button" class="sh-btn" data-ro="print">Print</button></div>
    </div>`}
 function weekHTML(drv){const W=weekDays(drv?2:weeks),D=W.filter(d=>d>=TODAY||!drv);const rows=D.map(d=>{const pb=(ros[d]||{}).pub||{};const its=drv?(pb.items||[]):pubOf(itemsFor(d)),xl=drv?(Array.isArray(pb.xl)?{}:pb.xl||{}):xlPub(d);return{d,its,xl}}).filter(r=>r.its.length||Object.keys(r.xl).length);
   const mine=s=>me&&s===me.staff;
@@ -9709,7 +9713,7 @@ const pz=pc=>pc?`<i class="pcp ${pcc(pc)}">${esc(pc)}</i>`:'';
 const headOf=dates=>dates.length===1?longD(dates[0]):niceD(dates[0])+' to '+niceD(dates[dates.length-1]);
 function dayData(d,pub){if(pub){const pb=(ros[d]||{}).pub;if(!pb)return null;return{d,its:pb.items||[],xl:pb.xl&&!Array.isArray(pb.xl)?pb.xl:{}}}return{d,its:pubOf(itemsFor(d)),xl:xlPub(d)}}
 function niceRows(dates,pub){return dates.map(d=>dayData(d,pub)).filter(r=>r&&(r.its.length||XLP.some(pc=>(r.xl[pc]||[]).length)))}
-function niceHTML(dates,pub){const rows=niceRows(dates,pub);if(!rows.length)return '';
+function niceHTML(dates,pub){const rows=dates.filter(d=>fromIso(d).getDay()!==0).map(d=>dayData(d,pub)||{d,its:[],xl:{},none:true});if(!rows.length)return '';
   const who=o=>`<span class="${me&&o.sid===me.staff?'me':''}">${esc(o.name)}</span>`;
   const nm=L=>L.length?L.map(who).join(', '):'<em class="need">Needs cover</em>';
   const dl=d=>d===TODAY?'Today':d===addD(TODAY,1)?'Tomorrow':'';
@@ -9720,6 +9724,7 @@ function niceHTML(dates,pub){const rows=niceRows(dates,pub);if(!rows.length)retu
      ${r.its.map(x=>`<div class="rr"><div class="wo"><b class="${me&&x.sid===me.staff?'me':''}">${esc(x.name)}</b><small>${pz(x.pc)}${[x.run,x.p?x.p+' parcels':''].filter(Boolean).map(esc).join(' · ')}</small></div>
        <div class="cv"><i>Covered by</i><span>${nm(x.cover)}</span></div><div class="so"><i>Sorting</i><span>${x.sort.length?x.sort.map(who).join(', '):'<em class="ns">Not set</em>'}</span></div></div>`).join('')}
      ${xl.map(pc=>`<div class="rr xl"><div class="wo"><b>XL parcels</b><small>${pz(pc)}</small></div><div class="cv"><i>Doing XL</i><span>${r.xl[pc].map(who).join(', ')}</span></div><div class="so"></div></div>`).join('')}
+     ${!n&&!xl.length?`<p class="emp">${pub?(r.none?'Nothing showing yet':'Nobody off. Everyone on their usual run.'):'Nobody off'}</p>`:''}
     </section>`}).join('')}
    <p class="nf">Everyone not listed is on their usual run.</p></div>`}
 function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Roster '+headOf(dates)+'*'];
@@ -9728,11 +9733,12 @@ function niceText(dates){const rows=niceRows(dates),multi=dates.length>1,L=['*Ro
     for(const pc of XLP)if((r.xl[pc]||[]).length)L.push(`XL ${pc}: ${r.xl[pc].map(o=>o.name).join(', ')}`)}
   L.push('','Everyone not listed is on their usual run.');return L.join('\n')}
 const sendBtns=()=>`<div class="ro-shotb"><button type="button" class="sh-btn primary" data-ro="sharetxt">Share</button><button type="button" class="sh-btn" data-ro="copytxt">Copy</button></div><p class="ro-note">Share opens WhatsApp, Connecteam or messages with the roster typed out. Copy lets you paste it anywhere. You can also screenshot the table.</p>`;
-function unpub(){const L=[];for(let i=0;i<70;i++){const d=addD(TODAY,i);if(fromIso(d).getDay()===0)continue;const its=itemsFor(d);if(!its.length&&!xlFor(d).length)continue;const p=(ros[d]||{}).pub;if(!p||changed(d,its))L.push(d)}return L}
-const pubAllBtn=()=>{const n=unpub().length;return `<button type="button" class="sh-btn" data-ro="puball" ${n?'':'disabled'}>${n?'Publish all ('+n+' day'+(n===1?'':'s')+')':'All published ✓'}</button>`};
-async function publishAll(){const L=unpub();if(!L.length)return;msg={t:'Publishing '+L.length+' days…'};render();
+const weekOf=d=>{const m=monOf(d);return [0,1,2,3,4,5].map(i=>addD(m,i)).filter(x=>x>=TODAY)};
+function unpubIn(L){return L.filter(d=>{const p=(ros[d]||{}).pub;return !p||changed(d,itemsFor(d))})}
+const pubWeekBtn=(L,lab)=>{const n=unpubIn(L).length;return `<button type="button" class="sh-btn sm" data-ro="pubwk" data-v="${L.join(',')}" ${n?'':'disabled'}>${n?lab:'Week published ✓'}</button>`};
+async function publishDays(L){L=unpubIn(L);if(!L.length)return;msg={t:'Publishing…'};render();
   for(const d of L){const its=itemsFor(d);await saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}})}
-  if(!msg||!msg.err)msg={t:'Published '+L.length+' day'+(L.length===1?'':'s')+'. Drivers can now see them.'};render()}
+  if(!msg||!msg.err)msg={t:'Published. Drivers can now see it.'};render()}
 const shownDates=()=>tab==='week'?weekDays(weeks):[day];
 async function copyTxt(){const t=niceText(shownDates());try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;left:-9999px';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(x){}a.remove()}msg={t:'Copied. Paste it into the group chat.'};render()}
 async function shareTxt(){const t=niceText(shownDates());if(navigator.share){try{await navigator.share({text:t});return}catch(e){if(e&&e.name==='AbortError')return}}copyTxt()}
@@ -9797,7 +9803,7 @@ function mountHome(){const el=document.getElementById('sh-roster');if(el)el.inne
 
 function render(){mountHome();const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='<div class="empty">Opening…</div>';return}
-  if(mode==='drv'){const m=myDays().map(([d,l,x])=>`<div class="ro-mine"><i>${l}</i><span>${x.join('<br>')}</span></div>`).join('');const D=weekDays(2).filter(d=>d>=TODAY);box.innerHTML=`<div class="rox">${m}${niceRows(D,true).length?niceHTML(D,true):'<div class="empty">Nothing on the roster yet. When the manager publishes it, it shows here.</div>'}</div>`;return}
+  if(mode==='drv'){const m=myDays().map(([d,l,x])=>`<div class="ro-mine"><i>${l}</i><span>${x.join('<br>')}</span></div>`).join('');const W2=weekDays(2),nx=W2.slice(6).some(d=>(ros[d]||{}).pub),D=(nx?W2:W2.slice(0,6)).filter(d=>d>=TODAY);box.innerHTML=`<div class="rox">${m}${niceHTML(D,true)||'<div class="empty">Nothing showing yet.</div>'}</div>`;return}
   if(!loaded.staff){box.innerHTML='<div class="empty">Opening…</div>';return}
   box.innerHTML=`<div class="rox"><div class="tabs" role="group" aria-label="Roster">${[['plan','Plan a day'],['week','Week'],['fl','Floaters']].map(([k,l])=>`<button type="button" data-ro="tab" data-v="${k}" aria-pressed="${tab===k}">${l}</button>`).join('')}</div>
    ${tab==='plan'?planHTML():tab==='week'?weekMgrHTML():flHTML()}</div>`;
@@ -9830,8 +9836,8 @@ document.addEventListener('click',e=>{const el=e.target.closest('[data-ro]');con
   if(a==='kn'){const k=know(sid,v);setFl(sid,{know:{...(flc(sid).know||{}),[v]:(k+1)%3}});render();return}
   if(a==='unfl'){setFl(sid,{off:true});open=null;render();return}
   const d=day,its=itemsFor(d),x=its.find(i=>i.sid===sid);msg=null;
-  if(a==='puball'){el.disabled=true;publishAll();return}
-  if(a==='send'){if(!its.length&&!xlFor(d).length)return;saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Published. Drivers can now see it on their Roster page and home screen.'};render()});return}
+  if(a==='pubwk'){el.disabled=true;publishDays(String(v).split(','));return}
+  if(a==='send'){saveDay(d,its,{pub:{items:pubOf(its),xl:xlPub(d),at:new Date().toISOString()}}).then(()=>{if(!msg)msg={t:'Published. Drivers can now see it on their Roster page and home screen.'};render()});return}
   if(a==='rm'&&String(sid).startsWith('_xl')){const o=xlOf(d),pc=sid.slice(3);o[pc]=o[pc].filter(k=>k!==who);saveDay(d,its,{xl:o});return}
   if(a==='rm'&&x){x[el.dataset.k]=x[el.dataset.k].filter(k=>k!==who);saveDay(d,its);return}
   if(a==='addc'&&x){if(!x.cover.includes(who))x.cover.push(who);saveDay(d,its);return}
@@ -10706,7 +10712,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271445';
+const VERSION='202610271500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
