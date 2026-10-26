@@ -2967,6 +2967,7 @@ p.ck-alert{color:#5A3C00!important}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
+#me_box .persub{margin:0;max-width:none}
 #sh-main .persub:empty{display:none}
 #sh-main .persub button{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1 1 0;min-width:0;padding:7px 2px;white-space:nowrap;border:1px solid var(--sh-line);border-radius:10px;background:var(--sh-surface);color:var(--sh-muted);font:inherit;cursor:pointer}
 #sh-main .persub button b{font:700 .95rem var(--sh-body);color:var(--sh-ink)}
@@ -6355,9 +6356,23 @@ function periods(){
   const k=Math.floor(Math.round((fromIso(D)-fromIso(CYC0))/864e5)/28),cs=addD(CYC0,k*28);
   const sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]};
   const longDay=s=>{const d=fromIso(s);return ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]+' '+sh(s)};
-  const wkNo=Math.floor(Math.round((fromIso(mon)-fromIso(cs))/864e5)/7)+1;
-  return{day:{dates:[dd],label:longDay(dd)},week:{dates:Array.from({length:7},(_,i)=>addD(mon,i)),label:'Week of '+sh(mon)+' to '+sh(addD(mon,6))+(wkNo>=1&&wkNo<=4?' · pay week '+wkNo+' of 4':'')},
+  const weeks=[0,1,2,3].map(i=>addD(cs,7*i));
+  const wmon=weeks.includes(PWK)?PWK:(weeks.includes(mon)?mon:weeks[weeks.length-1]);
+  const wkNo=weeks.indexOf(wmon)+1;
+  const wdays=Array.from({length:6},(_,i)=>addD(wmon,i));
+  const pickD=wdays.includes(PDAY)?PDAY:([...wdays].reverse().find(d=>mine.includes(d))||[...wdays].reverse().find(d=>all.includes(d))||(wdays.includes(dd)?dd:wdays[0]));
+  const subW=weeks.map((w,i)=>({w,n:i+1,on:w===wmon,has:mine.some(d=>d>=w&&d<=addD(w,6))}));
+  const subD=wdays.map(d=>({d,on:d===pickD,has:mine.includes(d)}));
+  const cyc={cs,ce:addD(cs,27)};
+  return{subW,subD,cyc,sh,day:{dates:[pickD],label:longDay(pickD)},week:{dates:Array.from({length:7},(_,i)=>addD(wmon,i)),label:'Week '+wkNo+' of the pay cycle · '+sh(wmon)+' to '+sh(addD(wmon,5))},
     cycle:{dates:Array.from({length:28},(_,i)=>addD(cs,i)),label:'Pay cycle '+sh(cs)+' to '+sh(addD(cs,27))}};
+}
+let PWK=null,PDAY=null;
+function subRowHTML(P){
+  const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  if(PER==='day')return `<div class="persub g-perf" role="group" aria-label="Choose a day">${P.subD.map(x=>`<button type="button" data-pd="${x.d}" aria-pressed="${x.on}" class="${x.has?'has':''}"><b>${DN[fromIso(x.d).getDay()]}</b><small>${P.sh(x.d)}</small></button>`).join('')}</div>`;
+  if(PER==='week')return `<div class="persub g-perf" role="group" aria-label="Choose a week">${P.subW.map(x=>`<button type="button" data-pw="${x.w}" aria-pressed="${x.on}" class="${x.has?'has':''}"><b>Week ${x.n}</b><small>${P.sh(x.w)}</small></button>`).join('')}</div>`;
+  return '';
 }
 function hoursFor(dates){const set=new Set(dates);let m=0,n=0;for(const c of (data&&data.clock)||[]){if(!set.has(c.date)||!c.start)continue;n++;if(c.finish)m+=Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0))}return{m,n}}
 let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
@@ -6379,6 +6394,7 @@ function profileHTML(){
     <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}</div>
   </section>
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
+  ${subRowHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
   ${x?`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.round(100*x.points/x.max):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
      :`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
@@ -6412,6 +6428,8 @@ async function showProfile(){
 document.addEventListener('click',e=>{
   const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
   const rb=e.target.closest('[data-me="run"]');if(rb)openRun(rb.dataset.login);
+  const pd=e.target.closest('[data-pd]');if(pd&&document.getElementById('me_box')&&document.getElementById('me_box').contains(pd)){PDAY=pd.dataset.pd;renderProfile();return}
+  const pw=e.target.closest('[data-pw]');if(pw&&document.getElementById('me_box')&&document.getElementById('me_box').contains(pw)){PWK=pw.dataset.pw;PDAY=null;renderProfile();return}
   const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;try{localStorage.setItem('me1161_per',PER)}catch(x){}renderProfile()}
 });
 function openRun(l){l=l||(me&&me.login);try{if(window.RUNS&&RUNS.openLogin&&l&&RUNS.openLogin(l))return}catch(x){}if(window.APP)APP.go('runs')}
@@ -9354,7 +9372,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261800';
+const VERSION='202610261820';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
