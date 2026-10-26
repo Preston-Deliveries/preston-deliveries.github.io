@@ -3917,6 +3917,15 @@ html.appui[data-theme="dark"] .t-reports{--tc:#F48A8A}
 html.appui[data-theme="dark"] .t-uniform,html.appui[data-theme="dark"] .t-me,html.appui[data-theme="dark"] .t-alerts,html.appui[data-theme="dark"] .t-clock{--tc:#AAB4C3}
 .ah-qa .qa .ic{background:var(--tbg,rgba(242,120,45,.15))!important;color:var(--tc,#C2570C)!important}
 html.appui .dh-todo .dh-do .ic{background:var(--tc,var(--act))}
+/* Admin view / User view switch: always at the bottom */
+@media (max-width:899.98px){
+ .sh-side .sh-vt:not([hidden]){display:block!important;position:absolute;left:0;right:0;bottom:100%;padding:8px 12px;background:var(--sh-nav);border-top:1px solid rgba(255,255,255,.1);box-sizing:border-box}
+ .sh-side .sh-vt .seg{border-radius:10px;max-width:520px;margin:0 auto;display:flex}
+ .sh-side .sh-vt .seg button{min-height:38px;font-size:.92rem;padding:6px 10px}
+ .sh-mtop .sh-vt{display:none!important}
+ html:has(.sh-side .sh-vt:not([hidden])) .sh-main{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))!important}
+}
+@media (min-width:900px){.sh-side .sh-role{order:1}.sh-side .sh-vt{order:2;padding:10px 8px 0;margin-top:0}.sh-side .sh-vt .seg button{padding:9px 10px;font-size:.88rem}}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -7608,7 +7617,7 @@ function build(){
   return L.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
 }
 function unread(L){const seen=new Set(get('seen')||[]);return L.filter(n=>!seen.has(n.id)).length}
-function badge(n){window.__alertN=n;document.querySelectorAll('[data-nav="alerts"]').forEach(b=>{let x=b.querySelector('.bdg');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';b.appendChild(x)}x.textContent=n>9?'9+':String(n)})}
+function badge(n){window.__alertN=n;document.querySelectorAll('.sh-links [data-nav="alerts"],.dm-t[data-nav="alerts"]').forEach(b=>{let x=b.querySelector('.bdg');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';b.appendChild(x)}x.textContent=n>9?'9+':String(n)})}
 async function refresh(force){await load(force);const L=build();badge(unread(L));return L}
 
 function alertsHTML(L){
@@ -11209,7 +11218,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281010';
+const VERSION='202610281020';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
