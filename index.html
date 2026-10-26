@@ -4989,7 +4989,7 @@ async function saveXlsx(){
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
 /* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
 const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"name",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";if(!["name","eta","nc","enq","pc","ftd"].includes(o.sort)){o.sort="name";o.dir=1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"name",dir:1}}})();
+const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"name",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";o.grp="all";if(!["name","eta","nc","enq","pc","ftd"].includes(o.sort)){o.sort="name";o.dir=1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"name",dir:1}}})();
 const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir}))}catch(e){}};
 const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
 const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
@@ -5057,7 +5057,6 @@ function rtHTML(rows,multi){
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option></select></label></div>
      
-     ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role">${chip("data-rg","all","All roles",null)}${gs.map(g=>chip("data-rg",g,GRPN[g]||g,n(r=>r.grp===g),"dg-"+g)).join("")}</div>`:""}
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
@@ -5532,7 +5531,6 @@ function mountSV(box,drivers,emptyTxt){
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-sv="q" placeholder="Search name or number" aria-label="Search drivers" value="${esc(SV.q)}"></label>
        <label class="rt-so"><span>Sort</span><select data-sv="sort" aria-label="Sort by"><option value="name">Name</option><option value="avg">Average score</option><option value="n">Most surveys</option><option value="lo">Most 0 to 6</option></select></label></div>
-     ${gs.length>1?`<div class="rt-chips gr" role="group" aria-label="Role"><button type="button" data-sg="all"><span>All roles</span></button>${gs.map(g=>`<button type="button" data-sg="${g}" class="dg-${g}"><span>${GRPN[g]||g}</span><small>${rows.filter(r=>r.grp===g).length}</small></button>`).join("")}</div>`:""}
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
@@ -10070,7 +10068,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270630';
+const VERSION='202610270640';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
