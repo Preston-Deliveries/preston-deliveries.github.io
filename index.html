@@ -3668,21 +3668,21 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt i.rd.r-g{background:#1E8A4C}#sh-main .rt i.rd.r-a,#sh-main .rt i.rd.r-w{background:#D98B00}#sh-main .rt i.rd.r-b{background:#C8352B}
 #sh-main .rt .rsk{font-size:.8rem;color:var(--sh-muted);margin-top:8px}#sh-main .rt .rsk i.rd{margin-left:2px}
 @media (max-width:700px){
-#sh-main .rt table.rsm{font-size:.74rem}
-#sh-main .rt table.rsm th button{padding:8px 2px 8px 6px;font-size:.54rem;letter-spacing:.01em}
+#sh-main .rt table.rsm{font-size:.88rem}
+#sh-main .rt table.rsm th button{padding:8px 2px 8px 6px;font-size:.64rem;letter-spacing:.03em}
 #sh-main .rt table.rsm td{padding:8px 2px}
 #sh-main .rt table.rsm :is(th,td):first-child{padding-left:8px}#sh-main .rt table.rsm :is(th,td):last-child{padding-right:8px}
 #sh-main .rt table.rsm th.dr{width:27%}
-#sh-main .rt table.rsm td.dr b{font-size:.78rem}
+#sh-main .rt table.rsm td.dr b{font-size:.9rem}
 #sh-main .rt table.rsm .dy{display:none}
-#sh-main .rt table.rsm th.dr{width:22%}#sh-main .rt table.rsm th.c-pc{width:15%}#sh-main .rt table.rsm th.c-ftd{width:15%}#sh-main .rt table.rsm th.c-eta{width:15%}#sh-main .rt table.rsm th.c-nc{width:8%}#sh-main .rt table.rsm th.c-enq{width:9%}#sh-main .rt table.rsm th.c-sv{width:16%}
+#sh-main .rt table.rsm th.dr{width:31%}#sh-main .rt table.rsm th.c-eta{width:22%}#sh-main .rt table.rsm th.c-nc{width:12%}#sh-main .rt table.rsm th.c-enq{width:12%}#sh-main .rt table.rsm th.c-sv{width:23%}
 #sh-main .rt i.rd{width:6px;height:6px;margin-right:3px}
 }
 #sh-main .rt table.rsm .rdl{display:block;font-size:.66rem;font-weight:700;margin-top:2px;white-space:nowrap}
 #sh-main .rt .rdl.g{color:#14804A}#sh-main .rt .rdl.b{color:#C62828}#sh-main .rt .rdl.n{color:var(--sh-muted)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .rt .rdl.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .rt .rdl.b{color:#F48A8A}}
 :root[data-theme="dark"] #sh-main .rt .rdl.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rdl.b{color:#F48A8A}
-@media (max-width:700px){#sh-main .rt table.rsm .rdl{font-size:.58rem}}
+@media (max-width:700px){#sh-main .rt table.rsm .rdl{font-size:.68rem}}
 #sh-main .rt table.rsm small.svn{font-size:.62rem;color:var(--sh-muted);margin-left:2px}
 #sh-main .rt table.rsm tbody.rgh td{padding:0!important;background:var(--sh-sunk);border-top:1px solid var(--sh-line)}
 #sh-main .rt table.rsm tbody.rgh button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:11px 10px;cursor:pointer;font:700 .9rem var(--sh-body);color:var(--sh-ink)}
@@ -5387,8 +5387,6 @@ function rowHTML(r,multi){
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
    <td class="dr"><b>${escR(nm)}</b><small>${r.me?'<em class="you">You</em> ':""}${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    ${multi?`<td class="r dy">${r.days||""}</td>`:""}
-   <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}${P?dlt(r.pc,P.pc,"n"):""}</td>
-   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
    <td class="r">${d(r.rt.eta)}${p1(r.eta)}${P?dlt(r.eta,P.eta,"pct"):""}</td>
    <td class="r">${r.nc==null?"n/a":Math.round(r.nc)}${P?dlt(r.nc,P.nc,"down"):""}</td>
    <td class="r">${r.enq==null?"0":Math.round(r.enq)}${P?dlt(+(r.enq||0),+(P.enq||0),"down"):""}</td>
@@ -5422,12 +5420,12 @@ function rtHTML(rows,multi){
      <div><small>FTD</small><b>${p1(tf)}</b></div></div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
-       <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="pc">Parcels</option><option value="ftd">Delivered first time</option><option value="sv">Survey</option></select></label></div>
+       <label class="rt-so"><span>Sort</span><select data-rt="sort" aria-label="Sort by"><option value="name">Name</option><option value="eta">2 hr ETA</option><option value="nc">NC scans</option><option value="enq">Enquiries</option><option value="sv">Survey</option></select></label></div>
      
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("pc","Parcels","r c-pc")}${th("ftd","FTD","r c-ftd")}${th("eta","ETA","r c-eta")}${th("nc","NC","r c-nc")}${th("enq","Enq","r c-enq")}${th("sv","Survey","r c-sv")}</tr></thead><tbody></tbody></table></div>
+   <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("eta","ETA","r c-eta")}${th("nc","NC","r c-nc")}${th("enq","Enq","r c-enq")}${th("sv","Survey","r c-sv")}</tr></thead><tbody></tbody></table></div>
    <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>ETA on target (${T().etaG}% or more)</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA. NC: NC scans. Enq: enquiries. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}, with the number of surveys in brackets.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
 }
 function mountRT(box,rows,multi){
@@ -10726,7 +10724,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280110';
+const VERSION='202610280120';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
