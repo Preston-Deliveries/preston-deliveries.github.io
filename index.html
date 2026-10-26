@@ -5863,7 +5863,7 @@ function svFilt(rows){
   const q=SV.q.trim().toLowerCase();
   const out=rows.filter(r=>(SV.grp==="all"||r.grp===SV.grp)&&(!q||(r.name+" "+r.id).toLowerCase().includes(q)));
   const[f]=SVS[SV.sort]||SVS.name,d=SV.dir;
-  return out.sort((a,b)=>{const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||(a.name||a.id).localeCompare(b.name||b.id)});
+  return out.sort((a,b)=>{if(a.me!==b.me)return a.me?-1:1;const x=f(a),y=f(b);return(x<y?-1:x>y?1:0)*d||(a.name||a.id).localeCompare(b.name||b.id)});
 }
 function svRowHTML(r){
   const said=r.r.filter(x=>x.c);
@@ -10724,7 +10724,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280120';
+const VERSION='202610280130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
