@@ -3594,7 +3594,12 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-leave .lvx>.rq-btn,#sh-main #mod-leave .lvx>.rq{order:2}
 #sh-main #mod-leave .lvx>.msg{order:2}
 #sh-main #mod-leave .lvx>.rq-mine{order:30}
-#mod-leave .rq .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+#mod-leave .rq .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#mod-leave .grid .f,#mod-leave .rq .f,#mod-leave .rq-item .f{min-width:0}
+#mod-leave .grid input{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+#mod-leave .rq input,#mod-leave .rq-item input{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+#mod-leave .rq input[type=date]{-webkit-appearance:none;appearance:none;min-height:46px;padding-right:8px}
+@media (max-width:360px){#mod-leave .rq .grid{grid-template-columns:1fr}}
 #mod-leave .rq-sum{margin:0;font-size:.95rem}
 #mod-leave .rq-warn{margin:0;padding:8px 10px;border-radius:6px;background:#FFF1D6;color:#7A4A00;font-size:.88rem}
 #mod-leave .rq-ok{margin:0;font-size:.88rem;color:#1E8E5A}
@@ -10694,7 +10699,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271415';
+const VERSION='202610271430';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
