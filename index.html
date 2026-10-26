@@ -4411,11 +4411,11 @@ function renderTargets(){
   for(const[k,lab]of TARGET_LABELS){const l=document.createElement("label");l.textContent=lab;const i=document.createElement("input");i.type="number";i.step="0.5";i.id="t_"+k;i.value=settings.targets[k];
     i.onchange=()=>{const v=num(i.value);if(v!=null){settings.targets[k]=v;saveSettings();renderAll()}};l.append(i);box.append(l)}
 }
-function renderSub(){
-  const box=document.getElementById("r_perSub");if(!box)return;
-  if(view==="day"){box.innerHTML=DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("");return}
-  if(view==="week"){const ci=cycleInfo(weekId);box.innerHTML=[1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("");return}
-  const cs=cycleInfo(weekId).start;box.innerHTML=`<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
+function renderSub(){const box=document.getElementById("r_perSub");if(box)box.innerHTML=subHTML()}
+function subHTML(){
+  if(view==="day"){return DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("")}
+  if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
+  const cs=cycleInfo(weekId).start;return `<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
 }
 function renderAll(){renderSub();renderWeekNav();renderDays();renderTable();renderClear();drawBoard();if(window.APP){const n=DAYS.filter(([k])=>week.days[k]).length;APP.stat("results",n?`Week of ${short(fromIso(weekId))}: ${n} of 6 days loaded`:`Week of ${short(fromIso(weekId))}: no days loaded yet`)}}
 
@@ -4555,9 +4555,40 @@ async function saveXlsx(){
 
 
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
+let LIVE=false;
+async function goLive(){
+  try{
+    if(SNAP&&SNAP.targets)settings.targets={...DEFAULT_TARGETS,...SNAP.targets};
+    const st=await loadDoc("settings/main");if(st)settings={names:st.names||{},targets:{...DEFAULT_TARGETS,...(st.targets||{})}};
+    let id=iso(mondayOf(new Date())),w=await loadWeekDocs(id);
+    if(!Object.keys(w.days).length){const p=iso(addDays(fromIso(id),-7)),w2=await loadWeekDocs(p);if(Object.keys(w2.days).length){id=p;w=w2}}
+    if(!Object.keys(w.days).length)return;
+    weekId=id;week=w;await loadCycle();
+    const f=DAYS.map(d=>d[0]).filter(k=>week.days[k]);selDay=f[f.length-1];
+    LIVE=true;if(!["day","week","cycle"].includes(dvKey))dvKey="week";
+    if(!$("driverView").hidden)showDriverView(!$("dvOwner").hidden);
+  }catch(e){console.warn(e)}
+}
+function liveView(owner){
+  const tabs=$("dvTabs"),boardBox=$("dvBoard");
+  const NM={day:"Day",week:"Week",cycle:"Month"};
+  for(const k of ["day","week","cycle"]){const t=document.createElement("button");t.type="button";t.textContent=NM[k];t.setAttribute("aria-pressed",String(k===dvKey));t.onclick=()=>{dvKey=k;showDriverView(owner)};tabs.append(t)}
+  const keep=view;view=dvKey;
+  const sub=$("dvSub");sub.innerHTML=subHTML();
+  sub.onclick=async e=>{const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;showDriverView(owner);return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);const f=DAYS.map(x=>x[0]).filter(k=>week.days[k]);if(!week.days[selDay]&&f.length)selDay=f[f.length-1];showDriverView(owner)}};
+  drawBoard();
+  const m=fromIso(weekId),ci=cycleInfo(weekId);
+  const label=dvKey==="day"?DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay)):dvKey==="week"?"Week "+ci.no+" \u00b7 "+short(m)+" to "+short(addDays(m,5)):"Pay period "+short(ci.start)+" to "+short(addDays(ci.start,26));
+  const has=dvKey==="day"?!!week.days[selDay]:dvKey==="week"?Object.keys(week.days).length>0:true;
+  $("dvUpdated").textContent=label;
+  if(!has){const e=document.createElement("div");e.className="empty";e.textContent="No results for "+(dvKey==="day"?"this day":"this week")+" yet.";boardBox.append(e)}
+  else{const img=new Image();img.src=$("board").toDataURL("image/png");img.alt=label+" results board";boardBox.append(img)}
+  view=keep;if(!$("tool").hidden)drawBoard();
+}
 function showDriverView(owner){
   $("tool").hidden=true;$("driverView").hidden=false;$("dvOwner").hidden=!owner;
   const tabs=$("dvTabs"),boardBox=$("dvBoard");tabs.textContent="";boardBox.textContent="";
+  if(LIVE)return liveView(owner);
   if(!SNAP||!SNAP.boards||!SNAP.boards.length){$("dvUpdated").textContent="";const e=document.createElement("div");e.className="empty";e.textContent="Results will show here once they are shared.";boardBox.append(e);return}
   const B=SNAP.boards;const kinds=["day","week","cycle"].filter(k=>B.some(x=>x.key===k));
   if(!kinds.includes(dvKey))dvKey=kinds.includes("week")?"week":kinds[0];
@@ -4638,7 +4669,7 @@ async function boot(){
   let u=null;
   try{if(window.claude&&claude.use){[db,downloads,art,u]=await Promise.all([claude.use("db"),claude.use("downloads"),claude.use("artifact"),claude.use("user")])}}catch(e){}
   try{isEditor=!!(u&&await u.canEdit())&&!window.__UV}catch(e){isEditor=false}
-  if(!isEditor){showDriverView(false);return}
+  if(!isEditor){showDriverView(false);goLive();return}
   showTool();
   const s=await loadDoc("settings/main");if(s){settings={names:s.names||{},targets:{...DEFAULT_TARGETS,...(s.targets||{})}}}
   const latest=await latestWeek();
@@ -9321,7 +9352,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261730';
+const VERSION='202610261745';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
