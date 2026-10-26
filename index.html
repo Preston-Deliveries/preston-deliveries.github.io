@@ -4064,7 +4064,7 @@ function renderTop(){
   document.getElementById('drivers').innerHTML=ids().map(id=>{
     const r=S.runs[id], tot=r.streets.length, p=placedOf(r).length, pct=tot?Math.round(p/tot*100):0;
     return `<button type="button" class="chip" data-act="driver" data-v="${esc(id)}" aria-current="${id===S.cur}">
-      <b>${esc(r.driver)}</b><small>${esc(r.login)} · Trolley bay ${esc(r.bay)}${canWrite?` · ${p}/${tot} placed`:''}</small>${canWrite?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</button>`}).join('');
+      <b title="${esc(r.driver)}">${esc(r.driver==='Unassigned'?'Unassigned':shortDrv(r.driver))}</b><small>${esc(r.login)} · Bay ${esc(r.bay)}</small>${canWrite?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</button>`}).join('');
 }
 
 /* ---------- editor ---------- */
@@ -10026,7 +10026,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270510';
+const VERSION='202610270520';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
