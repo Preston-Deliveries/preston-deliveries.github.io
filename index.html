@@ -2771,7 +2771,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .sh-sec.pg .card:not(.ckk){box-shadow:inset 0 2px 0 var(--g)}
 #sh-main .sh-sec.pg :is(.card,section,div)>h2:first-child{scroll-margin-top:12px}
 #sh-main .sh-sec.pg thead th{color:var(--g)}
-#sh-main .sh-sec.pg .step{background:var(--g)!important;color:#fff!important}
+#sh-main .sh-sec.pg :is(span.step,#mod-invoices .step .n){background:var(--g)!important;color:#fff!important}
 #sh-main .sh-sec.pg .lnk{color:var(--g)}
 #sh-main .sh-sec.pg input:focus-visible,#sh-main .sh-sec.pg select:focus-visible,#sh-main .sh-sec.pg textarea:focus-visible{outline:2px solid var(--g);outline-offset:1px}
 #sh-main .sh-sec.pg .empty{border-top:1.5px solid var(--gs)}
@@ -10157,7 +10157,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270800';
+const VERSION='202610270830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
