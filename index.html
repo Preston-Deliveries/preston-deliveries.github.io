@@ -3418,19 +3418,19 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main#sh-main :is(#mod-uniform,#mod-invoices) .tabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important}
 #sh-main#sh-main#sh-main :is(#mod-uniform,#mod-invoices) .tabs button{flex:1 1 auto!important;padding:8px 10px;white-space:nowrap}
 #sh-main #mod-invoices .im .tw{overflow:visible}
-#sh-main #mod-invoices .im table.tb,#sh-main #mod-invoices .im table.tb tbody{display:block;width:100%;min-width:0}
-#sh-main #mod-invoices .im table.tb thead{display:none}
-#sh-main #mod-invoices .im table.tb tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 4px;border-bottom:1px solid var(--sh-line)}
-#sh-main #mod-invoices .im table.tb td{display:block;padding:0;border:0;min-width:0}
-#sh-main #mod-invoices .im table.tb td:nth-child(1){grid-column:1}
-#sh-main #mod-invoices .im table.tb td:nth-child(3){grid-column:2;grid-row:1;text-align:right;font-weight:700}
-#sh-main #mod-invoices .im table.tb td:nth-child(2) small{display:inline;margin-left:6px}
-#sh-main #mod-invoices .im table.tb td:nth-child(4){grid-column:2;grid-row:2;text-align:right}
-#sh-main #mod-invoices .im table.tb td:nth-child(4) .why{text-align:left}
-#sh-main #mod-invoices .im table.tb td.acts2{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-#sh-main #mod-invoices .im table.tb td[colspan]{grid-column:1/-1}
-#sh-main #mod-invoices .im table.tb tr.none td.acts2{grid-column:2;grid-row:1/3;margin-top:0;align-self:center}
-#sh-main #mod-invoices .im table.tb tr.none td:nth-child(3),#sh-main #mod-invoices .im table.tb tr.none td:nth-child(4){display:none}
+#sh-main #mod-invoices .im table.tb.sublist,#sh-main #mod-invoices .im table.tb.sublist tbody{display:block;width:100%;min-width:0}
+#sh-main #mod-invoices .im table.tb.sublist thead{display:none}
+#sh-main #mod-invoices .im table.tb.sublist tr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 4px;border-bottom:1px solid var(--sh-line)}
+#sh-main #mod-invoices .im table.tb.sublist td{display:block;padding:0;border:0;min-width:0}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(1){grid-column:1}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(3){grid-column:2;grid-row:1;text-align:right;font-weight:700}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(2) small{display:inline;margin-left:6px}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(4){grid-column:2;grid-row:2;text-align:right}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(4) .why{text-align:left}
+#sh-main #mod-invoices .im table.tb.sublist td.acts2{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#sh-main #mod-invoices .im table.tb.sublist td[colspan]{grid-column:1/-1}
+#sh-main #mod-invoices .im table.tb.sublist tr.none td.acts2{grid-column:2;grid-row:1/3;margin-top:0;align-self:center}
+#sh-main #mod-invoices .im table.tb.sublist tr.none td:nth-child(3),#sh-main #mod-invoices .im table.tb.sublist tr.none td:nth-child(4){display:none}
 #sh-main #mod-invoices .im .segs{flex-wrap:wrap;overflow:visible}
 #sh-main #mod-invoices .im .tiles4{grid-template-columns:1fr 1fr}
 }
@@ -3548,6 +3548,32 @@ p.ck-alert{color:#5A3C00!important}
 #mod-summary .notes li{position:relative;padding-left:16px;font-size:.93rem;line-height:1.45}
 #mod-summary .notes li::before{content:'';position:absolute;left:0;top:.5em;width:8px;height:8px;border-radius:50%;background:#1E8A4C}
 #mod-summary .notes li.no::before{background:#D98B00}
+</style>
+<style id="invdays">
+#mod-invoices .wl{display:none}
+@media (max-width:700px){
+#sh-main #mod-invoices table.tb.days,#sh-main #mod-invoices table.tb.days tbody{display:block;width:100%;min-width:0}
+#sh-main #mod-invoices table.tb.days thead,#sh-main #mod-invoices table.tb.days tfoot{display:none}
+#sh-main #mod-invoices table.tb.days tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:6px 8px;align-items:end;padding:10px 12px;border-bottom:1px solid var(--sh-line)}
+#sh-main #mod-invoices table.tb.days tr.wk{display:block;padding:8px 12px}
+#sh-main #mod-invoices table.tb.days td{display:block;padding:0;border:0;min-width:0;text-align:left;box-shadow:none}
+#sh-main #mod-invoices table.tb.days td:first-child{grid-column:1/4;grid-row:1;display:flex;flex-wrap:wrap;gap:2px 10px;align-items:baseline}
+#sh-main #mod-invoices table.tb.days td.dtot{grid-column:4;grid-row:1;text-align:right;font-weight:700;align-self:start}
+#sh-main #mod-invoices table.tb.days td.ck{grid-column:1;grid-row:2}
+#sh-main #mod-invoices table.tb.days td.in-l1{grid-column:2;grid-row:2}
+#sh-main #mod-invoices table.tb.days td.sw{grid-column:3;grid-row:2}
+#sh-main #mod-invoices table.tb.days td.in-l2{grid-column:4;grid-row:2}
+#sh-main #mod-invoices table.tb.days td.in-xp{grid-column:1/3;grid-row:3}
+#sh-main #mod-invoices table.tb.days td.in-hr{grid-column:3/5;grid-row:3}
+#sh-main #mod-invoices table.tb.days td.wk2{grid-column:1/-1;font-size:.8rem;color:var(--sh-muted);text-align:left}
+#sh-main #mod-invoices table.tb.days td.wk2:empty{display:none}
+#sh-main #mod-invoices table.tb.days .wl{display:inline}
+#sh-main #mod-invoices table.tb.days td[data-l]::before{content:attr(data-l);display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
+#sh-main #mod-invoices table.tb.days td input[type=number]{width:100%;box-sizing:border-box;text-align:left}
+#sh-main #mod-invoices table.tb.days td.sw .swap{margin-bottom:2px}
+#sh-main #mod-invoices table.tb.days tr.tk td:first-child{box-shadow:none}
+
+}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -9925,15 +9951,15 @@ function html(){
   const needTick=R.filter(r=>num(r.v.l1)||num(r.v.l2)),ticked=needTick.filter(r=>ticks[r.d]).length,allTicked=ticked===needTick.length;
   let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;
   h+=`<div class="tickbar ${allTicked?'ok':''}"><span><b>${ticked} of ${needTick.length}</b> days checked. Tick each day once you have checked the parcels are in the right column: 1 load or 2 loads.</span>${needTick.length&&!allTicked?'<button type="button" class="sh-btn sm" data-im="tickall">Tick all</button>':''}</div>
-   <div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="c">Checked</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th></tr></thead><tbody>`;
+   <div class="tw"><table class="tb days"><thead><tr><th>Day</th><th class="c">Checked</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th></tr></thead><tbody>`;
   let wk=-1;const nc=showHr?9:8;
   for(const r of R){if(r.wk!==wk){wk=r.wk;h+=`<tr class="wk"><td colspan="${nc}">Week ${wk+1}${wk>3?' (outside the 4 week template)':''}</td></tr>`}
     const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;const hasP=num(r.v.l1)||num(r.v.l2);
     const said=r.auto&&r.auto.worked?(r.auto.tlSet?`Driver said ${r.auto.tl?'2 loads':'1 load'}`:'Driver did not answer loads'):'';
-    const inp=k=>`<td class="r"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`;
+    const LB={l1:'1 load',l2:'2 load',xp:'Extra parcels',hr:'Paid hours'};const inp=k=>`<td class="r in-${k}" data-l="${LB[k]}"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`;
     h+=`<tr class="${r.edited?'ed':''} ${r.auto?'':'none'} ${ticks[r.d]?'tk':''}"><td><b>${esc(short(r.d))}</b>${said?`<small class="sd ${r.auto.tlSet?'':'q'}">${said}</small>`:''}${r.note?`<small class="nt">${esc(r.note)}</small>`:''}${r.edited?`<button type="button" class="lk" data-im="undo" data-v="${r.d}">Undo change</button>`:''}</td>
-     <td class="c">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td>${inp('l1')}<td class="c">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
-     <td class="r">${dt?money(dt):''}</td><td class="r wk2">${r.auto&&r.auto.hrs?fmtH(r.auto.hrs):''}</td>
+     <td class="c ck" data-l="Checked">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td>${inp('l1')}<td class="c sw">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
+     <td class="r dtot">${dt?money(dt):''}</td><td class="r wk2">${r.auto&&r.auto.hrs?`<span class="wl">Worked </span>`+fmtH(r.auto.hrs):''}</td>
 </tr>`}
   h+=`</tbody><tfoot><tr><td>Totals</td><td class="c">${ticked}/${needTick.length}</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td></tr></tfoot></table></div>
    <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div><div class="wh"><span>Hours worked (for your info)</span><b>${worked?fmtH(worked):'None recorded'}</b></div></div>
@@ -10074,7 +10100,7 @@ function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:name
 function myListHTML(){
   const L=Object.entries(logs).map(([id,x])=>({id,...x})).sort((a,b)=>String(b.from).localeCompare(String(a.from)));
   return `<section class="card im"><h2>My invoices</h2><p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${L.length?`<div class="tw"><table class="tb"><thead><tr><th>Pay period</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(v=>`<tr><td><b>${esc(nice(v.from))}</b> to ${esc(nice(v.to))}</td><td>No. ${esc(v.no)}<small>Sent ${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small></td><td class="r">${money(v.T?v.T.total:v.total)}</td><td><span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span></td>
+   ${L.length?`<div class="tw"><table class="tb sublist"><thead><tr><th>Pay period</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(v=>`<tr><td><b>${esc(nice(v.from))}</b> to ${esc(nice(v.to))}</td><td>No. ${esc(v.no)}<small>Sent ${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small></td><td class="r">${money(v.T?v.T.total:v.total)}</td><td><span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span></td>
      <td class="acts2">${v.rows&&v.T?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
    :'<div class="empty">You have not submitted an invoice in the app yet.</div>'}
    <p class="sub">Once the office has checked your invoice it can no longer be changed here. Call the office if something is wrong.</p></section>`}
@@ -10114,7 +10140,7 @@ function listHTML(){
    <div class="segs" role="group">${[['all','Everyone'],['todo','Not submitted'],['submitted','Submitted'],['checked','Checked'],['paid','Paid']].map(([k,l])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l}${k==='all'?'':` <i>${k==='todo'?cnt('todo'):cnt(k)}</i>`}</button>`).join('')}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${nChk?`<p class="chknote">${nChk} invoice${nChk===1?'':'s'} highlighted in yellow ${nChk===1?'needs':'need'} a check: ${nChk===1?'it doesn’t':'they don’t'} match the set rates or the day records. Open it to see the figures.</p>`:''}
-   <div class="tw"><table class="tb"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
+   <div class="tw"><table class="tb sublist"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
    ${show.map(r=>{const v=r.inv;const ck=v?chk[r.id]||[]:[];return `<tr class="${v?(ck.length?'chk':''):'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
      <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
      <td class="r">${v?money(v.T?v.T.total:v.total):''}</td>
@@ -10533,7 +10559,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271945';
+const VERSION='202610272000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
