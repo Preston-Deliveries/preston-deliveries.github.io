@@ -8376,7 +8376,7 @@ function ncrCards(){const L=ncrs(),d=nqD.trim().toLowerCase(),a=nqA.trim().toLow
      :`<div class="empty">${L.length?'Nothing matches that search.':'No NCRs recorded. When the facility manager sends one, press + Add NCR.'}</div>`}`}
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
   return `<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>String(n.issued).startsWith(yr)).length}</b><small>This year</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
-   ${T.length?`<section class="card ntr"><span class="lbl">Drivers with NCRs, last 12 months</span>${T.map(d=>`<div class="drv"><div><b>${esc(d.name)}</b><small>${[dno(d.login),d.login].filter(Boolean).map(esc).join(' · ')} · ${esc(ISS[d.issue]||'')}${d.total>d.max?' · '+d.total+' in total':''}</small></div>${dots(d.max)}</div>`).join('')}<p class="sub">Three on the same issue means the Area Manager must be told.</p></section>`:''}
+
    <div class="srch"><label class="f" for="eq_nqd">Driver<input type="search" id="eq_nqd" value="${esc(nqD)}" placeholder="Name or login" autocomplete="off"></label>
     <label class="f" for="eq_nqa">Address<input type="search" id="eq_nqa" value="${esc(nqA)}" placeholder="Street or suburb" autocomplete="off"></label>
     <label class="f" for="eq_nqp">Postcode<select id="eq_nqp"><option value="">All postcodes</option>${['4214','4215','4217','4218'].map(pc=>`<option ${nqP===pc?'selected':''}>${pc}</option>`).join('')}</select></label></div>
@@ -10484,7 +10484,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271800';
+const VERSION='202610271815';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
