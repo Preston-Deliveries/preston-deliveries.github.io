@@ -3613,7 +3613,8 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary table.pct td:first-child b{font-size:.74rem}
 #sh-main #mod-summary table.pct.dtb th:nth-child(1){width:24%}#sh-main #mod-summary table.pct.dtb td:first-child b{display:block;white-space:normal;line-height:1.2}#sh-main #mod-summary table.pct.dtb .smm{display:block;font-size:.6rem;white-space:normal}
 #sh-main #mod-summary table.pct .dlt{display:block;font-size:.6rem;margin-top:1px;white-space:nowrap}
-#sh-main #mod-summary table.pct .dlt.same,#sh-main #mod-summary table.pct .dlt small,#sh-main #mod-summary table.pct .sub.in,#sh-main #mod-summary table.pct .dt{display:none}
+#sh-main #mod-summary table.pct .dlt.same,#sh-main #mod-summary table.pct .dlt small,#sh-main #mod-summary table.pct .sub.in,#sh-main #mod-summary table.pct .dt.none{display:none}
+#sh-main #mod-summary table.pct i.dt{width:6px;height:6px;margin-right:3px;vertical-align:1px}
 }
 /* results admin check table fits a phone */
 @media (max-width:700px){
@@ -3701,11 +3702,6 @@ p.ck-alert{color:#5A3C00!important}
 @media (max-width:700px){#sh-main .rt .rt-sum.rtk{grid-template-columns:1fr 1fr}#sh-main .rt .rtk .tk b{font-size:1.3rem}}
 </style>
 <style id="svcol">
-.svg,#sh-main .tile.svg>b,#sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#14804A!important}.svb,#sh-main .tile.svb>b,#sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#C62828!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .svg,:root:not([data-theme="light"]) #sh-main .tile.svg>b{color:#5CCB8E!important}:root:not([data-theme="light"]) .svb,:root:not([data-theme="light"]) #sh-main .tile.svb>b{color:#F48A8A!important}}
-:root[data-theme="dark"] .svg,:root[data-theme="dark"] #sh-main .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] .svb,:root[data-theme="dark"] #sh-main .tile.svb>b{color:#F48A8A!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}}
-:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}
 #r_saveXlsx,#sh-main #r_saveXlsx{display:none!important}
 </style>
 <style id="bigbrand">
@@ -3716,6 +3712,18 @@ p.ck-alert{color:#5A3C00!important}
 .sh-brand b{font:800 1.55rem/1.05 var(--sh-body)!important}
 @media (min-width:900px){.sh-side .sh-brand{flex-direction:row!important;align-items:center!important;gap:12px!important}.sh-side .sh-brand .sh-logo{width:58px!important;height:58px!important}.sh-side .sh-brand small{font-size:.68rem!important}.sh-side .sh-brand b{font-size:1.6rem!important;white-space:nowrap}}
 @media (max-width:380px){.sh-brand .sh-logo{width:44px!important;height:44px!important}.sh-brand small{font-size:.7rem!important}.sh-brand b{font-size:1.35rem!important}}
+</style>
+<style id="dotsonly">
+/* good or bad is shown with a green or red dot, the number itself stays plain */
+.svg,.svb,#sh-main .tile.svg>b,#sh-main .tile.svb>b,#sh-main#sh-main .sh-sec.pg .tile.svg>b,#sh-main#sh-main .sh-sec.pg .tile.svb>b,#sh-main .rt .rtk .tk b.g,#sh-main .rt .rtk .tk b.b,#sh-main .ms-r b.g,#sh-main .ms-r b.b{color:var(--sh-ink)!important}
+#sh-main #mod-summary .tile:is(.svg,.svb)>b,#sh-main .rt .rtk .tk b:is(.g,.b){color:var(--sh-ink)!important}
+.svg::before,.svb::before,#sh-main .tile:is(.svg,.svb)>b::before,#sh-main .rt .rtk .tk b:is(.g,.b)::before,#sh-main .ms-r b:is(.g,.b)::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:2px;background:#1E8A4C}
+.svb::before,#sh-main .tile.svb>b::before,#sh-main .rt .rtk .tk b.b::before,#sh-main .ms-r b.b::before{background:#C8352B}
+#sh-main .tile:is(.svg,.svb)>b::before,#sh-main .rt .rtk .tk b:is(.g,.b)::before{width:11px;height:11px;margin-right:8px;vertical-align:5px}
+.tile.svg::before,.tile.svb::before{display:none!important;content:none!important}
+#sh-main .tile.svg,#sh-main .tile.svb{color:inherit!important}
+@media (max-width:700px){#sh-main table .svg::before,#sh-main table .svb::before{width:6px;height:6px;margin-right:3px;vertical-align:1px}}
+#sh-main .pcol{color:var(--p,var(--d))!important}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -7474,8 +7482,8 @@ function profileHTML(){
     `<b>${sv.pts>0?'+':''}${sv.pts} <small>points from ${sv.n} survey${sv.n===1?'':'s'}</small></b><div class="me-mix">${sv.hi?`<span class="r-g">${sv.hi} gave 9 or 10</span>`:''}${sv.mid?`<span class="r-w">${sv.mid} gave 7 or 8</span>`:''}${sv.lo?`<span class="r-b">${sv.lo} gave 0 to 6</span>`:''}</div>${sv.avg!=null?`<span class="sb">Average score ${sv.avg.toFixed(1)} out of 10</span>`:''}`;
   return `<section class="me-card">
     <div class="me-av" aria-hidden="true">${esc(initials(me.name))}</div>
-    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${esc([me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).join(' · '))}</p>${me.email?`<small>${esc(me.email)}</small>`:''}
-    ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b>${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}</div>`:''}</div>
+    <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${[me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).map(x=>/^42\d\d$/.test(x)?`<span class="pcol dg-${x}">${x}</span>`:esc(x)).join(' · ')}</p>${me.email?`<small>${esc(me.email)}</small>`:''}
+    ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b class="pcol dg-${esc(run.postcode)}">${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}</div>`:''}</div>
   </section>
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
@@ -10752,7 +10760,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280430';
+const VERSION='202610280450';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
