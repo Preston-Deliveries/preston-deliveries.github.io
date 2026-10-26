@@ -3217,6 +3217,9 @@ try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e
 SNAP.updated=SNAP.updated||{};
 const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',name:'Admin',secs:['vchecks','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
+/* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
+window.__runNamesFrom=list=>{const m={};for(const p of list||[]){const nm=String(p.name||'').trim();if(!nm)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=nm})}return m};
+try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length)window.__runNames=window.__runNamesFrom(SNAP.directory)}catch(e){}
 setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets'];
@@ -3674,7 +3677,7 @@ function editorHTML(r){
   <details class="panel" id="rundetails" ${S.detailsOpen?'open':''}>
     <summary>Run details for ${esc(r.driver)} <span class="hint" style="font-weight:400">Login, bay, how to sort, depot notes</span></summary>
     <div class="run-grid">
-      ${field('Driver','driver',r.driver)}${field('Login','login',r.login)}${field('Trolley bay','bay',r.bay)}
+      <p class="hint wide" style="grid-column:1/-1;margin:0">The driver's name comes from the Drivers page: whoever has driver number <b>${esc(r.login)}</b> there. Change it on the Drivers page.</p>${field('Driver no.','login',r.login)}${field('Trolley bay','bay',r.bay)}
       ${field('Postcode','postcode',r.postcode)}${field('Van','van',r.van,{ph:'Rego or van number'})}${field('Start time','start',r.start,{ph:'e.g. 6:30am'})}
       ${field('How to sort this run','overview.sort',o.sort,{area:1,wide:1,ph:'e.g. Sort into 6 tubs by section number. Section 1 at the back of the van.'})}
       ${field('Before you leave the depot','overview.depot',o.depot,{area:1,wide:1,ph:'e.g. Collect locker key from office. Check parcels for 16 Casino Dr lockers.'})}
@@ -3805,7 +3808,7 @@ function sheetHTML(r){
   const alertChips=Object.entries(cnt).map(([k,v])=>{const t=TYPES[k]||TYPES.note;return `<span class="tag ${t.tone}">${v} × ${t.label}</span>`}).join('');
   return `<article class="sheet">
     <header class="sh-head"><div><div class="sh-eyebrow">Run sheet · Postcode ${esc(r.postcode)}</div><h1>${esc(r.driver)}</h1></div>
-      <dl class="sh-meta"><div><dt>Login</dt><dd>${esc(r.login)}</dd></div><div><dt>Trolley bay</dt><dd>${esc(r.bay)}</dd></div>
+      <dl class="sh-meta"><div><dt>Driver no.</dt><dd>${esc(r.login)}</dd></div><div><dt>Trolley bay</dt><dd>${esc(r.bay)}</dd></div>
       <div><dt>Sections</dt><dd>${r.sections.filter(x=>inSec(r,x.id).length).length}</dd></div><div><dt>Streets</dt><dd>${placed.length}</dd></div>
       ${r.van?`<div><dt>Van</dt><dd>${esc(r.van)}</dd></div>`:''}${r.start?`<div><dt>Start</dt><dd>${esc(r.start)}</dd></div>`:''}</dl></header>
     ${alertChips?`<div class="sh-alerts"><span class="lbl">On this run:</span>${alertChips}</div>`:''}
@@ -3851,7 +3854,11 @@ ${SHEET_CSS}</style></head><body>${sheetHTML(r)}</body></html>`;
 }
 
 /* ---------- render ---------- */
+/* names come from the Drivers page, matched on the run's driver number */
+function applyNames(){const M=window.__runNames;if(!M||!Object.keys(M).length)return;for(const id of Object.keys(S.runs)){const r=S.runs[id];const k=String(r.login||'').toUpperCase().replace(/\s+/g,'');r.driver=M[k]||'Unassigned'}}
+window.addEventListener('runnames',()=>{try{applyNames();render()}catch(e){}});
 function render(){
+  applyNames();
   renderTop();
   if(S.noDb){app.innerHTML=`<div class="state"><h2>Nothing shared yet</h2><p class="hint">The sort and run sheets will show here once the manager sends them to the drivers’ link.</p></div>`;return}
   if(!S.loaded){app.innerHTML=`<div class="state"><h2>Loading run sheets</h2><p class="hint">Your drivers and their streets will appear here.</p></div>`;return}
@@ -6178,7 +6185,8 @@ async function setPick(id){
   pickSubj=Object.assign({},p,{roleLabel:p.role?tc(p.role):'Driver'});pickData=d;renderProfile();
 }
 /* ---------- what is mine in the shared data ---------- */
-function myRun(){const R=S().runs||{};const id=Object.keys(R).find(k=>me.login&&dkey(R[k].login)===me.login);return id?{id,...R[id]}:null}
+const myKeys=()=>new Set(String((me&&me.run)||'').split(/[,\s]+/).concat([me&&me.login]).map(dkey).filter(Boolean));
+function myRun(){const R=S().runs||{},K=myKeys();const id=Object.keys(R).find(k=>K.has(dkey(R[k].login)));return id?{id,...R[id]}:null}
 function myResults(){
   const r=S().results;if(!r||!r.mine||!me.login)return null;
   const out={};for(const k of['week','day','cycle']){const L=r.mine[k]||[];const x=L.find(y=>dkey(y.l)===me.login);if(x)out[k]={...x,of:L.length,label:(r.boards||[]).find(b=>b.key===k)?.label||''}}
@@ -6188,7 +6196,7 @@ function mySurvey(which){
   const s=S().survey;const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
   let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
-  const keys=[me.login,dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
+  const keys=[...myKeys(),dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
   const row=rows.find(t=>keys.includes(dkey(t.querySelector('.id').textContent)));
   const sub=(doc.querySelector('.band .s')||{}).textContent||'';
   if(!row)return{found:false,of:rows.length,sub};
@@ -6197,7 +6205,7 @@ function mySurvey(which){
   const said=[...row.querySelectorAll('.cm .c .tx')].map(x=>x.textContent);
   return{found:true,sub,n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:sc.length?sc.reduce((a,x)=>a+x,0)/sc.length:null,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
 }
-function myPrecards(){return(S().precards||[]).filter(p=>me.login&&dkey(p.driver)===me.login).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
+function myPrecards(){const K=myKeys();return(S().precards||[]).filter(p=>K.has(dkey(p.driver))).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
 function weekShifts(){
   const now=new Date(),t=dayOf(now);const dow=(fromIso(t).getDay()+6)%7;const mon=new Date(fromIso(t).getTime()-dow*864e5);
   const ids=Array.from({length:7},(_,i)=>{const x=new Date(mon.getTime()+i*864e5);return dayOf(new Date(x.getTime()+12*36e5))});
@@ -6264,7 +6272,7 @@ function rate(kind,v){if(v==null)return '';const t=targets();
   if(kind==='nc')return v<=t.ncG?'g':v<=t.ncA?'w':'b';
   return v<=t.enqG?'g':v<=t.enqA?'w':'b'}
 const PT={g:2,w:1,b:0,'':0};
-function myRow(rows){if(!rows||!me.login)return null;const k=Object.keys(rows).find(x=>dkey(x)===me.login);return k?rows[k]:null}
+function myRow(rows){if(!rows)return null;const K=myKeys();const k=Object.keys(rows).find(x=>K.has(dkey(x)));return k?rows[k]:null}
 function statsFor(dates){
   const rs=[];for(const dt of dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)rs.push(r)}
   if(!rs.length)return null;const n=rs.length;
@@ -6835,7 +6843,7 @@ function listHTML(L){
 }
 async function saveHide(){try{await db.doc('dircfg/main').set({hide:[...hide]});msg={t:'Saved. Send the latest to drivers when you are ready.'}}catch(e){msg={err:true,t:'Could not save just now.'}}render()}
 async function share(){
-  const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));
+  const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp,login:String((people[x.id]||{}).login||'').toUpperCase()}));
   await APP.publish({directory:out});
 }
 /* Live: when the Drivers list changes, the drivers' directory updates by itself */
@@ -6843,7 +6851,7 @@ let liveT=null,liveLast=null;
 function liveSync(){
   clearTimeout(liveT);liveT=setTimeout(async()=>{
     let W=window.__liveShare?window:null;if(!W||!window.APP||!APP.SNAP)return;
-    const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp}));if(!out.length)return;
+    const out=fromStaff().map(x=>({name:x.name,role:x.roleT,phone:x.phone,no:x.no,grp:x.grp,login:String((people[x.id]||{}).login||'').toUpperCase()}));if(!out.length)return;
     const j=JSON.stringify(out);if(liveLast==null)liveLast=JSON.stringify(APP.SNAP.directory||null);if(j===liveLast)return;
     const n=new Date(),st=n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
     const upd=Object.assign({},APP.SNAP.updated,{directory:st}),at=Object.assign({},APP.SNAP.at,{directory:n.toISOString()});
@@ -6866,7 +6874,7 @@ async function start(role){
   try{const c=await db.doc('dircfg/main').get();if(c.exists)hide=new Set(__D(c).hide||[])}catch(e){}
   db.collection('staff').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=__D(d);people=o;
     if(window.APP)APP.stat('directory',Object.keys(o).length+' people');
-    liveSync();
+    liveSync();try{window.__runNames=window.__runNamesFrom(fromStaff().map(x=>({name:x.name,no:x.no,login:(people[x.id]||{}).login})));window.dispatchEvent(new Event('runnames'))}catch(e){}
     const a=document.activeElement;if(a&&a.id==='dy_q'){$('list').innerHTML=listHTML(list());return}render()},()=>{msg={err:true,t:'Could not load the driver list.'};render()});
 }
 window.DIRECTORY={share};
@@ -9281,7 +9289,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261635';
+const VERSION='202610261700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
