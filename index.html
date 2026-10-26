@@ -4958,7 +4958,7 @@ function summary(all){
    <div class="mix"><span style="width:${pct(P)};background:#1f8a4c"></span><span style="width:${pct(M)};background:#c27a00"></span><span style="width:${pct(X)};background:#c23b2e"></span></div>
    <div class="key"><span><i style="background:#1f8a4c"></i>9 or 10: ${P}</span><span><i style="background:#c27a00"></i>7 or 8: ${M}</span><span><i style="background:#c23b2e"></i>0 to 6: ${X}</span></div></div></div>`;
 }
-const HOW=`<div class="how"><div class="h">How points work</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = <b>+2</b></span><span><span class="b sm m">7</span>7 or 8 = <b>+1</b></span><span><span class="b sm d">0</span>0 to 6 = <b>−1</b></span></div><div>Same points? Higher average score ranks first.</div></div>`;
+const HOW=`<div class="how"><div class="h">How points work</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = <b>+1</b></span><span><span class="b sm m">7</span>7 or 8 = <b>0</b></span><span><span class="b sm d">0</span>0 to 6 = <b>−1</b></span></div><div>Same points? Higher average score ranks first.</div></div>`;
 const head=(t,s)=>`<div class="band"><div class="t">${t}</div><div class="s">${s}</div></div><div class="stripe"></div>`;
 
 // Weekly board
@@ -5181,7 +5181,7 @@ $("save4").addEventListener("click",async()=>{
 
 
 /* ---------- survey as a table, with filters, for admin and drivers ---------- */
-const SPTS=s=>s>=9?2:s>=7?1:-1;
+const SPTS=s=>s>=9?1:s>=7?0:-1;
 const SV={q:"",grp:"all",sort:"rank",dir:1};
 const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
 const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
@@ -5239,8 +5239,8 @@ function mountSV(box,drivers,emptyTxt){
    <div class="rt-tw"><table class="rt-t sv-t"><thead><tr>${th("rank","#","rk")}${th("name","Driver","dr")}${th("pts","Points","pt")}${th("n","Customer scores")}${th("avg","Average","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
    <details class="rt-how"><summary>How points work</summary>
      <p>Every customer survey you get earns points:</p>
-     <p><span class="sv-b sm p">9</span> 9 or 10 = <b>+2 points</b></p>
-     <p><span class="sv-b sm m">7</span> 7 or 8 = <b>+1 point</b></p>
+     <p><span class="sv-b sm p">9</span> 9 or 10 = <b>+1 point</b></p>
+     <p><span class="sv-b sm m">7</span> 7 or 8 = <b>0 points</b></p>
      <p><span class="sv-b sm d">5</span> 0 to 6 = <b>−1 point</b></p>
      <p>Your points add up for every survey. Same points? The higher average score ranks first.</p></details>`;
   svBody(box);
@@ -6583,7 +6583,7 @@ function mySurvey(which,opt){
     const W=C[cs]||{};let D={};
     if(which==='cycle')Object.values(W).forEach(d=>Object.entries(d||{}).forEach(([id,r])=>{(D[id]=D[id]||[]).push(...r)}));
     else{const have=Object.keys(W).map(Number).sort((a,b)=>a-b);const w=opt&&opt.wk?(W[opt.wk]?opt.wk:null):have[have.length-1];D=w?W[w]:{}}
-    const P=x=>x>=9?2:x>=7?1:-1;
+    const P=x=>x>=9?1:x>=7?0:-1;
     const L=Object.entries(D).filter(([,r])=>r&&r.length).map(([id,r])=>({id,r,pts:r.reduce((a,x)=>a+P(x.s),0),avg:r.reduce((a,x)=>a+x.s,0)/r.length})).sort((a,b)=>b.pts-a.pts||b.avg-a.avg);
     L.forEach((x,i)=>{const p=L[i-1];x.rank=p&&p.pts===x.pts&&Math.abs(p.avg-x.avg)<1e-9?p.rank:i+1});
     const keys=[...myKeys(),dkey(me.name),dkey(String(me.name).split(' ')[0])].filter(Boolean);
@@ -8002,7 +8002,7 @@ const pct=(w,n)=>n?w/n:null;
 const fmtPct=v=>v==null?'–':(v*100).toFixed(1)+'%';
 const fmtN=v=>Number(v||0).toLocaleString('en-AU');
 const ptsPct=a=>a.max?Math.round(a.pts/a.max*100):null;
-const svPts=a=>a.scores.reduce((t,x)=>t+(x.s>=9?2:x.s>=7?1:-1),0);
+const svPts=a=>a.scores.reduce((t,x)=>t+(x.s>=9?1:x.s>=7?0:-1),0);
 const totPts=a=>a.pts+svPts(a);
 const sgn=n=>(n>0?'+':'')+fmtN(n);
 const dot=g=>`<i class="dt ${g}"></i>`;
@@ -9711,7 +9711,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262150';
+const VERSION='202610262200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
