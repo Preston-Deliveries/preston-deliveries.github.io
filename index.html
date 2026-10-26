@@ -3708,6 +3708,15 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svg>b{color:#5CCB8E!important}:root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svb>b{color:#F48A8A!important}
 #r_saveXlsx,#sh-main #r_saveXlsx{display:none!important}
 </style>
+<style id="bigbrand">
+#sh-app .sh-brand,.sh-brand{gap:12px!important}
+.sh-brand .sh-logo{width:52px!important;height:52px!important;border-radius:12px!important}
+.sh-brand .bt{gap:3px!important}
+.sh-brand small{font-size:.72rem!important;letter-spacing:.1em!important;white-space:nowrap}
+.sh-brand b{font:800 1.55rem/1.05 var(--sh-body)!important}
+@media (min-width:900px){.sh-side .sh-brand{flex-direction:column!important;align-items:flex-start!important;gap:10px!important}.sh-side .sh-brand .sh-logo{width:64px!important;height:64px!important}.sh-side .sh-brand small{font-size:.7rem!important}.sh-side .sh-brand b{font-size:1.7rem!important;white-space:nowrap}}
+@media (max-width:380px){.sh-brand .sh-logo{width:44px!important;height:44px!important}.sh-brand small{font-size:.7rem!important}.sh-brand b{font-size:1.35rem!important}}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -10742,7 +10751,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280210';
+const VERSION='202610280220';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
