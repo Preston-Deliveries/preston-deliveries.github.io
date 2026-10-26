@@ -3684,6 +3684,13 @@ p.ck-alert{color:#5A3C00!important}
 :root[data-theme="dark"] #sh-main .rt .rdl.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .rt .rdl.b{color:#F48A8A}
 @media (max-width:700px){#sh-main .rt table.rsm .rdl{font-size:.58rem}}
 #sh-main .rt table.rsm small.svn{font-size:.62rem;color:var(--sh-muted);margin-left:2px}
+#sh-main .rt table.rsm tbody.rgh td{padding:0!important;background:var(--sh-sunk);border-top:1px solid var(--sh-line)}
+#sh-main .rt table.rsm tbody.rgh button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;padding:11px 10px;cursor:pointer;font:700 .9rem var(--sh-body);color:var(--sh-ink)}
+#sh-main .rt table.rsm tbody.rgh .gp{font-size:.8rem;padding:2px 10px;border-radius:999px;font-weight:800;background:var(--ps,#EEF2F7);color:var(--p,#5A6576)}
+#sh-main .rt table.rsm tbody.rgh .rgn{font-weight:500;font-size:.78rem;color:var(--sh-muted)}
+#sh-main .rt table.rsm tbody.rgh i{margin-left:auto;font-style:normal;color:var(--sh-muted)}
+#sh-main .rt table.rsm tbody.rgh button:focus-visible{outline:2px solid var(--g);outline-offset:-2px}
+#sh-main .rt table.rsm td.dr small .gp{display:none}
 </style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
@@ -5309,8 +5316,11 @@ async function saveXlsx(){
 /* ---------- drivers' view: a saved copy of the boards, visible without signing in ---------- */
 /* ---------- results as a table, with filters (no pictures, so it stays light) ---------- */
 const escR=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"name",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";o.grp="all";if(!["name","eta","nc","enq","pc","ftd"].includes(o.sort)){o.sort="name";o.dir=1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"name",dir:1}}})();
-const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir}))}catch(e){}};
+const RT=(()=>{try{const o=Object.assign({q:"",grp:"all",st:"all",sort:"name",dir:1},JSON.parse(localStorage.getItem("r1161_rt")||"{}"),{q:""});o.st="all";o.grp="all";if(!["name","eta","nc","enq","pc","ftd","sv","days"].includes(o.sort)){o.sort="name";o.dir=1}return o}catch(e){return{q:"",grp:"all",st:"all",sort:"name",dir:1}}})();
+const saveRT=()=>{try{localStorage.setItem("r1161_rt",JSON.stringify({grp:RT.grp,st:RT.st,sort:RT.sort,dir:RT.dir,open:RT.open}))}catch(e){}};
+/* the table is split into postcode groups that open and close */
+const RGRP=[["4214","4214",["4214"]],["4215","4215",["4215"]],["4217","4217",["4217"]],["4218","4218",["4218"]],["xr","XL and relief",["xl","relief"]],["of","Office and supervisors",["office","sup"]],["ot","Other",[""]]];
+const rgOf=g=>{const x=RGRP.find(([, ,m])=>m.includes(g||""));return x?x[0]:"ot"};
 const GRPN={"4214":"4214","4215":"4215","4217":"4217","4218":"4218",xl:"XL",relief:"Relief",sup:"Supervisors",office:"Office"};
 const GRPO=["4214","4215","4217","4218","xl","relief","sup","office"];
 const myLogin=()=>{let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}return String(window.__myLogin||(w&&w.login)||"").toUpperCase().replace(/\s+/g,"")};
@@ -5357,7 +5367,7 @@ function dlt(cur,prev,kind){if(cur==null||prev==null)return "";let d,t,g;
   else if(kind==="down"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d<0}
   else if(kind==="up"){d=cur-prev;t=String(Math.round(Math.abs(d)));g=d>0}
   else{if(!prev)return "";d=(cur-prev)/prev*100;t=Math.abs(d).toFixed(0)+"%";g=null}
-  if(Math.abs(d)<0.05)return `<span class="rdl n">Same</span>`;
+  if(Math.abs(d)<0.05)return "";
   return `<span class="rdl ${g==null?"n":g?"g":"b"}">${d>0?"▲":"▼"} ${t}</span>`}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
   return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,nc:x.nc,enq:x.enq,ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
@@ -5375,7 +5385,7 @@ function rowHTML(r,multi){
   const nm=(r.name?String(r.name).trim().split(/\s+/)[0]:"")||r.login,sub=r.name?r.login:"";
   const d=c=>`<i class="rd ${c?"r-"+c:"r-n"}" aria-hidden="true"></i>`,P=r.prev;
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
-   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
+   <td class="dr"><b>${escR(nm)}</b><small>${r.me?'<em class="you">You</em> ':""}${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    ${multi?`<td class="r dy">${r.days||""}</td>`:""}
    <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}${P?dlt(r.pc,P.pc,"n"):""}</td>
    <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
@@ -5386,7 +5396,12 @@ function rowHTML(r,multi){
 }
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
-  box.querySelector("tbody").innerHTML=F.length?F.map(r=>rowHTML(r,multi)).join(""):`<tr><td colspan="7" class="none">No drivers match these filters.</td></tr>`;
+  const tb=box.querySelector("table");tb.querySelectorAll("tbody").forEach(b=>b.remove());const cols=tb.tHead.rows[0].cells.length;
+  const me=rows.find(x=>x.me);const gs=[...new Set(F.map(x=>rgOf(x.grp)))];const OPEN=Array.isArray(RT.open)?RT.open:gs.length===1?gs:me?[rgOf(me.grp)]:[];
+  const all=!!RT.q.trim();
+  tb.insertAdjacentHTML("beforeend",F.length?RGRP.map(([k,l])=>{const L=F.filter(x=>rgOf(x.grp)===k);if(!L.length)return "";const op=all||OPEN.includes(k);
+    const pill=/^42/.test(k)?`<span class="gp dg-${k}">${l}</span>`:`<b>${l}</b>`;
+    return `<tbody class="rgh"><tr><td colspan="${cols}"><button type="button" data-rgo="${k}" aria-expanded="${op}">${pill}<span class="rgn">${L.length} driver${L.length===1?"":"s"}</span><i aria-hidden="true">${op?"\u25B4":"\u25BE"}</i></button></td></tr></tbody>${op?`<tbody>${L.map(r=>rowHTML(r,multi)).join("")}</tbody>`:""}`}).join(""):`<tbody><tr><td colspan="${cols}" class="none">No drivers match these filters.</td></tr></tbody>`);
   const busy=RT.q||RT.grp!=="all";
   box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-rt="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-rs]").forEach(b=>{const on=b.dataset.rs===RT.sort;b.closest("th").setAttribute("aria-sort",on?(RT.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(RT.dir===1?"▲":"▼"):""});
@@ -5424,11 +5439,12 @@ function mountRT(box,rows,multi){
   box.addEventListener("change",e=>{if(e.target.dataset.rt==="sort"){RT.sort=e.target.value;RT.dir=SORTS[RT.sort][1];saveRT();rtBody(box)}});
   box.addEventListener("click",e=>{
     const s=e.target.closest("[data-rs]");if(s){const k=s.dataset.rs;if(RT.sort===k)RT.dir=-RT.dir;else{RT.sort=k;RT.dir=SORTS[k][1]}saveRT();rtBody(box);return}
+    const go=e.target.closest("[data-rgo]");if(go){const k=go.dataset.rgo,cur=[...box.querySelectorAll("[data-rgo][aria-expanded=true]")].map(b=>b.dataset.rgo);RT.open=cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k);saveRT();rtBody(box);return}
     const g=e.target.closest("[data-rg]");if(g){RT.grp=g.dataset.rg;saveRT();rtBody(box);return}
     const f=e.target.closest("[data-rf]");if(f){RT.st=RT.st===f.dataset.rf&&f.dataset.rf!=="all"?"all":f.dataset.rf;saveRT();rtBody(box);return}
     const a=e.target.closest("[data-rt]");if(!a)return;
     if(a.dataset.rt==="clear"){RT.q="";RT.grp="all";RT.st="all";saveRT();const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}
-    if(a.dataset.rt==="find"){if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
+    if(a.dataset.rt==="find"){const mr=(box.__rows||[]).find(x=>x.me);if(mr){const k=rgOf(mr.grp),cur=[...box.querySelectorAll("[data-rgo][aria-expanded=true]")].map(b=>b.dataset.rgo);if(!cur.includes(k)){RT.open=cur.concat(k);saveRT();rtBody(box)}}if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
   });
 }
 let LIVE=false;
@@ -10710,7 +10726,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280045';
+const VERSION='202610280100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
