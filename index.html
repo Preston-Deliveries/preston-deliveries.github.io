@@ -3368,6 +3368,15 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .pc-sel select{min-height:40px;min-width:150px;padding:7px 34px 7px 12px;border-radius:10px;border:1px solid var(--sh-line);background-color:var(--sh-surface);color:var(--sh-ink);font:600 .95rem var(--sh-body)}
 #sh-main .rt .pc-sel{margin:0}
 #sh-main #mod-runs .pc-sel{margin:0 8px 0 0}
+</style><style id="smcmp">
+#sh-main #mod-summary .cmp{margin:0 0 8px;font-size:.82rem;color:var(--sh-muted)}
+#sh-main #mod-summary .tile .dlt{display:block;margin-top:4px;font:700 .78rem var(--sh-body)}
+#sh-main #mod-summary .tile .dlt small{font-weight:600;color:var(--sh-muted)}
+#sh-main #mod-summary .dlt.good{color:#14804A}#sh-main #mod-summary .dlt.bad{color:#C62828}#sh-main #mod-summary .dlt.neu{color:var(--sh-muted)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary .dlt.good{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main #mod-summary .dlt.bad{color:#F48A8A}}
+:root[data-theme="dark"] #sh-main #mod-summary .dlt.good{color:#5CCB8E}:root[data-theme="dark"] #sh-main #mod-summary .dlt.bad{color:#F48A8A}
+#sh-main #mod-summary td .dlt{display:block;font-size:.7rem;font-weight:700;margin-top:1px}
+#sh-main #mod-summary td .dlt small{display:none}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8303,8 +8312,8 @@ function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
   a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);const p=dayPoints(r);a.pts+=p;a.max+=3;a.list.push({date,...r,p})}
 function nps(sc){if(!sc.length)return null;const pr=sc.filter(x=>x.s>=9).length,de=sc.filter(x=>x.s<=6).length;return Math.round((pr-de)/sc.length*100)}
-function compute(){
-  const P=people(),R=range(),per={};
+function compute(R0){
+  const P=people(),R=R0||range(),per={};
   const get=k=>per[k]||(per[k]=blank());
   for(const d of Object.values(S.days)){if(!d||!d.date||d.date<R.from||d.date>R.to)continue;for(const[l,r]of Object.entries(d.rows||{}))addRow(get(dkey(l)),d.date,r||{})}
   const sw=[];for(const w of Object.values(S.weeks)){if(!w||!w.cycleStart)continue;const n=+w.week||+(String(w._id||'').split('_w')[1])||1;const f=add(w.cycleStart,(n-1)*7),t=add(f,6);if(t<R.from||f>R.to)continue;sw.push({f,t,n});
@@ -8348,7 +8357,32 @@ function matches(t,P){
   return out.slice(0,10);
 }
 /* ---------- views ---------- */
-function tiles(a,extra){
+/* ---------- compare with the previous week, month or year ---------- */
+let PC=null;
+const dayDiff=(a,b)=>Math.round((fromIso(b)-fromIso(a))/864e5);
+function prevRange(R){
+  if(period==='day'||!R)return null;
+  let f,t,lab;
+  if(period==='week'){f=add(R.from,-7);t=add(R.to,-7);lab='last week'}
+  else if(period==='year'){f=(+R.from.slice(0,4)-1)+R.from.slice(4);t=(+R.to.slice(0,4)-1)+R.to.slice(4);lab='last year'}
+  else{f=add(R.from,-28);t=add(R.to,-28);lab='last month'}
+  /* this period still running: compare the same number of days so far */
+  const last=latestDay();let part=false;
+  const today=iso(new Date());
+  if(today>=R.from&&today<=R.to&&last>=R.from&&last<R.to){t=add(f,dayDiff(R.from,last));part=true}
+  return{from:f,to:t,lab,part};
+}
+function dl(cur,prev,kind,lab){
+  if(cur==null||prev==null||!PC)return '';
+  let d,txt,good;
+  if(kind==='pct'){d=(cur-prev)*100;txt=Math.abs(d).toFixed(1)+' pts';good=d>0}
+  else if(kind==='nps'){d=cur-prev;txt=String(Math.abs(d));good=d>0}
+  else if(kind==='down'){d=cur-prev;txt=fmtN(Math.abs(d));good=d<0}
+  else{if(!prev)return '';d=(cur-prev)/prev*100;txt=Math.abs(d).toFixed(0)+'%';good=null}
+  if(Math.abs(d)<0.05)return `<span class="dlt neu">Same <small>as ${lab}</small></span>`;
+  return `<span class="dlt ${good==null?'neu':good?'good':'bad'}">${d>0?'\u25B2':'\u25BC'} ${txt} <small>vs ${lab}</small></span>`;
+}
+function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
   const T=[['Parcels',fmtN(a.pc),a.days?`${fmtN(a.days)} driver day${a.days===1?'':'s'}`:'No results loaded',''],
    ['Delivered first time',fmtPct(ftd),'For info',''],
@@ -8357,7 +8391,9 @@ function tiles(a,extra){
    ['Enquiries',fmtN(a.enq),a.fault?`${a.fault} at fault in the log`:'From Driver Results',a.days?(a.enq?'bad':'good'):'none'],
    ['Survey score',n==null?'–':String(n),a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'No survey for this period',n==null?'none':n>=70?'good':n>=50?'warn':'bad'],
    ...(extra||[])];
-  return `<div class="tiles">${T.map(([l,v,s,g])=>`<div class="tile ${g||''}"><span class="l">${esc(l)}</span><b>${esc(v)}</b><span class="s">${esc(s)}</span></div>`).join('')}</div>`;
+  const L=PC&&PC.R?PC.R.lab:'',pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
+  const D=pa&&PC?[dl(a.pc,pa.days?pa.pc:null,'chg',L),dl(ftd,pf,'pct',L),dl(eta,pe,'pct',L),dl(a.nc,pa.days?pa.nc:null,'down',L),dl(a.enq,pa.days?pa.enq:null,'down',L),dl(n,pn,'nps',L)]:[];
+  return `${PC&&PC.R&&pa?`<p class="cmp">Compared with ${esc(L)}${PC.R.part?' (the same days so far)':''}: ${esc(short(PC.R.from))} to ${esc(short(PC.R.to))}</p>`:''}<div class="tiles">${T.map(([l,v,s,g],i)=>`<div class="tile ${g||''}"><span class="l">${esc(l)}</span><b>${esc(v)}</b><span class="s">${esc(s)}</span>${D[i]||''}</div>`).join('')}</div>`;
 }
 function drvRows(keys,C){
   const rows=keys.map(k=>({p:C.P[k],a:C.per[k]||blank()})).filter(x=>x.p&&(x.a.days||x.a.scores.length||x.a.enqRecs.length||x.a.leave||x.a.wd));
@@ -8398,9 +8434,9 @@ function contractHTML(C){
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
-  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)])+
+  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.nc}</td><td class="r">${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
+   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${a.nc}${ok?dl(a.nc,pa.nc,'down',L):''}</td><td class="r">${a.enq}${ok?dl(a.enq,pa.enq,'down',L):''}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`;
 }
 let pcSort='none';
@@ -8410,7 +8446,7 @@ function pcSortSel(){return `<label class="mini" for="sm_pcsort">Sort<select id=
 function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_sort">${[['name','Name'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey']].map(([k,l])=>`<option value="${k}" ${k===sortBy?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
-  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)])+
+  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)],PC?sumOf(keys,PC.per):null)+
    `<section class="card"><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}</section>`;
 }
 function driverHTML(C,k){
@@ -8429,7 +8465,7 @@ function driverHTML(C,k){
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
   return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div>
    <dl class="facts">${prof.map(([l,v])=>`<div><dt>${esc(l)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></section>`+
-   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)])+
+   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fmtPct(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${dot(grade('nc',r.nc))}${r.nc??'–'}</td><td class="r">${dot(grade('enq',+(r.enq||0)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -8455,6 +8491,7 @@ function render0(){
   if(mode!=='mgr'){box.innerHTML='<div class="smx"><div class="empty">Loading summary…</div></div>';return}
   if(!anchor)anchor=latestDay();
   const C=compute(),R=C.R;
+  {const pr=prevRange(R);PC=pr?compute(pr):null;if(PC)PC.R=pr;if(pr&&window.needHist)window.needHist(pr.from,['days','enqlog'])}
   if(window.needHist&&R&&R.from){window.needHist(R.from,['days','leave','enqlog','vchecks','timesheets','clock']);window.needHist(add(R.from,-35),['weeks'])}
   const body=scope.t==='all'?contractHTML(C):scope.t==='pc'?postcodeHTML(C,scope.v):driverHTML(C,scope.v);
   box.innerHTML=`<div class="smx">
@@ -10067,7 +10104,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270650';
+const VERSION='202610270700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
