@@ -3049,7 +3049,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .rt .rt-q{flex:1 1 auto;min-width:0}
 #sh-main .rt .rt-so span{display:none}
 #sh-main .rt .rt-so select{max-width:120px}
-#sh-main .rt .rt-chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -10px;padding:0 10px}
+#sh-main .rt .rt-chips{flex-wrap:wrap;overflow:visible;margin:0;padding:0;gap:5px}
 #sh-main .rt .rt-chips::-webkit-scrollbar{display:none}
 #sh-main .rt .rt-chips button{flex:none;min-height:34px;padding:5px 11px;font-size:.84rem}
 #sh-main .rt .rt-t{min-width:560px;font-size:.88rem}
@@ -3198,7 +3198,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-precards .pcb button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:700 .92rem var(--sh-body);cursor:pointer}
 #sh-main #mod-precards .pcb button small{font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
 #sh-main #mod-precards .pcb button[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:inherit}
-#sh-main#sh-main #mod-precards .pcb button[class*="pr-"]{border-color:var(--p)!important;color:var(--p)!important;background:var(--ps)!important}
+#sh-main#sh-main #mod-precards .pcb button[class*="pr-"]{border-color:var(--p)!important;color:var(--p)!important;background:var(--sh-surface)!important}
 #sh-main#sh-main #mod-precards .pcb button[class*="pr-"][aria-pressed="true"]{background:var(--p)!important;color:#fff!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-precards .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}}
 :root[data-theme="dark"] #sh-main#sh-main #mod-precards .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}
@@ -3211,7 +3211,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-lockers .pcb button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:700 .92rem var(--sh-body);cursor:pointer}
 #sh-main #mod-lockers .pcb button small{font-size:.74rem;font-weight:700;color:var(--sh-muted);background:var(--sh-sunk);border-radius:999px;padding:1px 7px}
 #sh-main #mod-lockers .pcb button[aria-pressed="true"] small{background:rgba(255,255,255,.25);color:inherit}
-#sh-main#sh-main #mod-lockers .pcb button[class*="pr-"]{border-color:var(--p)!important;color:var(--p)!important;background:var(--ps)!important}
+#sh-main#sh-main #mod-lockers .pcb button[class*="pr-"]{border-color:var(--p)!important;color:var(--p)!important;background:var(--sh-surface)!important}
 #sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{background:var(--p)!important;color:#fff!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}}
 :root[data-theme="dark"] #sh-main#sh-main #mod-lockers .pcb button[class*="pr-"][aria-pressed="true"]{color:#0B1320!important}
@@ -3253,14 +3253,17 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main .rt .rt-q input{padding:7px 0}
 #sh-main#sh-main .rt .rt-so select{min-height:40px;padding:6px 8px}
 #sh-main#sh-main .rt .rt-chips{margin:0;padding:0}
-#sh-main#sh-main .rt .rt-chips button{min-height:30px;padding:3px 10px;font-size:.8rem}
+#sh-main#sh-main .rt .rt-chips button{min-height:30px;padding:3px 9px;font-size:.8rem;gap:4px}
+#sh-main#sh-main .rt .rt-chips button small{padding:0 6px;font-size:.7rem}
 #sh-main#sh-main .rt .rt-n{font-size:.8rem;margin:0}
 #sh-main#sh-main .rt .rt-n button{padding:2px;font-size:.8rem}
 #sh-main#sh-main .rt .rt-t tbody{gap:6px}
 #sh-main#sh-main .rt .rt-t tbody tr{padding:10px;gap:6px}
-#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:2px 0 8px;gap:5px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb{flex-wrap:wrap;overflow:visible;margin:2px 0 8px;gap:5px}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb::-webkit-scrollbar{display:none}
-#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb button{flex:none;min-height:32px;padding:3px 11px;font-size:.85rem}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb{gap:4px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb button{flex:none;min-height:32px;padding:2px 8px;font-size:.84rem;gap:4px}
+#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcb button small{padding:0 6px;font-size:.7rem}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) .bar{margin:0 0 6px;gap:6px}
 #sh-main#sh-main :is(#mod-precards,#mod-lockers) .q{min-height:40px;padding:7px 12px}
 }
@@ -3272,7 +3275,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]>:is(span,small){background:rgba(255,255,255,.25);color:inherit}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}}
 :root[data-theme="dark"] #sh-main#sh-main :is(#mod-staff .chips.grpc,#mod-vchecks .chips.grpc)>button[aria-pressed="true"]{color:#0B1320}
-@media (max-width:600px){#sh-main#sh-main #mod-directory .jump{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px}#sh-main#sh-main #mod-directory .jump::-webkit-scrollbar{display:none}#sh-main#sh-main #mod-directory .jump>button{flex:none;min-height:32px;padding:3px 11px;font-size:.84rem}}
+@media (max-width:600px){#sh-main#sh-main #mod-directory .jump{flex-wrap:wrap;overflow:visible;gap:5px}#sh-main#sh-main #mod-directory .jump::-webkit-scrollbar{display:none}#sh-main#sh-main #mod-directory .jump>button{flex:none;min-height:32px;padding:3px 11px;font-size:.84rem}}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -9935,7 +9938,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270300';
+const VERSION='202610270310';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
