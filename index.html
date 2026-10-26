@@ -3775,6 +3775,13 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary .sm-trend .tr-bars{height:48px}
 @media (max-width:420px){#sh-main #mod-summary .sm-trend .tr-row{grid-template-columns:92px 1fr}#sh-main #mod-summary .sm-trend .tr-wk{grid-template-columns:92px repeat(4,1fr)}}
 </style>
+<style id="regodue">
+#sh-main #mod-staff .rgd{display:block}#sh-main #mod-staff .rgd.soon{color:#C62828;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-staff .rgd.soon{color:#F48A8A}}:root[data-theme="dark"] #sh-main #mod-staff .rgd.soon{color:#F48A8A}
+#sh-main #mod-staff .rgsoon{margin:10px 0}#sh-main #mod-staff .rgsoon h2{margin:0 0 6px;font-size:1rem}
+#sh-main #mod-staff .rgrow{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;width:100%;padding:8px 0;border-top:1px solid var(--sh-line);font-size:.9rem}
+#sh-main #mod-staff .rgrow span{font-size:.82rem;color:var(--sh-muted)}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -6331,7 +6338,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -6373,9 +6380,13 @@ function optCells(p){
    +cell('pw','Password',p.pw?`<span class="num">${esc(p.pw)}</span>`:'')
    +cell('mobile','Mobile',p.mobile?`<a class="tel" data-dm="tel" href="tel:${esc(telOf(p.mobile))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>${esc(phoneTxt(p.mobile))}</a>`:'')
    +cell('email','Email',p.email?esc(p.email):'')
-   +cell('van','Van',(p.van||p.rego)?`${esc(title(p.van))}${p.rego?`<span class="sub num">${esc(p.rego)}</span>`:''}`:'')
+   +cell('van','Van',(p.van||p.rego)?`${esc(title(p.van))}${p.rego?`<span class="sub num">${esc(p.rego)}</span>`:''}${p.regoDue?`<span class="sub rgd ${dueIn(p)<=RDAYS?'soon':''}">${esc(dueTxt(p))}</span>`:''}`:'')
    +cell('ec','Emergency contact',(p.ecName||p.ecPhone)?`${esc(title(p.ecName))}${p.ecPhone?`<span class="sub num">${esc(p.ecPhone)}</span>`:''}`:'');
 }
+const RDAYS=30,todayIso=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const dueIn=p=>{if(!p.regoDue)return null;const a=new Date(p.regoDue+'T00:00:00'),b=new Date(todayIso()+'T00:00:00');return Math.round((a-b)/864e5)};
+const niceDue=s=>{if(!s)return '';const[y,m,d]=s.split('-').map(Number);return d+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]+' '+y};
+const dueTxt=p=>{const n=dueIn(p);if(n==null)return '';return n<0?`Rego overdue since ${niceDue(p.regoDue)}`:n===0?'Rego due today':n<=RDAYS?`Rego due ${niceDue(p.regoDue)} (${n} day${n===1?'':'s'})`:`Rego due ${niceDue(p.regoDue)}`};
 /* list laid out like the Directory: a colour for each group, initials, run tags and a call button */
 const DGROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
 const dgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return DGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
@@ -6386,7 +6397,7 @@ function infoLine(p){const it=[];
   if(shown.has('login')&&p.login)it.push(['Login',p.login]);
   if(shown.has('pw')&&p.pw)it.push(['Password',p.pw]);
   if(shown.has('email')&&p.email)it.push(['Email',p.email]);
-  if(shown.has('van')&&(p.van||p.rego))it.push(['Van',[title(p.van),p.rego].filter(Boolean).join(' ')]);
+  if(shown.has('van')&&(p.van||p.rego))it.push(['Van',[title(p.van),p.rego,p.regoDue?'due '+niceDue(p.regoDue):''].filter(Boolean).join(' ')]);
   if(shown.has('ec')&&(p.ecName||p.ecPhone))it.push(['Emergency',[title(p.ecName),p.ecPhone].filter(Boolean).join(' ')]);
   const b=bayLine(p);if(b)it.push(['Bays',b]);
   return it.length?`<span class="inf">${it.map(([k,v])=>`<span><i>${esc(k)}</i> ${esc(v)}</span>`).join('')}</span>`:''}
@@ -6402,6 +6413,7 @@ function render(){
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
       <div class="act"><button type="button" class="sh-btn primary" data-dm="add">Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
+    ${(()=>{const D=Object.values(people).filter(p=>p.regoDue&&dueIn(p)<=RDAYS).sort((a,b)=>String(a.regoDue).localeCompare(String(b.regoDue)));return D.length?`<section class="card rgsoon"><h2>Rego due soon</h2>${D.map(p=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(p.id)}"><b>${esc(fullName(p))}</b><span>${esc(p.rego||'')}</span><span class="svb">${esc(dueTxt(p).replace(/^Rego /,''))}</span></button>`).join('')}</section>`:''})()}
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
 </div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
@@ -6420,7 +6432,7 @@ function detailHTML(){
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
     :k==='pw'?`<label class="f" for="dm_f_pw">${l}<span class="pwrow"><input type="password" id="dm_f_pw" value="${esc(val(k))}" autocomplete="new-password"><button type="button" class="sh-btn" data-dm="pwshow">Show</button></span></label>`
-    :`<label class="f" for="dm_f_${k}">${l}<input type="${k==='email'?'email':k==='mobile'||k==='ecPhone'?'tel':'text'}" id="dm_f_${k}" value="${esc(val(k))}" ${ph?`placeholder="${esc(ph)}"`:''} autocomplete="off"></label>`;
+    :`<label class="f" for="dm_f_${k}">${l}<input type="${k==='email'?'email':k==='regoDue'?'date':k==='mobile'||k==='ecPhone'?'tel':'text'}" id="dm_f_${k}" value="${esc(val(k))}" ${ph?`placeholder="${esc(ph)}"`:''} autocomplete="off"></label>`;
   const grp=(t,keys)=>`<div class="sect">${t}</div>`+FIELDS.filter(f=>keys.includes(f[0])).map(inp).join('');
   return `<div class="dm">
     <button type="button" class="sh-btn back" data-dm="back">‹ All drivers</button>
@@ -6428,7 +6440,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego','regoDue'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -10877,7 +10889,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280740';
+const VERSION='202610280750';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
