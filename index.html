@@ -4437,14 +4437,14 @@ function cycleList(){return Object.keys(cycleWeeks).sort().map(id=>id===weekId?w
 /* Points, every day worked: 2 hr ETA at target or above +1, no NC scans +1, no enquiries +1 but any enquiry -1.
    A perfect day is 3. A week or pay period adds up every day worked. FTD is information only and never scored. */
 const PTS={good:1,bad:0,none:0};
-function dayPts(r){const e=r.enq==null?0:+r.enq;return PTS[rate("eta",r.eta)]+PTS[rate("nc",r.nc)]+(e>0?-1:1)}
+function dayPts(r){const e=r.enq==null||r.enq===""?0:+r.enq;const n=r.nc==null||r.nc===""?0:+r.nc;return(r.eta==null||r.eta===""?1:PTS[rate("eta",r.eta)])+(n>0?0:1)+(e>0?-1:1)}
 function weekRows(weeks){
   const by={};
   for(const w of(weeks||[week]))for(const[k]of DAYS){const d=w&&w.days&&w.days[k];if(!d)continue;for(const l in d.rows){(by[l]=by[l]||[]).push(d.rows[l])}}
-  return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq));
+  return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc==null||r.nc===""?0:+r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq));
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),nc,enq,ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*3}});
 }
-function dayRows(key){const d=week.days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
+function dayRows(key){const d=week.days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
 function scoreSort(rows){
   return rows.map(r=>({...r,star:r.points===r.max})).sort((a,b)=>cmp(a,b)||a.login.localeCompare(b.login));
 }
@@ -6529,8 +6529,8 @@ function statsFor(dates){
   const rs=[];for(const dt of dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)rs.push(r)}
   if(!rs.length)return null;const n=rs.length;
   const nn=a=>a.filter(x=>x!=null&&x!=='');const sum=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0):null};const avg=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0)/b.length:null};
-  const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
-  const points=rs.reduce((s,r)=>s+PT[rate('eta',r.eta)]+PT[rate('nc',r.nc)]+((r.enq==null?0:+r.enq)>0?-1:1),0);
+  const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>+r.nc||0)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
+  const points=rs.reduce((s,r)=>s+(r.eta==null||r.eta===''?1:PT[rate('eta',r.eta)])+((+r.nc||0)>0?0:1)+((r.enq==null?0:+r.enq)>0?-1:1),0);
   return{days:n,pc,eta,nc,enq,points,max:n*3,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
 }
 const CYC0='2026-10-05';
@@ -7818,7 +7818,7 @@ function grade(kind,v){const t=targets();if(v==null||v===''||isNaN(v))return 'no
   if(kind==='nc')return v<=0?'good':'bad';
   if(kind==='enq')return v<=0?'good':'bad';return 'none'}
 const PTS={good:1,bad:0,none:0};
-function dayPoints(r){return PTS[grade('eta',r.eta)]+PTS[grade('nc',r.nc)]+((+(r.enq||0))>0?-1:1)}
+function dayPoints(r){return(r.eta==null||r.eta===''?1:PTS[grade('eta',r.eta)])+((+(r.nc||0))>0?0:1)+((+(r.enq||0))>0?-1:1)}
 /* ---------- aggregate ---------- */
 function blank(){return{days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
 function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
@@ -9558,7 +9558,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262010';
+const VERSION='202610262020';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
