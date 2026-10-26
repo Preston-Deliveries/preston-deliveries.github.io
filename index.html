@@ -5300,7 +5300,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
     ["400","2 hr ETA: "+t.etaG+"% or more is on target."],
     ["400","NC scans: none is on target."],
     ["400","Enquiries: none is on target."],
-    ["400","Delivered first time is for information only."]];
+    ["400","FTD is for information only."]];
   if(isWeek||isCycle)lines.push(["400","Colours show your average day. Numbers show your totals."]);
   fy+=46;
   for(const[wt,txt]of lines){fy+=36;g.font=wt+" 24px "+FB;g.fillStyle=wt==="700"?C.ink:C.muted;g.fillText(fit(g,txt,W-96),48,fy)}
@@ -7443,7 +7443,7 @@ function statsHTML(per,x,sv,own){
    <div class="ms-sec"><h3>Driver results</h3>
     ${x?[
       row('Days worked',String(x.days)),
-      row('Delivered first time (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':Math.round(x.ftd*1000)/10>=92?'g':'b',x.ftd!=null&&Math.round(x.ftd*1000)/10<92?'National average is 92%':''),
+      row('FTD',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':Math.round(x.ftd*1000)/10>=92?'g':'b'),
       row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
       row('NC scans',String(Math.round(x.nc||0))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'nc'))),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
       row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}`))].join('')
@@ -9006,7 +9006,7 @@ function dl(cur,prev,kind,lab){
 function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
   const T=[['Parcels',fmtN(a.pc),a.days?`${fmtN(a.days)} driver day${a.days===1?'':'s'}`:'No results loaded',''],
-   ['Delivered first time',fmtPct(ftd),'National average '+FTDG+'%',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
+   ['FTD',fmtPct(ftd),'First time delivery',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan errors',fmtN(a.nc),'Lower is better',a.days?(a.nc===0?'good':a.nc<=Math.max(1,Math.round(a.days*0.05))?'warn':'bad'):'none'],
    ['Enquiries',fmtN(a.enq),a.fault?`${a.fault} at fault in the log`:'From Driver Results',a.days?(a.enq?'bad':'good'):'none'],
@@ -9058,7 +9058,7 @@ function bossNotes(C,all,pa,pcs){
   const good=[],watch=[];
   const vol=`${fmtN(all.pc)} parcels over ${fmtN(all.days)} driver days`+(ok&&pa.pc?`, ${all.pc>=pa.pc?'up':'down'} ${Math.abs(Math.round((all.pc-pa.pc)/pa.pc*100))}% on ${L}`:'')+'.';
   if(eta!=null)(eta*100>=t.etaG?good:watch).push(`2 hr ETA ${P(eta)} against a ${t.etaG}% target${chg(eta,pe,'pts')}.`);
-  if(ftd!=null)(pf!=null&&ok&&ftd<pf-.005?watch:good).push(`Delivered first time ${P(ftd)}${chg(ftd,pf,'pts')}.`);
+  if(ftd!=null)(pf!=null&&ok&&ftd<pf-.005?watch:good).push(`FTD ${P(ftd)}${chg(ftd,pf,'pts')}.`);
   (all.nc===0?good:watch).push(all.nc===0?'No NC scans.':`${fmtN(all.nc)} NC scan${all.nc===1?'':'s'}${chg(all.nc,pa&&pa.days?pa.nc:null)}.`);
   const fault=all.fault;(all.enq===0?good:watch).push(all.enq===0?'No customer enquiries.':`${fmtN(all.enq)} customer enquir${all.enq===1?'y':'ies'}${fault?`, ${fault} found at fault`:''}${chg(all.enq,pa&&pa.days?pa.enq:null)}.`);
   if(n!=null)(n>=70?good:watch).push(`Customer survey score ${n} from ${all.scores.length} customer${all.scores.length===1?'':'s'}${ok&&pn!=null&&n!==pn?`, ${n>pn?'up':'down'} ${Math.round(Math.abs(n-pn)*10)/10} on ${L}`:''}.`);
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280310';
+const VERSION='202610280320';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
