@@ -3118,6 +3118,31 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary .fbc{font:700 .78rem var(--sh-body);padding:3px 9px;border-radius:999px;white-space:nowrap}
 #sh-main #mod-summary .fbc.enq{background:var(--fes);color:var(--fe)}#sh-main #mod-summary .fbc.eta{background:var(--fts);color:var(--ft)}
 #sh-main #mod-summary .fbc.nc{background:var(--fns);color:var(--fn)}#sh-main #mod-summary .fbc.sv{background:var(--fss);color:var(--fs)}
+</style><style id="mestats">
+#sh-main .ms{border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface);overflow:hidden}
+#sh-main .ms-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--sh-line)}
+#sh-main .ms-top small{display:block;font:700 .72rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .ms-top b{display:block;font:800 2.4rem/1.05 var(--sh-body);color:var(--sh-ink)}
+#sh-main .ms-top>span{font-size:.88rem;color:var(--sh-muted);padding-bottom:4px;text-align:right}
+#sh-main .ms-sec{padding:12px 18px 6px;border-bottom:1px solid var(--sh-line)}
+#sh-main .ms-sec:last-child{border-bottom:0}
+#sh-main .ms-sec h3{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 4px;font:800 .74rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;color:var(--g,#6D3FC7)}
+#sh-main .ms-sec h3 em{font:800 1.15rem var(--sh-body);font-style:normal;letter-spacing:0;text-transform:none;color:var(--sh-ink)}
+#sh-main .ms-sec h3 em small{font-size:.8rem;color:var(--sh-muted)}
+#sh-main .ms-q{font-weight:600;color:var(--sh-muted);text-transform:none;letter-spacing:0;margin-left:6px}
+#sh-main .ms-r{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px dashed var(--sh-line)}
+#sh-main .ms-r:first-of-type{border-top:0}
+#sh-main .ms-r .l{color:var(--sh-ink);font-size:.95rem}
+#sh-main .ms-r .l small{display:block;font-size:.78rem;color:var(--sh-muted);margin-top:1px}
+#sh-main .ms-r b{font:700 1rem var(--sh-body);color:var(--sh-ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+#sh-main .ms-r b small{font-size:.78rem;color:var(--sh-muted);font-weight:600}
+#sh-main .ms-r b.g{color:#14804A}#sh-main .ms-r b.b{color:#C62828}#sh-main .ms-r b.gd{color:#B7791F}
+#sh-main .ms-bx{display:inline-flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+#sh-main .ms-bx i{font-style:normal;display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:6px;font:800 .8rem var(--sh-body)}
+#sh-main .ms-bx i.g{background:#DDF2E5;color:#14804A}#sh-main .ms-bx i.w{background:#FDEBC8;color:#A85F00}#sh-main .ms-bx i.b{background:#FCE1E1;color:#C62828}
+#sh-main .ms-none{margin:4px 0 10px;color:var(--sh-muted);font-size:.9rem}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .ms-r b.g{color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .ms-r b.b{color:#F48A8A}:root:not([data-theme="light"]) #sh-main .ms-r b.gd{color:#F2C94C}:root:not([data-theme="light"]) #sh-main .ms-bx i.g{background:#14321F;color:#5CCB8E}:root:not([data-theme="light"]) #sh-main .ms-bx i.w{background:#3A2C10;color:#F2B24A}:root:not([data-theme="light"]) #sh-main .ms-bx i.b{background:#3D1A1A;color:#F48A8A}}
+:root[data-theme="dark"] #sh-main .ms-r b.g{color:#5CCB8E}:root[data-theme="dark"] #sh-main .ms-r b.b{color:#F48A8A}:root[data-theme="dark"] #sh-main .ms-r b.gd{color:#F2C94C}:root[data-theme="dark"] #sh-main .ms-bx i.g{background:#14321F;color:#5CCB8E}:root[data-theme="dark"] #sh-main .ms-bx i.w{background:#3A2C10;color:#F2B24A}:root[data-theme="dark"] #sh-main .ms-bx i.b{background:#3D1A1A;color:#F48A8A}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -6706,7 +6731,7 @@ function statsFor(dates){
   const nn=a=>a.filter(x=>x!=null&&x!=='');const sum=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0):null};const avg=a=>{const b=nn(a);return b.length?b.reduce((s,x)=>s+ +x,0)/b.length:null};
   const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>+r.nc||0)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
   const points=rs.reduce((s,r)=>s+(r.eta==null||r.eta===''?1:PT[rate('eta',r.eta)])+((+r.nc||0)>0?0:1)+((r.enq==null?0:+r.enq)>0?-1:1),0);
-  return{days:n,pc,eta,nc,enq,points,max:n*3,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
+  return{days:n,pc,eta,nc,enq,ftd:avg(rs.map(r=>r.ftd)),points,max:n*3,r:{eta:rate('eta',eta),nc:rate('nc',nc==null?null:nc/n),enq:rate('enq',enq/n)}};
 }
 const CYC0='2026-10-05';
 function periods(){
@@ -6739,6 +6764,44 @@ function hoursFor(dates){const set=new Set(dates);let m=0,n=0;for(const c of (da
 let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
 const pctf=v=>v==null?'n/a':(v>=.9995?'100':(v*100).toFixed(1).replace(/\.0$/,''))+'%';
 function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
+/* minimal stats: total points, driver results, survey ranking, parcels */
+function dayP(r){const t=targets();const e=r.enq==null||r.enq===''?0:+r.enq,n=+r.nc||0;return(r.eta==null||r.eta===''?1:(r.eta*100>=t.etaG?1:0))+(n>0?0:1)+(e>0?-1:1)}
+function resultsRank(dates){
+  const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}
+  const K=myKeys(),L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(([k])=>K.has(k));if(i<0)return null;
+  let rk=i+1;while(rk>1&&L[rk-2][1]===L[i][1])rk--;return{rank:rk,of:L.length};
+}
+function statsHTML(per,x,sv,own){
+  const t=targets(),sh=s=>{const d=fromIso(s);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()};
+  const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
+  const etaBad=my.filter(r=>r.eta!=null&&r.eta!==''&&r.eta*100<t.etaG),ncDays=my.filter(r=>(+r.nc||0)>0),enqDays=my.filter(r=>(+r.enq||0)>0);
+  const rp=x?x.points:0,spv=sv&&sv.found?sv.pts:0,rr=x?resultsRank(per.dates):null;
+  const row=(l,v,cls,note)=>`<div class="ms-r"><span class="l">${l}${note?`<small>${note}</small>`:''}</span><b class="${cls||''}">${v}</b></div>`;
+  const ok=(bad,txt)=>bad?txt:'';
+  const svb=sv&&sv.found?sv.scores.map(n=>`<i class="${n>=9?'g':n>=7?'w':'b'}">${n}</i>`).join(''):'';
+  return `<section class="ms">
+   <div class="ms-top"><div><small>Total points</small><b>${(x||(sv&&sv.found))?rp+spv:'–'}</b></div><span>${x?rp:0} results ${spv<0?'−':'+'} ${Math.abs(spv)} survey</span></div>
+   <div class="ms-sec"><h3>Driver results<em>${x?`${x.points} <small>/ ${x.max}</small>`:'–'}</em></h3>
+    ${x?[
+      rr?row('Rank',`${rr.rank} <small>of ${rr.of}</small>`,rr.rank<=3?'gd':''):'',
+      row('Days worked',String(x.days)),
+      row('2 hr ETA',pctf(x.eta),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
+      row('NC scans',String(Math.round(x.nc||0)),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
+      row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}, minus 1 point each day`))].join('')
+     :`<p class="ms-none">No results ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]} yet.</p>`}
+   </div>
+   <div class="ms-sec"><h3>Survey ranking${PER==='day'?' <span class="ms-q">this week</span>':''}<em>${sv&&sv.found?(spv>0?'+':'')+spv:'–'}</em></h3>
+    ${sv&&sv.found?[
+      sv.rank?row('Rank',`${sv.rank} <small>of ${sv.of}</small>`,sv.rank<=3?'gd':''):'',
+      row('Surveys',`<span class="ms-bx">${svb}</span>`),
+      row('Average score',sv.avg!=null?sv.avg.toFixed(1):'–',sv.avg>=9?'g':sv.avg<7?'b':'')].join('')
+     :`<p class="ms-none">No customer surveys ${PER==='cycle'?'this month':'this week'} yet.</p>`}
+   </div>
+   <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
+    ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):'',x.ftd!=null?row('Delivered first time',pctf(x.ftd)):''].join(''):''}
+   </div>
+  </section>`;
+}
 function profileHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates),h=hoursFor(per.dates);
   const run=myRun(),pcs=myPrecards(),wk=weekShifts();
@@ -6757,19 +6820,7 @@ function profileHTML(){
   <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
-  ${x?`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>${x.points} <small>of ${x.max} points</small></b><div class="bar"><i style="width:${x.max?Math.max(0,Math.round(100*x.points/x.max)):0}%"></i></div><span class="sb">${PER==='day'?'From your 2 hr ETA, NC scans and enquiries':x.days+' day'+(x.days===1?'':'s')+' worked'}</span></div>`
-     :`<div class="me-c me-wide g-perf"><small>${my('My score','Score')}</small><b>No results</b><span class="sb">There are no results for you ${when} yet.</span></div>`}
-  <div class="me-grid">
-    ${card('road','box','Parcels',x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–',x&&x.days>1?'about '+Math.round(x.pc/x.days).toLocaleString('en-AU')+' a day':'')}
-    ${card('perf','eta','2 hr ETA',x?pctf(x.eta):'–',x?rtTxt[x.r.eta]:'',x&&x.r.eta)}
-    ${card('perf','scan','NC scans',x&&x.nc!=null?Math.round(x.nc):'–',x?rtTxt[x.r.nc]:'',x&&x.r.nc)}
-    ${card('perf','enq','Enquiries',x?Math.round(x.enq):'–',x?(x.r.enq==='b'?'Minus 1 point each day':'On target'):'',x&&x.r.enq)}
-  </div>
-  <div class="me-c me-wide g-perf me-sv"><span class="ic">${ICON.survey}</span><small>Customer survey${PER==='day'?' (weekly)':PER==='cycle'?' (monthly)':''}</small>${svBody}</div>
-  <div class="me-grid">
-    ${card('start','clock','Hours worked',h.m?hrs(h.m):'0h',h.n?h.n+' shift'+(h.n===1?'':'s'):'No shifts '+when)}
-    ${card('road','precard',my('Precards on my run','Precards on their run'),String(pcs.length),pcs.length===1?'address':'addresses')}
-  </div>
+  ${statsHTML(per,x,sv,own)}
   ${run?`<section class="me-box g-road"><h2>${my('My run','Run')}</h2><div class="me-kv"><span>Run</span><b>${esc(run.id)}</b><span>Postcode</span><b>${esc(run.postcode||'')}</b>${run.bay?`<span>Trolley bay</span><b>${esc(run.bay)}</b>`:''}${Array.isArray(run.streets)?`<span>Streets</span><b>${run.streets.length}</b>`:''}</div><button type="button" class="sh-btn primary me-go" data-me="run" data-login="${esc(me.login)}">${my('Open my run sheet','Open their run sheet')}</button></section>`:''}
   <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
@@ -9757,7 +9808,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262350';
+const VERSION='202610270000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
