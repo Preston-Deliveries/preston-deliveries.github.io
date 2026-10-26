@@ -9487,6 +9487,10 @@ const works=(f,d)=>{const ds=flc(f).days;return !(Array.isArray(ds)&&ds.length)|
 function leaveSids(d){const s=new Set(),by={};for(const[k,p]of Object.entries(staff))by[[p.first,p.last].filter(Boolean).join(' ').toUpperCase().replace(/\s+/g,' ').trim()]=k;
   for(const b of Object.values(leave))if((b.days||[]).includes(d)){const k=by[String(b.name||'').toUpperCase().replace(/\s+/g,' ').trim()];if(k)s.add(k)}return s}
 
+/* office people in the Directory but not on the Drivers page (Kim, Paul and so on) can still be picked */
+function addDir(m){const have=new Set(Object.values(m).map(p=>[p.first,p.last].filter(Boolean).join(' ').toUpperCase().replace(/\s+/g,' ').trim()));
+  for(const x of ((window.APP&&APP.SNAP&&APP.SNAP.directory)||[])){const n=String(x.name||'').trim();if(!n||!['office','sup'].includes(x.grp)||have.has(n.toUpperCase().replace(/\s+/g,' ')))continue;const pts=n.split(/\s+/);
+    m['dir_'+n.replace(/\W+/g,'_')]={first:pts[0],last:pts.slice(1).join(' '),role:x.grp==='office'?'ADMIN':x.grp==='sup'?'SUPERVISOR':'',runs:[],dir:true};have.add(n.toUpperCase())}}
 /* ---------- a day ---------- */
 const blank=(sid,why)=>{const p=staff[sid]||{};return{sid,name:short(sid),run:runOf(p),pc:pcOf(p),why,cover:[],sort:[]}};
 function itemsFor(d){const doc=ros[d]||{},rm=new Set(doc.removed||[]),lv=leaveSids(d);
@@ -9512,9 +9516,9 @@ function dayBtns(){const L=[];let d=fromIso(TODAY).getDay()===0?nextWork(TODAY):
   return `<div class="ro-days" role="group" aria-label="Day">${L.map(x=>{const its=itemsFor(x),n=its.length,nx=xlFor(x).length,need=its.filter(i=>!i.cover.length).length,p=(ros[x]||{}).pub;
     return `<button type="button" data-ro="day" data-v="${x}" aria-pressed="${x===day}"><b>${x===TODAY?'Today':x===nextWork(TODAY)?'Tomorrow':DOW[fromIso(x).getDay()]}</b><small>${fromIso(x).getDate()} ${MON[fromIso(x).getMonth()]}</small><i class="${need?'nd':p?'ok':''}">${n?n+' off':'None off'}${nx?' · XL':''}</i></button>`}).join('')}</div>`}
 function pplSel(kind,x,d,its){const off=offSet(d,its),used=usedSet(its,d),taken=new Set(x[kind]);const fl=floaters().filter(f=>!off.has(f)&&!taken.has(f)&&works(f,d));
-  const rest=Object.keys(staff).filter(k=>!off.has(k)&&!taken.has(k)&&!fl.includes(k)).sort(byShort);
+  const rest=Object.keys(staff).filter(k=>!off.has(k)&&!taken.has(k)&&!fl.includes(k)).sort(byShort);const offc=rest.filter(k=>OFFICE.includes(String(staff[k].role||'').toUpperCase())),drv=rest.filter(k=>!offc.includes(k));
   const o=k=>`<option value="${esc(k)}">${esc(short(k))}${kind==='cover'&&floaters().includes(k)?' · '+KN[know(k,x.run)].toLowerCase():''}${used.has(k)&&kind!=='sort'?' (already busy)':''}</option>`;
-  return `<select class="ro-addp" data-ro-add="${kind}" data-sid="${esc(x.sid)}" aria-label="Add a person"><option value="">+ Add</option>${fl.length?`<optgroup label="Floaters working">${fl.map(o).join('')}</optgroup>`:''}<optgroup label="Everyone else">${rest.map(o).join('')}</optgroup></select>`}
+  return `<select class="ro-addp" data-ro-add="${kind}" data-sid="${esc(x.sid)}" aria-label="Add a person"><option value="">+ Add</option>${fl.length?`<optgroup label="Floaters working">${fl.map(o).join('')}</optgroup>`:''}${offc.length?`<optgroup label="Office and supervisors">${offc.map(o).join('')}</optgroup>`:''}<optgroup label="Drivers">${drv.map(o).join('')}</optgroup></select>`}
 function chips(kind,x){return x[kind].map(k=>`<button type="button" class="ro-p" data-ro="rm" data-k="${kind}" data-sid="${esc(x.sid)}" data-who="${esc(k)}" aria-label="Take ${esc(short(k))} off">${esc(short(k)||'Unknown')}<span aria-hidden="true">×</span></button>`).join('')}
 function itemHTML(x,d,its){const n=avg[x.sid],sg=suggest(x,d,its),mxs=x.cover.map(k=>+flc(k).max||0),cap=mxs.every(Boolean)?mxs.reduce((a,b)=>a+b,0):0;
   return `<article class="ro-it ${x.cover.length?'':'need'}">
@@ -9710,7 +9714,7 @@ async function start(role){if(mode!=='wait'&&mode===(role==='mgr'?'mgr':'drv'))r
   if(subs.has(mode))return;subs.add(mode);if(subs.size>1&&mode==='drv')return;
   if(!subs.has('r')){subs.add('r');db.collection('roster').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v)m[v.date||d.id]=v}ros=m;later()},()=>{})}
   if(mode!=='mgr')return;
-  db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v&&!v.left)m[d.id]=v}const first=!loaded.staff;staff=m;loaded.staff=true;if(first)loadAvg();later()},()=>{});
+  db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v&&!v.left)m[d.id]=v}addDir(m);const first=!loaded.staff;staff=m;loaded.staff=true;if(first)loadAvg();later()},()=>{});
   db.collection('leave').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);leave=m;later()},()=>{});
   db.doc('settings/roster').get().then(x=>{const v=x.exists?__D(x):null;cfg=v&&v.fl?v:{fl:{}};loaded.cfg=true;later()}).catch(()=>{});
 }
@@ -10554,7 +10558,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271130';
+const VERSION='202610271145';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
