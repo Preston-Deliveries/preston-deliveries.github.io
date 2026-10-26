@@ -3107,29 +3107,12 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary .att-c{--fe:#C62828;--fes:#FCE1E1;--ft:#A85F00;--fts:#FDEBC8;--fn:#C2410C;--fns:#FCE6DA;--fs:#B7356B;--fss:#FBE1EC}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary .att-c{--fe:#F48A8A;--fes:#3D1A1A;--ft:#F2B24A;--fts:#3A2C10;--fn:#F4936A;--fns:#3D2116;--fs:#F48FB1;--fss:#3D1A28}}
 :root[data-theme="dark"] #sh-main #mod-summary .att-c{--fe:#F48A8A;--fes:#3D1A1A;--ft:#F2B24A;--fts:#3A2C10;--fn:#F4936A;--fns:#3D2116;--fs:#F48FB1;--fss:#3D1A28}
-#sh-main #mod-summary .fb-key{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-#sh-main #mod-summary .fb-t{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font:700 .82rem var(--sh-body);background:var(--s2);color:var(--c2)}
-#sh-main #mod-summary .fb-t i{font-style:normal}
-#sh-main #mod-summary .fb-t b{background:var(--c2);color:#fff;border-radius:999px;padding:0 7px;font-size:.75rem}
-#sh-main #mod-summary :is(.fb-t,.fb li).enq{--c2:var(--fe);--s2:var(--fes)}
-#sh-main #mod-summary :is(.fb-t,.fb li).eta{--c2:var(--ft);--s2:var(--fts)}
-#sh-main #mod-summary :is(.fb-t,.fb li).nc{--c2:var(--fn);--s2:var(--fns)}
-#sh-main #mod-summary :is(.fb-t,.fb li).sv{--c2:var(--fs);--s2:var(--fss)}
-#sh-main #mod-summary .fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-#sh-main #mod-summary .fb{display:flex;flex-direction:column;gap:10px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:14px}
-#sh-main #mod-summary .fb header{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-#sh-main #mod-summary .fb header .lnk{font:800 1.02rem var(--sh-body)}
-#sh-main #mod-summary .fb .sml{font-size:.78rem;color:var(--sh-muted)}
-#sh-main #mod-summary .fb .smg{display:inline-block;font:800 .68rem var(--sh-body);letter-spacing:.04em;padding:1px 7px;border-radius:999px;background:var(--ds);color:var(--d)}
-#sh-main #mod-summary .fb ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-#sh-main #mod-summary .fb li{display:flex;gap:10px;align-items:flex-start;background:var(--s2);border-radius:10px;padding:8px 10px}
-#sh-main #mod-summary .fb li .ic{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--c2);color:#fff;font:900 .78rem var(--sh-body)}
-#sh-main #mod-summary .fb li b{display:block;color:var(--c2);font-size:.9rem}
-#sh-main #mod-summary .fb li small{display:block;color:var(--sh-ink);opacity:.8;font-size:.8rem;margin-top:2px;line-height:1.35}
-#sh-main #mod-summary .fb footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
-#sh-main #mod-summary .fb .wa{background:#1E8A4C;border-color:#1E8A4C;color:#fff;text-decoration:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary :is(.fb li .ic,.fb-t b){color:#0B1320}}
-:root[data-theme="dark"] #sh-main #mod-summary :is(.fb li .ic,.fb-t b){color:#0B1320}
+#sh-main #mod-summary .att li{align-items:center}
+#sh-main #mod-summary .att .lnk{min-width:170px;text-align:left}
+#sh-main #mod-summary .fbs{display:flex;flex-wrap:wrap;gap:6px}
+#sh-main #mod-summary .fbc{font:700 .78rem var(--sh-body);padding:3px 9px;border-radius:999px;white-space:nowrap}
+#sh-main #mod-summary .fbc.enq{background:var(--fes);color:var(--fe)}#sh-main #mod-summary .fbc.eta{background:var(--fts);color:var(--ft)}
+#sh-main #mod-summary .fbc.nc{background:var(--fns);color:var(--fn)}#sh-main #mod-summary .fbc.sv{background:var(--fss);color:var(--fs)}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8100,18 +8083,9 @@ function attention(rows){
     if(I.length)L.push({p,I,n:enq.length*3+eta.length+nc.length+low.length*2});
   }
   if(!L.length)return '';L.sort((x,y)=>y.n-x.n);
-  const msgFor=({p,I})=>`Hi ${String(p.name).split(' ')[0]}, some quick feedback for ${R.label}:\n`+I.map(x=>'• '+x.m).join('\n')+`\nLet's work on these together. Thanks!`;
-  const ICON={enq:'!',eta:'⏱',nc:'✕',sv:'★'};
-  const NAME={enq:'Enquiries',eta:'2 hr ETA',nc:'NC scans',sv:'Survey'};
-  window.__smFb=Object.fromEntries(L.map(x=>[x.p.key,msgFor(x)]));
-  const cnt=k=>L.filter(x=>x.I.some(i=>i.k===k)).length;
+  const SHORT={enq:x=>x.t.replace('customer ',''),eta:x=>'ETA under '+T.etaG+'% '+x.t.split(' on ')[1],nc:x=>x.t.replace(' on ',' over '),sv:x=>x.t.replace('survey score','low survey').replace(' of 0 to 6','')};
   return `<details class="card att-c" ${L.length<=12?'open':''}><summary><h2>Needs attention <span class="cnt">${L.length}</span></h2><span class="tgl"></span></summary>
-   <div class="fb-key">${['enq','eta','nc','sv'].map(k=>`<span class="fb-t ${k}"><i>${ICON[k]}</i>${NAME[k]} <b>${cnt(k)}</b></span>`).join('')}</div>
-   <div class="fb-grid">${L.map(x=>{const{p,I}=x,g=grpCls(p);const ph=String(p.mobile||'').replace(/\D/g,'').replace(/^0/,'61');return `<article class="fb ${g}">
-     <header><button type="button" class="lnk" data-sm="drv" data-v="${esc(p.key)}">${esc(p.name)}</button><span class="sml">${esc(p.login||'')}</span>${g?`<span class="smg">${esc(grpLbl(p))}</span>`:''}</header>
-     <ul>${I.map(i=>`<li class="${i.k}"><span class="ic">${ICON[i.k]}</span><div><b>${esc(i.t)}</b><small>${esc(i.d)}</small></div></li>`).join('')}</ul>
-     <footer>${ph?`<a class="sh-btn sm wa" href="https://wa.me/${ph}?text=${encodeURIComponent(window.__smFb[p.key])}" target="_blank" rel="noopener">WhatsApp feedback</a>`:''}<button type="button" class="sh-btn sm" data-sm="fbcopy" data-v="${esc(p.key)}">Copy message</button></footer>
-   </article>`}).join('')}</div></details>`;
+   <ul class="att">${L.map(({p,I})=>`<li><button type="button" class="lnk" data-sm="drv" data-v="${esc(p.key)}">${esc(p.name)}</button><span class="fbs">${I.map(i=>`<span class="fbc ${i.k}" title="${esc(i.d)}">${esc(SHORT[i.k](i))}</span>`).join('')}</span></li>`).join('')}</ul></details>`;
 }
 const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
 function contractHTML(C){
@@ -9778,7 +9752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262330';
+const VERSION='202610262340';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
