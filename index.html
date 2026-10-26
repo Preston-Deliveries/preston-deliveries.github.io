@@ -3589,6 +3589,41 @@ p.ck-alert{color:#5A3C00!important}
 @media (max-width:560px){#sh-main #mod-roster .ro-nice .rr{grid-template-columns:1fr 1fr;gap:6px 12px}#sh-main #mod-roster .ro-nice .rr .wo{display:flex;align-items:center;gap:8px;flex-wrap:wrap}#sh-main #mod-roster .ro-nice .rr .wo small{margin-top:0}#sh-main #mod-roster .ro-nice .rr{padding:8px 12px}#sh-main #mod-roster .ro-nice .rd header{padding:7px 12px}#sh-main #mod-roster .ro-nice .rr .wo{grid-column:1/-1}#sh-main #mod-roster .ro-nice .rr.xl .so{display:none}}
 #sh-main #mod-roster .ro-week{max-width:760px;width:100%;margin:0 auto}
 </style>
+<style id="leavereq">
+#mod-leave .rq-btn{align-self:flex-start}
+#sh-main #mod-leave .lvx>.rq-btn,#sh-main #mod-leave .lvx>.rq{order:2}
+#sh-main #mod-leave .lvx>.msg{order:2}
+#sh-main #mod-leave .lvx>.rq-mine{order:30}
+#mod-leave .rq .grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+#mod-leave .rq-sum{margin:0;font-size:.95rem}
+#mod-leave .rq-warn{margin:0;padding:8px 10px;border-radius:6px;background:#FFF1D6;color:#7A4A00;font-size:.88rem}
+#mod-leave .rq-ok{margin:0;font-size:.88rem;color:#1E8E5A}
+#mod-leave .rq-long{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:8px;background:#FDE2E1;color:#7A1A14}
+#mod-leave .rq-long b{font-size:1rem}
+#mod-leave .rq-long p{margin:0;font-size:.9rem;line-height:1.4}
+#mod-leave .rq-long .f{color:#7A1A14}
+#mod-leave .chk{display:flex;gap:8px;align-items:center;font-weight:600}
+#mod-leave .rq-mine{gap:0}
+#mod-leave .rq-mine h2{margin-bottom:6px}
+#mod-leave .rq-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--sh-line)}
+#mod-leave .rq-row>div{flex:1;display:flex;flex-direction:column;gap:1px}
+#mod-leave .rq-row small{color:var(--sh-muted);font-size:.8rem}
+#mod-leave .rq-row small.rp{color:var(--sh-ink)}
+#mod-leave .rq-st{font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--sh-sunk,#EEF2F7);color:var(--sh-muted);white-space:nowrap}
+#mod-leave .rq-st.st-approved{background:#DDF2E5;color:#1E8A4C}#mod-leave .rq-st.st-declined{background:#FDE2E1;color:#C62828}#mod-leave .rq-st.st-pending{background:#FFF1D6;color:#7A4A00}
+#mod-leave .rq-item{gap:8px}
+#mod-leave .rq-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#mod-leave .rq-top b{font-size:1.05rem}
+#mod-leave .rq-lg{font-size:.74rem;font-weight:700;padding:2px 8px;border-radius:5px;background:#FDE2E1;color:#C62828}
+#mod-leave .rq-sub{margin:0;font-size:.9rem;color:var(--sh-muted)}
+#mod-leave .rq-h{margin:8px 0 0;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--sh-muted)}
+#mod-leave .foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#sh-main#sh-main#sh-main #mod-leave .lvx>.tabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important}
+#sh-main#sh-main#sh-main #mod-leave .lvx>.tabs button{flex:1 1 auto!important;white-space:nowrap}
+#sh-main#sh-main#sh-main #mod-leave .tabs .n{display:inline-block;min-width:1.3em;margin-left:5px;padding:0 5px;border-radius:9px;background:#D93025!important;color:#fff!important;font-size:.74rem;line-height:1.5;text-align:center}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-leave .rq-warn{background:#3A2C10;color:#F2C46A}:root:not([data-theme="light"]) #mod-leave .rq-long{background:#3D1A1A;color:#F4B4B0}:root:not([data-theme="light"]) #mod-leave .rq-long .f{color:#F4B4B0}}
+:root[data-theme="dark"] #mod-leave .rq-warn{background:#3A2C10;color:#F2C46A}:root[data-theme="dark"] #mod-leave .rq-long{background:#3D1A1A;color:#F4B4B0}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -4056,9 +4091,9 @@ function selectify(){
 }
 /* red count next to Feedback, Uniform and Reports for managers when something new comes in */
 window.__navN=window.__navN||{};
-function applyNavBadges(){const on=role==='mgr';for(const k of ['feedback','uniform','reports']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
+function applyNavBadges(){const on=role==='mgr';for(const k of ['feedback','uniform','reports','leave']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
-  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested']];
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending']];
   for(const[c,k,f]of W){try{db.collection(c).onSnapshot(sn=>{let n=0;for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&f(v))n++}window.__navN[k]=n;applyNavBadges()},()=>{})}catch(e){}}}
 function renderNav(){renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
@@ -7343,6 +7378,7 @@ const monday=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.se
 let tq='',tper=String(new Date().getFullYear()),tsort='days',topen=null,prefill='';
 let cv=(()=>{try{return localStorage.getItem('lv_cv')||'week'}catch(e){return 'week'}})(),wk=null,mode='wait',db=null,blocks={},cfg={limit:3,blackouts:[],showNames:false},staff={},month=null,sel=null,msg=null,view='cal',editing=null,armDel=false,armImport=null,busy=null;
 const isMgr=()=>mode==='mgr';
+let reqs={},me=null,rqOpen=false,rq={from:'',to:'',note:'',cover:'',ack:false},rqBusy=false,rqReply={};
 const today=iso(new Date());
 /* ---------- day map ---------- */
 function roleOf(name){const p=staff[name.toUpperCase()];return p?String(p.role||'').toUpperCase():''}
@@ -7361,7 +7397,48 @@ function status(d,o){
   const n=o?o.n:0,L=config().limit||3;
   if(n>=L)return{k:'full',t:'Full'};if(n===L-1)return{k:'one',t:'1 spot left'};return{k:'open',t:L-n+' spots left'};
 }
-function pushStat(){if(!window.APP)return;const m=dayMap();const up=Object.values(blocks).filter(b=>(b.days||[]).some(d=>d>=today)).length;APP.stat('leave',isMgr()?`${up} upcoming leave booking${up===1?'':'s'}`:'')}
+function pushStat(){if(!window.APP)return;const m=dayMap();const up=Object.values(blocks).filter(b=>(b.days||[]).some(d=>d>=today)).length;APP.stat('leave',isMgr()?`${pendN()?pendN()+' request'+(pendN()===1?'':'s')+' waiting, ':''}${up} upcoming leave booking${up===1?'':'s'}`:'')}
+/* ---------- leave requests ---------- */
+const spanDays=(a,b)=>Math.round((fromIso(b)-fromIso(a))/864e5)+1;
+const isLong=(a,b)=>!!(a&&b&&b>=a&&spanDays(a,b)>21);
+function clashes(days){const m=dayMap();return days.filter(d=>{const k=status(d,m[d]).k;return k==='full'||k==='bo'})}
+const RQS={pending:'Waiting',approved:'Approved',declined:'Declined'};
+function reqList(){return Object.entries(reqs).map(([id,r])=>({id,...r})).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}
+const pendN=()=>Object.values(reqs).filter(r=>r.status==='pending').length;
+function drvReqHTML(){const mine=reqList();let form='';
+  if(rqOpen){const ok=!!(rq.from&&rq.to&&rq.to>=rq.from),days=ok?weekdaysBetween(rq.from,rq.to):[],lg=ok&&isLong(rq.from,rq.to),cl=ok?clashes(days):[];
+   form=`<section class="card rq"><h2>Request time off</h2>
+    <div class="grid"><label class="f" for="lv_rqf">First day off<input type="date" id="lv_rqf" min="${today}" value="${esc(rq.from)}"></label><label class="f" for="lv_rqt">Last day off<input type="date" id="lv_rqt" min="${esc(rq.from||today)}" value="${esc(rq.to)}"></label></div>
+    ${ok?`<p class="rq-sum"><b>${days.length} working day${days.length===1?'':'s'}</b> off, ${esc(niceShort(rq.from))} to ${esc(niceShort(rq.to))}.</p>`:''}
+    ${cl.length?`<p class="rq-warn">${cl.length} of these days ${cl.length===1?'is':'are'} already full or in a no leave period: ${cl.slice(0,6).map(niceShort).join(', ')}${cl.length>6?' and more':''}. The manager may not be able to approve ${cl.length===1?'it':'them'}.</p>`:''}
+    ${lg?`<div class="rq-long"><b>More than 3 weeks off</b><p>For leave longer than 3 weeks you need to find your own cover driver for your run. Put their name below. Your leave is only confirmed once the manager approves it.</p>
+      <label class="f" for="lv_rqc">Who will cover your run?<input type="text" id="lv_rqc" value="${esc(rq.cover)}" placeholder="Their name and phone number"></label>
+      <label class="chk" for="lv_rqa"><input type="checkbox" id="lv_rqa" ${rq.ack?'checked':''}> I understand I need to find my own cover</label></div>`:''}
+    <label class="f" for="lv_rqn">Anything the manager should know? (optional)<input type="text" id="lv_rqn" maxlength="300" value="${esc(rq.note)}"></label>
+    <div class="foot"><button type="button" class="sh-btn primary" data-lv="rqsend" ${ok&&(!lg||rq.ack)&&!rqBusy?'':'disabled'}>${rqBusy?'Sending…':'Send request'}</button><button type="button" class="sh-btn" data-lv="rqcancel">Cancel</button></div>
+    ${ok&&lg&&!rq.ack?'<p class="sub">Tick the box above to send the request.</p>':''}</section>`}
+  return `${rqOpen?'':`<button type="button" class="sh-btn primary rq-btn" data-lv="rqopen">Request time off</button>`}${form}
+   ${mine.length?`<section class="card rq-mine"><h2>My requests</h2>${mine.map(r=>`<div class="rq-row"><div><b>${esc(niceShort(r.from))}${r.to!==r.from?' to '+esc(niceShort(r.to)):''}</b><small>${(r.days||[]).length} working day${(r.days||[]).length===1?'':'s'}${r.long?' · own cover: '+esc(r.cover||'not given'):''}</small>${r.reply?`<small class="rp">Manager: ${esc(r.reply)}</small>`:''}</div><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.status==='pending'?`<button type="button" class="sh-btn sm ghost" data-lv="rqdel" data-v="${esc(r.id)}">Cancel</button>`:''}</div>`).join('')}</section>`:''}`}
+function mgrReqHTML(){const L=reqList(),pend=L.filter(r=>r.status==='pending').sort((a,b)=>String(a.from).localeCompare(String(b.from))),done=L.filter(r=>r.status!=='pending').slice(0,10);
+  const row=r=>{const days=r.days||[],cl=clashes(days);return `<article class="card rq-item"><div class="rq-top"><b>${esc(r.name)}</b><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.long?'<span class="rq-lg">Over 3 weeks</span>':''}</div>
+    <p class="rq-sum">${esc(nice(r.from))}${r.to!==r.from?' to '+esc(nice(r.to)):''} · <b>${days.length} working day${days.length===1?'':'s'}</b></p>
+    ${r.long?`<p class="rq-sub">Own cover: <b>${esc(r.cover||'Not given')}</b></p>`:''}
+    ${r.note?`<p class="rq-sub">“${esc(r.note)}”</p>`:''}
+    ${r.status==='pending'?`${cl.length?`<p class="rq-warn">${cl.length} day${cl.length===1?' is':'s are'} already full or blocked: ${cl.slice(0,6).map(niceShort).join(', ')}${cl.length>6?' and more':''}.</p>`:'<p class="rq-ok">Room on every day.</p>'}
+     <label class="f" for="lv_rp_${esc(r.id)}">Reply to the driver (optional)<input type="text" id="lv_rp_${esc(r.id)}" data-rq="${esc(r.id)}" value="${esc(rqReply[r.id]||'')}"></label>
+     <div class="foot"><button type="button" class="sh-btn primary" data-lv="rqok" data-v="${esc(r.id)}">Approve and add to calendar</button><button type="button" class="sh-btn" data-lv="rqno" data-v="${esc(r.id)}">Decline</button></div>`:(r.reply?`<p class="rq-sub">Reply: ${esc(r.reply)}</p>`:'')}</article>`};
+  return `${pend.length?pend.map(row).join(''):'<div class="empty">No requests waiting.</div>'}${done.length?`<h3 class="rq-h">Recently decided</h3>${done.map(row).join('')}`:''}`}
+async function rqSend(){if(rqBusy)return;if(!me||!me.staff){msg={err:true,t:'Your sign in is not linked to a driver yet, so the request could not be sent. Ask the manager to check your email on the Drivers page.'};render();return}
+  const days=weekdaysBetween(rq.from,rq.to);if(!days.length){msg={err:true,t:'Those dates are all on a weekend.'};render();return}
+  const lg=isLong(rq.from,rq.to);rqBusy=true;msg=null;render();
+  const id=me.staff+'_'+rq.from+'_'+Date.now().toString(36);const doc={staff:me.staff,name:tc(me.name||''),from:rq.from,to:rq.to,days,note:rq.note.trim(),cover:lg?rq.cover.trim():'',long:lg,status:'pending',at:db.serverTime?db.serverTime():new Date().toISOString()};
+  try{await db.doc('leavereq/'+id).set(doc);reqs[id]={...doc,at:new Date().toISOString()};rqOpen=false;rq={from:'',to:'',note:'',cover:'',ack:false};msg={t:'Request sent. You will see the answer under My requests.'}}catch(e){msg={err:true,t:'Could not send just now. Check your connection and try again.'}}
+  rqBusy=false;render()}
+async function rqDecide(id,ok){const r=reqs[id];if(!r)return;const reply=String(rqReply[id]||'').trim();
+  try{if(ok){const bid=String(r.name||'leave').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+r.from;const doc={name:r.name,from:r.from,to:r.to,days:r.days||weekdaysBetween(r.from,r.to),note:[r.note,r.long?'Own cover: '+(r.cover||'not given'):''].filter(Boolean).join('. '),source:'request',updatedAt:new Date().toISOString()};await db.doc('leave/'+bid).set(doc);blocks[bid]={id:bid,...doc}}
+    await db.doc('leavereq/'+id).update({status:ok?'approved':'declined',reply,decidedAt:new Date().toISOString()});reqs[id]={...r,status:ok?'approved':'declined',reply};delete rqReply[id];
+    msg={t:ok?'Approved and added to the calendar. Press Send latest to drivers when you are ready.':'Declined. The driver will see it in the app.'};pushStat();render()}
+  catch(e){msg={err:true,t:'Could not save just now.'};render()}}
 /* ---------- render ---------- */
 function render(){
   const box=$('root');if(!box)return;
@@ -7372,11 +7449,12 @@ function render(){
   box.innerHTML=`<div class="lvx">
    <div class="head"><h1>Leave calendar</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-lv="add">+ Add leave</button><button type="button" class="sh-btn" data-lv="pdf" title="One page PDF of the month showing">Download PDF</button></div>`:''}</div>
    <p class="lead">${isMgr()?'Everyone’s booked leave, with how many drivers are off each day against your limit.':'Check a day before you ask for time off. Green days have room, amber has one spot left, red is full.'}</p>
+   ${!isMgr()?drvReqHTML():''}
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the calendar from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lv="share">Send latest to drivers</button></div>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${busy?`<p class="msg" role="status">${esc(busy)}</p>`:''}
    ${armImport?`<div class="confirm"><p>Replace imported leave from <b>${esc(nice(armImport.range.from))}</b> to <b>${esc(nice(armImport.range.to))}</b> with <b>${armImport.blocks.length} bookings</b> from ${esc(armImport.file)}? Leave before or after those dates, and leave you added by hand, stays.</p><button type="button" class="sh-btn primary" data-lv="doimport">Replace</button><button type="button" class="sh-btn" data-lv="noimport">Cancel</button></div>`:''}
-   ${isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-lv="view" data-v="cal" aria-pressed="${view==='cal'}">Calendar</button><button type="button" data-lv="view" data-v="list" aria-pressed="${view==='list'}">Upcoming leave</button><button type="button" data-lv="view" data-v="tot" aria-pressed="${view==='tot'}">Driver totals</button><button type="button" data-lv="view" data-v="set" aria-pressed="${view==='set'}">Limit and blackouts</button></div>`:''}
-   ${view==='tot'&&isMgr()?totHTML():view==='list'&&isMgr()?listHTML():view==='set'&&isMgr()?setHTML():calHTML()}
+   ${isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-lv="view" data-v="cal" aria-pressed="${view==='cal'}">Calendar</button><button type="button" data-lv="view" data-v="req" aria-pressed="${view==='req'}">Requests${pendN()?` <span class="n">${pendN()}</span>`:''}</button><button type="button" data-lv="view" data-v="list" aria-pressed="${view==='list'}">Upcoming leave</button><button type="button" data-lv="view" data-v="tot" aria-pressed="${view==='tot'}">Driver totals</button><button type="button" data-lv="view" data-v="set" aria-pressed="${view==='set'}">Limit and blackouts</button></div>`:''}
+   ${view==='req'&&isMgr()?mgrReqHTML():view==='tot'&&isMgr()?totHTML():view==='list'&&isMgr()?listHTML():view==='set'&&isMgr()?setHTML():calHTML()}
   </div>`;
 }
 function calHTML(){
@@ -7586,6 +7664,11 @@ async function share(){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-lv]');if(!el||!document.getElementById('mod-leave').contains(el))return;
   const a=el.dataset.lv,v=el.dataset.v;if(a!=='del')armDel=false;
+  if(a==='rqopen'){rqOpen=true;msg=null;render();const f=$('rqf');if(f)f.focus();return}
+  if(a==='rqcancel'){rqOpen=false;msg=null;render();return}
+  if(a==='rqsend'){rqSend();return}
+  if(a==='rqdel'){try{await db.doc('leavereq/'+v).delete();delete reqs[v];msg={t:'Request cancelled.'}}catch(x){msg={err:true,t:'Could not cancel just now.'}}render();return}
+  if(a==='rqok'||a==='rqno'){el.disabled=true;rqDecide(v,a==='rqok');return}
   if(a==='pdf'){const mm=cv==='week'?(()=>{const t=new Date(wk);t.setDate(t.getDate()+2);return new Date(t.getFullYear(),t.getMonth(),1)})():month;printMonth(mm,el);return}
   if(a==='prev'){month=new Date(month.getFullYear(),month.getMonth()-1,1);sel=null;render();return}
   if(a==='next'){month=new Date(month.getFullYear(),month.getMonth()+1,1);sel=null;render();return}
@@ -7609,16 +7692,23 @@ document.addEventListener('click',async e=>{
   if(a==='share'){el.disabled=true;msg={t:'Sending to drivers…'};render();try{await share();msg={t:'Done. Drivers now see the latest leave calendar. The page is reloading.'}}catch(x){msg={err:true,t:'Could not send just now. Try again in a minute.'}}render();return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#mod-leave tr[data-lv=edit],#mod-leave tr[data-lv=tot]'))e.target.click()});
-document.addEventListener('input',e=>{if(e.target.id==='lv_tq'){tq=e.target.value;topen=null;$('tt').innerHTML=totTable()}});
-document.addEventListener('change',e=>{if(e.target.id==='lv_tper'){tper=e.target.value;topen=null;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_tsort'){tsort=e.target.value;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_imp'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value=''}});
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='lv_rqn'){rq.note=t.value;return}if(t.id==='lv_rqc'){rq.cover=t.value;return}if(t.dataset&&t.dataset.rq){rqReply[t.dataset.rq]=t.value;return}
+  if(e.target.id==='lv_tq'){tq=e.target.value;topen=null;$('tt').innerHTML=totTable()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='lv_rqf'){rq.from=t.value;if(rq.to&&rq.to<rq.from)rq.to=rq.from;if(!rq.to)rq.to=rq.from;render();return}if(t.id==='lv_rqt'){rq.to=t.value;render();return}if(t.id==='lv_rqa'){rq.ack=t.checked;render();return}
+  if(e.target.id==='lv_tper'){tper=e.target.value;topen=null;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_tsort'){tsort=e.target.value;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_imp'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value=''}});
 async function start(role){
   const n=new Date();month=new Date(n.getFullYear(),n.getMonth(),1);wk=monday(n);if((n.getDay()+6)%7>=5)wk.setDate(wk.getDate()+7);
-  if(role!=='mgr'){mode='drv';render();return}
+  if(role!=='mgr'){mode='drv';render();
+    try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}
+    try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
+    if(db&&me&&me.staff){try{db.collection('leavereq').where('staff','==',me.staff).onSnapshot(sn=>{const o={};for(const d of sn.docs)o[d.id]=__D(d);reqs=o;if(!rqOpen)render()},()=>{})}catch(e){}}
+    render();return}
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
   mode='mgr';
   if(!db){msg={err:true,t:'Could not connect to the saved leave. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();for(const d of s.docs){const p=__D(d);staff[(String(p.first||'')+' '+String(p.last||'')).trim().toUpperCase()]=p}}catch(e){}
   try{const c=await db.doc('leavecfg/main').get();if(c.exists)cfg=Object.assign(cfg,__D(c))}catch(e){}
+  db.collection('leavereq').onSnapshot(sn=>{const o={};for(const d of sn.docs)o[d.id]=__D(d);reqs=o;pushStat();const a=document.activeElement;if(editing||(a&&a.closest&&a.closest('#mod-leave')&&a.tagName==='INPUT'))return;render()},()=>{});
   db.collection('leave').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));blocks=o;pushStat();
     if(busy||editing)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-leave .card'))return;render()},()=>{msg={err:true,t:'Could not load leave just now.'};render()});
 }
@@ -10604,7 +10694,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610271330';
+const VERSION='202610271400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
