@@ -5440,7 +5440,7 @@ function rtHTML(rows,multi){
   const PA=rows.prevAll,pe=PA?avg(PA.map(r=>r.eta)):null,tn=sum(rows.map(r=>r.nc==null?0:+r.nc)),te2=sum(rows.map(r=>+(r.enq||0)));
   const pn=PA?sum(PA.map(r=>r.nc==null?0:+r.nc)):null,pq=PA?sum(PA.map(r=>+(r.enq||0))):null,ST=rows.svT,SP=rows.svTp;
   const vs=`<small class="vs">vs ${PLAB[view]||"last week"}</small>`,tl=(h,v,sub,dd,cls)=>`<div class="tk"><small>${h}</small><b class="${cls||""}">${v}</b><span class="ts">${sub}</span>${dd?`<span class="td">${dd} ${vs}</span>`:""}</div>`;
-  return `<p class="rt-cap">How the contract is going</p><div class="rt-sum rtk">
+  return `<p class="rt-cap">Whole contract</p><div class="rt-sum rtk">
      ${tl("2 hr ETA",p1(te),"Target "+T().etaG+"%",PA?dlt(te,pe,"pct"):"",te==null?"":te*100>=T().etaG?"g":"b")}
      ${tl("NC scans",tn==null?"0":Math.round(tn),"Lower is better",PA?dlt(tn,pn,"down"):"")}
      ${tl("Enquiries",String(Math.round(te2||0)),"Lower is better",PA?dlt(te2||0,pq||0,"down"):"")}
@@ -5915,7 +5915,7 @@ function mountSV(box,drivers,emptyTxt){
   const all=rows.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,M=N-P-X;
   const gs=GRPO.filter(g=>rows.some(r=>r.grp===g));
   const th=(k,l,c)=>`<th class="${c||""}" scope="col"><button type="button" data-ss="${k}">${l}<i aria-hidden="true"></i></button></th>`;
-  box.innerHTML=`<div class="rt-sum">
+  box.innerHTML=`<p class="rt-cap">Whole contract</p><div class="rt-sum">
      <div><small>Surveys</small><b>${N}</b></div>
      <div><small>Score</small>${(sc=>`<b class="${N?(sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?Math.round(all.reduce((a,x)=>a+(+x.s||0),0)/N*100)/10:0)}</div>
      <div class="sv-g"><small>9 or 10</small><b>${P}</b></div>
@@ -10752,7 +10752,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280350';
+const VERSION='202610280400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
