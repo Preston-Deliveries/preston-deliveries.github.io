@@ -3647,6 +3647,37 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary table.stk td:not(:first-child)[data-l]::before{content:attr(data-l);display:block;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted)}
 }
 </style>
+<style id="rsm">
+#sh-main .rt .rsw{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+#sh-main .rt table.rsm{width:100%!important;min-width:0!important;border-collapse:collapse;table-layout:fixed;font-size:.92rem}
+#sh-main .rt table.rsm th{background:var(--sh-sunk);padding:0;border-bottom:1px solid var(--sh-line);text-align:right}
+#sh-main .rt table.rsm th button{all:unset;box-sizing:border-box;display:flex;justify-content:flex-end;align-items:center;gap:3px;width:100%;padding:10px 8px;font:700 .7rem var(--sh-body);letter-spacing:.05em;text-transform:uppercase;color:var(--g,#1E8A4C);cursor:pointer;white-space:nowrap}
+#sh-main .rt table.rsm th.dr button{justify-content:flex-start}
+#sh-main .rt table.rsm th button i{font-style:normal;font-size:.55rem}
+#sh-main .rt table.rsm th.dr{width:30%}
+#sh-main .rt table.rsm td{padding:10px 8px;border-bottom:1px solid var(--sh-line);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;vertical-align:middle}
+#sh-main .rt table.rsm tbody tr:last-child td{border-bottom:0}
+#sh-main .rt table.rsm td.dr{text-align:left;white-space:normal}
+#sh-main .rt table.rsm td.dr b{display:block;font-size:.92rem;line-height:1.2}
+#sh-main .rt table.rsm td.dr small{display:block;font-size:.7rem;color:var(--sh-muted);margin-top:2px}
+#sh-main .rt table.rsm td.dr .gp{font-size:.62rem;padding:0 5px;border-radius:4px;font-weight:800;background:var(--ps,#EEF2F7);color:var(--p,#5A6576)}
+#sh-main .rt table.rsm td.dr .you{font-style:normal;font-size:.6rem;font-weight:800;background:var(--g,#6C3FD1);color:#fff;border-radius:4px;padding:0 5px;vertical-align:2px}
+#sh-main .rt table.rsm tr.me td{background:var(--gs)}
+#sh-main .rt table.rsm td.none{text-align:center;white-space:normal;color:var(--sh-muted)}
+#sh-main .rt i.rd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px;background:var(--sh-line)}
+#sh-main .rt i.rd.r-g{background:#1E8A4C}#sh-main .rt i.rd.r-a,#sh-main .rt i.rd.r-w{background:#D98B00}#sh-main .rt i.rd.r-b{background:#C8352B}
+#sh-main .rt .rsk{font-size:.8rem;color:var(--sh-muted);margin-top:8px}#sh-main .rt .rsk i.rd{margin-left:2px}
+@media (max-width:700px){
+#sh-main .rt table.rsm{font-size:.74rem}
+#sh-main .rt table.rsm th button{padding:8px 2px;font-size:.56rem;letter-spacing:.02em}
+#sh-main .rt table.rsm td{padding:8px 2px}
+#sh-main .rt table.rsm :is(th,td):first-child{padding-left:8px}#sh-main .rt table.rsm :is(th,td):last-child{padding-right:8px}
+#sh-main .rt table.rsm th.dr{width:27%}
+#sh-main .rt table.rsm td.dr b{font-size:.78rem}
+#sh-main .rt table.rsm .dy{display:none}
+#sh-main .rt i.rd{width:6px;height:6px;margin-right:3px}
+}
+</style>
 <style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -5305,14 +5336,15 @@ const MK={g:"✓",w:"!",b:"✕","":""};
 function cell(c,txt){return `<span class="rt-v ${c?"r-"+c:"r-n"}">${c?`<i aria-hidden="true">${MK[c]}</i>`:""}${txt}</span>`}
 function rowHTML(r,multi){
   const nm=r.name||r.login,sub=r.name?r.login:"";
+  const d=c=>`<i class="rd ${c?"r-"+c:"r-n"}" aria-hidden="true"></i>`;
   return `<tr class="${r.me?"me":""}${r.st==="full"?" full":""}" data-k="${escR(r.key)}">
-   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?`<span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small>${r.pc!=null?`<small class="m-pcs">${Math.round(r.pc).toLocaleString("en-AU")} parcels${multi&&r.days?` \u00b7 ${r.days} day${r.days===1?"":"s"}`:""}</small>`:""}</td>
-   
-   <td class="m-k" data-l="2 hr ETA">${cell(r.rt.eta,p1(r.eta))}${r.etaRk?`<small class="rk2">${r.etaRk}/${r.etaRkOf}</small>`:""}</td>
-   <td class="m-k" data-l="NC scans">${cell(r.rt.nc,r.nc==null?"n/a":Math.round(r.nc))}${r.ncRk?`<small class="rk2">${r.ncRk}/${r.ncRkOf}</small>`:""}</td>
-   <td class="m-k" data-l="Enquiries">${cell(r.rt.enq,r.enq==null?"0":Math.round(r.enq))}</td>
-   <td class="num m-i" data-l="Parcels">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
-   <td class="num mu m-i" data-l="FTD">${r.ftd==null?"n/a":p1(r.ftd)}</td>${multi?`<td class="num m-i" data-l="Days">${r.days||""}</td>`:""}</tr>`;
+   <td class="dr"><b>${escR(nm)}${r.me?' <em class="you">You</em>':""}</b><small>${sub?escR(sub):""}${r.grp?` <span class="gp dg-${escR(r.grp)}">${escR(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
+   ${multi?`<td class="r dy">${r.days||""}</td>`:""}
+   <td class="r">${r.pc==null?"n/a":Math.round(r.pc).toLocaleString("en-AU")}</td>
+   <td class="r">${r.ftd==null?"n/a":p1(r.ftd)}</td>
+   <td class="r">${d(r.rt.eta)}${p1(r.eta)}</td>
+   <td class="r">${d(r.rt.nc)}${r.nc==null?"n/a":Math.round(r.nc)}</td>
+   <td class="r">${d(r.rt.enq)}${r.enq==null?"0":Math.round(r.enq)}</td></tr>`;
 }
 function rtBody(box){
   const rows=box.__rows||[],multi=box.__multi,F=filtRows(rows);
@@ -5342,8 +5374,8 @@ function rtHTML(rows,multi){
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rt-tw"><table class="rt-t nork res-t"><thead><tr>${th("name","Driver","dr")}${th("eta","2 hr ETA")}${th("nc","NC scans")}${th("enq","Enquiries")}${th("pc","Parcels","num")}${th("ftd","FTD","num")}${multi?th("days","Days","num"):""}</tr></thead><tbody></tbody></table></div>
-   <p class="rt-key"><span class="rt-v r-g"><i>\u2713</i>On target</span> <span class="rt-v r-b"><i>\u2715</i>Missed</span> 2 hr ETA ${T().etaG}% or more, no NC scans, no enquiries.</p>`;
+   <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("pc","Parcels","r")}${th("ftd","FTD","r")}${th("eta","ETA","r")}${th("nc","NC","r")}${th("enq","Enq","r")}</tr></thead><tbody></tbody></table></div>
+   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA, ${T().etaG}% or more. NC: NC scans, none. Enq: enquiries, none. Tap a heading to sort.</p>`;
 }
 function mountRT(box,rows,multi){
   box.classList.add("rt");box.__rows=rows;box.__multi=multi;
@@ -10639,7 +10671,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610272245';
+const VERSION='202610272300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
