@@ -7374,6 +7374,8 @@ function mySurvey(which,opt){
   return{found:true,sub,n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:sc.length?sc.reduce((a,x)=>a+x,0)/sc.length:null,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
 }
 function myPrecards(){const K=myKeys();return(S().precards||[]).filter(p=>K.has(dkey(p.driver))).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
+function hoursFor(dates){const by={};(data&&data.clock||[]).forEach(c=>by[c.date]=c);let m=0,n=0;
+  for(const d of dates||[]){const c=by[d];if(!c||!c.start||!c.finish)continue;const v=Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0));if(v>0){m+=v;n++}}return{m,n}}
 function weekShifts(){
   const now=new Date(),t=dayOf(now);const dow=(fromIso(t).getDay()+6)%7;const mon=new Date(fromIso(t).getTime()-dow*864e5);
   const ids=Array.from({length:7},(_,i)=>{const x=new Date(mon.getTime()+i*864e5);return dayOf(new Date(x.getTime()+12*36e5))});
@@ -7566,6 +7568,7 @@ function statsHTML(per,x,sv,own){
    </div>
    <div class="ms-sec"><h3>Parcels<em>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'–'}</em></h3>
     ${x&&x.pc!=null?[x.days>1?row('Average a day',Math.round(x.pc/x.days).toLocaleString('en-AU')):''].join(''):''}
+    ${(h=>h.n?row('Hours worked',hrs(h.m))+(h.n>1?row('Average hours a day',hrs(Math.round(h.m/h.n))):''):'')(hoursFor(per.dates))}
     ${x&&me&&me.staff&&per.dates&&per.dates.length?`<div class="ms-r" id="me_earn" data-sid="${esc(me.staff)}" data-a="${esc([...per.dates].sort()[0])}" data-b="${esc([...per.dates].sort().slice(-1)[0])}"><span class="l">Approx earned<small>Working it out…</small></span><b>…</b></div>`:''}
    </div>
    ${(x||(sv&&sv.found))?`<div class="ms-sec ms-fb"><h3>${own?'Feedback for you':'Feedback'}</h3>${fbHTML}</div>`:''}
@@ -7592,7 +7595,6 @@ function profileHTML(){
   <p class="me-per">${esc(per.label)}</p>
   ${statsHTML(per,x,sv,own)}
   ${trendHTML(own)}
-  <section class="me-box g-start"><h2>${my('My shifts this week','Shifts this week')}</h2><div class="me-sh">${wk.rows.map(r=>`<div class="${r.id===wk.today?'td':''}${r.c?'':' off'}"><span>${esc(niceDay(r.id))}</span><span>${r.c?esc(nice(r.c.start))+' to '+(r.c.finish?esc(nice(r.c.finish)):'now'):'No shift'}</span><b>${r.m?hrs(r.m):''}</b></div>`).join('')}<div class="tot"><span>Total</span><span></span><b>${hrs(wk.tot)}</b></div></div></section>
   ${brief?`<section class="me-box g-news"><h2>Team brief</h2><p class="me-line">${signed?'<span class="ok">✓ Signed</span>':'<span class="due">Not signed yet</span>'} · ${esc(brief.date?niceDay(brief.date):'Latest brief')}</p>${signed||!own?'':'<button type="button" class="sh-btn primary me-go" data-nav="briefs">Read and sign</button>'}</section>`:''}
   ${data&&data.inv.length?`<section class="me-box g-admin"><h2>${my('My invoices','Invoices')}</h2><div class="me-sh">${data.inv.slice(0,4).map(v=>`<div><span>${esc(v.from?niceDay(v.from):'')}</span><span>${v.total?'$'+(+v.total).toFixed(2):''}</span><b class="st ${esc(v.status)}">${esc(tc(v.status||''))}</b></div>`).join('')}</div></section>`:''}
   ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf"><h2>${my('What your customers said','What customers said')}</h2>${sv.said.slice(0,3).map(t=>`<p class="me-q">“${esc(t)}”</p>`).join('')}</section>`:''}
@@ -10912,7 +10914,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280810';
+const VERSION='202610280820';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
