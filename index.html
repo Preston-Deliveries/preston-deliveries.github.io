@@ -3151,6 +3151,13 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .ms-fb li::before{content:'';position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--c)}
 #sh-main .ms-fb li.enq{--c:#C62828}#sh-main .ms-fb li.eta{--c:#D98B00}#sh-main .ms-fb li.nc{--c:#C2410C}#sh-main .ms-fb li.sv{--c:#B7356B}
 #sh-main .ms-good{margin:4px 0 10px;color:#14804A;font-weight:600}
+</style><style id="lkdrv">
+#sh-main .lk-h{margin:14px 0 8px;font:800 .74rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;color:var(--sh-muted)}
+#sh-main .lk-drv{display:flex;flex-direction:column;gap:8px}
+#sh-main .lk-drv .lk-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#sh-main .lk-drv .lk-top .go{margin-left:auto}
+#sh-main .lk-sts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+#sh-main .lk-sts span{font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--sh-sunk);color:var(--sh-ink)}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -4256,7 +4263,7 @@ function lookupHTML(){
   for(const id of list){const r=S.runs[id];let g=groups.find(x=>x.driver===r.driver);if(!g){g={driver:r.driver,ids:[]};groups.push(g)}g.ids.push(id)}
   return `<div class="lk">
     <div class="lk-bar">
-      <input type="search" id="lookupQ" class="lk-q" placeholder="Type a street to find its driver" value="${esc(S.q)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Street name">
+      <input type="search" id="lookupQ" class="lk-q" placeholder="Type a street or driver to find" value="${esc(S.q)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Street or driver">
       <label class="lk-all" for="lookupAll"><input type="checkbox" id="lookupAll" ${S.allPc?'checked':''}> All postcodes</label>
       ${(downloads=window.__UVDL||downloads||window.__DLSHIM)?`<button type="button" class="btn primary" data-act="printSort">Download ${esc(S.pc)} printout</button>`:''}
       ${window.APP&&APP.isEditor?`<button type="button" class="btn" data-act="shareRuns" title="Drivers see the sort and run sheets as they are now">Send latest to drivers</button>`:''}
@@ -4283,13 +4290,18 @@ function renderResults(){
     box.innerHTML=rows.length?`<div class="az">${h}${last?'</section>':''}</div>`:`<div class="state"><h2>No streets for ${esc(S.pc)} yet</h2><p class="hint">Streets appear here once the drivers for this postcode are loaded.</p></div>`;
     return;
   }
+  /* drivers: by name or driver number, across every postcode */
+  const tk=t.replace(/\s+/g,'');
+  const drv=allIds().filter(id=>{const r=S.runs[id];const nm=normName(r.driver||''),lg=String(r.login||'').toUpperCase().replace(/\s+/g,'');return(r.driver&&r.driver!=='Unassigned'&&(nm.startsWith(t)||nm.split(' ').some(w=>w.startsWith(t))))||(tk.length>=2&&lg===tk)}).slice(0,12);
+  const colD=colourMap();
+  const drvHTML=drv.length?`<div class="lk-drv"><h3 class="lk-h">Drivers</h3>${drv.map(id=>{const r=S.runs[id],st=[...new Set((r.streets||[]).map(x=>String(x.name||'').trim()).filter(Boolean))];return `<div class="lk-st"><div class="lk-top"><i class="cdot" style="background:${colD[id]}"></i><span class="lk-name">${esc(r.driver)}</span><span class="lk-pc">${esc(r.postcode)}</span>${r.login?`<span class="rg">${esc(r.login)}</span>`:''}<button type="button" class="go" data-act="openRun" data-v="${esc(id)}">Run sheet</button></div><div class="lk-sts">${st.length?st.slice(0,40).map(n=>`<span>${esc(n)}</span>`).join('')+(st.length>40?`<span>and ${st.length-40} more</span>`:''):'<span>No streets yet</span>'}</div></div>`}).join('')}</div>`:'';
   let res=idx.filter(g=>(S.allPc||g.pc===S.pc)&&(g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t)));
   res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||(b.pc===S.pc)-(a.pc===S.pc)||a.n.localeCompare(b.n));
   const shown=res.slice(0,60);
-  cnt.textContent=res.length?`${res.length} match${res.length===1?'':'es'}${S.allPc?' across all postcodes':' in '+S.pc}${res.length>60?', showing the first 60':''}`:'';
-  box.innerHTML=shown.length?`<div class="lk-res">${shown.map(g=>`<div class="lk-st"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="go edst" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}">Edit</button>`:''}</div>
+  cnt.textContent=[drv.length?`${drv.length} driver${drv.length===1?'':'s'}`:'',res.length?`${res.length} street${res.length===1?'':'s'}${S.allPc?' across all postcodes':' in '+S.pc}${res.length>60?', showing the first 60':''}`:''].filter(Boolean).join(' and ');
+  box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res">${shown.map(g=>`<div class="lk-st"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="go edst" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}">Edit</button>`:''}</div>
     ${g.parts.map(p=>`<div class="lk-part"><i class="cdot" style="background:${p.col}"></i><span class="who">${esc(p.driver)}</span>${p.rg?`<span class="rg">${esc(p.rg)}</span>`:''}<button type="button" class="go" data-act="openRun" data-v="${esc(p.id)}">Run sheet</button></div>`).join('')}</div>`).join('')}</div>`
-    :`<div class="state"><h2>No street matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Nothing in ${esc(S.pc)} matches. Tick All postcodes to search everywhere.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`;
+    :drv.length?'':`<div class="state"><h2>No street or driver matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Nothing in ${esc(S.pc)} matches. Tick All postcodes to search everywhere.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`);
 }
 function sortPrintDoc(pc){
   const rows=streetIndex().filter(g=>g.pc===pc), col=colourMap();
@@ -9826,7 +9838,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270010';
+const VERSION='202610270030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
