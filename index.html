@@ -3097,6 +3097,12 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary tr.smr:hover td{background:var(--ds)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary tr.smr .dno{color:#0B1320}}
 :root[data-theme="dark"] #sh-main #mod-summary tr.smr .dno{color:#0B1320}
+#sh-main #mod-summary td.smd b{display:block;white-space:nowrap}
+#sh-main #mod-summary .smm{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:3px}
+#sh-main #mod-summary .smm .sub{margin:0}
+#sh-main #mod-summary abbr{text-decoration:none;cursor:help}
+#sh-main #mod-summary .smk{margin-top:8px}
+#sh-main #mod-summary table.tb{min-width:0}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -8048,10 +8054,10 @@ function grpCls(p){const pc=String(p.pc||'');if(/^42\d\d$/.test(pc))return 'dg-'
 function grpLbl(p){const c=grpCls(p);return{'dg-xl':'XL','dg-relief':'Relief','dg-sup':'Supervisor','dg-office':'Office'}[c]||p.pc}
 function driverTable(rows){
   if(!rows.length)return `<div class="empty">No driver results for this period yet. Load the day's emails on Driver Results.</div>`;
-  return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th>No.</th><th>Group</th><th class="r ptsh">Total points</th><th class="r">Results points</th><th class="r">Survey points</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th></tr></thead><tbody>
-  ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="n">${i+1}</td><td><b>${esc(p.name)}</b>${p.login&&p.login!==p.name?`<span class="sub">${esc(p.login)}</span>`:''}</td><td>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join(' ')}</td><td>${g?`<span class="smg">${esc(gl)}</span>`:esc(p.pc)}</td>
-   <td class="r pts"><b>${fmtN(totPts(a))}</b></td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?`${sgn(svPts(a))} <span class="sub in">(${a.scores.length})</span>`:'–'}</td><td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':a.nc<=1?'warn':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td></tr>`}).join('')}
-  </tbody></table></div>`;
+  return `<div class="tw"><table class="tb"><thead><tr><th class="n">#</th><th>Driver</th><th class="r ptsh"><abbr title="Total points">TP</abbr></th><th class="r"><abbr title="Results points">RP</abbr></th><th class="r"><abbr title="Survey points">SP</abbr></th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
+  ${rows.map(({p,a},i)=>{const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="n">${i+1}</td><td class="smd"><b>${esc(p.name)}</b><span class="smm">${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join(' ')}${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sub in">${esc(p.pc)}</span>`}${p.login&&p.login!==p.name?`<span class="sub in">${esc(p.login)}</span>`:''}</span></td>
+   <td class="r pts"><b>${fmtN(totPts(a))}</b></td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?`${sgn(svPts(a))} <span class="sub in">(${a.scores.length})</span>`:'–'}</td><td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.days?dot(a.nc===0?'good':'bad'):''}${a.nc}</td><td class="r">${a.days?dot(a.enq?'bad':'good'):''}${a.enq}</td></tr>`}).join('')}
+  </tbody></table></div><p class="hint smk">TP total points · RP results points · SP survey points · ETA 2 hr ETA · NC NC scans · Enq enquiries</p>`;
 }
 function attention(rows){
   const L=[];for(const{p,a}of rows){const why=[];
@@ -8071,7 +8077,7 @@ function contractHTML(C){
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days));
   const rows=drvRows(keys,C);
   return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)])+
-  `<section class="card"><h2>By postcode and group</h2><div class="tw"><table class="tb"><thead><tr><th>Postcode or group</th><th class="r ptsh">Total points</th><th class="r">Results points</th><th class="r">Survey points</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r">Scan errors</th><th class="r">Enquiries</th><th class="r">Survey</th></tr></thead><tbody>
+  `<section class="card"><h2>By postcode and group</h2><div class="tw"><table class="tb"><thead><tr><th>Group</th><th class="r ptsh"><abbr title="Total points">TP</abbr></th><th class="r"><abbr title="Results points">RP</abbr></th><th class="r"><abbr title="Survey points">SP</abbr></th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="NC scans">NC</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r pts"><b>${fmtN(totPts(a))}</b></td><td class="r">${a.max?`${fmtN(a.pts)}<span class="sub in"> / ${fmtN(a.max)}</span>`:'–'}</td><td class="r">${a.scores.length?sgn(svPts(a)):'–'}</td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fmtPct(pct(a.ftdW,a.ftdN))}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}</td><td class="r">${a.nc}</td><td class="r">${a.enq}</td><td class="r">${n==null?'–':n+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see just its drivers.</p></section>`+attention(rows)+
   `<section class="card"><div class="ch"><h2>Drivers</h2>${sortSel()}</div>${driverTable(rows)}<p class="hint">Tap a driver to see everything about them.</p></section>`;
@@ -9723,7 +9729,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262220';
+const VERSION='202610262230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
