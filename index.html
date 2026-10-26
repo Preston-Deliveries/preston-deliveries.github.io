@@ -4341,7 +4341,7 @@ const h=decodeURIComponent((location.hash||'').slice(1));
 let first='home';
 if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
-else if(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h)) first='guide';
+else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
 else if(h) first='runs';
 else if(previewChild){try{const v=window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
 else{try{const v=localStorage.getItem('sec1161');if(SECS.includes(v))first=v}catch(e){}}
@@ -6061,7 +6061,7 @@ window.addEventListener("runnames",()=>{try{if(!$("driverView").hidden)showDrive
 <script type="text/x-mod" data-mod="guide">
 
 (function(){
-const BASE="https://claude.ai/artifact/UikokNoFnHQAsHwFC8coYm";
+const BASE="https://preston-deliveries.github.io/";
 const UPDATED="24 October 2026";
 const CATS={
   delivery:{name:"Delivering parcels",short:"Delivery",cc:"var(--c-delivery)",cs:"var(--c-delivery-soft)"},
@@ -6176,7 +6176,7 @@ function sheetHtml(t){
   h.push(`</article>`);
   return h.join("");
 }
-function linkFor(id){return BASE?BASE+"#"+id:"#"+id}
+function linkFor(id){return BASE+"#guide/"+id}
 function showSheet(id){
   const i=T.findIndex(t=>t.id===id);if(i<0)return showHome();
   const t=T[i],prev=T[i-1],next=T[i+1];
@@ -6200,7 +6200,7 @@ function showHome(){
 }
 function go(id){
   if(id==="home"){showHome();try{history.replaceState(null,"","#")}catch(e){}}
-  else{showSheet(id);try{history.replaceState(null,"","#"+id)}catch(e){}}
+  else{showSheet(id);try{history.replaceState(null,"","#guide/"+id)}catch(e){}}
 }
 
 /* ---------- editing (owner and editors only) ---------- */
@@ -6291,9 +6291,10 @@ q.addEventListener("focus",search);
 q.addEventListener("keydown",e=>{if(e.key==="Enter"){const f=res.querySelector("button");if(f){go(f.dataset.id);q.value="";res.hidden=true;q.blur()}}if(e.key==="Escape"){res.hidden=true}});
 res.addEventListener("click",e=>{const b=e.target.closest("button");if(b){go(b.dataset.id);q.value="";res.hidden=true}});
 document.addEventListener("click",e=>{if(!e.target.closest(".searchbox"))res.hidden=true});
-window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(h&&T.some(t=>t.id===h))showSheet(h)});
+const gid=()=>decodeURIComponent(location.hash.slice(1)).replace(/^guide\//,"");
+window.addEventListener("hashchange",()=>{const h=gid();if(h&&T.some(t=>t.id===h)){if(window.APP&&APP.section!=="guide")APP.go("guide");showSheet(h)}});
 /* start */
-const start=location.hash.slice(1);
+const start=gid();
 if(start&&T.some(t=>t.id===start))showSheet(start);else showHome();
 window.__T=T;
 if(window.APP)APP.stat("guide",T.length+" topics in "+CAT_ORDER.length+" groups");
@@ -10811,7 +10812,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610280650';
+const VERSION='202610280700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
