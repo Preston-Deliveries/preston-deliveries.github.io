@@ -3151,6 +3151,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main .ms-fb li::before{content:'';position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--c)}
 #sh-main .ms-fb li.enq{--c:#C62828}#sh-main .ms-fb li.eta{--c:#D98B00}#sh-main .ms-fb li.nc{--c:#C2410C}#sh-main .ms-fb li.sv{--c:#B7356B}
 #sh-main .ms-good{margin:4px 0 10px;color:#14804A;font-weight:600}
+#sh-main .ms-r b small.mr{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--sh-sunk);color:var(--sh-muted);font:700 .74rem var(--sh-body);vertical-align:2px}
 </style><style id="lkdrv">
 #sh-main .lk-h{margin:14px 0 8px;font:800 .74rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;color:var(--sh-muted)}
 #sh-main .lk-drv{display:flex;flex-direction:column;gap:8px}
@@ -6788,6 +6789,12 @@ function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?'
 /* minimal stats: total points, driver results, survey ranking, parcels */
 function dayP(r){const t=targets();const e=r.enq==null||r.enq===''?0:+r.enq,n=+r.nc||0;return(r.eta==null||r.eta===''?1:(r.eta*100>=t.etaG?1:0))+(n>0?0:1)+(e>0?-1:1)}
 function rankIn(by){const K=myKeys(),L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&L[rk-2][1]===L[i][1])rk--;return{rank:rk,of:L.length}}
+/* where I sit against everyone for one measure: ETA higher is better, NC scans fewer is better */
+function metricRank(dates,kind){
+  const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);const o=by[k]=by[k]||{e:0,en:0,n:0};if(r.eta!=null&&r.eta!==''){o.e+=+r.eta;o.en++}o.n+=+r.nc||0}}
+  const L=Object.entries(by).map(([k,o])=>[k,kind==='eta'?(o.en?o.e/o.en:null):o.n]).filter(([,v])=>v!=null).sort((a,b)=>kind==='eta'?b[1]-a[1]:a[1]-b[1]);
+  const K=myKeys(),i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&Math.abs(L[rk-2][1]-L[i][1])<1e-9)rk--;return{rank:rk,of:L.length};
+}
 function resultsBy(dates){const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}return by}
 function resultsRank(dates){
   const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}
@@ -6814,8 +6821,8 @@ function statsHTML(per,x,sv,own){
     ${x?[
       rr?row('Rank',`${rr.rank} <small>of ${rr.of}</small>`,rr.rank<=3?'gd':''):'',
       row('Days worked',String(x.days)),
-      row('2 hr ETA',pctf(x.eta),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
-      row('NC scans',String(Math.round(x.nc||0)),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
+      row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`)),
+      row('NC scans',String(Math.round(x.nc||0))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'nc'))),ncDays.length?'b':'g',ok(ncDays.length,`On ${ncDays.map(r=>sh(r.dt)).join(', ')}`)),
       row('Enquiries',String(Math.round(x.enq||0)),enqDays.length?'b':'g',ok(enqDays.length,`On ${enqDays.map(r=>sh(r.dt)).join(', ')}, minus 1 point each day`))].join('')
      :`<p class="ms-none">No results ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]} yet.</p>`}
    </div>
@@ -9838,7 +9845,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270030';
+const VERSION='202610270040';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
