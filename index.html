@@ -2741,7 +2741,14 @@ p.ck-alert{color:#5A3C00!important}
 </style><style id="theme-all">
 /* One colour scheme everywhere: each page uses its section colour (blue on the road, amber news and guides, purple performance, green team, orange admin, teal overview) */
 #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){background:var(--g)!important;border-color:var(--g)!important;color:#fff!important}
-#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){background:transparent!important;color:var(--g)!important;border-bottom-color:var(--g)!important}
+/* page tabs look like the By week buttons: one rounded box, the chosen tab filled in */
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs{display:inline-flex!important;align-self:flex-start;max-width:100%;overflow-x:auto;flex-wrap:nowrap!important;gap:3px;padding:3px!important;background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-radius:10px!important;margin:0 0 4px!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button{border:0!important;border-radius:8px!important;margin:0!important;padding:8px 14px!important;color:var(--sh-ink)!important;font:600 .95rem var(--sh-body)!important;background:transparent!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:hover{background:var(--gs)!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){background:var(--g)!important;color:#fff!important}
+#sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active) :is(.n,b,span:not(:first-child),small){color:inherit!important;opacity:.85;background:transparent!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){color:#0B1320!important}}
+:root[data-theme="dark"] #sh-main#sh-main#sh-main .sh-sec.pg :is(.dyx,.eqx,.fbx,.ivx,.lvx,.ntx,.pcx,.rpx,.smx,.tbx,.tsx,.unx,.vcx)>.tabs>button:is([aria-pressed="true"],[aria-selected="true"],.on,.active){color:#0B1320!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}}
 :root[data-theme="dark"] #sh-main#sh-main .sh-sec.pg :is(.tabs,.seg,.modes,.chips:not(.grpc):not(.miss),.cats,.pcs,.ckseg,.me-seg)>button:is([aria-pressed="true"],[aria-selected="true"]){color:#0B1320!important}
 #sh-main .sh-sec.pg .tile:not(.bad):not(.warn):not(.good):not(.none){box-shadow:inset 0 3px 0 var(--g)}
@@ -9159,7 +9166,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610261510';
+const VERSION='202610261520';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
