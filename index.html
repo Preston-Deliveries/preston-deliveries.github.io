@@ -3107,8 +3107,13 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-summary .att-c{--fe:#C62828;--fes:#FCE1E1;--ft:#A85F00;--fts:#FDEBC8;--fn:#C2410C;--fns:#FCE6DA;--fs:#B7356B;--fss:#FBE1EC}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main #mod-summary .att-c{--fe:#F48A8A;--fes:#3D1A1A;--ft:#F2B24A;--fts:#3A2C10;--fn:#F4936A;--fns:#3D2116;--fs:#F48FB1;--fss:#3D1A28}}
 :root[data-theme="dark"] #sh-main #mod-summary .att-c{--fe:#F48A8A;--fes:#3D1A1A;--ft:#F2B24A;--fts:#3A2C10;--fn:#F4936A;--fns:#3D2116;--fs:#F48FB1;--fss:#3D1A28}
-#sh-main #mod-summary .att li{align-items:center}
-#sh-main #mod-summary .att .lnk{min-width:170px;text-align:left}
+#sh-main #mod-summary .fbl li{display:grid;grid-template-columns:28px minmax(180px,260px) 1fr;gap:14px;align-items:center;padding:10px 4px;cursor:pointer;border-bottom:1px solid var(--sh-line)}
+#sh-main #mod-summary .fbl li:hover{background:var(--sh-sunk)}
+#sh-main #mod-summary .fbl .fbn b{display:block;font-weight:800;color:var(--sh-ink)}
+#sh-main #mod-summary .fbl .smm{display:flex;align-items:center;gap:6px;margin-top:2px}
+#sh-main #mod-summary .fbl .sml{font-size:.78rem;color:var(--sh-muted)}
+#sh-main #mod-summary .fbl .smg{display:inline-block;font:800 .68rem var(--sh-body);letter-spacing:.04em;padding:1px 7px;border-radius:999px;background:var(--ds);color:var(--d)}
+@media (max-width:640px){#sh-main #mod-summary .fbl li{grid-template-columns:28px 1fr}#sh-main #mod-summary .fbl .fbs{grid-column:2}}
 #sh-main #mod-summary .fbs{display:flex;flex-wrap:wrap;gap:6px}
 #sh-main #mod-summary .fbc{font:700 .78rem var(--sh-body);padding:3px 9px;border-radius:999px;white-space:nowrap}
 #sh-main #mod-summary .fbc.enq{background:var(--fes);color:var(--fe)}#sh-main #mod-summary .fbc.eta{background:var(--fts);color:var(--ft)}
@@ -8085,7 +8090,7 @@ function attention(rows){
   if(!L.length)return '';L.sort((x,y)=>y.n-x.n);
   const SHORT={enq:x=>x.t.replace('customer ',''),eta:x=>'ETA under '+T.etaG+'% '+x.t.split(' on ')[1],nc:x=>x.t.replace(' on ',' over '),sv:x=>x.t.replace('survey score','low survey').replace(' of 0 to 6','')};
   return `<details class="card att-c" ${L.length<=12?'open':''}><summary><h2>Needs attention <span class="cnt">${L.length}</span></h2><span class="tgl"></span></summary>
-   <ul class="att">${L.map(({p,I})=>`<li><button type="button" class="lnk" data-sm="drv" data-v="${esc(p.key)}">${esc(p.name)}</button><span class="fbs">${I.map(i=>`<span class="fbc ${i.k}" title="${esc(i.d)}">${esc(SHORT[i.k](i))}</span>`).join('')}</span></li>`).join('')}</ul></details>`;
+   <ul class="att fbl">${L.map(({p,I})=>{const g=grpCls(p);return `<li data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="${g}"><span class="smrk" title="Things to work on">${I.length}</span><span class="fbn"><b>${esc(p.name)}</b><span class="smm">${p.login&&p.login!==p.name?`<span class="sml">${esc(p.login)}</span>`:''}${g?`<span class="smg">${esc(grpLbl(p))}</span>`:''}</span></span><span class="fbs">${I.map(i=>`<span class="fbc ${i.k}" title="${esc(i.d)}">${esc(SHORT[i.k](i))}</span>`).join('')}</span></li>`}).join('')}</ul></details>`;
 }
 const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
 function contractHTML(C){
@@ -9752,7 +9757,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610262340';
+const VERSION='202610262350';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
