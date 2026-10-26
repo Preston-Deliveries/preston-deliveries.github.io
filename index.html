@@ -4453,7 +4453,6 @@ function lookupHTML(){
       ${(downloads=window.__UVDL||downloads||window.__DLSHIM)?`<button type="button" class="btn primary" data-act="printSort">Download ${esc(S.pc)} printout</button>`:''}
       ${window.APP&&APP.isEditor?`<button type="button" class="btn" data-act="shareRuns" title="Drivers see the sort and run sheets as they are now">Send latest to drivers</button>`:''}
     </div>
-    <div class="lk-key" aria-label="Drivers in ${esc(S.pc)}">${groups.map(g=>`<button type="button" data-act="openRun" data-v="${esc(g.ids[0])}" title="Open ${esc(g.driver)}'s run sheet"><i class="cdot" style="background:${col[g.ids[0]]}"></i><span>${esc(g.driver)}</span></button>`).join('')||'<span class="hint">No drivers loaded for this postcode yet.</span>'}</div>
     <div class="lk-count" id="lkCount" aria-live="polite"></div>
     <div id="lkRes"></div>
     <div id="lkEd"></div>
@@ -4464,7 +4463,7 @@ function renderResults(){
   const t=normName(S.q), idx=streetIndex(), cnt=document.getElementById('lkCount');
   if(!t){
     const rows=idx.filter(g=>g.pc===S.pc);
-    cnt.textContent=`${rows.length} streets in ${S.pc}. Start typing to search, or tap a driver to open their run sheet.`;
+    cnt.textContent=`${rows.length} streets in ${S.pc}. Start typing a street or driver to search.`;
     let last='',h='';
     for(const g of rows){
       const L=g.n[0]||'#'; if(L!==last){h+=(last?'</section>':'')+`<section class="lt"><h3>${esc(L)}</h3>`;last=L}
@@ -10018,7 +10017,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270440';
+const VERSION='202610270450';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
