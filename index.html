@@ -3354,6 +3354,9 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main#sh-main #mod-runs .drivers .chip small{font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 #sh-main#sh-main #mod-runs .drivers .chip .bar{height:2px;margin-top:4px}
 @media (max-width:600px){#sh-main#sh-main #mod-runs .drivers{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}}
+</style><style id="navbadge">
+#sh-main .sh-li .bdg.nb,.sh-side .bdg.nb,.bdg.nb{position:static!important;margin-left:auto;box-shadow:none!important;flex:none}
+.sh-li .bdg.nb{margin-right:6px}
 </style><style id="persub">
 /* the row of days or weeks under Day, Week, Month */
 #sh-main .persub{display:flex;gap:6px;margin:-6px 0 14px;max-width:640px}
@@ -3697,7 +3700,7 @@ const DLRE=/^(download|print|export|save image|import time)/i;
 function tagDl(){document.querySelectorAll('#sh-main .sh-sec :is(button,a.sh-btn,a.btn)').forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^print/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
   const parents=new Set([...document.querySelectorAll('#sh-main .sh-sec .dlb')].map(b=>b.parentNode));
   parents.forEach(p=>{const kids=[...p.children];const dl=kids.filter(k=>k.classList.contains('dlb'));if(!dl.length)return;const firstDl=kids.indexOf(dl[0]);const tail=kids.slice(firstDl);dl.sort((a,b)=>b.classList.contains('dl-in')-a.classList.contains('dl-in'));const want=kids.filter(k=>!k.classList.contains('dlb')).concat(dl);if(!p.matches('td,li,tr')&&want.some((k,i)=>kids[i]!==k))dl.forEach(b=>p.appendChild(b));dl.forEach((b,i)=>b.classList.toggle('dlb1',i===0));p.classList.add('has-dl')})}
-let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc();tagDl()})}).observe(document.body,{childList:true,subtree:true});
+let pcQ=false;new MutationObserver(()=>{if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;tagPc();tagDl();try{applyNavBadges()}catch(e){}})}).observe(document.body,{childList:true,subtree:true});
 let dupQ=false;new MutationObserver(()=>{if(dupQ)return;dupQ=true;requestAnimationFrame(()=>{dupQ=false;markDup()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
   renderPageHead();
@@ -3794,7 +3797,13 @@ function renderWa(){
       window.open('https://wa.me/?text='+encodeURIComponent(t.value),'_blank','noopener')});
     sec.insertAdjacentElement('afterend',box)}
   box.hidden=false}
-function renderNav(){renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();
+/* red count next to Feedback, Uniform and Reports for managers when something new comes in */
+window.__navN=window.__navN||{};
+function applyNavBadges(){const on=role==='mgr';for(const k of ['feedback','uniform','reports']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
+async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested']];
+  for(const[c,k,f]of W){try{db.collection(c).onSnapshot(sn=>{let n=0;for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&f(v))n++}window.__navN[k]=n;applyNavBadges()},()=>{})}catch(e){}}}
+function renderNav(){renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
   document.querySelectorAll('.sh-role').forEach(e=>e.innerHTML=r)}
 function go(sec,opts){
@@ -10027,7 +10036,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610270530';
+const VERSION='202610270540';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
