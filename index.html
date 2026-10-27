@@ -4577,7 +4577,9 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #mod-enquiries .oc:has(.ob.part){display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px}
 #mod-enquiries .oc .ob{font-size:1rem;padding:14px 8px}
 #mod-results .rb-s small{white-space:nowrap}
-@media (max-width:899.98px){#mod-results .rb-r .rb-c:nth-of-type(5) b,#mod-results .rb-r .rb-c:nth-of-type(6) b{opacity:.75}}
+#mod-results .rb-r .rb-c:nth-of-type(5) b{opacity:.75}
+#mod-results .rb b.v-pc{color:var(--sh-ink)}
+@media (max-width:899.98px){#mod-results .rb-r .rb-c small{font-size:.7rem;letter-spacing:0}#mod-results .rb-r .rb-c b{font-size:.98rem}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6545,7 +6547,7 @@ function bVals(r){
    ["2 hr ETA",r.eta==null?"–":p1(r.eta),r.eta==null?"n":c(r.rt.eta)],
    ["Scan compliance",r.cp==null?"–":p1(r.cp),r.cp==null?"n":c(r.rt.nc)],
    ["Enquiries",(()=>{const f=Math.round(+r.enq||0),p=Math.round(+r.enqP||0);return p?`${f} + ${p} partly`:String(f)})(),(+r.enq||0)>0?"b":(+r.enqP||0)>0?"b":"gd"],
-   ["First time delivery",r.ftd==null?"–":p1(r.ftd),r.ftd==null?"n":r.ftd>=.9995?"gd":r.ftd*100>=tf-1e-9?"g":"b"],
+   ["Parcels",r.pc==null?"–":Math.round(+r.pc).toLocaleString("en-AU"),"pc"],
    ["Survey score",r.sv==null?"–":String(r.sv),r.sv==null?"n":r.sv>=100?"gd":r.sv>=70?"g":"b"]];
 }
 function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";if(r.rank<=10)return "kt";if(n>10&&r.rank>n-10)return "kb";return ""}
@@ -6556,13 +6558,13 @@ function mountBoard(box,rows){
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div><button type="button" class="sh-btn rb-pdf" data-rb="pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>Download PDF</button>
   <div class="rb" role="table" aria-label="Driver results">
-   <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries</span><span role="columnheader">FTD <i class="ns">not scored</i></span><span role="columnheader">Survey <i class="ns">not scored</i></span><span role="columnheader">Score</span></div>
+   <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries</span><span role="columnheader">Parcels</span><span role="columnheader">Survey <i class="ns">not scored</i></span><span role="columnheader">Score</span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.95&&r.rank;
      return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR(r.name||r.login)}</b><small>${r.days} day${r.days===1?"":"s"}${r.rank?"":" · not ranked"}</small></span></button>
-     ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["2 hr ETA","Scan","Enquiries","FTD","Survey"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
+     ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["2 hr ETA","Scan","Enquiries","Parcels","Survey"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b class="v-${(r.avg||0)>=96-1e-9?"g":"b"}">${scTxt(r)}</b></span></div>`}).join("")}
   </div>
-  <p class="rb-key">Ranked by score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days and ${PCNEED[view].toLocaleString("en-AU")} parcels.`} Ties go to the driver with more parcels. FTD and survey are shown but not scored.</p>${window.SCORE.howHTML("sc-how")}`;
+  <p class="rb-key">Ranked by score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days and ${PCNEED[view].toLocaleString("en-AU")} parcels.`} Ties go to the driver with more parcels. Survey is shown but not scored.</p>${window.SCORE.howHTML("sc-how")}`;
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
@@ -6630,9 +6632,9 @@ async function boardPdf(btn){
     doc.setFillColor(15,26,42);doc.rect(0,0,W,26,"F");doc.setFillColor(242,120,45);doc.rect(0,26,W,1.6,"F");
     doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  \u00b7  CONTRACT 1161",M,9);
     doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text("Driver results",M,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(perLabel(),M,23.5);
-    const nR=rows.filter(r=>r.rank).length,col={g:[30,138,76],gd:[30,138,76],b:[198,40,40],n:[138,148,166]},RK={k1:[212,160,23],k2:[154,164,177],k3:[184,115,51],kt:[30,138,76],kb:[198,40,40]};
+    const nR=rows.filter(r=>r.rank).length,col={g:[30,138,76],gd:[30,138,76],b:[198,40,40],n:[138,148,166],pc:[20,33,58]},RK={k1:[212,160,23],k2:[154,164,177],k3:[184,115,51],kt:[30,138,76],kb:[198,40,40]};
     const body=rows.map(r=>{const V=bVals(r);return [r.rank?String(r.rank):"\u2013",(r.name||r.login)+(r.rank?"":"  (not ranked, "+r.days+" day"+(r.days===1?"":"s")+")"),...V.map(v=>v[1]),scTxt(r)]});
-    doc.autoTable({head:[["#","DRIVER","2 HR ETA","SCAN %","ENQUIRIES","FTD *","SURVEY *","SCORE"]],body,startY:top,margin:{left:M,right:M,bottom:bottom},theme:"plain",
+    doc.autoTable({head:[["#","DRIVER","2 HR ETA","SCAN %","ENQUIRIES","PARCELS","SURVEY *","SCORE"]],body,startY:top,margin:{left:M,right:M,bottom:bottom},theme:"plain",
       styles:{fontSize:fs,cellPadding:{top:(rh-fs*0.35)/2,bottom:(rh-fs*0.35)/2,left:1.5,right:1.5},textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2}},
       headStyles:{fontStyle:"bold",textColor:[90,102,128],fontSize:Math.max(6.5,fs-1.5)},
       columnStyles:{0:{halign:"center",cellWidth:10,fontStyle:"bold"},1:{cellWidth:"auto",fontStyle:"bold"},2:{halign:"center",cellWidth:20},3:{halign:"center",cellWidth:20},4:{halign:"center",cellWidth:20},5:{halign:"center",cellWidth:18},6:{halign:"center",cellWidth:18},7:{halign:"right",cellWidth:20,fontStyle:"bold"}},
@@ -12550,7 +12552,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610302200';
+const VERSION='202610302300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
