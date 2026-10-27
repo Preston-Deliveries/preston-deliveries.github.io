@@ -42,6 +42,16 @@ body:not(.web-ready) .sh-app{display:none}
 #web-gate .wg-load{text-align:center;color:#5A6576;margin:12px 0 4px}
 #web-gate .wg-spin{width:34px;height:34px;margin:10px auto 0;border:4px solid #E3EAF3;border-top-color:#1B3F6B;border-radius:50%;animation:wgspin .9s linear infinite}
 @keyframes wgspin{to{transform:rotate(360deg)}}
+/* opening and sign in screen: always dark, so there is no white flash */
+html{background:#0B1220}body:not(.web-ready){background:#0B1220}
+#web-gate{background:#0B1220;color:#E6ECF4}
+#web-gate .wg-card{background:#131E2E;border-color:#24324A;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#web-gate .wg-top{background:#0F1A2A}
+#web-gate p,#web-gate .wg-load{color:#B4C0D0}#web-gate label{color:#8E9BAE}#web-gate h1{color:#fff}
+#web-gate input[type=email],#web-gate input[type=url],#web-gate input[type=password],#web-gate input[type=text]{background:#0E1826;border-color:#2E3D55;color:#fff}
+#web-gate .wg-btn{background:#2B5C99}#web-gate .wg-link,#web-gate .wg-eye,#web-gate .wg-msg{color:#8FB8EA}#web-gate .wg-msg.err{color:#FF8A80}
+#web-gate .wg-alt{border-top-color:#24324A}
+#web-gate .wg-spin{border-color:#24324A;border-top-color:#F2B705}
 #web-off{position:fixed;left:0;right:0;bottom:0;z-index:2500;padding:9px 14px calc(9px + env(safe-area-inset-bottom,0px));background:#5A3200;color:#FFE2B0;font:600 .88rem "Barlow",system-ui,sans-serif;text-align:center}
 #web-off[hidden]{display:none}
 .web-out{background:none;border:1px solid rgba(255,255,255,.22);color:#C8D1DE;border-radius:6px;font:600 .78rem "Barlow",system-ui,sans-serif;padding:5px 10px;cursor:pointer}
@@ -12666,7 +12676,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303800';
+const VERSION='202610303900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
