@@ -4384,9 +4384,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main #mod-summary .tb.stk td:empty{display:none!important}
 @media (max-width:899.98px){:root:root:root #sh-main#sh-main #mod-summary .tb.stk tr{padding-left:12px!important}}
 :root:root:root #sh-main#sh-main#sh-main#sh-main #mod-uniform .tabs [data-un="view"][data-v="form"]{display:none!important}
-:root:root:root #sh-main#sh-main#sh-main #mod-uniform>.unord{display:flex!important;justify-content:center;width:calc(100% - 32px);margin:0 16px 14px;min-height:52px;font-size:1.05rem}
-:root:root:root #sh-main#sh-main#sh-main #mod-uniform>.unord[hidden]{display:none!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-iv="tab"][data-v="make"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
+:root:root:root #sh-main#sh-main#sh-main #mod-uniform>.unord,:root:root:root #sh-main#sh-main#sh-main #mod-invoices>.unord{display:flex!important;justify-content:center;width:calc(100% - 32px);margin:0 16px 14px;min-height:52px;font-size:1.05rem}
+:root:root:root #sh-main#sh-main#sh-main :is(#mod-uniform,#mod-invoices)>.unord[hidden]{display:none!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices .tabs [data-iv="tab"][data-v="make"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets .ckwa,:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckwa"],:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckcopy"]{display:none!important}
 #sh-main #mod-timesheets .tsback{align-self:flex-start;margin-bottom:10px}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="pclear"]:not(.tsback){display:none!important}
@@ -4952,8 +4952,8 @@ const VT={
   lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','drm','share'])},
   staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
   timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
-  invoices:{lab:'Edit',e:VTA('im',['lopen','lst']).concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],tabs:'[data-iv="tab"]:not([data-v="make"])'},
-  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','clear']),tabs:'[data-un="view"]:not([data-v="form"])',order:true},
+  invoices:{lab:'Edit',e:VTA('im',['lopen','lst']).concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],tabs:'[data-iv="tab"]:not([data-v="make"])',order:{data:{iv:'tab',v:'make'},label:'+ Make an invoice',on:'.tabs [data-iv="tab"][data-v="make"][aria-pressed="true"]'}},
+  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','clear']),tabs:'[data-un="view"]:not([data-v="form"])',order:{data:{un:'view',v:'form'},label:'+ Order uniform',on:'.tabs [data-un="view"][data-v="form"][aria-pressed="true"]',keep:'[data-un="edit"],[data-un="syncNames"],[data-un="savecfg"]'}},
   reports:{lab:'Edit',e:VTA('rp',['file','del','msave','rmph','unfile'])}
 };
 let vtMode='view',vtObs=null,vtBusy=false,vtFix1=false;
@@ -4968,10 +4968,10 @@ function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vt
   sec.querySelectorAll('button,label.sh-btn').forEach(b=>{const t=(b.textContent||'').trim();if(/^(\+ |Add |Add$|Save(?! image)|Delete|Tap again to delete|Remove|Mark |Done$|Paste |Sign and submit|Clear$|Remind|Send latest|Hide from drivers|Show to drivers|Cancel$|✕$)/.test(t)&&!b.closest('.vtab'))b.classList.add('vt-e')});
   /* back buttons always stay, so you can get out of any screen */
   sec.querySelectorAll('button,a').forEach(b=>{if(/^\s*\u2039/.test(b.textContent||''))b.classList.remove('vt-e','vt-nc','vt-ro')});
-  if(c.order){/* uniform: ordering has its own button and works in View too */
-    let ob=sec.querySelector(':scope>.unord');if(!ob){ob=document.createElement('button');ob.type='button';ob.className='sh-btn primary unord';ob.dataset.un='view';ob.dataset.v='form';ob.textContent='+ Order uniform';const vt=sec.querySelector(':scope>.vtab');if(vt)vt.after(ob);else sec.prepend(ob)}
-    const onForm=!!sec.querySelector('.tabs [data-un="view"][data-v="form"][aria-pressed="true"]');ob.hidden=onForm;ob.classList.remove('vt-e','vt-ro','vt-nc');
-    if(onForm)sec.querySelectorAll('.vt-e,.vt-ro,.vt-nc').forEach(x=>{if(!x.matches('[data-un="edit"],[data-un="syncNames"],[data-un="savecfg"]'))x.classList.remove('vt-e','vt-ro','vt-nc')})}
+  if(c.order){/* a page's main action has its own button and works in View too (Order uniform, Make an invoice) */
+    const O=c.order;let ob=sec.querySelector(':scope>.unord');if(!ob){ob=document.createElement('button');ob.type='button';ob.className='sh-btn primary unord';Object.assign(ob.dataset,O.data);ob.textContent=O.label;const vt=sec.querySelector(':scope>.vtab');if(vt)vt.after(ob);else sec.prepend(ob)}
+    const onForm=!!sec.querySelector(O.on);ob.hidden=onForm;ob.classList.remove('vt-e','vt-ro','vt-nc');
+    if(onForm)sec.querySelectorAll('.vt-e,.vt-ro,.vt-nc').forEach(x=>{if(!(O.keep&&x.matches(O.keep)))x.classList.remove('vt-e','vt-ro','vt-nc')})}
   vtBusy=false;requestAnimationFrame(vtAlign)}
 function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;if(cur==='uniform'&&vtFix1){vtFix1=false;const f=sec.querySelector('.tabs [data-un="view"][data-v="form"][aria-pressed="true"]');if(f){const r=sec.querySelector('.tabs [data-un="view"][data-v="req"]');if(r)r.click();return}}
   if(cur==='invoices'&&vtFix1){vtFix1=false;const mk=sec.querySelector('[data-iv="tab"][data-v="make"][aria-pressed="true"]');if(mk){const sb=sec.querySelector('[data-iv="tab"][data-v="sub"]');if(sb)sb.click();return}}const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
@@ -12155,7 +12155,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610292330';
+const VERSION='202610300000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
