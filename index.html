@@ -4045,6 +4045,10 @@ html.appui:not(.drvui)[data-theme="dark"] .t-runs,html.appui:not(.drvui)[data-th
 html.appui:not(.drvui)[data-theme="dark"] .t-invoices,html.appui:not(.drvui)[data-theme="dark"] .t-uniform,html.appui:not(.drvui)[data-theme="dark"] .t-reports,html.appui:not(.drvui)[data-theme="dark"] .t-feedback{--tc:#F5A25D}
 html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-theme="dark"] .t-alerts,html.appui:not(.drvui)[data-theme="dark"] .t-clock{--tc:#AAB4C3}
 #sh-main .rt .rt-sum.rtk .tk small{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.15}
+#mod-results .clr1{margin-top:10px}#mod-results .clr1:empty{display:none}
+#mod-results .clr1 .c1{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;padding:12px 14px;border-radius:12px;border:1.5px dashed #C8352B;color:#C8352B;font-weight:800;min-height:48px}
+#mod-results .clr1 p{margin:0 0 8px;font-size:.95rem}#mod-results .clr1 .b{display:flex;gap:8px;flex-wrap:wrap}#mod-results .clr1 .b button{min-height:48px;padding:0 16px;border-radius:12px;font-weight:800}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) #mod-results .clr1 .c1{color:#F48A8A;border-color:#F48A8A}}html[data-theme="dark"] #mod-results .clr1 .c1{color:#F48A8A;border-color:#F48A8A}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -4142,6 +4146,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
       <input type="file" id="r_fileInput" accept=".xlsx,.xls,.csv" multiple="" hidden="">
     </label>
     <div class="msg" id="r_msg" hidden=""></div>
+    <div class="clr1" id="r_clear1"></div>
   </section>
 
   <details class="card" id="r_stepCheck">
@@ -5621,9 +5626,19 @@ function renderTable(){
   }
 }
 function mk(type,val,cls,label){const i=document.createElement("input");i.type=type;i.value=val;if(cls)i.className=cls;i.setAttribute("aria-label",label);i.id="in_"+label.replace(/\W+/g,"_");return i}
+/* step 1: clear the selected day so the files can be loaded again */
+let clr1Arm=false;
+function renderClear1(){const box=document.getElementById("r_clear1");if(!box)return;const d=week.days[selDay];
+  const nm=DAYS.find(x=>x[0]===selDay)[1]+" "+short(dayDate(selDay));
+  if(!d||!Object.keys(d.rows||{}).length){box.innerHTML="";clr1Arm=false;return}
+  box.innerHTML=clr1Arm?`<p>Remove everything loaded for <b>${nm}</b>? You can drop the files in again after.</p><div class="b"><button type="button" class="danger" data-c1="yes">Yes, clear ${nm}</button><button type="button" data-c1="no">Keep it</button></div>`
+    :`<button type="button" class="c1" data-c1="arm">Made a mistake? Clear ${nm} and load it again</button>`;
+  box.querySelectorAll("[data-c1]").forEach(b=>b.onclick=()=>{const a=b.dataset.c1;if(a==="arm"){clr1Arm=true;renderClear1();return}
+    if(a==="no"){clr1Arm=false;renderClear1();return}
+    clr1Arm=false;delete week.days[selDay];saveDay(selDay);note(nm+" is cleared. Drop the files in again.");renderAll()})}
 function paintDot(el,kind,v){const s=rate(kind,v);el.style.background=`var(--${s})`}
-function renderClear(){
-  const box=$("clearBox");box.textContent="";
+function renderClear(){renderClear1();
+  const box=$("clearBox");if(!box)return;box.textContent="";
   const b=document.createElement("button");b.className="danger";b.textContent="Clear this day";
   b.onclick=()=>{box.textContent="";const q=document.createElement("span");q.textContent="Remove this day's data?";
     const y=document.createElement("button");y.className="danger";y.textContent="Yes, clear";y.onclick=()=>{delete week.days[selDay];saveDay(selDay);renderAll()};
@@ -11415,7 +11430,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281440';
+const VERSION='202610281450';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
