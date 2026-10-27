@@ -3875,7 +3875,7 @@ html.drvui .dr .persub button{min-height:56px}html.drvui .dr .persub button b{fo
 .dr-fb .need li::before{content:"✗";position:absolute;left:4px;color:var(--bad);font-weight:900}.dr-fb .good li::before{content:"✓";position:absolute;left:4px;color:var(--ok);font-weight:900}
 html.drvui .dr .me-trend{border-radius:18px}
 html.drvui .dr .dr-said .me-q{font-size:1.05rem}
-@media (max-width:899.98px){html.drvui .sh-links [data-nav="home"]{order:1}html.drvui .sh-links [data-nav="me"]{order:2}html.drvui .sh-links [data-nav="alerts"]{order:3}html.drvui .sh-links [data-nav="menu"]{order:4}}
+@media (max-width:899.98px){html.drvui .sh-links [data-nav="home"]{order:1}html.drvui .sh-links [data-nav="me"]{order:2}html.drvui .sh-links [data-nav="alerts"]{order:3}html.drvui .sh-links [data-nav="updates"]{order:3}html.drvui .sh-links [data-nav="menu"]{order:4}}
 .iv-sum .ps{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;margin:0 0 16px;display:flex;flex-direction:column;gap:12px}
 .iv-sum .hd{display:flex;flex-direction:column;gap:2px}.iv-sum h2{margin:0;font:800 1.25rem var(--sh-body)}.iv-sum .hd small{color:var(--sh-muted);font-size:.95rem}
 .iv-sum .ps-big{display:flex;flex-direction:column;gap:2px;padding:14px;border-radius:14px;background:var(--okbg,rgba(30,138,76,.1))}
@@ -4337,7 +4337,7 @@ const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards',
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','directory','uniform'];
-const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Time off',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'Office news',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
+const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Time off',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
 const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
@@ -4379,15 +4379,15 @@ let cur='home', role='loading', stats={}, homeMsg=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
-function visible(){return SECS.filter(s=>role==='mgr'?true:!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s))}
-function tabSecs(){return role==='mgr'?['home','summary','updates','menu']:['home','me','alerts','menu']}
+function visible(){return SECS.filter(s=>s!=='alerts'&&(role==='mgr'?true:!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
+function tabSecs(){return role==='mgr'?['home','summary','updates','menu']:['home','me','updates','menu']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
   document.body.appendChild(w);document.body.classList.add('sh-more-on');}
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
 function navHTML(){const v=new Set(visible());const T=tabSecs();
-  if(role!=='mgr'){const L=T.concat(DRV_MENU.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',alerts:'News',menu:'Menu'};
+  if(role!=='mgr'){const L=T.concat(DRV_MENU.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',updates:'News',menu:'Menu'};
     return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'You are in user view. Tap for admin view':'You are in admin view. Tap for user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true">${previewChild?'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>':'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'}</svg></span><span class="sm">${previewChild?'User':'Admin'}</span></button>`:''}</div>`}
   let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','summary','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group">${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'You are in user view. Tap for admin view':'You are in admin view. Tap for user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true">${previewChild?'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>':'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'}</svg></span><span class="sm">${previewChild?'User':'Admin'}</span></button>`:''}</div>`}
@@ -4397,7 +4397,7 @@ function renderPageHead(){
   if(cur==='home'||cur==='me'){ph.hidden=true;ph.innerHTML='';return}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
-  {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['alerts','menu'].includes(cur);ph.className+=' dph';
+  {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['updates','menu'].includes(cur);ph.className+=' dph';
     ph.innerHTML=`<div class="in">${tab?'':`<button type="button" class="dback" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back</button>`}<h1>${esc(role==='mgr'&&cur==='updates'?'News':nm(cur)||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;markDup();return}
   ph.innerHTML=`<div class="in"><span class="eb">${esc(g&&g.k!=='start'?g.name:'Overview')}</span><h1>${esc(NAMES[cur]||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;
   markDup();
@@ -4537,7 +4537,11 @@ function selectify(){
 }
 /* red count next to Feedback, Uniform and Reports for managers when something new comes in */
 window.__navN=window.__navN||{};
-function applyNavBadges(){const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
+function newsBadge(){if(role==='mgr')return;let seen='';try{seen=localStorage.getItem('news_seen')||''}catch(e){}
+  if(cur==='updates'){const now=new Date().toISOString();try{localStorage.setItem('news_seen',now)}catch(e){}seen=now}
+  const N=((window.APP&&APP.SNAP&&APP.SNAP.notices)||[]).filter(n=>{const at=String(n.edited||n.postedAt||'');return at&&(!seen||at>seen)}).length;
+  document.querySelectorAll('.sh-links [data-nav="updates"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!N){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t})}
+function applyNavBadges(){try{newsBadge()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
   const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)]];
   for(const[c,k,f]of W){try{db.collection(c).onSnapshot(sn=>{let n=0;for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&f(v))n++}window.__navN[k]=n;applyNavBadges()},()=>{})}catch(e){}}}
@@ -4547,6 +4551,7 @@ function renderNav(){document.documentElement.classList.toggle('drvui',role!=='m
 function go(sec,opts){
   opts=opts||{};
   if(opts.act){const sel=opts.act;let n=0;const t=setInterval(()=>{const el=document.querySelector('#'+(MOD[sec]||'')+' '+sel);if(el&&!el.disabled){clearInterval(t);el.click();setTimeout(()=>{const f=document.querySelector('#'+MOD[sec]+' input:not([type=hidden]):not([type=search]),#'+MOD[sec]+' textarea');if(f)try{f.focus()}catch(e){}},150)}else if(++n>40)clearInterval(t)},100)}
+  if(sec==='alerts') sec='updates';
   if(!SECS.includes(sec)) sec='home';
   if(MGR_ONLY.includes(sec)&&role==='drv') sec='home';
   if(role==='drv'&&DRV_HIDE.includes(sec)) sec='me';
@@ -4576,12 +4581,12 @@ const AMENU=[['Every day','day',[['results','Load the daily results'],['timeshee
  ['Team','team',[['staff','Driver details'],['leave','Leave and requests'],['directory','Phone numbers'],['vchecks','Van checks']]],
  ['On the road','road',[['runs','Delivery order'],['sort','Whose street'],['precards','Card addresses'],['lockers','Building lockers']]],
  ['Office','office',[['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards'],['feedback','Driver messages']]],
- ['Me','me',[['me','My profile'],['alerts','My notifications'],['clock','My start and finish']]]];
+ ['Me','me',[['me','My profile'],['clock','My start and finish']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
   if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+'<button type="button" class="dm-out" data-sh="signout">Sign out</button>';setTimeout(applyNavBadges,0);return}
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
-  <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
+  <div class="dm-also">${['briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
 let aoSel=null;
@@ -8022,7 +8027,7 @@ async function homeCards(){
      ${wins.length?`<span class="win">★ ${esc(wins[0])}</span>`:''}`:`<span class="nores">No results for this week yet. They show here after the office loads them.</span>`}
      <span class="go">See my results<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
    </button>
-   ${news.length?`<section class="dh-card dh-news"><div class="hd"><h2>Office news</h2><button type="button" data-nav="alerts">See all</button></div>${news.map(n=>`<button type="button" class="dh-n${n.important?' imp':''}" data-nav="updates">${n.important?'<em>Important</em>':''}<b>${esc(n.title||'')}</b><small>${esc(ago(n.edited||n.postedAt))}</small></button>`).join('')}</section>`:''}`;
+   ${news.length?`<section class="dh-card dh-news"><div class="hd"><h2>Office news</h2><button type="button" data-nav="updates">See all</button></div>${news.map(n=>`<button type="button" class="dh-n${n.important?' imp':''}" data-nav="updates">${n.important?'<em>Important</em>':''}<b>${esc(n.title||'')}</b><small>${esc(ago(n.edited||n.postedAt))}</small></button>`).join('')}</section>`:''}`;
 }
 function driverHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates);
@@ -11360,7 +11365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281300';
+const VERSION='202610281310';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
