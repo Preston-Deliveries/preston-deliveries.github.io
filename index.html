@@ -11887,7 +11887,7 @@ function html(){
     <div class="iw-big">${[['p','By parcel',money(cfg.r1)+' a parcel, '+money(cfg.r2)+' on 2 load days'],['h','By the hour','Hours come from '+your+' timesheet'],['b','Both','Some days by parcel, some days by the hour']].map(([v,l,s])=>`<button type="button" data-im="ans" data-k="pay" data-v="${v}" aria-pressed="${ans.pay===v}">${l}<small>${esc(s)}</small></button>`).join('')}</div>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
   if(step==='rate')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your hourly rate?':'What is '+esc(your)+' hourly rate?'}</h3><p class="sub">You can change it on any day later if that day had a different rate.</p>
-    <label class="iw-rate"><span>$</span><input type="number" inputmode="decimal" step="0.01" min="0" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>
+    <label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="decimal" step="0.01" min="0" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>
     <button type="button" class="sh-btn primary iw-next" data-im="rateok" ${num(ans.rh)>0?'':'disabled'}>Next</button>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
   /* the days */
@@ -11905,7 +11905,7 @@ function html(){
   let wk=-1;
   for(const r of R){const v=r.v,a=r.auto,d=r.d,tk=!!ticks[d],H=v.t==='h';
     if(r.wk!==wk){wk=r.wk;h+=`<p class="iw-wk">Week ${wk+1}</p>`}
-    const inp=(k,lab,extra,step2)=>`<label class="iw-f"><span>${lab}</span><input type="number" inputmode="${k==='pc'||k==='xp'?'numeric':'decimal'}" min="0" step="${step2||'1'}" data-imd="${d}" data-k="${k}" value="${esc(v[k])}" aria-label="${esc(lab)} ${esc(short(d))}">${extra?`<small>${extra}</small>`:''}</label>`;
+    const inp=(k,lab,extra,step2)=>`<label class="iw-f"><span>${lab}</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="${k==='pc'||k==='xp'?'numeric':'decimal'}" min="0" step="${step2||'1'}" data-imd="${d}" data-k="${k}" value="${esc(v[k])}" aria-label="${esc(lab)} ${esc(short(d))}">${extra?`<small>${extra}</small>`:''}</label>`;
     const seg=(k,opts)=>`<div class="iw-seg" role="group">${opts.map(([val,l,s])=>`<button type="button" data-im="dset" data-d="${d}" data-k="${k}" data-v="${val}" aria-pressed="${String(v[k])===String(val)}">${l}${s?`<small>${s}</small>`:''}</button>`).join('')}</div>`;
     h+=`<div class="iw-day ${tk?'ok':''}" id="iwd-${d}"><div class="iw-dh"><b>${esc(DAYN[r.di])} ${fromIso(d).getDate()} ${MON[fromIso(d).getMonth()]}</b><span class="iw-dt">${money(dayTotal(v))}</span></div>
      ${ans.pay==='b'?seg('t',[['p','Parcels'],['h','Hourly']]):''}`;
@@ -11919,7 +11919,7 @@ function html(){
    ${off.length?`<p class="sub">Taken off this invoice: ${off.map(d=>`${esc(short(d))} <button type="button" class="lk il" data-im="back1" data-v="${d}">Put back</button>`).join(', ')}</p>`:''}</div>`;
   /* extra work */
   h+=`<div class="iw-sec"><h3>Extra work</h3><p class="sub">Only if the boss asked ${me?'you':esc(you)} to do extra work for a set amount, like $300 for the day. Say what it was for.</p>
-   ${extras.map((x,i)=>{const bad=num(x.amt)>0&&!String(x.why||'').trim();return `<div class="iw-x ${bad?'bad':''}"><div class="iw-g"><label class="iw-f"><span>Day</span><input type="date" data-imx="${i}" data-k="d" value="${esc(x.d||'')}"></label><label class="iw-f"><span>Amount, $</span><input type="number" inputmode="decimal" min="0" step="0.01" data-imx="${i}" data-k="amt" value="${esc(x.amt)}"></label></div>
+   ${extras.map((x,i)=>{const bad=num(x.amt)>0&&!String(x.why||'').trim();return `<div class="iw-x ${bad?'bad':''}"><div class="iw-g"><label class="iw-f"><span>Day</span><input type="date" data-imx="${i}" data-k="d" value="${esc(x.d||'')}"></label><label class="iw-f"><span>Amount, $</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="decimal" min="0" step="0.01" data-imx="${i}" data-k="amt" value="${esc(x.amt)}"></label></div>
      <label class="iw-f"><span>What was it for?</span><input data-imx="${i}" data-k="why" value="${esc(x.why||'')}" placeholder="e.g. Helped at the depot all day"></label>${bad?'<small class="iw-bad">Say what it was for.</small>':''}<button type="button" class="lk" data-im="xrm" data-v="${i}">Remove</button></div>`}).join('')}
    <button type="button" class="sh-btn" data-im="xadd">+ Add extra work</button></div>`;
   /* details on the invoice */
@@ -11927,7 +11927,7 @@ function html(){
   h+=`<details class="cfg iw-det" ${showCfg||miss.length||!String(invNo||'').trim()?'open':''}><summary>${me?'Your details on the invoice':esc(your)+' details on the invoice'} <small>${miss.length?'<b class="iw-bad">Missing: '+miss.map(k=>({abn:'ABN',bsb:'BSB',acctNo:'account number'})[k]).join(', ')+'</b>':'ABN '+esc(cfg.abn)+' · Invoice no. '+esc(invNo)}</small></summary>
    <div class="grid"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
     ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
-    ${me?'':[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel adds on top ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
+    ${me?'':[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel adds on top ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="text" inputmode="decimal" autocomplete="off" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
    </div><p class="sub">${last?`Last invoice${last.no?' number '+esc(last.no):''}: ${esc(nice(last.from))}${last.to?' to '+esc(nice(last.to)):''}, ${money(last.T?last.T.total:last.total)}.`:(me?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p>
    <div class="acts"><button type="button" class="sh-btn" data-im="savecfg">Save details for next time</button></div></details>`;
   /* totals */
@@ -11952,8 +11952,8 @@ let lastToast=null;
 function toast(){if(!msg||msg===lastToast)return;lastToast=msg;let t=document.getElementById('im_toast');if(!t){t=document.createElement('div');t.id='im_toast';t.setAttribute('role','status');document.body.appendChild(t)}
   t.textContent=msg.t;t.className=msg.err?'err show':'show';clearTimeout(t._h);t._h=setTimeout(()=>{t.classList.remove('show')},msg.err?6000:3500)}
 document.addEventListener('click',e=>{const t=document.getElementById('im_toast');if(t&&t.classList.contains('show')&&e.target===t){clearTimeout(t._h);t.classList.remove('show')}});
-function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
-  box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
+function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
+  box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
 function pick(id){sid=id;pickedFor=id;msg=null;cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
@@ -12298,6 +12298,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.dataset.imx&&t.dataset.k==='why'){paint();return}
   if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
+  if(t.inputMode==='decimal'){const c=t.value.replace(/[^\d.]/g,'').replace(/(\..*)\./g,'$1');if(c!==t.value)t.value=c}
   if(t.id==='im_no'){invNo=t.value;saveDraft();return}
   if(t.id==='im_rh'){ans.rh=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="rateok"]');if(b)b.disabled=!(num(ans.rh)>0);return}
   if(t.dataset.imc){const k=t.dataset.imc;cfg[k]=['r1','r2','rx','rh'].includes(k)?(t.value===''?'':+t.value):t.value;if(['r1','r2','rx'].includes(k))paint();return}
@@ -12665,7 +12666,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303700';
+const VERSION='202610303800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
