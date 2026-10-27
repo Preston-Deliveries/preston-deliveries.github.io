@@ -4527,6 +4527,11 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #ivp .ivp-acts{max-width:760px;margin:14px auto 0;display:flex;flex-direction:column;gap:10px}
 #ivp .ivp-acts button{width:100%;min-height:52px}
 #ivp .ivp-acts button:first-child{background:#E9B10A;color:#13213A}
+#mod-invoices .iw-sent{display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-radius:12px;border:2px solid #22A35A;background:rgba(34,163,90,.12);color:var(--sh-ink)}
+#mod-invoices .iw-sent b{font-size:1.1rem}
+#mod-invoices .iw-sent>span{font-size:.95rem}
+#mod-invoices .iw-sb{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+#mod-invoices .iw-tag{font-style:normal;font-size:.78rem;font-weight:800;color:#fff;background:#22A35A;border-radius:999px;padding:2px 8px;margin-top:4px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -11673,6 +11678,9 @@ function html(){
   if(!me)h+=`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`;
   else h+=`<p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p>`;
   if(!sid)return h+'</section>';
+  {const pv=logs[logId(sid,from)];if(pv){const st=pv.status||'submitted',when=pv.submittedAt||pv.at;const W={submitted:'The office has it and will check it.',checked:'The office has checked it.',paid:'The office has paid it.'};
+    h+=`<div class="iw-sent ${st}"><b>✓ ${me?'You sent your invoice':'Invoice sent'} for ${esc(short(pv.from))} to ${esc(short(pv.to||to))}</b><span>${when?'Sent '+esc(nice(String(when).slice(0,10)))+'. ':''}${W[st]||W.submitted} Total ${money(pv.T?pv.T.total:pv.total)}.</span>
+     <div class="iw-sb">${pv.v===2?`<button type="button" class="sh-btn sm" data-im="lsee" data-v="${esc(logId(sid,from))}">See it</button>`:''}${me&&st!=='submitted'?'':`<span class="sub">${me?'You do not need to send it again. Only change it if something is wrong.':''}</span>`}</div></div>`}}
   if(!asked&&step!=='days'&&knownAns(sid)){ans=loadAns(sid);syncCfg();step='days'}
   const nQ=ans.pay==='p'?2:3;
   /* question 1 */
@@ -11689,7 +11697,7 @@ function html(){
   const R=rows(),T=totals(R),last=lastLog(),off=offDays();const[cs,ce]=period(0),[ls,le]=period(-1);
   const PAYL={p:'By parcel',h:'By the hour',b:'Parcel and hourly'};
   h+=`<div class="iw-ans"><span>GST: <b>${ans.gst?'Registered':'Not registered'}</b></span><span>Paid: <b>${PAYL[ans.pay]||'By parcel'}</b></span>${ans.pay!=='p'?`<span>Rate: <b>${money(ans.rh)} an hour</b></span>`:''}<button type="button" class="sh-btn sm" data-im="chg">Change answers</button></div>
-   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per">${[[-1,'Last pay period',ls,le],[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))}</small></button>`).join('')}</div>
+   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per">${[[-1,'Last pay period',ls,le],[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))}</small>${logs[logId(sid,a)]?'<i class="iw-tag">✓ Sent</i>':''}</button>`).join('')}</div>
     <details class="iw-other" ${(from===cs&&to===ce)||(from===ls&&to===le)?'':'open'}><summary>Other dates</summary><div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label></div></details>
     ${me&&logs[logId(sid,from)]&&(logs[logId(sid,from)].status||'submitted')!=='submitted'?`<p class="iw-left">The office has already ${logs[logId(sid,from)].status==='paid'?'paid':'checked'} your invoice for these dates. Call the office if something needs changing.</p>`:''}
     ${from&&to&&(fromIso(to)-fromIso(from))/864e5>27?'<p class="warn">An invoice holds 4 weeks. Pick 4 weeks or less.</p>':''}</div>`;
@@ -12460,7 +12468,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300900';
+const VERSION='202610301000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
