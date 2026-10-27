@@ -4227,6 +4227,24 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root #sh-main #mod-summary .scopes.pcbig>button[aria-pressed="true"]{background:#1F3A5F;border-color:#1F3A5F;color:#fff}
 :root:root #sh-main #mod-summary .scopes.pcbig .cur{grid-column:1/-1;justify-self:start}
 </style>
+<style id="sidefit">
+/* desktop side menu: compact so it fits the screen without a scroll bar */
+@media (min-width:900px){
+ :root:root .sh-side .sh-links [data-nav]{padding-top:2px!important;padding-bottom:2px!important;min-height:0!important}
+ :root:root .sh-side .sh-links .sh-gl{padding-top:4px!important;padding-bottom:0!important}
+ :root:root .sh-side .sh-links{scrollbar-width:none}
+ :root:root .sh-side .sh-links::-webkit-scrollbar{display:none}
+ :root:root .sh-side .sh-brand{padding-top:2px!important;padding-bottom:4px!important;margin-bottom:2px!important}
+ :root:root .sh-side .sh-brand .sh-logo{width:34px!important;height:34px!important}
+ :root:root .sh-side .sh-brand .bt b{font-size:1.25rem!important;line-height:1.1!important}
+ :root:root .sh-side .sh-vt{padding-top:4px!important}
+ :root:root .sh-side .sh-vt .seg button{padding:4px 8px!important;font-size:.8rem!important;min-height:0!important}
+ :root:root .sh-side .sh-thm{margin-top:4px!important;padding:2px!important}
+ :root:root .sh-side .sh-thm button{padding:3px 6px!important;font-size:.8rem!important}
+ :root:root .sh-side .sh-role{gap:4px 8px}
+ :root:root .sh-side .sh-role .web-out{padding:3px 10px!important}
+}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4482,7 +4500,7 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','clock','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries']},{k:'team',name:'Team',secs:['leave','directory','feedback','timesheets','staff']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['vchecks','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','clock']},{k:'team',name:'Team',secs:['leave','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
 window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
@@ -4497,7 +4515,7 @@ const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','director
 const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
 const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
  menu:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
@@ -4546,8 +4564,8 @@ function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();
 function navHTML(){const v=new Set(visible());const T=tabSecs();
   if(role!=='mgr'){const L=T.concat(DRV_MENU.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',updates:'News',menu:'Menu'};
     return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'You are in user view. Tap for admin view':'You are in admin view. Tap for user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true">${previewChild?'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>':'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'}</svg></span><span class="sm">${previewChild?'User':'Admin'}</span></button>`:''}</div>`}
-  let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','summary','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
-  return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Drivers',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group">${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'You are in user view. Tap for admin view':'You are in admin view. Tap for user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true">${previewChild?'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>':'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'}</svg></span><span class="sm">${previewChild?'User':'Admin'}</span></button>`:''}</div>`}
+  let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','summary','me','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
+  return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group">${(canMgr||previewChild)?`<button type="button" class="tab vsw${previewChild?' u':''}" data-sh="${previewChild?'mv':'uv'}" aria-label="${previewChild?'You are in user view. Tap for admin view':'You are in admin view. Tap for user view'}"><span class="ic2"><svg viewBox="0 0 24 24" aria-hidden="true">${previewChild?'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>':'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>'}</svg></span><span class="sm">${previewChild?'User':'Admin'}</span></button>`:''}</div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
@@ -4733,14 +4751,13 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['Every day','day',[['results','Load the daily results'],['timesheets','Hours and clock ins'],['enquiries','Enquiries and NCRs'],['survey','Customer survey sheet']]],
+const AMENU=[['Every day','day',[['results','Load the daily results'],['enquiries','Enquiries and NCRs'],['survey','Customer survey sheet'],['clock','My start and finish']]],
  ['News for drivers','news',[['updates','Post an update'],['briefs','Write and send'],['guide','How to sheets']]],
- ['Team','team',[['staff','Driver details'],['leave','Leave and requests'],['directory','Phone numbers'],['vchecks','Van checks']]],
+ ['Team','team',[['leave','Leave and requests'],['directory','Phone numbers'],['vchecks','Van checks'],['feedback','Driver messages']]],
  ['On the road','road',[['runs','Delivery order'],['sort','Whose street'],['precards','Card addresses'],['lockers','Building lockers']]],
- ['Office','office',[['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards'],['feedback','Driver messages']]],
- ['Me','me',[['me','My profile'],['clock','My start and finish']]]];
+ ['Office','office',[['staff','Driver details'],['timesheets','Hours and clock ins'],['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+`<section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`;setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=[['Overview','me',[['me','Any driver\'s results']]],...AMENU].map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+`<section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`;setTimeout(applyNavBadges,0);return}
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
   <div class="dm-also">${['briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
@@ -11686,7 +11703,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290100';
+const VERSION='202610290130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12060,6 +12077,18 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
  function side(){const sd=document.querySelector('.sh-side');if(!sd||sd.querySelector('.sh-thm'))return;const b=document.createElement('div');b.className='sh-thm';b.setAttribute('role','group');b.setAttribute('aria-label','Light or dark screen');b.innerHTML='<button type="button" data-theme-set="light">☀ Light</button><button type="button" data-theme-set="dark">☾ Dark</button>';sd.appendChild(b);apply(get())}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',side);else side();setTimeout(side,1500);
  apply(get());
+})();
+</script>
+<script>
+/* desktop side menu: if it still does not fit, shrink it a little so there is no scroll bar */
+(function(){
+ function fit(){const L=document.querySelector('.sh-side .sh-links');if(!L)return;
+  if(!matchMedia('(min-width:900px)').matches){L.style.zoom='';return}
+  L.style.zoom='';const need=L.scrollHeight,have=L.clientHeight;
+  if(need>have+1){const z=Math.max(.74,have/need);L.style.zoom=String(Math.floor(z*1000)/1000)}}
+ let t=0;const q=()=>{clearTimeout(t);t=setTimeout(fit,60)};
+ window.addEventListener('resize',q);document.addEventListener('DOMContentLoaded',q);setTimeout(fit,800);setTimeout(fit,2500);
+ try{const mo=new MutationObserver(q);const go=()=>{const sd=document.querySelector('.sh-side');if(sd)mo.observe(sd,{childList:true,subtree:true});else setTimeout(go,500)};go()}catch(e){}
 })();
 </script>
 </body>
