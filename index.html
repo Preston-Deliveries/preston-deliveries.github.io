@@ -10056,7 +10056,7 @@ function driverHTML(C,k){
   const prof=[['Driver number',p.nos.join(', ')],['Scanner login',p.login],['Clock in today',ckT?(ckT.finish?'Finished '+nice(ckT.finish):'On shift since '+nice(ckT.start)):'Not clocked in'],['Email',p.email],['Emergency contact',p.ec],[/^\d/.test(p.pc)?'Postcode':'Group',p.pc],['Role',p.role&&!/^42\d\d$/.test(p.role)?tc(p.role):''],['Mobile',p.mobile],['Parking bay',p.bay],['Van',p.van],['Streets on run',streets?String(streets):''],['Precard addresses',pre?String(pre):''],['Parcel lockers',lck?String(lck):''],['Leave this year',yrDays?yrDays+' weekday'+(yrDays===1?'':'s'):'None booked'],['Last van check',(()=>{const v=Object.entries(S.vchecks).filter(([id,r])=>!id.startsWith('_')&&r&&normName(r.driver)===normName(p.name)).map(([,r])=>r).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];return v?short(v.date)+' '+String(v.date).slice(0,4)+' · '+({pass:'Pass',minor:'Pass, fix needed',fail:'Fail'}[v.outcome]||'')+(v.checker?' · '+v.checker:''):''})()],['Next leave',next?short(next.from)+' to '+short(next.to)+' '+String(next.to).slice(0,4):'']].filter(x=>x[1]);
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
   const bl=back&&back.s.t==='pc'?'Drivers in '+back.s.v:'Whole contract';
-  return `<button type="button" class="sh-btn back smback" data-sm="back">‹ ${esc(bl)}</button><section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
+  return `<section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
    tiles(a,[],PC?(PC.per[k]||blank()):null)+
    ''+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -10094,7 +10094,7 @@ function render0(){
     <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
     ${perHTML()}
    </div>
-   <div class="scopes pcbig" role="group" aria-label="Postcode">${[['all','All'],...['4214','4215','4217','4218'].map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
+   <div class="scopes pcbig" role="group" aria-label="Postcode">${[['all','All'],...['4214','4215','4217','4218'].map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${body}
    ${(()=>{try{return scope.t==='all'?smTrend(Object.keys(C.P),'Contract 1161'):scope.t==='pc'?smTrend(Object.keys(C.P).filter(k=>C.P[k].pc===scope.v),scope.v):smTrend([scope.v],'')}catch(e){return ''}})()}
@@ -11726,7 +11726,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290300';
+const VERSION='202610290330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
