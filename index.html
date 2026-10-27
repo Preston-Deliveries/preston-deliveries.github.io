@@ -4221,6 +4221,12 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}
 :root:root[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}
 </style>
+<style id="pcbig">
+:root:root #sh-main #mod-summary .scopes.pcbig{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+:root:root #sh-main #mod-summary .scopes.pcbig>button{min-height:52px;padding:10px 4px;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:800 1.1rem var(--sh-body)}
+:root:root #sh-main #mod-summary .scopes.pcbig>button[aria-pressed="true"]{background:#1F3A5F;border-color:#1F3A5F;color:#fff}
+:root:root #sh-main #mod-summary .scopes.pcbig .cur{grid-column:1/-1;justify-self:start}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4665,7 +4671,7 @@ function renderWa(){
   box.hidden=false}
 /* postcode and role buttons become one tidy dropdown; picking an option presses the matching (hidden) button */
 function selectify(){
-  document.querySelectorAll('#sh-main :is(.rt-chips.gr,.pcb,.chips.grpc,.scopes,#pcs)').forEach(box=>{
+  document.querySelectorAll('#sh-main :is(.rt-chips.gr,.pcb,.chips.grpc,.scopes:not(.pcbig),#pcs)').forEach(box=>{
     const btns=[...box.querySelectorAll(':scope>button')];if(btns.length<2)return;
     box.classList.add('sel-done');box.__btns=btns;
     let sel=box.nextElementSibling;
@@ -9992,7 +9998,7 @@ function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
   return tiles(a,[],PC?sumOf(keys,PC.per):null)+
-   `<section class="card" id="sm_pcdrv"><button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}<button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button></section>`;
+   '';
 }
 function driverHTML(C,k){
   const p=C.P[k];if(!p)return `<div class="empty">That driver could not be found.</div>`;
@@ -10048,7 +10054,7 @@ function render0(){
     <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
     ${perHTML()}
    </div>
-   <div class="scopes" role="group" aria-label="Show">${[['all','Whole contract'],...GRPS.map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
+   <div class="scopes pcbig" role="group" aria-label="Postcode">${['4214','4215','4217','4218'].map(p=>['pc:'+p,p]).map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${body}
    ${(()=>{try{return scope.t==='all'?smTrend(Object.keys(C.P),'Contract 1161'):scope.t==='pc'?smTrend(Object.keys(C.P).filter(k=>C.P[k].pc===scope.v),scope.v):smTrend([scope.v],'')}catch(e){return ''}})()}
@@ -10115,7 +10121,7 @@ document.addEventListener('click',e=>{
   if(a==='latest'){anchor=latestDay();render();return}
   if(a==='per'){period=v;try{localStorage.setItem('sm_period',period)}catch(x){}render();return}
   if(a==='chip'){anchor=v;render();return}
-  if(a==='scope'){scope=v==='all'?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
+  if(a==='scope'){scope=v==='all'||(scope.t==='pc'&&'pc:'+scope.v===v)?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
   if(a==='pcback'){scope={t:'all'};render();const y=window.__smPcY||0;window.scrollTo(0,y);return}
   if(a==='pc'){window.__smPcY=window.scrollY;scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
   if(a==='drv'){back=scope.t!=='drv'?{s:scope,y:window.scrollY}:back;scope={t:'drv',v};render();window.scrollTo(0,0);return}
@@ -11680,7 +11686,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290000';
+const VERSION='202610290030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
