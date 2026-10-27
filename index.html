@@ -4548,6 +4548,7 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 :root:root #sh-main .dr-tiles .dt.pcs{border-color:var(--sh-accent)!important;background:var(--sh-accent-soft)!important}
 :root:root #sh-main .dr-tiles .dt.pcs b{color:var(--sh-ink)!important}
 :root:root #sh-main .dr-tiles .dt.pcs .tg{font-size:.95rem;color:var(--sh-ink);opacity:.85}
+@media (max-width:899.98px){.sh-links .tab>.bdg.nb{display:none!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5031,10 +5032,13 @@ function ntUnread(){const src=ntSrc();if(!window.__liveNotices&&!src.length)retu
   const set=new Set(R);return src.filter(n=>!set.has(ntKey(n))).sort((a,b)=>String(b.edited||b.postedAt||'').localeCompare(String(a.edited||a.postedAt||'')))}
 function ntMarkRead(){const R=ntRead()||[];const set=new Set(R);for(const n of ntSrc())set.add(ntKey(n));ntSave([...set])}
 window.__ntUnread=ntUnread;
-function newsBadge(){if(role==='mgr'){const p=document.getElementById('nt-pop');if(p)p.hidden=true;return}
+function newsBadge(){
   if(cur==='updates'&&(!ntInUV()||window.__uvTapped))ntMarkRead();
   const U=cur==='updates'?[]:ntUnread();const N=U.length;
-  document.querySelectorAll('.sh-links [data-nav="updates"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!N){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t});
+  /* bottom tabs: small count on the icon; side menu and Menu tiles: the same red count as Feedback */
+  document.querySelectorAll('[data-nav="updates"]').forEach(b=>{const sm=b.querySelector('.sm');
+    if(sm){let x=sm.querySelector('.bdg');if(!N){if(x)x.remove()}else{if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t}}
+    let x=b.querySelector('.bdg.nb');if(!N){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t});
   let dis=[];try{dis=JSON.parse(localStorage.getItem(ntInUV()?'nt_pop_off_uv':'nt_pop_off')||'[]')}catch(e){}
   let p=document.getElementById('nt-pop');const n=U[0];const show=N&&!dis.includes(ntKey(n));
   if(!show){if(p)p.hidden=true;return}
@@ -12472,7 +12476,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610301700';
+const VERSION='202610301800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
