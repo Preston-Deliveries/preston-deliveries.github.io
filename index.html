@@ -4369,6 +4369,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+@media (min-width:900px){:root:root:root #sh-main#sh-main #mod-guide .bar-in{max-width:860px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}:root:root:root #sh-main#sh-main #mod-guide .ctrls{max-width:none!important;width:100%}}
 :root:root:root #sh-main#sh-main .sh-wa,:root:root:root .sh-wa{display:none!important}
 /* picked or flagged rows on phones: the whole card is coloured, not patches behind each box */
 @media (max-width:899.98px){
@@ -5010,8 +5011,8 @@ function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':
   if(!(Rr>L)||Rr-L<300){reset();return}
   all.forEach(x=>{x.style.setProperty('margin-left',Math.round(L-S.left)+'px','important');x.style.setProperty('width',Math.round(Rr-L)+'px','important')});
   /* the title banner keeps its full-width background, its words line up with the content */
-  if(phIn){const P=phIn.parentElement.getBoundingClientRect(),cs=getComputedStyle(phIn.parentElement);const ml=Math.round(L-P.left-parseFloat(cs.paddingLeft||0));
-    phIn.style.setProperty('margin-left',Math.max(0,ml)+'px','important');phIn.style.setProperty('width',Math.round(Rr-L)+'px','important');phIn.style.setProperty('max-width','none','important')}}
+  if(phIn){const P=phIn.parentElement.getBoundingClientRect(),cs=getComputedStyle(phIn.parentElement);const ic=getComputedStyle(phIn),ip=parseFloat(ic.paddingLeft||0)+parseFloat(ic.paddingRight||0);const ml=Math.round(L-P.left-parseFloat(cs.paddingLeft||0)-parseFloat(ic.paddingLeft||0));
+    phIn.style.setProperty('margin-left',Math.max(0,ml)+'px','important');phIn.style.setProperty('width',Math.round(Rr-L+ip)+'px','important');phIn.style.setProperty('box-sizing','border-box','important');phIn.style.setProperty('max-width','none','important')}}
 window.__vtAlign=vtAlign;
 window.addEventListener('resize',()=>{clearTimeout(vtAlign.t);vtAlign.t=setTimeout(vtAlign,80)});
 document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;const y=window.scrollY;vtSet(b.dataset.vt);requestAnimationFrame(()=>window.scrollTo(0,y))});
@@ -12163,7 +12164,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300130';
+const VERSION='202610300200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
