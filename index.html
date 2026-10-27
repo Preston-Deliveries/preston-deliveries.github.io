@@ -9788,7 +9788,7 @@ function contractHTML(C){
   const pcKeys=pc=>keys.filter(k=>C.P[k].pc===pc);
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
-  return tiles(all,[['Drivers worked',String(worked),'',''],['Days off (leave)',fmtN(all.leave),'Weekdays booked',''],...workTiles(all)],PC?sumOf(keys,PC.per):null)+
+  return tiles(all,[],PC?sumOf(keys,PC.per):null)+
   `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="Scan compliance">Scan</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
    ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&a.days;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fsp(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${dot(grade('eta',eta))}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${(q=>q==null?'–':dot(grade('cp',q))+fmtPct(q))(pct(a.cpW,a.cpN))}${ok?dl(pct(a.cpW,a.cpN),pct(pa.cpW,pa.cpN),'pct',L):''}</td><td class="r">${a.days?dot(grade('enq',epk(a.enq,a.pc)))+epkTxt(epk(a.enq,a.pc)):'–'}${ok?dl(epk(a.enq,a.pc),epk(pa.enq,pa.pc),'down1',L):''}</td><td class="r">${n==null?'–':`<span class="${n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}${pa&&n!=null?dl(n,nps(pa.scores),'nps',L):''}</td></tr>`}).join('')}
   </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
@@ -9800,7 +9800,7 @@ function pcSortSel(){return `<label class="mini" for="sm_pcsort">Sort<select id=
 function sortSel(){return `<label class="mini" for="sm_sort">Sort<select id="sm_sort">${[['name','Name'],['parcels','Parcels'],['eta','2HR ETA'],['survey','Survey']].map(([k,l])=>`<option value="${k}" ${k===sortBy?'selected':''}>${l}</option>`).join('')}</select></label>`}
 function postcodeHTML(C,pc){
   const keys=Object.keys(C.P).filter(k=>C.P[k].pc===pc),a=sumOf(keys,C.per),rows=drvRows(keys,C);
-  return tiles(a,[['Drivers worked',String(keys.filter(k=>C.per[k]&&C.per[k].days).length),'',''],['Days off (leave)',fmtN(a.leave),'Weekdays booked',''],...workTiles(a)],PC?sumOf(keys,PC.per):null)+
+  return tiles(a,[],PC?sumOf(keys,PC.per):null)+
    `<section class="card" id="sm_pcdrv"><button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button><div class="ch"><h2>Drivers in ${/^\d/.test(pc)?pc:esc(pc)}</h2>${sortSel()}</div>${driverTable(rows)}<button type="button" class="sh-btn back smback" data-sm="pcback">‹ Back to all postcodes</button></section>`;
 }
 function driverHTML(C,k){
@@ -9820,7 +9820,7 @@ function driverHTML(C,k){
   const days=a.list.slice().sort((x,y)=>x.date.localeCompare(y.date));
   const bl=back&&back.s.t==='pc'?'Drivers in '+back.s.v:'Whole contract';
   return `<button type="button" class="sh-btn back smback" data-sm="back">‹ ${esc(bl)}</button><section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
-   tiles(a,[['Days off (leave)',String(a.leave),'In this period',''],...workTiles(a)],PC?(PC.per[k]||blank()):null)+
+   tiles(a,[],PC?(PC.per[k]||blank()):null)+
    `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb ddt"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r"><abbr title="Scan compliance">Scan</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
     ${days.map(r=>`<tr><td>${esc(longD(r.date).replace(/ \d{4}$/,''))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fsp(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${r.cp==null||r.cp===''?'–':dot(grade('cp',+r.cp))+fmtPct(+r.cp)}</td><td class="r">${dot(grade('enq',epk(r.enq,r.pc)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
@@ -9883,7 +9883,7 @@ async function pdf(btn){
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
   const C=compute(),R=C.R,NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],INK=[20,32,29],LINE=[211,220,216],ALT=[246,248,247];
-  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan compliance',fmtPct(pct(a.cpW,a.cpN))],['Enquiries per 1000 (at fault)',epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')'],['Survey',n==null?'–':n+' ('+a.scores.length+')'],['Leave days',String(a.leave)],['Hours',a.mins?fmtH(a.mins):'–'],['Extra parcels',String(a.xp||0)]]};
+  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan compliance',fmtPct(pct(a.cpW,a.cpN))],['Enquiries per 1000 (at fault)',epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')'],['Survey',n==null?'–':n+' ('+a.scores.length+')']]};
   let blocks=[],tops;
   const drvBody=rows=>rows.map(({p,a},i)=>[String(i+1),p.name,p.nos.join(', '),p.pc,String(a.days),fmtN(a.pc),fmtPct(pct(a.ftdW,a.ftdN)),fmtPct(pct(a.etaW,a.etaN)),fmtPct(pct(a.cpW,a.cpN)),epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')',nps(a.scores)==null?'–':nps(a.scores)+' ('+a.scores.length+')']);
   const drvHead=['#','DRIVER','NO.','GROUP','DAYS','PARCELS','FTD','2HR ETA','SCAN %','ENQ /1000','SURVEY'];
@@ -11494,7 +11494,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281510';
+const VERSION='202610281520';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
