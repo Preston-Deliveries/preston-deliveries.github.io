@@ -4052,6 +4052,12 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 #sh-main #mod-enquiries .eqx>.rimpc{order:2}#sh-main #mod-enquiries .eqx>.rimp{order:20}
 #sh-main #mod-enquiries .rimp{display:flex;justify-content:center;align-items:center;margin:8px 0;min-height:46px;text-align:center}
 #sh-main #mod-enquiries .rimpc ul{margin:8px 0 12px;padding-left:18px;line-height:1.5}#sh-main #mod-enquiries .rimpc .b{display:flex;gap:8px;flex-wrap:wrap}
+#sh-main #mod-enquiries .plist textarea{width:100%;box-sizing:border-box;margin:6px 0 10px;font-size:1rem;padding:10px;border-radius:10px;border:1px solid var(--sh-line)}
+#sh-main #mod-enquiries .pl-rows{display:flex;flex-direction:column;gap:8px;margin:8px 0 12px}
+#sh-main #mod-enquiries .pl-r{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;border:1px solid var(--sh-line)}
+#sh-main #mod-enquiries .pl-r.need{border-color:#C8352B;background:rgba(200,53,43,.06)}
+#sh-main #mod-enquiries .pl-r .d{display:flex;flex-direction:column}#sh-main #mod-enquiries .pl-r small{color:var(--sh-muted)}
+#sh-main #mod-enquiries .pl-r select{width:100%}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -9157,7 +9163,24 @@ const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const nice=s=>{if(!s)return '';const[a,b,c]=s.split('-').map(Number);const d=new Date(a,b-1,c);return DOW[d.getDay()]+' '+c+' '+MON[b-1]+' '+a};
 const PM0=today().slice(0,7),PER={enq:{mode:'month',m:PM0,y:PM0.slice(0,4)},ncr:{mode:'year',m:PM0,y:PM0.slice(0,4)}};
-let rImp=null;
+let rImp=null,pList=null;
+/* paste a typed list like "TUE 6/10 NATHAN INGRAM 1 at fault"; each line is matched to a driver on the Drivers page */
+function parseList(txt){const yr=new Date().getFullYear(),out=[];
+  for(const raw of String(txt||'').split(/\n+/)){const line=raw.trim();if(!line)continue;
+    const dm=line.match(/(\d{1,2})\s*\/\s*(\d{1,2})(?:\s*\/\s*(\d{2,4}))?/);if(!dm)continue;
+    const y=dm[3]?(dm[3].length===2?'20'+dm[3]:dm[3]):String(yr);const date=y+'-'+String(dm[2]).padStart(2,'0')+'-'+String(dm[1]).padStart(2,'0');
+    let rest=line.slice(dm.index+dm[0].length);const nf=/not\s+at\s+fault/i.test(rest);
+    const cm=rest.match(/(\d+)\s*(?:x\s*)?(?:not\s+)?(?:at\s+fault|enquir\w*)?\s*$/i);const n=cm?Math.max(1,+cm[1]):1;if(cm)rest=rest.slice(0,cm.index);
+    rest=rest.replace(/\b(not\s+)?at\s+fault\b/ig,'').replace(/\b(mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)\b\.?/ig,'').replace(/[^A-Za-z' ]+/g,' ').trim();
+    out.push({date,name:rest,n,fault:nf?'no':'yes',login:matchName(rest)})}
+  return out}
+function matchName(nm){const w=String(nm||'').toLowerCase().split(/\s+/).filter(Boolean);if(!w.length)return '';
+  const L=staff.map(p=>({p,t:p.name.toLowerCase().split(/\s+/)}));
+  let c=L.filter(x=>w.every((t,i)=>i===0?x.t[0]===t:x.t.slice(1).some(z=>t.length===1?z[0]===t:z===t)));
+  if(c.length!==1&&w.length===1)c=L.filter(x=>x.t[0]===w[0]);
+  if(c.length!==1)c=L.filter(x=>w.every(t=>x.t.some(z=>t.length===1?z[0]===t:z===t)));
+  if(c.length!==1){const lg=w.join('').toUpperCase();c=L.filter(x=>x.p.login===lg)}
+  return c.length===1?c[0].p.login:''}
 let nqD='',nqA='',nqP='',qPc='',tab='enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 /* ---------- people ---------- */
@@ -9336,6 +9359,11 @@ function render(){
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   ${rImp?`<section class="card rimpc"><h2>Import old enquiries</h2>${rImp.length?`<p>Found ${rImp.reduce((a,x)=>a+x.n,0)} enquiries in the report. They will be added as <b>at fault</b> on these days:</p><ul>${rImp.map(x=>`<li><b>${esc(nice(x.date))}</b> · ${(n=>n?esc(n)+' ('+esc(x.login)+')':esc(x.login))((byLogin(x.login)||{}).name)}${x.n>1?' × '+x.n:''}</li>`).join('')}</ul><div class="b"><button type="button" class="sh-btn primary" data-eq="rimpgo">Add ${rImp.reduce((a,x)=>a+x.n,0)} at fault enquiries</button><button type="button" class="sh-btn" data-eq="rimpno">Cancel</button></div><p class="hint">Adding the same report again replaces these, it does not double them.</p>`:`<p>No enquiries were found in that report.</p><button type="button" class="sh-btn" data-eq="rimpno">Close</button>`}</section>`:''}
   <label class="sh-btn up rimp">Import old enquiries from a 1161 Performance Report<input type="file" id="eq_rimp" accept=".xlsx,.xls" hidden></label>
+  ${pList?`<section class="card rimpc plist"><h2>Paste a list of enquiries</h2>
+    ${pList.rows?`<p>Check each driver. Pick the right one where it says Choose.</p><div class="pl-rows">${pList.rows.map((x,i)=>`<div class="pl-r ${x.login?'':'need'}"><span class="d"><b>${esc(nice(x.date))}</b><small>${esc(x.name)}${x.n>1?' · '+x.n:''} · ${x.fault==='yes'?'at fault':'not at fault'}</small></span><select data-pl="${i}" aria-label="Driver for ${esc(x.name)}"><option value="">Choose…</option>${staff.map(p=>`<option value="${esc(p.login)}" ${p.login===x.login?'selected':''}>${esc(p.name)}${p.login?' ('+esc(p.login)+')':''}</option>`).join('')}</select></div>`).join('')}</div>
+      <div class="b"><button type="button" class="sh-btn primary" data-eq="plgo" ${pList.rows.length&&pList.rows.every(x=>x.login)?'':'disabled'}>Add ${pList.rows.reduce((a,x)=>a+x.n,0)} enquiries</button><button type="button" class="sh-btn" data-eq="plback">Edit the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`
+    :`<p>One line each: day, driver, how many, at fault. For example <i>TUE 6/10 NATHAN INGRAM 1 at fault</i>.</p><textarea id="eq_pltxt" rows="8" placeholder="TUE 6/10 NATHAN INGRAM 1 at fault">${esc(pList.text||'')}</textarea><div class="b"><button type="button" class="sh-btn primary" data-eq="plcheck">Check the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`}</section>`
+  :`<button type="button" class="sh-btn up rimp" data-eq="plopen">Paste a list of enquiries</button>`}
   ${perBar('enq',enqs().map(x=>x.date))}
   ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
   <div class="srch"><label class="f" for="eq_qd">Driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
@@ -9430,6 +9458,16 @@ document.addEventListener('click',async ev=>{
   if(a==='edit'){draft=clone(recs[open]);view='form';msg=null;render();return}
   if(a==='f'){readForm();draft.fault=v;render();return}
   if(a==='rimpno'){rImp=null;render();return}
+  if(a==='plopen'){pList={text:''};render();return}
+  if(a==='plno'){pList=null;render();return}
+  if(a==='plback'){pList={text:pList.text};render();return}
+  if(a==='plcheck'){const t=($('pltxt')||{}).value||'';const rows=parseList(t);if(!rows.length){msg={err:true,t:'No lines with a date were found. Use a date like 6/10.'};pList={text:t};render();return}msg=null;pList={text:t,rows};render();return}
+  if(a==='plgo'&&pList&&pList.rows){const R=pList.rows;pList=null;msg={t:'Adding…'};render();const now=new Date().toISOString(),seen={};let n=0;
+    try{for(const x of R){const p=byLogin(x.login);for(let i=0;i<x.n;i++){const k=x.date+'-'+x.login;seen[k]=(seen[k]||0)+1;const id='lst-'+k+'-'+seen[k];
+      const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date:x.date,caseNo:'',login:x.login,driver:p?p.name:x.login,address:'',details:'Added from a pasted list.',supervisor:'',fault:x.fault,note:'',source:'list',createdAt:now,updatedAt:now};
+      await db.doc('enqlog/'+id).set(doc);recs[id]=Object.assign({id},doc);n++}}
+      msg={t:n+' enquir'+(n===1?'y':'ies')+' added.'}}catch(e){msg={err:true,t:'Could not save all of them just now ('+n+' added). Try again.'}}
+    render();return}
   if(a==='rimpgo'&&rImp){const L=rImp;rImp=null;msg={t:'Adding…'};render();const now=new Date().toISOString();let n=0;
     try{for(const x of L){const p=byLogin(x.login);for(let i=1;i<=x.n;i++){const id='imp-'+x.date+'-'+x.login+'-'+i;
       const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date:x.date,caseNo:'',login:x.login,driver:p?p.name:x.login,address:'',details:'Imported from the 1161 Performance Report.',supervisor:'',fault:'yes',note:'',source:'report',createdAt:now,updatedAt:now};
@@ -9449,6 +9487,7 @@ document.addEventListener('click',async ev=>{
 document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_nimp'&&el.files.length){const F=[...el.files];el.value='';importOld(F);return}
+  if(el.dataset&&el.dataset.pl!=null&&pList&&pList.rows){const r=pList.rows[+el.dataset.pl];if(r){r.login=el.value;render()}return}
   if(el.id==='eq_rimp'&&el.files[0]){const f=el.files[0];el.value='';msg={t:'Reading the report…'};render();
     try{if(typeof XLSX==='undefined'&&window.loadXLSX)await window.loadXLSX();
       const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const out={};
@@ -11455,7 +11494,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281500';
+const VERSION='202610281510';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
