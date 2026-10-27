@@ -4348,7 +4348,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results .perrow #r_perSeg{display:grid!important;width:auto!important;flex:1 1 auto!important}
 :root:root:root #sh-main #mod-summary :has(>.pchs){display:flex}:root:root:root #sh-main #mod-summary .pchs{flex:1 1 auto!important;width:auto!important}
 
-:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(.sel-done):not([hidden]):not(.vt-hide){display:flex!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v),:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(.sel-done):not([hidden]):not(.vt-hide):not(.vt-v){display:flex!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel{display:flex!important;align-items:center;gap:10px;width:100%!important;max-width:none!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel select{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0}
 </style>
@@ -4356,7 +4356,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 /* View / Edit switch: always first on the page */
 :root:root #sh-main .sh-sec>.vtab{display:grid!important;grid-template-columns:1fr 1fr;margin:4px 0 14px}
 :root:root #sh-main .sh-sec>.vtab button{min-height:50px;font-size:1.05rem;font-weight:800}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-e,:root:root #sh-main .sh-sec[data-vt="view"] .vt-e,:root:root #sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt] .vt-hide{display:none!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-e,:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt="view"] .vt-e,:root:root #sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt] .vt-hide{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-nc{pointer-events:none!important;cursor:default}
 :root:root #sh-main .sh-sec[data-vt="view"] .vt-nc .pen{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-ro{pointer-events:none!important;pointer-events:none;background:transparent!important;border-color:transparent!important;-webkit-appearance:none;appearance:none}
@@ -4561,7 +4561,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
         <div class="field"><label for="v_tip2">Tip 2</label><input id="v_tip2" type="text"></div>
       </div>
       <div class="row" style="align-items:center">
-        <button class="hv" id="v_save" type="button" hidden>Save image</button>
+        <button class="hv" id="v_save" type="button" hidden>Download PDF</button>
         <button class="ghost" id="v_remove" type="button" hidden style="padding:10px 16px;font-size:16px">Remove this week</button>
         <span class="status" id="v_status" role="status"></span>
       </div>
@@ -4582,7 +4582,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
       </div>
       <div class="weeks" id="v_weeks"></div>
       <div class="row" style="align-items:center">
-        <button class="hv" id="v_save4" type="button" hidden>Save image</button>
+        <button class="hv" id="v_save4" type="button" hidden>Download PDF</button>
         <span class="status" id="v_status4" role="status"></span>
       </div>
     </div>
@@ -4912,7 +4912,7 @@ function go(sec,opts){
    View hides the add, edit, delete and upload controls; Edit shows them. Each page opens on View. */
 const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
 const VT={
-  survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file']},
+  survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file'],v:['#v_tblW','#v_fit','#v_emptyW','#v_shotBox','#v_save','#v_save4','#v_viewC','#v_pk .pseg2','#v_sharePanel','#v_status4']},
   enquiries:{lab:'Edit',e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
   updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save','cancel'])},
   briefs:{lab:'Edit',e:VTA('tb',['new','del','ldel','toggle','rmfile','create'])},
@@ -4950,6 +4950,7 @@ function vtClose(sec){/* leaving Edit: close any open editor so View shows the n
   for(let i=0;i<3;i++){const b=[...sec.querySelectorAll('button,a')].find(x=>x.offsetParent&&!x.closest('.vtab')&&Object.values(x.dataset||{}).some(v=>/^(cancel|ncancel|back|nback|close|plno|rimpno|addno|delno|noimport|edClose)$/.test(v)));if(!b)break;
     const oc=window.confirm;window.confirm=()=>true;try{b.click()}finally{window.confirm=oc}}}
 function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;if(mode==='view'&&sec.dataset.vt==='edit')vtClose(sec);vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
+  if(cur==='survey'&&mode==='edit'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}
   if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
   setTimeout(vtFixTabs,0)}
 function vtEnter(sec,mode){
@@ -6822,24 +6823,28 @@ async function capture(boardId,boxId,W,name,shotId,shotBox,say){
   if(!window.html2canvas)await window.loadH2C();
   const canvas=await html2canvas($(boardId),{scale:1.25,backgroundColor:"#ffffff",width:W,windowWidth:W+120,
     onclone:doc=>{doc.getElementById("v_"+boardId).style.transform="none";doc.getElementById("v_"+boxId).style.height="auto";}});
-  const blob=await new Promise(r=>canvas.toBlob(r,"image/png"));
-  $(shotId).src=URL.createObjectURL(blob);
+  /* one A4 page PDF of the ranking */
+  if(!window.jspdf)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+  const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  const pw=210,ph=297,m=8,iw=canvas.width,ih=canvas.height;const k=Math.min((pw-2*m)/iw,(ph-2*m)/ih);
+  doc.addImage(canvas.toDataURL("image/jpeg",0.92),"JPEG",(pw-iw*k)/2,m,iw*k,ih*k);
+  const blob=doc.output("blob");
   if(downloads){
-    try{await downloads.save({filename:name,data:blob});say("Image saved. Post it on Connecteam.","ok");$(shotBox).hidden=true;}
-    catch(e){if(e&&e.code==="declined")say("Save cancelled.");else{$(shotBox).hidden=false;say("Saving isn't available here. Press and hold the image below to save it.","err");}}
-  }else{$(shotBox).hidden=false;say("Your image is ready below. Press and hold (or right click) to save it.","ok");}
+    try{await downloads.save({filename:name,data:blob});say("PDF saved.","ok");$(shotBox).hidden=true;}
+    catch(e){if(e&&e.code==="declined")say("Save cancelled.");else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();say("PDF downloaded.","ok")}}
+  }else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000);say("PDF downloaded.","ok");}
 }
 const clean=s=>s.replace(/[^\w ]+/g," ").replace(/\s+/g," ").trim();
 $("save").addEventListener("click",async()=>{
   if(!cur){status("Load a sheet first.","err");return;}
-  const b=$("save");b.disabled=true;status("Making the image…");
-  try{await capture("board","fit",1280,`1161 Survey Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.png`,"shot","shotBox",status)}catch(e){status("Couldn't make the image. Try again.","err")}
+  const b=$("save");b.disabled=true;status("Making the PDF…");
+  try{await capture("board","fit",1280,`1161 Survey Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,"shot","shotBox",status)}catch(e){status("Couldn't make the image. Try again.","err")}
   b.disabled=false;
 });
 $("save4").addEventListener("click",async()=>{
   if(!$("cycle").value){status4("No weeks saved yet.","err");return;}
-  const b=$("save4");b.disabled=true;status4("Making the image…");
-  try{await capture("board4","fit4",1000,`1161 Survey Ranking ${clean(monthName($("cycle").value))}.png`,"shot4","shotBox4",status4)}catch(e){status4("Couldn't make the image. Try again.","err")}
+  const b=$("save4");b.disabled=true;status4("Making the PDF…");
+  try{await capture("board4","fit4",1000,`1161 Survey Ranking ${clean(monthName($("cycle").value))}.pdf`,"shot4","shotBox4",status4)}catch(e){status4("Couldn't make the image. Try again.","err")}
   b.disabled=false;
 });
 
@@ -12074,7 +12079,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291730';
+const VERSION='202610291800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
