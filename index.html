@@ -4049,6 +4049,9 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 #mod-results .clr1 .c1{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;padding:12px 14px;border-radius:12px;border:1.5px dashed #C8352B;color:#C8352B;font-weight:800;min-height:48px}
 #mod-results .clr1 p{margin:0 0 8px;font-size:.95rem}#mod-results .clr1 .b{display:flex;gap:8px;flex-wrap:wrap}#mod-results .clr1 .b button{min-height:48px;padding:0 16px;border-radius:12px;font-weight:800}
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) #mod-results .clr1 .c1{color:#F48A8A;border-color:#F48A8A}}html[data-theme="dark"] #mod-results .clr1 .c1{color:#F48A8A;border-color:#F48A8A}
+#sh-main #mod-enquiries .eqx>.rimpc{order:2}#sh-main #mod-enquiries .eqx>.rimp{order:20}
+#sh-main #mod-enquiries .rimp{display:flex;justify-content:center;align-items:center;margin:8px 0;min-height:46px;text-align:center}
+#sh-main #mod-enquiries .rimpc ul{margin:8px 0 12px;padding-left:18px;line-height:1.5}#sh-main #mod-enquiries .rimpc .b{display:flex;gap:8px;flex-wrap:wrap}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -9154,6 +9157,7 @@ const pad=n=>String(n).padStart(2,'0');
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const nice=s=>{if(!s)return '';const[a,b,c]=s.split('-').map(Number);const d=new Date(a,b-1,c);return DOW[d.getDay()]+' '+c+' '+MON[b-1]+' '+a};
 const PM0=today().slice(0,7),PER={enq:{mode:'month',m:PM0,y:PM0.slice(0,4)},ncr:{mode:'year',m:PM0,y:PM0.slice(0,4)}};
+let rImp=null;
 let nqD='',nqA='',nqP='',qPc='',tab='enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 /* ---------- people ---------- */
@@ -9330,6 +9334,8 @@ function render(){
   <div class="head"><h1>Enquiries</h1><div class="act"><button type="button" class="sh-btn primary" data-eq="new">+ Add enquiry</button></div></div>
   ${tabsHTML(ncrs().filter(n=>nState(n)!=='closed').length)}
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+  ${rImp?`<section class="card rimpc"><h2>Import old enquiries</h2>${rImp.length?`<p>Found ${rImp.reduce((a,x)=>a+x.n,0)} enquiries in the report. They will be added as <b>at fault</b> on these days:</p><ul>${rImp.map(x=>`<li><b>${esc(nice(x.date))}</b> · ${(n=>n?esc(n)+' ('+esc(x.login)+')':esc(x.login))((byLogin(x.login)||{}).name)}${x.n>1?' × '+x.n:''}</li>`).join('')}</ul><div class="b"><button type="button" class="sh-btn primary" data-eq="rimpgo">Add ${rImp.reduce((a,x)=>a+x.n,0)} at fault enquiries</button><button type="button" class="sh-btn" data-eq="rimpno">Cancel</button></div><p class="hint">Adding the same report again replaces these, it does not double them.</p>`:`<p>No enquiries were found in that report.</p><button type="button" class="sh-btn" data-eq="rimpno">Close</button>`}</section>`:''}
+  <label class="sh-btn up rimp">Import old enquiries from a 1161 Performance Report<input type="file" id="eq_rimp" accept=".xlsx,.xls" hidden></label>
   ${perBar('enq',enqs().map(x=>x.date))}
   ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
   <div class="srch"><label class="f" for="eq_qd">Driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
@@ -9423,6 +9429,13 @@ document.addEventListener('click',async ev=>{
   if(a==='back'||a==='cancel'){view=draft&&draft.id&&a==='cancel'?'one':'list';draft=null;msg=null;render();return}
   if(a==='edit'){draft=clone(recs[open]);view='form';msg=null;render();return}
   if(a==='f'){readForm();draft.fault=v;render();return}
+  if(a==='rimpno'){rImp=null;render();return}
+  if(a==='rimpgo'&&rImp){const L=rImp;rImp=null;msg={t:'Adding…'};render();const now=new Date().toISOString();let n=0;
+    try{for(const x of L){const p=byLogin(x.login);for(let i=1;i<=x.n;i++){const id='imp-'+x.date+'-'+x.login+'-'+i;
+      const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date:x.date,caseNo:'',login:x.login,driver:p?p.name:x.login,address:'',details:'Imported from the 1161 Performance Report.',supervisor:'',fault:'yes',note:'',source:'report',createdAt:now,updatedAt:now};
+      await db.doc('enqlog/'+id).set(doc);recs[id]=Object.assign({id},doc);n++}}
+      msg={t:n+' at fault enquir'+(n===1?'y':'ies')+' added. They count in the results for those days.'}}catch(e){msg={err:true,t:'Could not save all of them just now ('+n+' added). Try again.'}}
+    render();return}
   if(a==='print'){printList();return}
   if(a==='save'){const r=readForm();
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
@@ -9436,6 +9449,18 @@ document.addEventListener('click',async ev=>{
 document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_nimp'&&el.files.length){const F=[...el.files];el.value='';importOld(F);return}
+  if(el.id==='eq_rimp'&&el.files[0]){const f=el.files[0];el.value='';msg={t:'Reading the report…'};render();
+    try{if(typeof XLSX==='undefined'&&window.loadXLSX)await window.loadXLSX();
+      const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const out={};
+      for(const nm of wb.SheetNames){const rows=XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,raw:true,defval:null});
+        const title=String((rows[0]||[])[0]||'');if(/weekly|\bto\b/i.test(title))continue;
+        const m=title.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);if(!m)continue;const y=m[3].length===2?'20'+m[3]:m[3];const date=y+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');
+        let hi=-1,li=-1,ei=-1;for(let i=0;i<Math.min(rows.length,10);i++){const h=(rows[i]||[]).map(v=>String(v||'').trim().toUpperCase());const a=h.indexOf('LOGIN'),b=h.findIndex(v=>/^ENQUIR/.test(v));if(a>=0&&b>=0){hi=i;li=a;ei=b;break}}
+        if(hi<0)continue;
+        for(const r of rows.slice(hi+1)){if(!r)continue;const l=String(r[li]||'').trim().toUpperCase().replace(/\s+/g,'');if(!l||l==='TOTAL')continue;const n=Math.round(+r[ei]||0);if(n>0){const k=date+'|'+l;out[k]=(out[k]||0)+n}}}
+      rImp=Object.entries(out).map(([k,n])=>{const[date,login]=k.split('|');return{date,login,n}}).sort((a,b)=>a.date.localeCompare(b.date)||a.login.localeCompare(b.login));msg=null}
+    catch(e){rImp=null;msg={err:true,t:'Could not read that file. Use the 1161 Performance Report with a sheet for each day.'}}
+    render();return}
   if(el.id==='eq_nform'&&el.files[0]){const f=el.files[0];readN();msg={t:'Reading the NCR form…'};render();
     try{const o=fromNcr(await docxLines(f));if(!o.caseNo&&!o.login&&!o.what)throw 0;
       for(const k of ['caseNo','article','address','delivered','by','issued','what','actions','issue'])if(o[k])nDraft[k]=o[k];
@@ -11430,7 +11455,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281450';
+const VERSION='202610281500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
