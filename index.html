@@ -4586,6 +4586,8 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 @media (min-width:900px){:root:root:root #mod-results .rb-r{grid-template-columns:minmax(220px,2.2fr) repeat(4,1fr) 1fr}:root:root:root #mod-results .rb .rb-d,:root:root:root #mod-results .rb-s{grid-column:auto}}
 :root:root #mod-results .rb-r.nr .rk{background:#7A8496!important;color:#fff!important}
 :root:root #mod-results .rb-r.nr .rb-s b{color:var(--sh-muted)!important}
+#mod-results .rb-pic{display:flex!important;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px!important;min-height:46px}
+#mod-results .rb-pic svg,#mod-results .rb-pdf svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6562,7 +6564,7 @@ function mountBoard(box,rows){
   box.classList.remove("rt");
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
-  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div><button type="button" class="sh-btn rb-pdf" data-rb="pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>Download PDF</button>
+  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div><button type="button" class="sh-btn rb-pdf" data-rb="pdf">Download PDF</button><button type="button" class="sh-btn rb-pic" data-rb="share">Save image</button><p class="rb-msg" id="r_shareMsg" hidden></p>
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries</span><span role="columnheader">Contract Score</span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
@@ -6579,10 +6581,10 @@ function mountBoard(box,rows){
 let LOGO=null;
 function logoImg(){if(LOGO)return Promise.resolve(LOGO);return new Promise(res=>{const i=new Image();i.onload=()=>{LOGO=i;res(i)};i.onerror=()=>res(null);i.src="icon-192.png"})}
 async function boardCanvas(rows){
-  const W=1080,M=36,RH=84,HEAD=250,COLH=70,FOOT=150,H=HEAD+COLH+rows.length*RH+FOOT;
+  const W=1080,M=36,RH=84,HEAD=250,COLH=70,FOOT=210,H=HEAD+COLH+rows.length*RH+FOOT;
   const cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d");
   const F='"Barlow","Barlow Semi Condensed",Arial,sans-serif';
-  const col={ink:"#14213a",mut:"#5a6680",line:"#dde3ec",alt:"#f4f6fa",navy:"#0F1A2A",org:"#F2782D",g:"#1E8A4C",b:"#C62828",gd:"#1E8A4C",n:"#8A94A6"};
+  const col={ink:"#14213a",mut:"#5a6680",line:"#dde3ec",alt:"#f4f6fa",navy:"#0F1A2A",org:"#F2782D",g:"#1E8A4C",b:"#C62828",gd:"#1E8A4C",n:"#8A94A6",pc:"#14213a"};
   g.fillStyle="#fff";g.fillRect(0,0,W,H);
   g.fillStyle=col.navy;g.fillRect(0,0,W,HEAD);g.fillStyle=col.org;g.fillRect(0,HEAD-8,W,8);
   const lg=await logoImg();if(lg){g.save();const s=120,x=M,y=48;g.beginPath();g.roundRect?g.roundRect(x,y,s,s,24):g.rect(x,y,s,s);g.clip();g.drawImage(lg,x,y,s,s);g.restore()}
@@ -6590,12 +6592,12 @@ async function boardCanvas(rows){
   g.fillStyle="#fff";g.font=`800 62px ${F}`;g.fillText("Driver results",tx,148);
   g.fillStyle="#C9D6E6";g.font=`600 32px ${F}`;g.fillText(perLabel(),tx,196);
   // column layout
-  const X={rk:M,nm:M+70,sc:W-M},CX=[455,572,689,800,893];
+  const X={rk:M,nm:M+70,sc:W-M},CX=[540,660,775,885];
   const hy=HEAD+COLH-22;g.fillStyle=col.mut;g.font=`700 22px ${F}`;g.textAlign="left";g.fillText("DRIVER",X.nm,hy);
-  g.textAlign="center";[["2 HR","ETA"],["SCAN","%"],["ENQ","PER 1K"],["FTD",""],["SURVEY",""]].forEach(([a,b],i)=>{const cx=CX[i];g.fillText(a,cx,b?hy-22:hy);if(b)g.fillText(b,cx,hy)});
+  g.textAlign="center";[["PARCELS",""],["2 HR","ETA"],["SCAN","%"],["ENQUIRIES",""]].forEach(([a,b],i)=>{const cx=CX[i];g.fillText(a,cx,b?hy-22:hy);if(b)g.fillText(b,cx,hy)});
   g.textAlign="right";g.fillText("CONTRACT",X.sc,hy-22);g.fillText("SCORE",X.sc,hy);
   g.fillStyle=col.line;g.fillRect(M,HEAD+COLH-6,W-2*M,3);
-  const nR=rows.filter(r=>r.rank).length,RK={k1:"#D4A017",k2:"#9AA4B1",k3:"#B87333",kt:"#1E8A4C",kb:"#C62828",nr:"#C3CAD5","":"#5a6680"};
+  const nR=rows.filter(r=>r.rank).length,RK={k1:"#D4A017",k2:"#9AA4B1",k3:"#B87333",kt:"#1E8A4C",kb:"#C62828",nr:"#7A8496","":"#5a6680"};
   rows.forEach((r,i)=>{const y=HEAD+COLH+i*RH;if(i%2)g.fillStyle=col.alt,g.fillRect(0,y,W,RH);
     const cy=y+RH/2;const k=rkClass(r,nR);
     g.fillStyle=RK[k]||RK[""];g.beginPath();g.arc(X.rk+26,cy,26,0,Math.PI*2);g.fill();
@@ -6604,12 +6606,14 @@ async function boardCanvas(rows){
     while(g.measureText(nm).width>mw&&nm.length>3)nm=nm.slice(0,-2)+"…";if(g.measureText(nm).width>mw)nm=nm.slice(0,-1);
     g.fillText(nm,X.nm,cy+(r.rank?11:0));if(!r.rank){g.fillStyle=col.mut;g.font=`600 20px ${F}`;g.fillText("Not ranked · "+r.days+" day"+(r.days===1?"":"s"),X.nm,cy+26)}
     bVals(r).forEach(([l,v,c],j)=>{g.fillStyle=col[c]||col.n;g.font=`800 29px ${F}`;g.textAlign="center";g.fillText(v,CX[j],cy+11)});
-    g.textAlign="right";g.fillStyle=r.rank&&r.avg>=3-1e-9?col.gd:col.ink;g.font=`800 38px ${F}`;g.fillText(scTxt(r),X.sc,cy+13);
+    g.textAlign="right";g.fillStyle=!r.rank?col.n:(r.avg||0)>=96-1e-9?col.g:col.b;g.font=`800 38px ${F}`;g.fillText(scTxt(r),X.sc,cy+13);
   });
-  const fy=HEAD+COLH+rows.length*RH+44;g.textAlign="left";g.fillStyle=col.mut;g.font=`600 23px ${F}`;
-  g.fillText(`Targets: 2 hr ETA ${T().etaG}%  ·  Scan ${T().cpG??99}%  ·  Enquiries 1 or less per 1k  ·  FTD 92%  ·  Survey 70`,M,fy);
-  g.fillText(`Score: every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance.`,M,fy+36);
-  g.fillStyle=col.g;g.fillText("Green on target",M,fy+76);g.fillStyle=col.b;g.fillText("Red missed",M+210,fy+76);
+  const fy=HEAD+COLH+rows.length*RH+40;g.textAlign="left";g.fillStyle=col.mut;g.font=`600 21px ${F}`;
+  g.fillText(`Contract Score: every day starts at 100. Enquiry at fault minus 40, partly minus 20 (max 60).`,M,fy);
+  g.fillText(`2 hr ETA minus 1 per 1% below 100% (max 30).`,M,fy+30);
+  g.fillText(`Scan compliance minus 1 per 0.5% below 100% (max 10).`,M,fy+60);
+  g.fillText(`The score is the average of the days worked.${view==="day"?"":" A place needs "+NEED[view]+" days worked."}`,M,fy+90);
+  g.font=`700 22px ${F}`;g.fillStyle=col.g;g.fillText("Green: 96 or more",M,fy+130);g.fillStyle=col.b;g.fillText("Red: under 96",M+240,fy+130);g.fillStyle=col.n;g.fillText("Grey: not qualified",M+440,fy+130);
   return cv;
 }
 async function shareBoard(btn){
@@ -12559,7 +12563,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610302900';
+const VERSION='202610303100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
