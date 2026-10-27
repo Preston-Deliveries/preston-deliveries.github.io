@@ -4967,7 +4967,7 @@ function vtEnter(sec,mode){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;vtSet(b.dataset.vt);window.scrollTo(0,0)});
 /* in View, a tap on anything that changes data does nothing */
-['click','input','change','focusin'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(!t||!t.closest)return;const sec=t.closest('.sh-sec[data-vt="view"]');if(!sec)return;const x=t.closest('.vt-nc,.vt-e,.vt-ro');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(ev==='focusin'&&t.blur)t.blur()},true));
+['click','input','change','focusin'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.isTrusted)return;const t=e.target;if(!t||!t.closest)return;const sec=t.closest('.sh-sec[data-vt="view"]');if(!sec)return;const x=t.closest('.vt-nc,.vt-e,.vt-ro');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(ev==='focusin'&&t.blur)t.blur()},true));
 window.addEventListener('app:role',()=>{try{vtEnter(cur,'view')}catch(e){}});
 function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
@@ -12111,7 +12111,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291830';
+const VERSION='202610291900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
