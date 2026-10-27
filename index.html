@@ -10022,9 +10022,7 @@ function contractHTML(C){
   const pcs=[...GRPS,'Not in Drivers',''].map(pc=>({pc,keys:pcKeys(pc)})).filter(x=>GRPS.includes(x.pc)||x.keys.some(k=>C.per[k]&&C.per[k].days)).map(x=>({...x,a:sumOf(x.keys,C.per)})).sort((a,b)=>(GRPS.includes(b.pc)-GRPS.includes(a.pc))||pcCmp(a,b));
   const rows=drvRows(keys,C);
   return tiles(all,[],PC?sumOf(keys,PC.per):null)+
-  `<section class="card"><div class="ch"><h2>By postcode and group</h2></div><div class="tw"><table class="tb pct"><thead><tr><th>Group</th><th class="r">Drivers</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="Scan compliance">Scan</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
-   ${pcs.map(({pc,keys})=>{const a=sumOf(keys,C.per),eta=pct(a.etaW,a.etaN),n=nps(a.scores),w=keys.filter(k=>C.per[k]&&C.per[k].days).length;const pa=PC?sumOf(keys,PC.per):null,L=PC&&PC.R?PC.R.lab:'',ok=false;return `<tr ${pc?`data-sm="pc" data-v="${pc}" tabindex="0"`:''}><td><b>${pc||'Not set'}</b></td><td class="r">${w}</td><td class="r">${fmtN(a.pc)}${ok?dl(a.pc,pa.pc,'chg',L):''}</td><td class="r">${fsp(pct(a.ftdW,a.ftdN))}${ok?dl(pct(a.ftdW,a.ftdN),pct(pa.ftdW,pa.ftdN),'pct',L):''}</td><td class="r">${gdot('eta',eta)}${fmtPct(eta)}${ok?dl(eta,pct(pa.etaW,pa.etaN),'pct',L):''}</td><td class="r">${(q=>q==null?'–':gdot('cp',q)+fmtPct(q))(pct(a.cpW,a.cpN))}${ok?dl(pct(a.cpW,a.cpN),pct(pa.cpW,pa.cpN),'pct',L):''}</td><td class="r">${a.days?gdot('enq',epk(a.enq,a.pc))+epkTxt(epk(a.enq,a.pc)):'–'}${ok?dl(epk(a.enq,a.pc),epk(pa.enq,pa.pc),'down1',L):''}</td><td class="r">${n==null?'–':`<span class="${n>=100?'svgd':n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
-  </tbody></table></div><p class="hint">Tap a postcode to see its drivers.</p></section>`+bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
+  bossNotes(C,all,PC?sumOf(keys,PC.per):null,pcs);
 }
 let pcSort='none';
 function pcCmp(x,y){const e=a=>pct(a.etaW,a.etaN)??-1,sv=a=>nps(a.scores)??-999;
@@ -10127,7 +10125,6 @@ async function pdf(btn){
     if(a.enqRecs.length)blocks.push({title:'ENQUIRIES',head:['DATE','CASE','ADDRESS','OUTCOME'],body:a.enqRecs.map(e=>[longD(e.date),e.caseNo||'',e.address||'',e.fault==='yes'?'At fault':e.fault==='no'?'Not at fault':''])});
   }else{
     const keys=Object.keys(C.P).filter(k=>scope.t==='all'||C.P[k].pc===scope.v);tops=kpi(sumOf(keys,C.per));
-    if(scope.t==='all')blocks.push({title:'BY POSTCODE AND GROUP',head:['GROUP','DRIVERS','PARCELS','FTD','2HR ETA','SCAN %','ENQ /1000','SURVEY'],body:GRPS.map(pc=>{const ks=keys.filter(k=>C.P[k].pc===pc),a=sumOf(ks,C.per),n=nps(a.scores);return[pc,String(ks.filter(k=>C.per[k]&&C.per[k].days).length),fmtN(a.pc),fmtPct(pct(a.ftdW,a.ftdN)),fmtPct(pct(a.etaW,a.etaN)),fmtPct(pct(a.cpW,a.cpN)),epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')',n==null?'–':n+' ('+a.scores.length+')']})});
     blocks.push({title:'DRIVERS',head:drvHead,body:drvBody(drvRows(keys,C))});
   }
   const {jsPDF}=window.jspdf;
@@ -11723,7 +11720,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610282300';
+const VERSION='202610282330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
