@@ -4189,6 +4189,37 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root[data-theme="dark"] #sh-main #mod-leave .lvr.open{--rbg:#17271F;--lc:#5E9E7B}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.one{--rbg:#2A2414;--lc:#B08A3A}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#2D1D1C;--lc:#B86862}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#1F252D;--lc:#6B7686}
 :root:root #sh-main #mod-leave .lvkey .open{--lc:#3D7356}:root:root #sh-main #mod-leave .lvkey .one{--lc:#9A6B12}:root:root #sh-main #mod-leave .lvkey .full{--lc:#A8423B}:root:root #sh-main #mod-leave .lvkey .bo{--lc:#5D6876}
 :root:root .ck-big.go,:root:root #sh-home .sh-hero .ck-big.go{background:#2E7D55!important}:root:root .ck-big.stop,:root:root #sh-home .sh-hero .ck-big.stop{background:#B5463F!important}
+/* WHATSAPP STYLE BOTTOM BAR (phones): plain bar, grey line icons, the open tab sits in a soft pill */
+@media (max-width:899.98px){
+ :root:root .sh-side{background:#FFFFFF!important;border-top:1px solid #E3E7EC!important;box-shadow:none!important}
+ :root:root .sh-side .sh-links button.tab{color:#54656F!important;padding:8px 2px 6px!important;gap:4px!important}
+ :root:root .sh-side .sh-links button.tab svg{width:24px!important;height:24px!important;color:#54656F!important;stroke-width:1.9;box-sizing:content-box;padding:4px 18px;border-radius:999px;transition:background .15s}
+ :root:root .sh-side .sh-links button.tab .sm{font-size:12.5px!important;font-weight:600!important;color:#54656F!important}
+ :root:root .sh-side .sh-links button.tab[aria-current="page"] svg{background:#DCE6F2;color:#1B3F6B!important}
+ :root:root .sh-side .sh-links button.tab[aria-current="page"] .sm{color:#111B21!important;font-weight:800!important}
+ :root:root .sh-side .sh-links button.tab[aria-current="page"]::before{display:none!important}
+ :root:root .sh-side .sh-links .vsw .ic2{width:auto!important;height:auto!important;padding:4px 18px;border-radius:999px!important}
+ :root:root .sh-side .sh-links .vsw .ic2 svg{padding:0!important;background:none!important;width:24px!important;height:24px!important}
+ :root:root .sh-side .sh-links .vsw:not(.u) .ic2{background:#FBE3D3!important;color:#B8622E!important}:root:root .sh-side .sh-links .vsw:not(.u) .ic2 svg{color:#B8622E!important}:root:root .sh-side .sh-links .vsw:not(.u) .sm{color:#B8622E!important;font-weight:800!important}
+ :root:root .sh-side .sh-links .vsw.u .ic2{background:#FFF0B8!important;color:#7A5B00!important}:root:root .sh-side .sh-links .vsw.u .ic2 svg{color:#7A5B00!important}:root:root .sh-side .sh-links .vsw.u .sm{color:#7A5B00!important;font-weight:800!important}
+ :root:root .sh-side .sh-links .bdg{background:#1FA855!important;color:#fff!important;box-shadow:0 0 0 2px #fff!important;top:2px!important}
+}
+@media (max-width:899.98px) and (prefers-color-scheme:dark){
+ :root:root:not([data-theme="light"]) .sh-side{background:#111B21!important;border-top-color:#222D34!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links button.tab,:root:root:not([data-theme="light"]) .sh-side .sh-links button.tab svg,:root:root:not([data-theme="light"]) .sh-side .sh-links button.tab .sm{color:#AEBAC1!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links button.tab[aria-current="page"] svg{background:#1F3247;color:#D6E4F5!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links button.tab[aria-current="page"] .sm{color:#E9EDEF!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links .vsw:not(.u) .ic2{background:#3A2416!important}:root:root:not([data-theme="light"]) .sh-side .sh-links .vsw:not(.u) :is(.ic2,.ic2 svg,.sm){color:#E4A276!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links .vsw.u .ic2{background:#3A3010!important}:root:root:not([data-theme="light"]) .sh-side .sh-links .vsw.u :is(.ic2,.ic2 svg,.sm){color:#E6C766!important}
+ :root:root:not([data-theme="light"]) .sh-side .sh-links .bdg{box-shadow:0 0 0 2px #111B21!important}
+}
+@media (max-width:899.98px){
+ :root:root[data-theme="dark"] .sh-side{background:#111B21!important;border-top-color:#222D34!important}
+ :root:root[data-theme="dark"] .sh-side .sh-links button.tab,:root:root[data-theme="dark"] .sh-side .sh-links button.tab svg,:root:root[data-theme="dark"] .sh-side .sh-links button.tab .sm{color:#AEBAC1!important}
+ :root:root[data-theme="dark"] .sh-side .sh-links button.tab[aria-current="page"] svg{background:#1F3247;color:#D6E4F5!important}
+ :root:root[data-theme="dark"] .sh-side .sh-links button.tab[aria-current="page"] .sm{color:#E9EDEF!important}
+ :root:root[data-theme="dark"] .sh-side .sh-links .bdg{box-shadow:0 0 0 2px #111B21!important}
+}
 /* red number badges: a little softer */
 :root:root .bdg{background:#C9453F!important}
 </style><div class="sh-app">
@@ -11654,7 +11685,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281830';
+const VERSION='202610281840';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
