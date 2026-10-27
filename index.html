@@ -4539,8 +4539,8 @@ setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards','lockers','sort'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
-const DRV_HIDE=[];
-const DRV_MENU=['runs','reports','results','survey','briefs','guide','feedback','invoices','directory','uniform'];
+const DRV_HIDE=['results','survey'];
+const DRV_MENU=['runs','reports','briefs','guide','feedback','invoices','directory','uniform'];
 const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',results:'Driver results',survey:'Survey results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
@@ -11732,7 +11732,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290530';
+const VERSION='202610290600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
