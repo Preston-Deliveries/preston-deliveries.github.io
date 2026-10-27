@@ -4724,7 +4724,8 @@ else if(/^\d{4}$/.test(h)) first='sort';
 else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
 else if(h) first='runs';
 else if(previewChild){try{const v=window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
-else{try{const v=localStorage.getItem('sec1161');if(SECS.includes(v))first=v}catch(e){}}
+/* the app always opens on Home; if it sat in the background for 15 minutes or more, it goes back to Home too */
+{let hid=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){hid=Date.now();return}if(hid&&Date.now()-hid>=15*60e3&&!previewChild&&cur!=='home'){const a=document.activeElement;if(!(a&&a.matches&&a.matches('input,textarea,select')))try{go('home')}catch(e){}}hid=0})}
 cur=first;window.__uvFirst=first;
 document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==MOD[first]);
 renderNav();renderHome();
@@ -11365,7 +11366,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281320';
+const VERSION='202610281330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
