@@ -4326,6 +4326,13 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main .me-trend .tr-c i.gd,:root:root:root #sh-main .rt i.rd.r-gd,:root:root:root #sh-main #mod-summary i.dt.gold{background:var(--ok,#14804A)!important}
 :root:root:root #sh-main .tile.gold{border-top-color:var(--sh-line)!important}
 </style>
+<style id="rnav">
+:root:root #sh-main #mod-results #r_tool[data-tab="view"] header.top{display:none!important}
+#mod-results #r_perSub{display:flex!important;align-items:stretch;gap:6px}
+#mod-results #r_perSub .snx{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;min-width:0}
+#mod-results #r_perSub .snx .pc{display:flex;align-items:center;justify-content:center;font-weight:700;text-align:center}
+:root:root #sh-main #mod-results #r_perSub .sn{flex:none;width:34px;min-height:44px;padding:0;border:1px solid var(--sh-line);border-radius:10px;background:var(--sh-surface);color:var(--sh-ink);font:800 1.3rem var(--sh-body);cursor:pointer}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -5909,7 +5916,8 @@ function renderTargets(){
     i.onchange=()=>{const v=num(i.value);if(v!=null){settings.targets[k]=v;saveSettings();renderAll()}};l.append(i);box.append(l)}
 }
 function renderSub(){const box=document.getElementById("r_perSub");if(box)box.innerHTML=subHTML()}
-function subHTML(){
+function subHTML(){const ar=(d,l)=>`<button type="button" class="sn" data-sn="${d}" aria-label="${l}">${d<0?"‹":"›"}</button>`;return ar(-1,"Earlier")+`<div class="snx">${subIn()}</div>`+ar(1,"Later")}
+function subIn(){
   if(view==="day"){return DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("")}
   if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
   const cs=cycleInfo(weekId).start;return `<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
@@ -6371,7 +6379,7 @@ function wire(){
   ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("over")}));
   drop.addEventListener("drop",ev=>handleFiles(ev.dataTransfer.files));
   const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv===v)));renderSub();drawBoard()};
-  document.getElementById("r_perSub").addEventListener("click",async e=>{const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
+  document.getElementById("r_perSub").addEventListener("click",async e=>{const n=e.target.closest("[data-sn]");if(n){await openWeek(iso(addDays(fromIso(weekId),(view==="cycle"?28:7)*(+n.dataset.sn))));renderAll();return}const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
   document.getElementById("r_perSeg").addEventListener("click",e=>{const b=e.target.closest("[data-rv]");if(b)setView(b.dataset.rv)});
   $("viewSel").onchange=e=>setView(e.target.value);$("viewWeek").onclick=()=>setView("week");$("viewDay").onclick=()=>setView("day");$("viewCycle").onclick=()=>setView("cycle");
   document.getElementById("r_tabs").addEventListener("click",e=>{const b=e.target.closest("[data-rtab]");if(!b)return;const t=b.dataset.rtab;$("tool").dataset.tab=t;document.querySelectorAll("#r_tabs [data-rtab]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.rtab===t)));if(t==="view")renderAll();window.scrollTo(0,0)});
@@ -11870,7 +11878,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290730';
+const VERSION='202610290800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
