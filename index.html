@@ -4539,9 +4539,9 @@ setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards','lockers','sort'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
-const DRV_HIDE=['results','survey'];
-const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','directory','uniform'];
-const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
+const DRV_HIDE=[];
+const DRV_MENU=['runs','reports','results','survey','briefs','guide','feedback','invoices','directory','uniform'];
+const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',results:'Driver results',survey:'Survey results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
 const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
@@ -4787,9 +4787,9 @@ const AMENU=[['Every day','day',[['results','Load the daily results'],['enquirie
  ['Office','office',[['staff','Driver details'],['timesheets','Hours and clock ins'],['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
   if(role==='mgr'){box.innerHTML=[['Overview','me',[['me','Any driver\'s results']]],...AMENU].map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+`<section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`;setTimeout(applyNavBadges,0);return}
-  const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
+  const SUB={results:'Everyone\'s results',survey:'Customer survey',briefs:'Read and sign',runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
-  <div class="dm-also">${['briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
+  <section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
 let aoSel=null;
@@ -11732,7 +11732,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290500';
+const VERSION='202610290530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
