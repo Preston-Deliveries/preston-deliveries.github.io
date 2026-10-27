@@ -4369,6 +4369,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-iv="tab"][data-v="make"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets .ckwa,:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckwa"],:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckcopy"]{display:none!important}
 #sh-main #mod-timesheets .tsback{align-self:flex-start;margin-bottom:10px}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="pclear"]:not(.tsback){display:none!important}
@@ -4934,11 +4935,11 @@ const VT={
   lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','drm','share'])},
   staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
   timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
-  invoices:{lab:'Edit',e:['[data-iv="tab"][data-v="make"]','[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'].concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="sub"]'],tabs:'[data-iv="tab"]'},
+  invoices:{lab:'Edit',e:VTA('im',['lopen','lst']).concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],tabs:'[data-iv="tab"]:not([data-v="make"])'},
   uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','inc','dec','clear']).concat(['[data-un="view"][data-v="form"]']),v:['[data-un="view"][data-v="req"]','[data-un="view"][data-v="done"]'],tabs:'[data-un="view"]'},
   reports:{lab:'Edit',e:VTA('rp',['file','del','msave','rmph','unfile'])}
 };
-let vtMode='view',vtObs=null,vtBusy=false;
+let vtMode='view',vtObs=null,vtBusy=false,vtFix1=false;
 function vtSec(){return document.getElementById(MOD[cur]||'')}
 function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vtBusy=true;
   const tag=(L,cls)=>{sec.querySelectorAll('.'+cls).forEach(x=>x.classList.remove(cls));(L||[]).forEach(q=>sec.querySelectorAll(q).forEach(x=>x.classList.add(cls)))};
@@ -4951,7 +4952,7 @@ function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vt
   /* back buttons always stay, so you can get out of any screen */
   sec.querySelectorAll('button,a').forEach(b=>{if(/^\s*\u2039/.test(b.textContent||''))b.classList.remove('vt-e','vt-nc','vt-ro')});
   vtBusy=false}
-function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
+function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;if(cur==='invoices'&&vtFix1){vtFix1=false;const mk=sec.querySelector('[data-iv="tab"][data-v="make"][aria-pressed="true"]');if(mk){const sb=sec.querySelector('[data-iv="tab"][data-v="sub"]');if(sb)sb.click();return}}const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
   if(on&&getComputedStyle(on).display==='none'){const nx=L.find(b=>getComputedStyle(b).display!=='none');if(nx)nx.click()}}
 function vtSwitch(sec,c){let w=sec.querySelector(':scope>.vtab');
   if(!w){w=document.createElement('div');w.className='seg rtabs vtab';w.setAttribute('role','group');w.setAttribute('aria-label','View or '+c.lab.toLowerCase());sec.prepend(w)}
@@ -4960,7 +4961,7 @@ function vtClose(sec){/* leaving Edit: close any open editor so View shows the n
   {const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}
   for(let i=0;i<3;i++){const b=[...sec.querySelectorAll('button,a')].find(x=>x.offsetParent&&!x.closest('.vtab')&&Object.values(x.dataset||{}).some(v=>/^(cancel|ncancel|back|nback|close|plno|rimpno|addno|delno|noimport|edClose)$/.test(v)));if(!b)break;
     const oc=window.confirm;window.confirm=()=>true;try{b.click()}finally{window.confirm=oc}}}
-function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;if(mode==='view'&&sec.dataset.vt==='edit'){const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
+function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;vtFix1=true;if(mode==='view'&&sec.dataset.vt==='edit'){const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
   if(cur==='survey'&&mode==='edit'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}
   if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
   setTimeout(vtFixTabs,0)}
@@ -12122,7 +12123,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610292030';
+const VERSION='202610292100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
