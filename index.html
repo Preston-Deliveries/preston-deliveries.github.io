@@ -4058,6 +4058,9 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 #sh-main #mod-enquiries .pl-r.need{border-color:#C8352B;background:rgba(200,53,43,.06)}
 #sh-main #mod-enquiries .pl-r .d{display:flex;flex-direction:column}#sh-main #mod-enquiries .pl-r small{color:var(--sh-muted)}
 #sh-main #mod-enquiries .pl-r select{width:100%}
+.rk b.nr,.dr-rank .rk b.nr{font-size:2rem!important;color:var(--sh-muted)}
+.nrt{display:block;margin:4px 0 0;font-weight:700;color:var(--sh-muted);font-size:.95rem}
+.avgp{display:block;margin:4px 0 0;font-weight:700;font-size:.95rem}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -5592,13 +5595,15 @@ function weekRows(weeks){
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq,sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*3}});
 }
 function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r0])=>{const r=Object.assign({},r0,{enq:fe(d,login)});return r}).map((r,i)=>[Object.keys(d.rows)[i],r]).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk(r.enq,r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
-function scoreSort(rows){
-  return rows.map(r=>({...r,star:r.points===r.max})).sort((a,b)=>cmp(a,b)||a.login.localeCompare(b.login));
+/* ranking: average points a day worked. To get a place you need 3 days in a week, 12 in a pay cycle (1 for a single day).
+   Ties: fewer enquiries, better ETA, better scan compliance; parcels never count; exact ties share a rank */
+const NEED={day:1,week:3,cycle:12};
+function scoreSort(rows,need){need=need||NEED[view]||1;
+  return rows.map(r=>({...r,avg:r.days?r.points/r.days:0,q:(r.days||1)>=need,need,star:r.points===r.max})).sort((a,b)=>(b.q-a.q)||cmp(a,b)||a.login.localeCompare(b.login));
 }
-/* ranking: most points, then fewer enquiries, better ETA, better scan compliance; parcels never count; exact ties share a rank */
-function cmp(a,b){return b.points-a.points||(a.enq??0)-(b.enq??0)||(b.eta??-1)-(a.eta??-1)||(b.cp??-1)-(a.cp??-1)}
+function cmp(a,b){return (b.avg??0)-(a.avg??0)||(a.enq??0)-(b.enq??0)||(b.eta??-1)-(a.eta??-1)||(b.cp??-1)-(a.cp??-1)}
 function ranked(rows){
-  rows.forEach((r,i)=>{r.rank=i&&cmp(rows[i-1],r)===0?rows[i-1].rank:i+1});return rows;
+  rows.forEach((r,i)=>{if(!r.q){r.rank=null;return}const p=rows[i-1];r.rank=p&&p.q&&cmp(p,r)===0?p.rank:i+1});return rows;
 }
 
 /* ---------- rendering: page ---------- */
@@ -6006,7 +6011,7 @@ function boardsNow(){
   view=keep;drawBoard();
   return out;
 }
-function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,cp:r.cp,nc:r.nc,enq:r.enq,ftd:r.ftd,r:{eta:c(rate('eta',r.eta)),nc:c(rate('cp',r.cp)),enq:c(rate('enq',r.enqK!=null?r.enqK:epk(r.enq,r.pc)))}});try{return{week:ranked(scoreSort(weekRows())).map(f),day:ranked(scoreSort(dayRows(selDay))).map(f),cycle:ranked(scoreSort(weekRows(cycleList()))).map(f)}}catch(e){return null}}
+function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,cp:r.cp,nc:r.nc,enq:r.enq,ftd:r.ftd,r:{eta:c(rate('eta',r.eta)),nc:c(rate('cp',r.cp)),enq:c(rate('enq',r.enqK!=null?r.enqK:epk(r.enq,r.pc)))}});try{return{week:ranked(scoreSort(weekRows(),NEED.week)).map(f),day:ranked(scoreSort(dayRows(selDay),NEED.day)).map(f),cycle:ranked(scoreSort(weekRows(cycleList()),NEED.cycle)).map(f)}}catch(e){return null}}
 window.RESULTS={share:async()=>{
   if(!week||!Object.keys(week.days||{}).length)throw new Error("nothing to share");
   const now=new Date();
@@ -7925,11 +7930,15 @@ function metricRank(dates,kind){
   const K=myKeys(),i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&Math.abs(L[rk-2][1]-L[i][1])<1e-9)rk--;return{rank:rk,of:L.length};
 }
 function resultsBy(dates){const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}return by}
+/* place among drivers by average points a day worked; you need 3 days in a week (12 in a pay cycle, 1 for one day) to get a place */
 function resultsRank(dates){
-  const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}
-  const K=myKeys(),L=Object.entries(by).sort((a,b)=>b[1]-a[1]);const i=L.findIndex(([k])=>K.has(k));if(i<0)return null;
-  let rk=i+1;while(rk>1&&L[rk-2][1]===L[i][1])rk--;return{rank:rk,of:L.length};
+  const by={},dy={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r);dy[k]=(dy[k]||0)+1}}
+  const need=dates.length>7?12:dates.length>1?3:1,K=myKeys(),mine=Object.keys(by).find(k=>K.has(k));if(!mine)return null;
+  const Q=Object.keys(by).filter(k=>dy[k]>=need).map(k=>[k,by[k]/dy[k]]).sort((a,b)=>b[1]-a[1]);const avg=by[mine]/dy[mine];
+  if(dy[mine]<need)return{rank:null,of:Q.length,days:dy[mine],need,avg};
+  const i=Q.findIndex(([k])=>k===mine);let rk=i+1;while(rk>1&&Math.abs(Q[rk-2][1]-Q[i][1])<1e-9)rk--;return{rank:rk,of:Q.length,days:dy[mine],need,avg};
 }
+const nrTxt=r=>`You worked ${r.days} day${r.days===1?'':'s'}. Work ${r.need} or more to get a place.`;
 function statsHTML(per,x,sv,own){
   const t=targets(),sh=s=>{const d=fromIso(s);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()};
   const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
@@ -8058,7 +8067,7 @@ function tiles4(x,sv,withFtd){const t=targets();
   if(withFtd){T.splice(3,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%'])}
   return T}
 function tileHTML([l,v,ok,tg],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
-function moveTxt(r,p,lab){if(!r||!p)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
+function moveTxt(r,p,lab){if(!r||!p||r.rank==null||p.rank==null)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
   try{await load()}catch(e){}
@@ -8079,7 +8088,7 @@ async function homeCards(){
      :`<section class="dh-card dh-done"><b>✓ All done</b><span>Nothing to do right now.</span></section>`}
    <button type="button" class="dh-card dh-week" data-nav="me">
      <span class="hd"><b>This week</b><small>${esc(P.sh(wd[0]))} to ${esc(P.sh(addD(wd[0],5)))}</small></span>
-     ${x?`<span class="rk">${rk?`<b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:''}</span>${moveTxt(rk,prk,'last week')}
+     ${x?`<span class="rk">${rk?(rk.rank!=null?`<b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`):''}</span>${rk&&rk.rank==null?`<span class="nrt">${esc(nrTxt(rk))}</span>`:''}${rk?`<span class="avgp">${(Math.round(rk.avg*10)/10).toFixed(1)} points a day, out of 3</span>`:''}${moveTxt(rk,prk,'last week')}
      <span class="st4">${T.map(z=>`<span class="s ${z[2]==null?'none':z[2]?'ok':'bad'}"><small>${z[0]}</small><b>${z[1]==null?'–':esc(z[1])}</b><i>${z[2]==null?'':z[2]?'✓':'✗'}</i></span>`).join('')}</span>
      <span class="msg ${have&&hit===have?'ok':''}">${have&&hit===have?'★ Great week. You hit every target.':have?`${hit} of ${have} on target`:''}</span>
      ${wins.length?`<span class="win">★ ${esc(wins[0])}</span>`:''}`:`<span class="nores">No results for this week yet. They show here after the office loads them.</span>`}
@@ -8099,7 +8108,7 @@ function driverHTML(){
   <div class="me-seg dseg" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
   ${subRowHTML(P)}
   <section class="dr-rank"><small>${when} · ${esc(per.label.replace(/^Week \d of the pay cycle · /,''))}</small>
-   ${x&&rk?`<div class="rk"><b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span></div>${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
+   ${x&&rk?`<div class="rk">${rk.rank!=null?`<b>${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`}</div>${rk.rank==null?`<p class="nrt">${esc(nrTxt(rk))}</p>`:''}<p class="avgp">${(Math.round(rk.avg*10)/10).toFixed(1)} points a day, out of 3</p>${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
   <div class="dr-tiles">${T.map((z,i)=>tileHTML(z,i===4)).join('')}</div>
   ${fb.good.length||fb.need.length?`<section class="dr-fb">${fb.need.length?`<div class="need"><h3>Work on</h3><ul>${fb.need.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}${fb.good.length?`<div class="good"><h3>Going well</h3><ul>${fb.good.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}</section>`:''}
   ${trendHTML(true)}
@@ -9749,7 +9758,7 @@ function tiles(a,extra,pa){
 }
 function drvRows(keys,C){
   const rows=keys.map(k=>({p:C.P[k],a:C.per[k]||blank()})).filter(x=>x.p&&(x.a.days||x.a.scores.length||x.a.enqRecs.length||x.a.leave||x.a.wd));
-  const by={points:(x,y)=>totPts(y.a)-totPts(x.a)||y.a.pts-x.a.pts||y.a.pc-x.a.pc,parcels:(x,y)=>y.a.pc-x.a.pc,name:(x,y)=>x.p.name.localeCompare(y.p.name),eta:(x,y)=>(pct(y.a.etaW,y.a.etaN)??-1)-(pct(x.a.etaW,x.a.etaN)??-1),survey:(x,y)=>(nps(y.a.scores)??-999)-(nps(x.a.scores)??-999)};
+  const by={points:(x,y)=>(y.a.days?y.a.pts/y.a.days:-9)-(x.a.days?x.a.pts/x.a.days:-9)||y.a.pc-x.a.pc,parcels:(x,y)=>y.a.pc-x.a.pc,name:(x,y)=>x.p.name.localeCompare(y.p.name),eta:(x,y)=>(pct(y.a.etaW,y.a.etaN)??-1)-(pct(x.a.etaW,x.a.etaN)??-1),survey:(x,y)=>(nps(y.a.scores)??-999)-(nps(x.a.scores)??-999)};
   return rows.sort(by[sortBy]||by.name);
 }
 /* role colour for each driver: postcode, XL, relief, supervisors or office */
@@ -11533,7 +11542,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281610';
+const VERSION='202610281620';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
