@@ -4110,6 +4110,14 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 #sh-main #mod-leave .cal,#sh-main #mod-leave .daydet{order:7}
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).open{--lc:#5CCB8E}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).one{--lc:#F2C94C}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).full{--lc:#F48A8A}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).bo{--lc:#AAB4C3}html:not([data-theme="light"]) #sh-main #mod-leave .lvnav .tl{color:#5CCB8E}}
 html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).open{--lc:#5CCB8E}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).one{--lc:#F2C94C}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).full{--lc:#F48A8A}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).bo{--lc:#AAB4C3}
+/* leave week rows: strong status colours, easy to tell at a glance */
+#sh-main #mod-leave .lvr{background:var(--rbg)!important;border-color:var(--lc)!important;border-width:2px!important;border-left-width:8px!important}
+#sh-main #mod-leave .lvr .pill{background:var(--lc)!important;color:#fff!important;font-size:.9rem;padding:7px 12px}
+#sh-main #mod-leave .lvr.open{--rbg:#E7F6EC}#sh-main #mod-leave .lvr.one{--rbg:#FFF3D6;--lc:#B26A00}#sh-main #mod-leave .lvr.full{--rbg:#FDE4E2}#sh-main #mod-leave .lvr.bo{--rbg:#ECEFF3}
+#sh-main #mod-leave .lvr .pp{background:rgba(255,255,255,.7)}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}html:not([data-theme="light"]) #sh-main #mod-leave .lvr .pp{background:rgba(255,255,255,.12)}}
+html[data-theme="dark"] #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}html[data-theme="dark"] #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}html[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}html[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}html[data-theme="dark"] #sh-main #mod-leave .lvr .pp{background:rgba(255,255,255,.12)}
+#sh-main #mod-leave .lvkey span{background:var(--lc)!important;color:#fff!important}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -11600,7 +11608,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281750';
+const VERSION='202610281800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
