@@ -4369,6 +4369,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+:root:root:root #sh-main#sh-main .sh-wa,:root:root:root .sh-wa{display:none!important}
 /* picked or flagged rows on phones: the whole card is coloured, not patches behind each box */
 @media (max-width:899.98px){
 :root:root:root #sh-main#sh-main :is(#mod-uniform table.olist tr.on,#mod-invoices table tr.chk,#mod-leave table.tot tr.exp) td{background:transparent!important}
@@ -4859,7 +4860,7 @@ function closeUserView(){(window.__uvSubs||[]).splice(0).forEach(u=>{try{u()}cat
 /* Let drivers know: open WhatsApp with a ready message and a link straight to the page (admin only) */
 const WA_MSG={updates:'Please read the latest update in the PDS app.',briefs:'A new team brief is up. Please read it and sign off in the PDS app.',results:'Driver results have been updated. Check yours in the PDS app.',survey:'The survey ranking has been updated. Check it in the PDS app.'};
 const waLink=s=>location.origin+location.pathname+'#'+s;
-function renderWa(){
+function renderWa(){document.querySelectorAll('.sh-wa').forEach(el=>el.remove());return;
   document.querySelectorAll('.sh-wa').forEach(el=>{if(el.dataset.for!==cur||role!=='mgr'||previewChild)el.hidden=true});
   if(!WA_MSG[cur]||role!=='mgr'||previewChild)return;
   const sec=document.getElementById(MOD[cur]);if(!sec)return;
@@ -12162,7 +12163,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300100';
+const VERSION='202610300130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
