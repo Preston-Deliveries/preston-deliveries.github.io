@@ -120,7 +120,6 @@ service cloud.firestore {
         && request.resource.data.status == 'submitted');
       allow delete: if isAdmin();
     }
-    // Leave requests: drivers ask for their own time off and can cancel it while it is waiting; only admins approve or decline
     // Uniform orders: a driver sends their own order into the app; only admins see everyone's, change or delete
     match /uniorders/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
@@ -131,6 +130,7 @@ service cloud.firestore {
         && request.resource.data.items is list && request.resource.data.items.size() <= 20);
       allow update, delete: if isAdmin();
     }
+    // Leave requests: drivers ask for their own time off and can cancel it while it is waiting; only admins approve or decline
     match /leavereq/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
       allow create: if isAdmin() || (hasAccess()
