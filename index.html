@@ -3966,30 +3966,92 @@ html.appui .sh-side .sh-links button:not(.vsw) svg{color:var(--g)!important}
 @media (min-width:900px){html.appui .sh-side .sh-links button[aria-current="page"]{border-left-color:var(--g)!important}}
 @media (min-width:900px){.sh-side .sh-role{order:1}.sh-side .sh-vt{order:2;padding:10px 8px 0;margin-top:0}.sh-side .sh-vt .seg button{padding:9px 10px;font-size:.88rem}}
 .sh-vt:not(.user) .seg button[aria-pressed="true"]{background:#F2782D!important;color:#fff!important}
-/* ADMIN BIG: phone admin view is big and easy to read */
+/* BIG: phone view is big and easy to read, same size in admin and user view */
 @media (max-width:899.98px){
- html.appui:not(.drvui){font-size:18px}
- html.appui:not(.drvui) #sh-main :is(button,.btn,.sh-btn,a.sh-btn):not(.dm-t):not(.qa):not(.dh-do):not(.dback){min-height:44px}
- html.appui:not(.drvui) #sh-main :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:1rem!important;min-height:48px;box-sizing:border-box}
- html.appui:not(.drvui) #sh-main textarea{min-height:110px}
+ html.appui:not(.drvui),html.appui.drvui{font-size:18px}
+ html.appui #sh-main :is(button,.btn,.sh-btn,a.sh-btn):not(.dm-t):not(.qa):not(.dh-do):not(.dback){min-height:44px}
+ html.appui #sh-main :is(input:not([type=checkbox]):not([type=radio]),select,textarea){font-size:1rem!important;min-height:48px;box-sizing:border-box}
+ html.appui #sh-main textarea{min-height:110px}
  html.appui:not(.drvui) .sh-links button.tab .sm{font-size:13px!important}
- html.appui:not(.drvui) #mod-uniform .fit{display:flex;max-width:100%}html.appui:not(.drvui) #mod-uniform .fit button{flex:1;min-width:0;padding:6px 4px!important}
- html.appui:not(.drvui) #sh-main :is(.sh-btn.primary,.btn.primary):not(.sm){min-height:52px!important;font-size:1.02rem!important;font-weight:800!important;border-radius:12px!important;padding-left:18px!important;padding-right:18px!important}
- html.appui:not(.drvui) #sh-main input[type=checkbox],html.appui:not(.drvui) #sh-main input[type=radio]{width:22px!important;height:22px!important;flex:none}
- html.appui:not(.drvui) #sh-main label:has(>input[type=checkbox]){font-size:1rem!important;min-height:40px;display:inline-flex;align-items:center;gap:10px}
- html.appui:not(.drvui) #sh-main .tiles .tile>span:first-child,html.appui:not(.drvui) #sh-main .tile .l{font-size:.76rem!important;letter-spacing:.03em!important;line-height:1.25}
- html.appui:not(.drvui) #sh-main small:not(.tg){font-size:max(.74rem,1em)}
- html.appui:not(.drvui) #sh-main .tile small{font-size:.76rem!important}
- html.appui:not(.drvui) #sh-main table.pct td{font-size:.86rem!important}
- html.appui:not(.drvui) #sh-main table.pct th,html.appui:not(.drvui) #sh-main table.pct th abbr{font-size:.6rem!important;letter-spacing:0!important;white-space:nowrap}
- html.appui:not(.drvui) #sh-main table.pct :is(th,td){padding-left:3px!important;padding-right:3px!important}
- html.appui:not(.drvui) #sh-main table.pct td:first-child,html.appui:not(.drvui) #sh-main table.pct td:first-child *{white-space:nowrap}
- html.appui:not(.drvui) #sh-main table.pct .pcz{font-size:.8rem!important;padding:2px 6px!important;overflow:visible!important;max-width:none!important}
- html.appui:not(.drvui) #sh-main .rtk small{font-size:.68rem!important}
- html.appui:not(.drvui) #sh-main .days .chip{font-size:.7rem!important}
- html.appui:not(.drvui) #sh-main .role,html.appui:not(.drvui) #sh-main .pill{font-size:.78rem!important}
+ html.appui #mod-uniform .fit{display:flex;max-width:100%}html.appui #mod-uniform .fit button{flex:1;min-width:0;padding:6px 4px!important}
+ html.appui #sh-main :is(.sh-btn.primary,.btn.primary):not(.sm){min-height:52px!important;font-size:1.02rem!important;font-weight:800!important;border-radius:12px!important;padding-left:18px!important;padding-right:18px!important}
+ html.appui #sh-main input[type=checkbox],html.appui #sh-main input[type=radio]{width:22px!important;height:22px!important;flex:none}
+ html.appui #sh-main label:has(>input[type=checkbox]){font-size:1rem!important;min-height:40px;display:inline-flex;align-items:center;gap:10px}
+ html.appui #sh-main .tiles .tile>span:first-child,html.appui #sh-main .tile .l{font-size:.76rem!important;letter-spacing:.03em!important;line-height:1.25}
+ html.appui #sh-main small:not(.tg){font-size:max(.74rem,1em)}
+ html.appui #sh-main .tile small{font-size:.76rem!important}
+ html.appui #sh-main table.pct td{font-size:.86rem!important}
+ html.appui #sh-main table.pct th,html.appui #sh-main table.pct th abbr{font-size:.6rem!important;letter-spacing:0!important;white-space:nowrap}
+ html.appui #sh-main table.pct :is(th,td){padding-left:3px!important;padding-right:3px!important}
+ html.appui #sh-main table.pct td:first-child,html.appui #sh-main table.pct td:first-child *{white-space:nowrap}
+ html.appui #sh-main table.pct .pcz{font-size:.8rem!important;padding:2px 6px!important;overflow:visible!important;max-width:none!important}
+ html.appui #sh-main .rtk small{font-size:.68rem!important}
+ html.appui #sh-main .days .chip{font-size:.7rem!important}
+ html.appui #sh-main .role,html.appui #sh-main .pill{font-size:.78rem!important}
 }
 @media (min-width:900px){html.appui:not(.drvui){font-size:17px}html.appui:not(.drvui) #sh-main :is(.sh-btn.primary,.btn.primary):not(.sm){min-height:46px;font-weight:800;padding-left:18px;padding-right:18px;border-radius:10px}}
+/* Who's off card on admin Home */
+.ah-off .ao-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ah-off .ao-h h2{margin:0}
+.ah-off .ao-h button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:2px;font-weight:800;font-size:.92rem;color:#1E8A4C}
+.ah-off .ao-h button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4}
+.ah-off .ao-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ah-off .ao-b{border-radius:14px;padding:12px 14px;min-width:0}
+.ah-off .ao-b.in{background:rgba(30,138,76,.1)}
+.ah-off .ao-b.off{background:rgba(232,113,10,.12)}
+.ah-off .ao-b small{display:block;font-size:.8rem;font-weight:700;color:var(--sh-muted)}
+.ah-off .ao-b b{display:block;font:800 1.2rem/1.2 var(--sh-body);margin-top:4px}
+.ah-off .ao-b.in b{color:#1E8A4C}.ah-off .ao-b.off b{color:#C2570C}
+.ah-off .ao-b span{font-size:.9rem;color:#1E8A4C;font-weight:700}
+.ah-off .ao-b ul{margin:6px 0 0;padding:0;list-style:none;font-weight:700;font-size:1rem;line-height:1.35}
+.ah-off h3{margin:16px 0 8px;font:800 1.05rem var(--sh-body)}.ah-off h3 span{font-weight:600;color:var(--sh-muted);font-size:.9rem;margin-left:4px}
+.ah-off .ao-wk{border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+.ah-off .ao-r{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid var(--sh-line)}
+.ah-off .ao-r:first-child{border-top:0}
+.ah-off .ao-r.now{background:rgba(127,127,127,.08)}
+.ah-off .ao-r .d{flex:none;width:52px;display:flex;flex-direction:column;line-height:1.1;color:var(--sh-muted);font-size:.85rem}
+.ah-off .ao-r .d b{color:var(--sh-ink);font-size:1rem}
+.ah-off .ao-r .n{display:flex;flex-wrap:wrap;gap:6px}
+.ah-off .ao-r em{font-style:normal;font-weight:700;background:rgba(232,113,10,.14);color:#9A4A08;border-radius:8px;padding:4px 10px;font-size:.95rem}
+.ah-off .ao-r i{font-style:normal;color:var(--sh-muted);font-size:.92rem}
+.ah-off .ao-none{margin:10px 0 0;color:#1E8A4C;font-weight:700}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .ah-off .ao-r em{color:#F5B27A}html:not([data-theme="light"]) .ah-off .ao-b.in b,html:not([data-theme="light"]) .ah-off .ao-b span,html:not([data-theme="light"]) .ah-off .ao-none,html:not([data-theme="light"]) .ah-off .ao-h button{color:#5CCB8E}html:not([data-theme="light"]) .ah-off .ao-b.off b{color:#F5A25D}}
+html[data-theme="dark"] .ah-off .ao-r em{color:#F5B27A}html[data-theme="dark"] .ah-off .ao-b.in b,html[data-theme="dark"] .ah-off .ao-b span,html[data-theme="dark"] .ah-off .ao-none,html[data-theme="dark"] .ah-off .ao-h button{color:#5CCB8E}html[data-theme="dark"] .ah-off .ao-b.off b{color:#F5A25D}
+/* admin: Menu headings like the desktop side menu, and each group in one colour */
+.am-g h2{display:flex;align-items:center;gap:8px;font:800 .85rem var(--sh-body)!important;letter-spacing:.12em!important;text-transform:uppercase;color:var(--gc)!important}
+.am-g h2::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--gc)}
+.am-day{--gc:#6D3FC7}.am-news{--gc:#B86E00}.am-team{--gc:#14804A}.am-road{--gc:#1D5FD1}.am-office{--gc:#C2410C}.am-me{--gc:#4B5B75}
+html:not(.drvui) .am-day .dm-t{--tc:#7C4DDB;--tbg:rgba(124,77,219,.13)}html:not(.drvui) .am-news .dm-t{--tc:#B7791F;--tbg:rgba(242,178,74,.18)}html:not(.drvui) .am-team .dm-t{--tc:#1E8A4C;--tbg:rgba(30,138,76,.13)}html:not(.drvui) .am-road .dm-t{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}html:not(.drvui) .am-office .dm-t{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}html:not(.drvui) .am-me .dm-t{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .am-day{--gc:#B596F2}html:not([data-theme="light"]) .am-news{--gc:#F2B24A}html:not([data-theme="light"]) .am-team{--gc:#5CCB8E}html:not([data-theme="light"]) .am-road{--gc:#7FA8F5}html:not([data-theme="light"]) .am-office{--gc:#F4936A}html:not([data-theme="light"]) .am-me{--gc:#AAB4C3}
+html:not(.drvui):not([data-theme="light"]) .am-day .dm-t{--tc:#B596F2}html:not(.drvui):not([data-theme="light"]) .am-news .dm-t{--tc:#F2C94C}html:not(.drvui):not([data-theme="light"]) .am-team .dm-t{--tc:#5CCB8E}html:not(.drvui):not([data-theme="light"]) .am-road .dm-t{--tc:#7FA8F5}html:not(.drvui):not([data-theme="light"]) .am-office .dm-t{--tc:#F5A25D}html:not(.drvui):not([data-theme="light"]) .am-me .dm-t{--tc:#AAB4C3}}
+html[data-theme="dark"] .am-day{--gc:#B596F2}html[data-theme="dark"] .am-news{--gc:#F2B24A}html[data-theme="dark"] .am-team{--gc:#5CCB8E}html[data-theme="dark"] .am-road{--gc:#7FA8F5}html[data-theme="dark"] .am-office{--gc:#F4936A}html[data-theme="dark"] .am-me{--gc:#AAB4C3}
+html[data-theme="dark"]:not(.drvui) .am-day .dm-t{--tc:#B596F2}html[data-theme="dark"]:not(.drvui) .am-news .dm-t{--tc:#F2C94C}html[data-theme="dark"]:not(.drvui) .am-team .dm-t{--tc:#5CCB8E}html[data-theme="dark"]:not(.drvui) .am-road .dm-t{--tc:#7FA8F5}html[data-theme="dark"]:not(.drvui) .am-office .dm-t{--tc:#F5A25D}html[data-theme="dark"]:not(.drvui) .am-me .dm-t{--tc:#AAB4C3}
+/* admin: every page takes its group colour (side menu, Menu, Quick add, Needs you) */
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="results"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="timesheets"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="enquiries"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="survey"]{--g:#B596F2}
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="updates"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="briefs"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="guide"]{--g:#F2C94C}
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="staff"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="leave"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="directory"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="vchecks"]{--g:#5CCB8E}
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="runs"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="sort"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="precards"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="lockers"]{--g:#7FA8F5}
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="invoices"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="uniform"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="reports"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="feedback"]{--g:#F5A25D}
+html.appui:not(.drvui) .sh-side .sh-links [data-nav="me"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="alerts"],html.appui:not(.drvui) .sh-side .sh-links [data-nav="clock"]{--g:#AAB4C3}
+html.appui:not(.drvui) .t-results,html.appui:not(.drvui) .t-timesheets,html.appui:not(.drvui) .t-enquiries,html.appui:not(.drvui) .t-survey{--tc:#7C4DDB;--tbg:rgba(124,77,219,.13)}
+html.appui:not(.drvui) .t-updates,html.appui:not(.drvui) .t-briefs,html.appui:not(.drvui) .t-guide{--tc:#B7791F;--tbg:rgba(242,178,74,.18)}
+html.appui:not(.drvui) .t-staff,html.appui:not(.drvui) .t-leave,html.appui:not(.drvui) .t-directory,html.appui:not(.drvui) .t-vchecks{--tc:#1E8A4C;--tbg:rgba(30,138,76,.13)}
+html.appui:not(.drvui) .t-runs,html.appui:not(.drvui) .t-sort,html.appui:not(.drvui) .t-precards,html.appui:not(.drvui) .t-lockers{--tc:#2F6FED;--tbg:rgba(47,111,237,.13)}
+html.appui:not(.drvui) .t-invoices,html.appui:not(.drvui) .t-uniform,html.appui:not(.drvui) .t-reports,html.appui:not(.drvui) .t-feedback{--tc:#C2570C;--tbg:rgba(232,113,10,.14)}
+html.appui:not(.drvui) .t-me,html.appui:not(.drvui) .t-alerts,html.appui:not(.drvui) .t-clock{--tc:#4B5B75;--tbg:rgba(75,91,117,.14)}
+@media (prefers-color-scheme:dark){html.appui:not(.drvui):not([data-theme="light"]) .t-results,html.appui:not(.drvui):not([data-theme="light"]) .t-timesheets,html.appui:not(.drvui):not([data-theme="light"]) .t-enquiries,html.appui:not(.drvui):not([data-theme="light"]) .t-survey{--tc:#B596F2}
+html.appui:not(.drvui):not([data-theme="light"]) .t-updates,html.appui:not(.drvui):not([data-theme="light"]) .t-briefs,html.appui:not(.drvui):not([data-theme="light"]) .t-guide{--tc:#F2C94C}
+html.appui:not(.drvui):not([data-theme="light"]) .t-staff,html.appui:not(.drvui):not([data-theme="light"]) .t-leave,html.appui:not(.drvui):not([data-theme="light"]) .t-directory,html.appui:not(.drvui):not([data-theme="light"]) .t-vchecks{--tc:#5CCB8E}
+html.appui:not(.drvui):not([data-theme="light"]) .t-runs,html.appui:not(.drvui):not([data-theme="light"]) .t-sort,html.appui:not(.drvui):not([data-theme="light"]) .t-precards,html.appui:not(.drvui):not([data-theme="light"]) .t-lockers{--tc:#7FA8F5}
+html.appui:not(.drvui):not([data-theme="light"]) .t-invoices,html.appui:not(.drvui):not([data-theme="light"]) .t-uniform,html.appui:not(.drvui):not([data-theme="light"]) .t-reports,html.appui:not(.drvui):not([data-theme="light"]) .t-feedback{--tc:#F5A25D}
+html.appui:not(.drvui):not([data-theme="light"]) .t-me,html.appui:not(.drvui):not([data-theme="light"]) .t-alerts,html.appui:not(.drvui):not([data-theme="light"]) .t-clock{--tc:#AAB4C3}
+}
+html.appui:not(.drvui)[data-theme="dark"] .t-results,html.appui:not(.drvui)[data-theme="dark"] .t-timesheets,html.appui:not(.drvui)[data-theme="dark"] .t-enquiries,html.appui:not(.drvui)[data-theme="dark"] .t-survey{--tc:#B596F2}
+html.appui:not(.drvui)[data-theme="dark"] .t-updates,html.appui:not(.drvui)[data-theme="dark"] .t-briefs,html.appui:not(.drvui)[data-theme="dark"] .t-guide{--tc:#F2C94C}
+html.appui:not(.drvui)[data-theme="dark"] .t-staff,html.appui:not(.drvui)[data-theme="dark"] .t-leave,html.appui:not(.drvui)[data-theme="dark"] .t-directory,html.appui:not(.drvui)[data-theme="dark"] .t-vchecks{--tc:#5CCB8E}
+html.appui:not(.drvui)[data-theme="dark"] .t-runs,html.appui:not(.drvui)[data-theme="dark"] .t-sort,html.appui:not(.drvui)[data-theme="dark"] .t-precards,html.appui:not(.drvui)[data-theme="dark"] .t-lockers{--tc:#7FA8F5}
+html.appui:not(.drvui)[data-theme="dark"] .t-invoices,html.appui:not(.drvui)[data-theme="dark"] .t-uniform,html.appui:not(.drvui)[data-theme="dark"] .t-reports,html.appui:not(.drvui)[data-theme="dark"] .t-feedback{--tc:#F5A25D}
+html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-theme="dark"] .t-alerts,html.appui:not(.drvui)[data-theme="dark"] .t-clock{--tc:#AAB4C3}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -4528,6 +4590,25 @@ function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visi
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
   <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
+/* admin: who is off today, tomorrow and this week (from the leave calendar) */
+window.__lvChange=()=>{if(cur==='home')adminOff()};
+function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
+  const L=window.LEAVE;if(!L||!L.dayMap){setTimeout(adminOff,400);return}
+  const m=L.dayMap()||{},pad=n=>String(n).padStart(2,'0'),iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const nm=x=>String(x||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(q,a,c)=>a+c.toUpperCase());
+  const who=d=>{const o=m[iso(d)];return o?(o.names||[]).concat(o.office||[]).map(nm):[]};
+  const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const t0=new Date();t0.setHours(12,0,0,0);const t1=new Date(t0);t1.setDate(t0.getDate()+1);
+  const box=(lab,d)=>{const w=who(d),we=d.getDay()===0||d.getDay()===6;return `<div class="ao-b ${w.length?'off':'in'}"><small>${lab} · ${DN[d.getDay()]} ${d.getDate()} ${MN[d.getMonth()]}</small>${w.length?`<b>${w.length} off</b><ul>${w.map(n=>`<li>${esc(n)}</li>`).join('')}</ul>`:`<b>${we?'Weekend':'Nobody off'}</b>${we?'':'<span>✓ Everyone in</span>'}`}</div>`};
+  const mon=new Date(t0);const dw=(mon.getDay()+6)%7;if(dw>=5)mon.setDate(mon.getDate()+7-dw);else mon.setDate(mon.getDate()-dw);
+  const wk=[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d});
+  const tot=wk.reduce((a,d)=>a+who(d).length,0);
+  const html=`<section class="dh-card ah-off"><div class="ao-h"><h2>Who’s off</h2><button type="button" data-nav="leave">Leave calendar<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+   <div class="ao-2">${box('Today',t0)}${box('Tomorrow',t1)}</div>
+   <h3>${dw>=5?'Next week':'This week'} <span>${wk[0].getDate()} ${MN[wk[0].getMonth()]} to ${wk[4].getDate()} ${MN[wk[4].getMonth()]}</span></h3>
+   <div class="ao-wk">${wk.map(d=>{const w=who(d),isT=iso(d)===iso(t0);return `<div class="ao-r${isT?' now':''}"><span class="d"><b>${DN[d.getDay()]}</b>${d.getDate()}</span><span class="n">${w.length?w.map(n=>`<em>${esc(n)}</em>`).join(''):'<i>Nobody off</i>'}</span></div>`}).join('')}</div>
+   ${tot?'':'<p class="ao-none">✓ Nobody is booked off this week.</p>'}</section>`;
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
@@ -4550,12 +4631,13 @@ function renderHome(){
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
    <div id="ah_todo"></div>
+   <div id="ah_off"></div>
    <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
    <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>After you change sort sheets, run sheets, results, the survey, leave, precards, lockers or contacts, send them so drivers see the latest.</p>
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section>
   </div>`;
-  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminTodo();return;
+  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminTodo();adminOff();return;
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
@@ -8031,7 +8113,7 @@ function status(d,o){
   const n=o?o.n:0,L=config().limit||3;
   if(n>=L)return{k:'full',t:'Full'};if(n===L-1)return{k:'one',t:'1 spot left'};return{k:'open',t:L-n+' spots left'};
 }
-function pushStat(){if(!window.APP)return;const m=dayMap();const up=Object.values(blocks).filter(b=>(b.days||[]).some(d=>d>=today)).length;APP.stat('leave',isMgr()?`${pendN()?pendN()+' request'+(pendN()===1?'':'s')+' waiting, ':''}${up} upcoming leave booking${up===1?'':'s'}`:'')}
+function pushStat(){try{window.__lvChange&&window.__lvChange()}catch(e){}if(!window.APP)return;const m=dayMap();const up=Object.values(blocks).filter(b=>(b.days||[]).some(d=>d>=today)).length;APP.stat('leave',isMgr()?`${pendN()?pendN()+' request'+(pendN()===1?'':'s')+' waiting, ':''}${up} upcoming leave booking${up===1?'':'s'}`:'')}
 /* ---------- leave requests ---------- */
 const spanDays=(a,b)=>Math.round((fromIso(b)-fromIso(a))/864e5)+1;
 const isLong=(a,b)=>!!(a&&b&&b>=a&&spanDays(a,b)>21);
@@ -8346,7 +8428,7 @@ async function start(role){
   db.collection('leave').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));blocks=o;pushStat();
     if(busy||editing)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-leave .card'))return;render()},()=>{msg={err:true,t:'Could not load leave just now.'};render()});
 }
-window.LEAVE={share};
+window.LEAVE={share,dayMap:()=>{try{return dayMap()}catch(e){return {}}},ready:()=>isMgr()};
 render();
 window.addEventListener('app:role',e=>start(e.detail));
 if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
@@ -11284,7 +11366,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281200';
+const VERSION='202610281240';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
