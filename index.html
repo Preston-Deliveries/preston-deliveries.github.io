@@ -9534,8 +9534,8 @@ function render(){
   <section class="order" id="un_order"><div class="oh"><h2>Your order</h2><span class="lim ${n>=c.max?'full':''}">${n} of ${c.max} items</span></div>
    ${L.length?`<ul class="lines">${L.map(l=>`<li>${imgTag(l.it)}<span class="ln"><b>${esc(labelOf(l.it))}</b><span>${l.fit!=='u'?esc(fitName(l.fit))+', ':''}size <b>${esc(l.size)}</b></span></span><span class="qty"><button type="button" class="sh-btn" data-un="dec" data-v="${esc(l.k)}" aria-label="One less">−</button><b>${l.q}</b><button type="button" class="sh-btn" data-un="inc" data-v="${esc(l.k)}" aria-label="One more" ${n>=c.max?'disabled':''}>+</button></span></li>`).join('')}</ul>
    <div class="prev"><span class="lbl">Message that will be sent</span><pre id="un_txt">${esc(orderText())}</pre></div>
-   <div class="foot">${isMgr()?`<button type="button" class="sh-btn primary" data-un="saveReq">Save as request</button>`:`${c.wa?`<button type="button" class="sh-btn primary" data-un="wa">Send on WhatsApp</button>`:''}${c.email?`<button type="button" class="sh-btn ${c.wa?'':'primary'}" data-un="mail">Send by email</button>`:''}`}<button type="button" class="sh-btn" data-un="copy">Copy order</button><span class="sp"></span><button type="button" class="sh-btn danger" data-un="clear">Clear order</button></div>
-   <p class="sub">${isMgr()?'Saves straight into Requests. ':''}Sends to ${esc(c.to)}${c.email?' at '+esc(c.email):''}. Your order stays on this phone until you clear it.</p>`
+   <div class="foot">${isMgr()?`<button type="button" class="sh-btn primary" data-un="saveReq">Submit request</button>`:`${c.wa?`<button type="button" class="sh-btn primary" data-un="wa">Send on WhatsApp</button>`:''}${c.email?`<button type="button" class="sh-btn ${c.wa?'':'primary'}" data-un="mail">Send by email</button>`:''}`}<button type="button" class="sh-btn" data-un="copy">Copy order</button><span class="sp"></span><button type="button" class="sh-btn danger" data-un="clear">Clear order</button></div>
+   <p class="sub">${isMgr()?'Goes straight into Requests. ':''}Sends to ${esc(c.to)}${c.email?' at '+esc(c.email):''}. Your order stays on this phone until you clear it.</p>`
    :'<div class="empty">Nothing added yet. Choose a fit and size on an item above, then press Add.</div>'}
   </section></div>`;
 }
@@ -9692,7 +9692,7 @@ document.addEventListener('click',async e=>{
   if(a==='selNone'){sel.clear();render();return}
   if(a==='bulkDone'||a==='bulkReopen'){const ids=[...sel].filter(id=>orders[id]);const upd=a==='bulkDone'?{status:'completed',completedAt:new Date().toISOString()}:{status:'requested',completedAt:''};msg={t:'Saving…'};render();
     try{for(const id of ids){await db.doc('uniorders/'+id).set(Object.assign((({id:_,...r})=>r)(orders[id]),upd));Object.assign(orders[id],upd)}sel.clear();msg={t:`${ids.length} order${ids.length===1?'':'s'} ${a==='bulkDone'?'marked completed':'moved back to requests'}.`}}catch(x){msg={err:true,t:'Some orders could not be saved. Try again.'}}render();return}
-  if(a==='saveReq'){if(!ready())return;const L=lines();try{await saveOrder(who.name,L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();view='req';msg={t:'Request saved for '+who.name+'.'};who.name=(!isMgr()&&myName)||'';keep()}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
+  if(a==='saveReq'){if(!ready())return;const L=lines();try{await saveOrder(who.name,L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();view='req';msg={t:'Request submitted for '+who.name+'.'};who.name=(!isMgr()&&myName)||'';keep()}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
   if(a==='parse'){parsed=parseOrder($('paste').value);msg=null;render();return}
   if(a==='noPaste'){parsed=null;render();return}
   if(a==='savePaste'){if(!parsed.name){msg={err:true,t:'Pick the driver.'};render();return}try{await saveOrder(parsed.name,parsed.items);msg={t:'Request saved for '+parsed.name+'.'};parsed=null;showPaste=false}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
@@ -12131,7 +12131,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610292130';
+const VERSION='202610292200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
