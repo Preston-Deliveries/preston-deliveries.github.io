@@ -4333,12 +4333,24 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 #mod-results #r_perSub .snx .pc{display:flex;align-items:center;justify-content:center;font-weight:700;text-align:center}
 #mod-results .perrow{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
 #mod-results .perrow #r_perSeg{flex:1 1 auto;min-width:0}
-:root:root #sh-main #mod-results .perrow #r_perSeg{display:grid!important;grid-template-columns:repeat(3,1fr);width:auto!important}
+:root:root #sh-main #mod-results .perrow #r_perSeg{display:grid!important;grid-template-columns:repeat(3,1fr);width:auto!important;flex:1 1 auto!important}
 :root:root #sh-main #mod-results .perrow #r_perSeg button{padding-left:4px!important;padding-right:4px!important;min-width:0!important}
 #mod-results .perrow #r_perSeg{margin-top:0;margin-bottom:0}
 #mod-results #r_mnav{display:flex;gap:6px;flex:none}#mod-results #r_mnav:empty{display:none}
 :root:root #sh-main #mod-results #r_mnav .sn{flex:none;width:44px;min-height:52px;padding:0;border:1px solid var(--sh-line);border-radius:12px;background:var(--sh-surface);color:var(--sh-ink);font:800 1.5rem var(--sh-body);cursor:pointer}
 :root:root #sh-main #mod-results #r_perSub .sn{flex:none;width:34px;min-height:44px;padding:0;border:1px solid var(--sh-line);border-radius:10px;background:var(--sh-surface);color:var(--sh-ink);font:800 1.3rem var(--sh-body);cursor:pointer}
+</style>
+<style id="segfull">
+/* every row of menu buttons stretches across the screen; up to 4 buttons share the width evenly */
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2,:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg,:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs,:root:root:root #sh-main#sh-main#sh-main#sh-main .modes,:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg,:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk,:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk,:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs{width:100%!important;max-width:none!important;box-sizing:border-box;align-self:stretch!important;justify-self:stretch!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(:has(>:nth-child(5)))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(:has(>:nth-child(5)))>button{flex:1 1 0!important;min-width:0!important;justify-content:center;text-align:center}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:has(>:nth-child(5))>button,:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:has(>:nth-child(5))>button{flex:1 1 auto!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results .perrow #r_perSeg{display:grid!important;width:auto!important;flex:1 1 auto!important}
+:root:root:root #sh-main #mod-summary :has(>.pchs){display:flex}:root:root:root #sh-main #mod-summary .pchs{flex:1 1 auto!important;width:auto!important}
+
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(.sel-done):not([hidden]){display:flex!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel{display:flex!important;align-items:center;gap:10px;width:100%!important;max-width:none!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel select{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -11888,7 +11900,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290930';
+const VERSION='202610291000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
