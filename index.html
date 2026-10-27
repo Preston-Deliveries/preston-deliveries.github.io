@@ -4972,7 +4972,7 @@ function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vt
     let ob=sec.querySelector(':scope>.unord');if(!ob){ob=document.createElement('button');ob.type='button';ob.className='sh-btn primary unord';ob.dataset.un='view';ob.dataset.v='form';ob.textContent='+ Order uniform';const vt=sec.querySelector(':scope>.vtab');if(vt)vt.after(ob);else sec.prepend(ob)}
     const onForm=!!sec.querySelector('.tabs [data-un="view"][data-v="form"][aria-pressed="true"]');ob.hidden=onForm;ob.classList.remove('vt-e','vt-ro','vt-nc');
     if(onForm)sec.querySelectorAll('.vt-e,.vt-ro,.vt-nc').forEach(x=>{if(!x.matches('[data-un="edit"],[data-un="syncNames"],[data-un="savecfg"]'))x.classList.remove('vt-e','vt-ro','vt-nc')})}
-  vtBusy=false}
+  vtBusy=false;requestAnimationFrame(vtAlign)}
 function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;if(cur==='uniform'&&vtFix1){vtFix1=false;const f=sec.querySelector('.tabs [data-un="view"][data-v="form"][aria-pressed="true"]');if(f){const r=sec.querySelector('.tabs [data-un="view"][data-v="req"]');if(r)r.click();return}}
   if(cur==='invoices'&&vtFix1){vtFix1=false;const mk=sec.querySelector('[data-iv="tab"][data-v="make"][aria-pressed="true"]');if(mk){const sb=sec.querySelector('[data-iv="tab"][data-v="sub"]');if(sb)sb.click();return}}const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
   if(on&&getComputedStyle(on).display==='none'){const nx=L.find(b=>getComputedStyle(b).display!=='none');if(nx)nx.click()}}
@@ -4996,6 +4996,16 @@ function vtEnter(sec,mode){
   if(!vtObs){vtObs=new MutationObserver(()=>{if(vtBusy)return;clearTimeout(vtObs.t);vtObs.t=setTimeout(()=>{const s=vtSec();if(!s||!s.dataset.vt)return;if(!s.querySelector(':scope>.vtab'))vtSwitch(s,VT[cur]);vtTag();vtFixTabs()},30)})}
   vtObs.disconnect();vtObs.observe(el,{childList:true,subtree:true});
 }
+/* on computers, the switch lines up with the page's own content column */
+function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab');if(!w)return;const extra=[...sec.querySelectorAll(':scope>.unord')];
+  if(!matchMedia('(min-width:900px)').matches){[w,...extra].forEach(x=>{x.style.marginLeft='';x.style.width=''});return}
+  const S=sec.getBoundingClientRect();let L=1e9,Rr=-1e9;
+  sec.querySelectorAll('*').forEach(e=>{if(e.children.length||e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0||b.height<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
+  sec.querySelectorAll('.card,section,table,.tw').forEach(e=>{if(e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
+  if(!(Rr>L)||Rr-L<300){[w,...extra].forEach(x=>{x.style.marginLeft='';x.style.width=''});return}
+  const R={left:L,width:Rr-L};
+  [w,...extra].forEach(x=>{x.style.setProperty('margin-left',Math.round(R.left-S.left)+'px','important');x.style.setProperty('width',Math.round(R.width)+'px','important')})}
+window.addEventListener('resize',()=>{clearTimeout(vtAlign.t);vtAlign.t=setTimeout(vtAlign,80)});
 document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;const y=window.scrollY;vtSet(b.dataset.vt);requestAnimationFrame(()=>window.scrollTo(0,y))});
 /* in View, a tap on anything that changes data does nothing */
 ['click','input','change','focusin'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.isTrusted)return;const t=e.target;if(!t||!t.closest)return;const sec=t.closest('.sh-sec[data-vt="view"]');if(!sec)return;const x=t.closest('.vt-nc,.vt-e,.vt-ro');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(ev==='focusin'&&t.blur)t.blur()},true));
@@ -12145,7 +12155,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610292300';
+const VERSION='202610292330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
