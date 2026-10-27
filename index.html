@@ -4936,7 +4936,8 @@ function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vt
   tag(c.e,'vt-e');tag(c.v,'vt-v');tag(c.nc,'vt-nc');tag((c.ro||[]).map(q=>q.replace(/^#mod-\w+ /,'')),'vt-ro');
   if(c.runs){const m=sec.querySelector('.modes:not(.pcs)');if(m)m.classList.add('vt-hide')}
   /* detail screens: read only in View */
-  sec.querySelectorAll(':is(.grid,.card.mgr,form,.tw,.ed) :is(input:not([type=search]):not([type=hidden]),textarea,select),.card.mgr button').forEach(x=>x.classList.add('vt-ro'));
+  const FLT='.srch,.pkx,.pbar,.pc-sel,.rt-f,.ctl,.flt,.filters,.bar,.mini,label.mini,.vtab,.dm-tools,.tools,.q-row,.lk-bar';
+  sec.querySelectorAll('input:not([type=hidden]),textarea,select,.card.mgr button').forEach(x=>{if(cur==='invoices'||x.type==='search'||x.type==='file'||x.closest(FLT)||x.matches('.q,.dm-q,.lk-q,.tray-search'))return;x.classList.add('vt-ro')});
   sec.querySelectorAll('button,label.sh-btn').forEach(b=>{const t=(b.textContent||'').trim();if(/^(\+ |Add |Add$|Save(?! image)|Delete|Tap again to delete|Remove|Mark |Done$|Paste |Sign and submit|Clear$|Remind|Send latest|Hide from drivers|Show to drivers|Cancel$|✕$)/.test(t)&&!b.closest('.vtab'))b.classList.add('vt-e')});
   vtBusy=false}
 function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
@@ -12073,7 +12074,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291700';
+const VERSION='202610291730';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
