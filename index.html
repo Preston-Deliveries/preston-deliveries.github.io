@@ -9525,12 +9525,40 @@ document.addEventListener('change',async ev=>{const el=ev.target;
 });
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.matches&&ev.target.matches('#mod-enquiries tr[data-eq=open]'))ev.target.click()});
 function pushStat(){if(!window.APP)return;const yr=String(new Date().getFullYear());const L=enqs().filter(r=>String(r.date).startsWith(yr)),no=ncrs().filter(n=>nState(n)!=='closed').length;APP.stat('enquiries',(no?no+' open NCR'+(no===1?'':'s')+', ':'')+L.length?`${L.length} this year, ${L.filter(r=>r.fault==='yes').length} at fault`:'No enquiries recorded')}
+/* Jonathan's list of old at fault enquiries (given 27 Oct 2026). Added once, matched to drivers by name on the Drivers page.
+   Each one has a fixed id, so it is never added twice. Any name that can't be matched opens in "Paste a list" to pick the driver. */
+const SEED=`TUE 6/10 NATHAN INGRAM 1 at fault
+WED 7/10 FILMON 1 at fault
+FRI 9/10 GITOM 1 at fault
+FRI 9/10 GABRIEL 1 at fault
+TUE 6/10 SIMON 1 at fault
+TUE 6/10 DANIEL G 1 at fault
+WED 7/10 IVAN 2 at fault
+FRI 9/10 LUCAS 2 at fault
+FRI 9/10 CARTER 1 at fault
+FRI 9/10 DANIEL T 1 at fault
+19/10 RYAN 1 at fault
+15/10 SIMON 1 at fault
+14/10 SIMON 1 at fault`;
+let seeded=false;
+async function seedOnce(){if(seeded||mode!=='mgr'||!db||!staff.length)return;seeded=true;
+  const rows=parseList(SEED),miss=[],seen={},now=new Date().toISOString();let added=0;
+  for(const x of rows){if(!x.login){miss.push(x);continue}
+    for(let i=0;i<x.n;i++){const k=x.date+'-'+x.login;seen[k]=(seen[k]||0)+1;const id='seed-'+k+'-'+seen[k];if(recs[id])continue;
+      const have=Object.values(recs).filter(r=>r.kind!=='ncr'&&r.fault==='yes'&&r.date===x.date&&String(r.login||'').toUpperCase()===x.login&&(r.source==='list'||r.source==='seed')).length;if(have>=seen[k])continue;
+      const p=byLogin(x.login);const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date:x.date,caseNo:'',login:x.login,driver:p?p.name:x.login,address:'',details:'Old at fault enquiry, from the list given on 27 Oct 2026.',supervisor:'',fault:'yes',note:'',source:'seed',createdAt:now,updatedAt:now};
+      try{await db.doc('enqlog/'+id).set(doc);recs[id]=Object.assign({id},doc);added++}catch(e){}}}
+  if(miss.length){const done=(()=>{try{return localStorage.getItem('seed_miss_done')==='1'}catch(e){return false}})();
+    if(!done){pList={text:miss.map(x=>`${x.date.slice(8)}/${x.date.slice(5,7)} ${x.name} ${x.n} at fault`).join('\n'),rows:miss};try{localStorage.setItem('seed_miss_done','1')}catch(e){}
+      msg={t:(added?added+' old at fault enquiries were added. ':'')+'Pick the driver for the '+miss.length+' name'+(miss.length===1?'':'s')+' below that could not be matched, then tap Add.'}}}
+  else if(added)msg={t:added+' old at fault enquiries were added from your list.'};
+  if(added||miss.length)render()}
 async function start(role){
   mode=role==='mgr'?'mgr':'drv';if(mode!=='mgr'){render();return}
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(x){db=null}
   if(!db){msg={err:true,t:'Could not connect. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>clone(__D(d))))}catch(x){}
-  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();
+  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();
     const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{msg={err:true,t:'Could not load enquiries.'};render()});
   render();
 }
@@ -11498,7 +11526,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281540';
+const VERSION='202610281550';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
