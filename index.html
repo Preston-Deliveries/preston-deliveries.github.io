@@ -4499,6 +4499,34 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 #mod-invoices .iw-acts .sh-btn{width:100%;min-height:52px;font-size:1.05rem;justify-content:center}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .iw-prog,:root:not([data-theme="light"]) #mod-invoices .iw-left{background:#3A2A0C;color:#FFD48A}:root:not([data-theme="light"]) #mod-invoices .iw-prog.ok{background:#0F3320;color:#8BE3AE}:root:not([data-theme="light"]) #mod-invoices .iw-bad{color:#FFB547}}
 :root[data-theme="dark"] #mod-invoices .iw-prog,:root[data-theme="dark"] #mod-invoices .iw-left{background:#3A2A0C;color:#FFD48A}:root[data-theme="dark"] #mod-invoices .iw-prog.ok{background:#0F3320;color:#8BE3AE}:root[data-theme="dark"] #mod-invoices .iw-bad{color:#FFB547}
+#mod-invoices .iw-who{text-align:center;margin:2px 0 0}
+#mod-invoices .iw-see{border:2px solid var(--sh-accent)!important;color:var(--sh-ink)}
+html.ivp-open,html.ivp-open body{overflow:hidden}
+#ivp{position:fixed;inset:0;z-index:9999;background:rgba(5,10,20,.72);display:flex;flex-direction:column}
+#ivp[hidden]{display:none}
+#ivp .ivp-bar{display:flex;justify-content:space-between;align-items:center;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:#13213A;color:#fff;font:700 1.05rem system-ui,sans-serif}
+#ivp button{font:700 1rem system-ui,sans-serif;border-radius:10px;padding:10px 16px;border:0;background:#fff;color:#13213A;cursor:pointer;min-height:44px}
+#ivp .ivp-sc{flex:1;overflow:auto;padding:16px 12px calc(24px + env(safe-area-inset-bottom,0px))}
+#ivp .ivp-paper{max-width:760px;margin:0 auto;background:#fff;color:#161E2D;border-radius:6px;overflow:hidden;font:14px/1.4 system-ui,sans-serif;box-shadow:0 6px 30px rgba(0,0,0,.4)}
+#ivp .ivp-top{background:#13213A;color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:4px solid #E9B10A}
+#ivp .ivp-top b{font-size:1.35rem}#ivp .ivp-top span{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.85;text-align:right}
+#ivp .ivp-in{padding:14px 16px 18px;display:flex;flex-direction:column;gap:14px}
+#ivp .ivp-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#ivp h5{margin:0 0 4px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:#606C7C}
+#ivp .ivp-2 p{margin:0;font-size:.86rem;overflow-wrap:anywhere}#ivp .ivp-2 p span{color:#606C7C;margin-right:6px}
+#ivp .ivp-t{width:100%;border-collapse:collapse;font-size:.88rem}
+#ivp .ivp-t th{background:#13213A;color:#fff;text-align:left;padding:6px 8px;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+#ivp .ivp-t td{padding:6px 8px;border-bottom:1px solid #D6DCE4;vertical-align:top}
+#ivp .ivp-t .r{text-align:right;white-space:nowrap}#ivp .ivp-t td:first-child{white-space:nowrap}
+#ivp .ivp-t tr.wt td{background:#F4F6F9;font-weight:700}
+#ivp .ivp-sum{margin-left:auto;width:min(100%,380px);display:flex;flex-direction:column;gap:4px}
+#ivp .ivp-sum p{margin:0;display:flex;justify-content:space-between;gap:12px;font-size:.9rem}#ivp .ivp-sum small{color:#606C7C}
+#ivp .ivp-sum p.s{border-top:1px solid #D6DCE4;padding-top:6px}
+#ivp .ivp-sum p.t{background:#13213A;color:#fff;padding:8px 10px;border-radius:4px;font-size:1.05rem;margin-top:4px}
+#ivp .ivp-n{margin:0;font-size:.78rem;color:#606C7C}
+#ivp .ivp-acts{max-width:760px;margin:14px auto 0;display:flex;flex-direction:column;gap:10px}
+#ivp .ivp-acts button{width:100%;min-height:52px}
+#ivp .ivp-acts button:first-child{background:#E9B10A;color:#13213A}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -11709,7 +11737,10 @@ function html(){
   h+=`${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${prev?`<p class="subd">Already sent for these dates${prev.submittedAt||prev.at?' on '+esc(nice(String(prev.submittedAt||prev.at).slice(0,10))):''} (${esc(STAT[prev.status]||'Submitted')}).${locked?'':' Sending again replaces it.'}</p>`:''}
    ${ok||!left.length?'':`<p class="iw-left">${esc(left.join('. '))}.</p>`}
-   <div class="acts iw-acts"><button type="button" class="sh-btn primary" data-im="submit" ${busy||!ok?'disabled':''}>${prev?'Send again':me?'Send my invoice to the office':'Submit invoice'}</button><button type="button" class="sh-btn" data-im="pdf" ${busy||left.length?'disabled':''}>Download PDF</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">'+(me?'See my invoices':'See submitted invoices')+'</button>':''}</div></section>`;
+   <div class="acts iw-acts"><button type="button" class="sh-btn iw-see" data-im="see" ${left.length?'disabled':''}>See my invoice</button>
+    <button type="button" class="sh-btn primary" data-im="submit" ${busy||!ok?'disabled':''}>${prev?'Send it again in the app':me?'Send it to the office in the app':'Submit invoice'}</button>
+    ${me?`<p class="sub iw-who">It goes to ${OFFICE_NAME} in the office, who checks it here in the app. No email needed.</p><button type="button" class="sh-btn" data-im="mail" ${busy||!ok?'disabled':''}>Email it to ${OFFICE_NAME} instead</button>`:''}
+    <button type="button" class="sh-btn" data-im="pdf" ${busy||left.length?'disabled':''}>Download PDF</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">'+(me?'See my invoices':'See submitted invoices')+'</button>':''}</div></section>`;
   return h;
 }
 let lastToast=null;
@@ -11871,17 +11902,58 @@ const STAT={submitted:'Submitted',checked:'Checked',paid:'Paid'};
 async function saveCfg(){const me2={};for(const k of MEK)me2[k]=cfg[k]||'';me2.at=new Date().toISOString();
   if(role==='drv'){if(!(cfgs[sid]&&cfgs[sid].gst!==undefined))me2.gst=!!cfg.gst;await db.doc('invme/'+sid).set(me2);mes[sid]=me2;return}
   const rc={};for(const k of RATEK)rc[k]=cfg[k];await db.doc('invcfg/'+sid).set(rc);cfgs[sid]=rc;await db.doc('invme/'+sid).set(me2);mes[sid]=me2}
+const OFFICE_EMAIL='pds2004@hotmail.com.au',OFFICE_NAME='Kim';
+async function writeLog(inv){const id=logId(sid,from);const prev=logs[id];const by=(window.__webMe&&window.__webMe.email)||'';
+  const doc={...inv,total:inv.T.total,status:role==='drv'?'submitted':(prev&&prev.status==='paid'?'paid':'submitted'),submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()};
+  await db.doc('invlog/'+id).set(JSON.parse(JSON.stringify(doc)));logs[id]=doc;try{await saveCfg()}catch(x){}}
+function blocked(){const prev=logs[logId(sid,from)];if(role==='drv'&&prev&&prev.status&&prev.status!=='submitted'){msg={err:true,t:'The office has already '+(prev.status==='paid'?'paid':'checked')+' this invoice. Call the office if something needs changing.'};paint();return true}return false}
 async function submit(){
   const inv=snap();if(!inv.rows.length&&!inv.extras.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
   if(!invNo.trim()){msg={err:true,t:'Add an invoice number first.'};paint();return}
-  busy=true;msg={t:'Submitting…'};paint();
-  const id=logId(sid,from);const prev=logs[id];
-  if(role==='drv'&&prev&&prev.status&&prev.status!=='submitted'){busy=false;msg={err:true,t:'The office has already '+(prev.status==='paid'?'paid':'checked')+' this invoice. Call the office if something needs changing.'};paint();return}
-  try{const by=(window.__webMe&&window.__webMe.email)||'';await db.doc('invlog/'+id).set({...inv,total:inv.T.total,status:role==='drv'?'submitted':(prev&&prev.status==='paid'?'paid':'submitted'),submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()});
-    try{await saveCfg()}catch(x){}
-    msg={t:role==='drv'?(prev?'Invoice updated and sent to the office.':'Invoice submitted to the office. Thank you.'):(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
-  catch(e){msg={err:true,t:'Could not submit just now. Check your connection and try again.'}}
+  if(blocked())return;const prev=logs[logId(sid,from)];
+  busy=true;msg={t:'Sending…'};paint();
+  try{await writeLog(inv);
+    msg={t:role==='drv'?(prev?'Sent again. The office has your new invoice.':'Sent. The office will check it in the app. Thank you.'):(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
+  catch(e){console.warn(e);msg={err:true,t:'Could not send it in the app'+(e&&e.code?' ('+e.code+')':'')+'. Try again, or tap Email it to '+OFFICE_NAME+'.'}}
   busy=false;paint()}
+/* email: makes the PDF and opens the share sheet (pick Mail), with the office email copied to paste in. Also saves it in the app. */
+let mailFile=null;
+async function mailIt(){
+  if(blocked())return;const inv=snap();if(!invNo.trim()){msg={err:true,t:'Add an invoice number first.'};paint();return}
+  const subj='Invoice '+inv.no+' '+inv.name+' '+nice(inv.from)+' to '+nice(inv.to),body='Hi '+OFFICE_NAME+',\n\nHere is my invoice for '+nice(inv.from)+' to '+nice(inv.to)+'. Total '+money(inv.T.total)+'.\n\nThank you,\n'+inv.name;
+  try{navigator.clipboard&&navigator.clipboard.writeText(OFFICE_EMAIL).catch(()=>{})}catch(e){}
+  const share=async f=>{await navigator.share({files:[f],title:subj,text:body});msg={t:'In the email, put '+OFFICE_EMAIL+' in To. It is copied, so you can paste it.',done:true}};
+  /* a second tap shares the file made on the first tap straight away */
+  if(mailFile&&mailFile.key===JSON.stringify(inv.T)+inv.no){try{await share(mailFile.f)}catch(e){if(!e||e.name!=='AbortError')msg={err:true,t:'Could not open email on this phone. Tap Download PDF and email it to '+OFFICE_EMAIL+'.'}}paint();return}
+  busy=true;msg={t:'Making your invoice…'};paint();
+  try{await writeLog(inv)}catch(e){console.warn(e)}
+  try{const blob=await pdfOf([inv]);const name=fname(inv,'pdf');const f=new File([blob],name,{type:'application/pdf'});mailFile={key:JSON.stringify(inv.T)+inv.no,f};
+    if(navigator.canShare&&navigator.canShare({files:[f]})){try{await share(f)}catch(e){if(e&&e.name==='NotAllowedError')msg={t:'Your invoice is ready. Tap Email it to '+OFFICE_NAME+' once more.'};else if(!e||e.name!=='AbortError')throw e}}
+    else{await save(blob,name);msg={t:'The PDF is saved. Attach it to the email that opens.',done:true};setTimeout(()=>{location.href='mailto:'+OFFICE_EMAIL+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body)},400)}}
+  catch(e){console.warn(e);msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
+  busy=false;paint()}
+/* see the invoice before sending: the same content as the PDF, on screen */
+function invHTML(inv){const c=inv.cfg||{},T=inv.T||{},R=inv.rows||[],X=inv.extras||[];const r1=num(c.r1),r2=num(c.r2),rx=num(c.rx);
+  const kv=(t,L)=>`<div><h5>${t}</h5>${L.map(([k,v])=>`<p>${k?`<span>${k}</span>`:''}${esc(v||'')}</p>`).join('')}</div>`;
+  let h=`<div class="ivp-paper"><div class="ivp-top"><b>${c.gst?'TAX INVOICE':'INVOICE'}</b><span>Subcontractor delivery services</span></div><div class="ivp-in">
+   <div class="ivp-2">${kv('From',[['Name',inv.name],['ABN',c.abn],['Address',c.address],['Phone',c.phone],['Email',c.email]])}${kv('Invoice',[['No.',inv.no],['Date',nice(inv.date)],['From',nice(inv.from)],['To',nice(inv.to)]])}</div>
+   <div class="ivp-2">${kv('Pay to',[['Account',c.acct],['BSB',c.bsb],['Acct no.',c.acctNo]])}${kv('Bill to',[['','Preston Delivery Service Pty Ltd'],['','7/10 Ivan Street, Arundel QLD 4214'],['','ABN 56 109 175 046']])}</div>
+   <table class="ivp-t"><thead><tr><th>Day</th><th>Work</th><th class="r">Total</th></tr></thead><tbody>`;
+  let wk=-1;const wsum=w=>R.filter(r=>r.wk===w).reduce((a,r)=>a+num(r.amt),0);
+  for(const r of R){if(r.wk!==wk){if(wk>=0)h+=`<tr class="wt"><td colspan="2">Week ${wk+1} total</td><td class="r">${money(wsum(wk))}</td></tr>`;wk=r.wk}
+    const w=r.t==='h'?`${fmtH(num(r.hr))} at ${money(r.rh)} an hour`:`${num(r.pc)} parcels, ${r.ld===2?'2 loads':'1 load'}${num(r.xp)?`, ${num(r.xp)} extra`:''}`;
+    h+=`<tr><td>${esc(short(r.d))}</td><td>${esc(w)}</td><td class="r">${money(r.amt)}</td></tr>`}
+  if(wk>=0)h+=`<tr class="wt"><td colspan="2">Week ${wk+1} total</td><td class="r">${money(wsum(wk))}</td></tr>`;
+  h+=`</tbody></table>`;
+  if(X.length)h+=`<h5>Extra work</h5><table class="ivp-t">${X.map(x=>`<tr><td>${x.d?esc(short(x.d)):''}</td><td>${esc(x.why)}</td><td class="r">${money(x.amt)}</td></tr>`).join('')}</table>`;
+  const L=[];if(T.l1)L.push(['Parcels, 1 load',T.l1+' × '+money(r1),T.l1*r1]);if(T.l2)L.push(['Parcels, 2 loads',T.l2+' × '+money(r2),T.l2*r2]);if(T.xp)L.push(['Extra parcels, on top',T.xp+' × '+money(rx),T.xp*rx]);
+  const hg={};for(const r of R)if(r.t==='h'&&num(r.hr)){const k=num(r.rh).toFixed(2);hg[k]=(hg[k]||0)+num(r.hr)}for(const[k,q]of Object.entries(hg))L.push(['Hours',Math.round(q*100)/100+' × '+money(+k),q*k]);if(T.ex)L.push(['Extra work','',T.ex]);
+  h+=`<div class="ivp-sum">${L.map(([a,b,v])=>`<p><span>${a} <small>${b}</small></span><b>${money(v)}</b></p>`).join('')}${c.gst?`<p class="s"><span>Subtotal (ex GST)</span><b>${money(T.sub)}</b></p><p><span>GST 10%</span><b>${money(T.gst)}</b></p>`:''}<p class="t"><span>Total due${c.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></p></div>
+   ${c.gst?'':'<p class="ivp-n">No GST has been charged as the supplier is not registered for GST.</p>'}</div></div>`;return h}
+let pvInv=null;
+function showPreview(inv){pvInv=inv;let o=document.getElementById('ivp');if(!o){o=document.createElement('div');o.id='ivp';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Your invoice');document.body.appendChild(o)}
+  o.innerHTML=`<div class="ivp-bar"><b>Your invoice</b><button type="button" data-ivp="close">Close</button></div><div class="ivp-sc">${invHTML(inv)}<div class="ivp-acts"><button type="button" data-ivp="pdf">Download PDF</button><button type="button" data-ivp="close">Close</button></div></div>`;o.hidden=false;document.documentElement.classList.add('ivp-open');o.querySelector('.ivp-sc').scrollTop=0}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ivp]');if(!b)return;const o=document.getElementById('ivp');if(b.dataset.ivp==='close'){o.hidden=true;document.documentElement.classList.remove('ivp-open');return}if(b.dataset.ivp==='pdf'&&pvInv)dlOne(pvInv,'pdf',b)});
 async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making…'}
   try{const blob=kind==='xlsx'?await buildXlsx(inv):await pdfOf([inv]);await save(blob,fname(inv,kind));msg={t:(kind==='xlsx'?'Excel':'PDF')+' saved for '+inv.name+'.'}}
   catch(e){msg={err:true,t:'Could not make the file. Check your connection and try again.'}}
@@ -11895,7 +11967,7 @@ function myListHTML(){
   const L=Object.entries(logs).map(([id,x])=>({id,...x})).sort((a,b)=>String(b.from).localeCompare(String(a.from)));
   return `<section class="card im"><h2>My invoices</h2><p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${L.length?`<div class="tw"><table class="tb sublist"><thead><tr><th>Pay period</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>${L.map(v=>`<tr><td><b>${esc(nice(v.from))}</b> to ${esc(nice(v.to))}</td><td>No. ${esc(v.no)}<small>Sent ${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small></td><td class="r">${money(v.T?v.T.total:v.total)}</td><td><span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span></td>
-     <td class="acts2">${v.rows&&v.T?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
+     <td class="acts2">${v.rows&&v.T?`${v.v===2?`<button type="button" class="sh-btn sm" data-im="lsee" data-v="${esc(v.id)}">See</button>`:''}<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button>${(v.status||'submitted')==='submitted'?`<button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Change</button>`:''}`:''}</td></tr>`).join('')}</tbody></table></div>`
    :'<div class="empty">You have not submitted an invoice in the app yet.</div>'}
    <p class="sub">Once the office has checked your invoice it can no longer be changed here. Call the office if something is wrong.</p></section>`}
 /* Check a submitted invoice against the office rates and the day records. Anything that doesn't line up is shown in yellow. */
@@ -11996,6 +12068,9 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='savecfg'){try{syncCfg();await saveCfg();msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
   if(a==='submit'){submit();return}
   if(a==='pdf'){dlOne(snap(),'pdf',el);return}
+  if(a==='see'){showPreview(snap());return}
+  if(a==='mail'){mailIt();return}
+  if(a==='lsee'&&logs[v]){showPreview({...logs[v]});return}
   if(a==='xlsx'){dlOne(snap(),'xlsx',el);return}
   if(a==='golist'){msg=null;lper=from;setView('list');return}
   if(a==='lf'){lf=v;paint();return}
@@ -12384,7 +12459,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300600';
+const VERSION='202610300700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12410,7 +12485,7 @@ const AK='~a~',KP='~k~';
 const FV=()=>firebase.firestore.FieldValue;
 function ENC(v){
   if(v&&FV()&&v instanceof FV())return v;
-  if(Array.isArray(v))return v.map(x=>Array.isArray(x)?{[AK]:ENC(x)}:ENC(x));
+  if(Array.isArray(v))return Array.from(v,x=>Array.isArray(x)?{[AK]:ENC(x)}:ENC(x));
   if(v&&typeof v==='object'&&!(v instanceof Date)){const o={};for(const k of Object.keys(v)){if(v[k]===undefined||typeof v[k]==='function')continue;const kk=(k===''||/^__.*__$/.test(k)||k.startsWith(KP))?KP+k:k;o[kk]=ENC(v[k])}return o}
   if(typeof v==='number'&&!isFinite(v))return null;
   return v;
@@ -12424,7 +12499,8 @@ function DEC(v){
   return v;
 }
 const clone=v=>v===undefined?v:JSON.parse(JSON.stringify(v));
-function cloneKeep(v){if(v&&FV()&&v instanceof FV())return v;if(Array.isArray(v))return v.map(cloneKeep);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))o[k]=cloneKeep(v[k]);return o}return v}
+/* Array.from (not .map) so a list made inside the User view frame becomes a list of this page, which Firestore accepts */
+function cloneKeep(v){if(v&&FV()&&v instanceof FV())return v;if(Array.isArray(v))return Array.from(v,cloneKeep);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v))o[k]=cloneKeep(v[k]);return o}return v}
 
 /* ---------- database with the same shape the app used inside Claude ---------- */
 const docSnap=s=>({id:s.id,exists:s.exists,data:()=>s.exists?DEC(s.data()):undefined});
