@@ -5581,13 +5581,17 @@ function cycleList(){return Object.keys(cycleWeeks).sort().map(id=>id===weekId?w
    A perfect day is 3. A week or pay period adds up every day worked. FTD is information only and never scored. */
 const PTS={good:1,bad:0,none:0};
 function dayPts(r){const e=r.enq==null||r.enq===""?0:+r.enq;return(r.eta==null||r.eta===""?1:PTS[rate("eta",r.eta)])+(r.cp==null||r.cp===""?1:PTS[rate("cp",+r.cp)])+(rate("enq",epk(e,r.pc))==="good"?1:-1)}
+/* at fault enquiries come live from the Enquiries page (worked out on the Summary side), so a newly logged one shows straight away */
+let FMc=null;const FM=()=>FMc||(FMc=(window.enqFaultMap&&window.enqFaultMap())||null);
+window.__enqChanged=()=>{FMc=null;try{renderAll()}catch(e){}};
+function fe(d,l){const F=FM();const r=d.rows[l]||{};if(!F||!d.date)return r.enq;return (F[d.date]||{})[String(l).toUpperCase().replace(/\s+/g,"")]||0}
 function weekRows(weeks){
   const by={};
-  for(const w of(weeks||[week]))for(const[k]of DAYS){const d=w&&w.days&&w.days[k];if(!d)continue;for(const l in d.rows){(by[l]=by[l]||[]).push(d.rows[l])}}
+  for(const w of(weeks||[week]))for(const[k]of DAYS){const d=w&&w.days&&w.days[k];if(!d)continue;for(const l in d.rows){(by[l]=by[l]||[]).push(Object.assign({},d.rows[l],{enq:fe(d,l)}))}}
   return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc==null||r.nc===""?0:+r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq));
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq,sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,points:sum(rs.map(dayPts)),max:days*3}});
 }
-function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk(r.enq,r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
+function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r0])=>{const r=Object.assign({},r0,{enq:fe(d,login)});return r}).map((r,i)=>[Object.keys(d.rows)[i],r]).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk(r.enq,r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,points:dayPts(r),max:3}))}
 function scoreSort(rows){
   return rows.map(r=>({...r,star:r.points===r.max})).sort((a,b)=>cmp(a,b)||a.login.localeCompare(b.login));
 }
@@ -9951,14 +9955,14 @@ async function start(role){
   if(role!=='mgr'){mode='drv';render();return}
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
   mode='mgr';render();if(!db){msg={err:true,t:'Could not connect to the saved data. Reload the page.'};render();return}
-  for(const c of Object.keys(S)){db.collection(c).onSnapshot(snap=>{const m={};for(const d of snap.docs){const v=__D(d);if(v&&typeof v==='object')v._id=d.id;m[d.id]=v}S[c]=m;LD[c]=1;later();if(c==='days'||c==='enqlog')syncEnq()},()=>{})}
+  for(const c of Object.keys(S)){db.collection(c).onSnapshot(snap=>{const m={};for(const d of snap.docs){const v=__D(d);if(v&&typeof v==='object')v._id=d.id;m[d.id]=v}S[c]=m;LD[c]=1;later();if(c==='days'||c==='enqlog')syncEnq();if(c==='enqlog'){try{window.__enqChanged&&window.__enqChanged()}catch(e){}}},()=>{})}
 }
 /* Enquiries in the results only count when the Enquiries page marks them at fault.
    Each driver's day gets the number of at fault enquiries for parcels delivered that day (the delivered date on the
    enquiry, or the enquiry date if there is none). The number typed in before this change is kept as enqMan. */
 const LD={};let enqSyncT=null;
 const enqDay=e=>{const m=String(e.deliveredAt||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return m[3]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');return e.date};
-window.enqFaultMap=()=>{const F={};for(const e of Object.values(S.enqlog||{})){if(!e||e.kind==='ncr'||e.fault!=='yes'||!e.login)continue;const dt=enqDay(e);if(!dt)continue;const m=F[dt]=F[dt]||{};const k=dkey(e.login);m[k]=(m[k]||0)+1}return F};
+window.enqFaultMap=()=>{if(!LD.enqlog)return null;const F={};for(const e of Object.values(S.enqlog||{})){if(!e||e.kind==='ncr'||e.fault!=='yes'||!e.login)continue;const dt=enqDay(e);if(!dt)continue;const m=F[dt]=F[dt]||{};const k=dkey(e.login);m[k]=(m[k]||0)+1}return F};
 function syncEnq(){if(mode!=='mgr'||!db)return;clearTimeout(enqSyncT);enqSyncT=setTimeout(async()=>{
   if(!LD.days||!LD.enqlog)return;const F=window.enqFaultMap();
   for(const[id,d]of Object.entries(S.days||{})){if(!d||!d.rows||!d.date)continue;const up={};
@@ -11494,7 +11498,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281520';
+const VERSION='202610281530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
