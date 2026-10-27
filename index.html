@@ -4066,15 +4066,14 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 #sh-main #mod-summary .notes .dr-fb li::before{background:none!important;width:auto!important;height:auto!important;border-radius:0!important;top:0!important;left:4px!important;position:absolute;font-weight:900;font-size:1rem;line-height:1.35}
 #sh-main #mod-summary .notes .dr-fb .good li::before{content:"✓"!important;color:var(--ok)}
 #sh-main #mod-summary .notes .dr-fb .need li::before{content:"✗"!important;color:var(--bad)}
-/* GOLD: a perfect result (100% 2 hr ETA, 100% scan compliance, 0.0 at fault enquiries) */
-.svgd,#sh-main .tile.svgd>b,#sh-main#sh-main .sh-sec.pg .tile.svgd>b,#sh-main .rt .rtk .tk b.g.gd,#sh-main .ms-r b.g.gd,#sh-main #mod-summary td:has(> i.dt.gold),#sh-main .rt td:has(> i.rd.r-gd),.dt.gold b,.dt.gold .st,.dh-week .st4 .s.gold b,.dh-week .st4 .s.gold i{color:#B8860B!important}
-#sh-main .tile.gold{border-top-color:#B8860B!important}
-#sh-main .me-trend .tr-c i.gd{background:#B8860B!important}
-.dt.gold,.dh-week .st4 .s.gold{background:rgba(242,201,76,.18)!important}
-#sh-main .rt i.rd.r-gd{background:#B8860B}
-.rk b.rk1,.dr-rank .rk b.rk1,.dh-week .rk b.rk1{color:#B8860B!important}.rk b.rk2,.dh-week .rk b.rk2{color:#7D8794!important}.rk b.rk3,.dh-week .rk b.rk3{color:#A0522D!important}.rk b.rkg,.dh-week .rk b.rkg{color:#14804A!important}.rk b.rkb,.dh-week .rk b.rkb{color:#C62828!important}
-@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .svgd,html:not([data-theme="light"]) #sh-main .tile.svgd>b,html:not([data-theme="light"]) #sh-main#sh-main .sh-sec.pg .tile.svgd>b,html:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g.gd,html:not([data-theme="light"]) #sh-main .ms-r b.g.gd,html:not([data-theme="light"]) #sh-main #mod-summary td:has(> i.dt.gold),html:not([data-theme="light"]) #sh-main .rt td:has(> i.rd.r-gd),html:not([data-theme="light"]) .dt.gold b,html:not([data-theme="light"]) .dt.gold .st,html:not([data-theme="light"]) .dh-week .st4 .s.gold b,html:not([data-theme="light"]) .dh-week .st4 .s.gold i{color:#F2C94C!important}html:not([data-theme="light"]) #sh-main .me-trend .tr-c i.gd{background:#F2C94C!important}html:not([data-theme="light"]) #sh-main .tile.gold{border-top-color:#F2C94C!important}html:not([data-theme="light"]) .rk b.rk1,html:not([data-theme="light"]) .dh-week .rk b.rk1{color:#F2C94C!important}html:not([data-theme="light"]) .rk b.rk2,html:not([data-theme="light"]) .dh-week .rk b.rk2{color:#C9D1DB!important}html:not([data-theme="light"]) .rk b.rk3,html:not([data-theme="light"]) .dh-week .rk b.rk3{color:#E3A26A!important}html:not([data-theme="light"]) .rk b.rkg,html:not([data-theme="light"]) .dh-week .rk b.rkg{color:#5CCB8E!important}html:not([data-theme="light"]) .rk b.rkb,html:not([data-theme="light"]) .dh-week .rk b.rkb{color:#F48A8A!important}}
-html[data-theme="dark"] .svgd,html[data-theme="dark"] #sh-main .tile.svgd>b,html[data-theme="dark"] #sh-main#sh-main .sh-sec.pg .tile.svgd>b,html[data-theme="dark"] #sh-main .rt .rtk .tk b.g.gd,html[data-theme="dark"] #sh-main .ms-r b.g.gd,html[data-theme="dark"] #sh-main #mod-summary td:has(> i.dt.gold),html[data-theme="dark"] #sh-main .rt td:has(> i.rd.r-gd),html[data-theme="dark"] .dt.gold b,html[data-theme="dark"] .dt.gold .st,html[data-theme="dark"] .dh-week .st4 .s.gold b,html[data-theme="dark"] .dh-week .st4 .s.gold i{color:#F2C94C!important}html[data-theme="dark"] #sh-main .me-trend .tr-c i.gd{background:#F2C94C!important}html[data-theme="dark"] #sh-main .tile.gold{border-top-color:#F2C94C!important}html[data-theme="dark"] .rk b.rk1,html[data-theme="dark"] .dh-week .rk b.rk1{color:#F2C94C!important}html[data-theme="dark"] .rk b.rk2,html[data-theme="dark"] .dh-week .rk b.rk2{color:#C9D1DB!important}html[data-theme="dark"] .rk b.rk3,html[data-theme="dark"] .dh-week .rk b.rk3{color:#E3A26A!important}html[data-theme="dark"] .rk b.rkg,html[data-theme="dark"] .dh-week .rk b.rkg{color:#5CCB8E!important}html[data-theme="dark"] .rk b.rkb,html[data-theme="dark"] .dh-week .rk b.rkb{color:#F48A8A!important}
+/* GOLD: a perfect result (100% 2 hr ETA, 100% scan compliance, 100% FTD, 0.0 at fault enquiries) */
+:root:root .svgd,:root:root #sh-main .tile.svgd>b,:root:root #sh-main .sh-sec.pg .tile.svgd>b,:root:root #sh-main .rt .rtk .tk b.g.gd,:root:root #sh-main .ms-r b.g.gd,:root:root #sh-main #mod-summary td:has(> i.dt.gold),:root:root #sh-main .rt td:has(> i.rd.r-gd),:root:root .dt.gold b,:root:root .dt.gold .st,:root:root .dh-week .st4 .s.gold b,:root:root .dh-week .st4 .s.gold i{color:#B8860B!important}
+:root:root #sh-main .tile.gold{border-top-color:#B8860B!important}
+:root:root #sh-main .me-trend .tr-c i.gd,:root:root #sh-main .rt i.rd.r-gd,:root:root #sh-main #mod-summary i.dt.gold{background:#B8860B!important}
+:root:root .dt.gold,:root:root .dh-week .st4 .s.gold{background:rgba(242,201,76,.18)!important}
+:root:root .rk b.rk1,:root:root .dh-week .rk b.rk1{color:#B8860B!important}:root:root .rk b.rk2,:root:root .dh-week .rk b.rk2{color:#7D8794!important}:root:root .rk b.rk3,:root:root .dh-week .rk b.rk3{color:#A0522D!important}:root:root .rk b.rkg,:root:root .dh-week .rk b.rkg{color:#14804A!important}:root:root .rk b.rkb,:root:root .dh-week .rk b.rkb{color:#C62828!important}
+@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .svgd,:root:root:not([data-theme="light"]) #sh-main .tile.svgd>b,:root:root:not([data-theme="light"]) #sh-main .sh-sec.pg .tile.svgd>b,:root:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g.gd,:root:root:not([data-theme="light"]) #sh-main .ms-r b.g.gd,:root:root:not([data-theme="light"]) #sh-main #mod-summary td:has(> i.dt.gold),:root:root:not([data-theme="light"]) #sh-main .rt td:has(> i.rd.r-gd),:root:root:not([data-theme="light"]) .dt.gold b,:root:root:not([data-theme="light"]) .dt.gold .st,:root:root:not([data-theme="light"]) .dh-week .st4 .s.gold b,:root:root:not([data-theme="light"]) .dh-week .st4 .s.gold i{color:#F2C94C!important}:root:root:not([data-theme="light"]) #sh-main .me-trend .tr-c i.gd,:root:root:not([data-theme="light"]) #sh-main .rt i.rd.r-gd,:root:root:not([data-theme="light"]) #sh-main #mod-summary i.dt.gold{background:#F2C94C!important}:root:root:not([data-theme="light"]) #sh-main .tile.gold{border-top-color:#F2C94C!important}:root:root:not([data-theme="light"]) .rk b.rk1,:root:root:not([data-theme="light"]) .dh-week .rk b.rk1{color:#F2C94C!important}:root:root:not([data-theme="light"]) .rk b.rk2,:root:root:not([data-theme="light"]) .dh-week .rk b.rk2{color:#C9D1DB!important}:root:root:not([data-theme="light"]) .rk b.rk3,:root:root:not([data-theme="light"]) .dh-week .rk b.rk3{color:#E3A26A!important}:root:root:not([data-theme="light"]) .rk b.rkg,:root:root:not([data-theme="light"]) .dh-week .rk b.rkg{color:#5CCB8E!important}:root:root:not([data-theme="light"]) .rk b.rkb,:root:root:not([data-theme="light"]) .dh-week .rk b.rkb{color:#F48A8A!important}}
+:root:root[data-theme="dark"] .svgd,:root:root[data-theme="dark"] #sh-main .tile.svgd>b,:root:root[data-theme="dark"] #sh-main .sh-sec.pg .tile.svgd>b,:root:root[data-theme="dark"] #sh-main .rt .rtk .tk b.g.gd,:root:root[data-theme="dark"] #sh-main .ms-r b.g.gd,:root:root[data-theme="dark"] #sh-main #mod-summary td:has(> i.dt.gold),:root:root[data-theme="dark"] #sh-main .rt td:has(> i.rd.r-gd),:root:root[data-theme="dark"] .dt.gold b,:root:root[data-theme="dark"] .dt.gold .st,:root:root[data-theme="dark"] .dh-week .st4 .s.gold b,:root:root[data-theme="dark"] .dh-week .st4 .s.gold i{color:#F2C94C!important}:root:root[data-theme="dark"] #sh-main .me-trend .tr-c i.gd,:root:root[data-theme="dark"] #sh-main .rt i.rd.r-gd,:root:root[data-theme="dark"] #sh-main #mod-summary i.dt.gold{background:#F2C94C!important}:root:root[data-theme="dark"] #sh-main .tile.gold{border-top-color:#F2C94C!important}:root:root[data-theme="dark"] .rk b.rk1,:root:root[data-theme="dark"] .dh-week .rk b.rk1{color:#F2C94C!important}:root:root[data-theme="dark"] .rk b.rk2,:root:root[data-theme="dark"] .dh-week .rk b.rk2{color:#C9D1DB!important}:root:root[data-theme="dark"] .rk b.rk3,:root:root[data-theme="dark"] .dh-week .rk b.rk3{color:#E3A26A!important}:root:root[data-theme="dark"] .rk b.rkg,:root:root[data-theme="dark"] .dh-week .rk b.rkg{color:#5CCB8E!important}:root:root[data-theme="dark"] .rk b.rkb,:root:root[data-theme="dark"] .dh-week .rk b.rkb{color:#F48A8A!important}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -7893,7 +7892,7 @@ function trendHTML(own){
     ['Scan compliance','Target '+t.cpG+'%',st.map(x=>x&&x.cp!=null?x.cp*100:null),v=>v>=t.cpG-1e-9,v=>(Math.round(v*10)/10)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
     ['Enquiries','At fault, per 1000 parcels. Target 1 or less',st.map(x=>x?x.enqK:null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
     ['Survey','Target 70',sv,v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
-  const bars=([l,tg,vals,ok,fmt,h])=>{const gd=v=>v!=null&&((/2 hr ETA|Scan/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0));const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1];
+  const bars=([l,tg,vals,ok,fmt,h])=>{const gd=v=>v!=null&&((/2 hr ETA|Scan|FTD|First time/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0));const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1];
     return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${tg}</small><b class="${cur==null?'':gd(cur)?'svgd':ok(cur)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><em>${v==null?'':fmt(v)}</em><i class="${v==null?'na':gd(v)?'ok gd':ok(v)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
   /* streaks, counted back from the latest day */
   let ncRun=0;for(let i=all.length-1;i>=0;i--){const r=myRow(data.days[all[i]].rows);if(r.cp==null||r.cp==='')continue;if(+r.cp*100<t.cpG-1e-9)break;ncRun++}
@@ -7989,7 +7988,7 @@ function statsHTML(per,x,sv,own){
   return `<section class="ms">
    <div class="ms-sec"><h3>Driver results</h3>
     ${x?[
-      row('First time delivery (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
+      row('First time delivery (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':x.ftd>=.9995?'g gd':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
       row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':x.eta>=.9995?'g gd':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`),t.etaG+'%'),
       row('Scan compliance',(x.cp==null?'–':pctf(x.cp))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(x.cp==null?null:metricRank(per.dates,'nc'))),x.cp==null?'':ncDays.length?'b':x.cp>=.9995?'g gd':'g',ok(ncDays.length,`Under ${t.cpG}% on ${ncDays.map(r=>sh(r.dt)).join(', ')}`),t.cpG+'%'),
       row('Enquiries (at fault)',epkTxt(x.enqK)+` <small class="mr">${Math.round(x.enq||0)}</small>`,x.enqK===0?'g gd':x.enqK<=1+1e-9?'g':'b',ok(enqDays.length,`Per 1000 parcels. On ${enqDays.map(r=>sh(r.dt)).join(', ')}`),'1 per 1000')].join('')
@@ -8081,7 +8080,7 @@ function tiles4(x,sv,withFtd){const t=targets();
     ['Scan compliance',x&&x.cp!=null?pctf(x.cp):null,x&&x.cp!=null?x.cp*100>=t.cpG-1e-9:null,'Target '+t.cpG+'%',!!(x&&x.cp!=null&&x.cp>=.9995)],
     ['Enquiries',x?epkTxt(x.enqK):null,x?x.enqK<=1+1e-9:null,(x&&x.enq?Math.round(x.enq)+' at fault. ':'')+'Target 1 per 1000 parcels',!!(x&&x.enqK===0)],
     ['Survey',sv&&sv.found&&sv.avg!=null?String(Math.round(sv.avg*100)/10):null,sv&&sv.found&&sv.avg!=null?sv.avg*10>=70:null,'Target 70']];
-  if(withFtd){T.splice(3,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%'])}
+  if(withFtd){T.splice(3,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%',!!(x&&x.ftd!=null&&x.ftd>=.9995)])}
   return T}
 function tileHTML([l,v,ok,tg,pf],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${pf?' gold':''}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
 function moveTxt(r,p,lab){if(!r||!p||r.rank==null||p.rank==null)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
@@ -9687,7 +9686,7 @@ function addRow(a,date,r){a.days++;a.wdates.add(date);const pc=+r.pc||0;a.pc+=pc
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
   if(r.cp!=null&&r.cp!==''){a.cpW+=r.cp*(pc||1);a.cpN+=(pc||1)}
   a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);const p=dayPoints(r);a.pts+=p;a.max+=3;a.list.push({date,...r,p})}
-const FTDG=92,fc=v=>v==null?'':(Math.round(v*1000)/10>=FTDG?'svg':'svb'),fsp=v=>`<span class="${fc(v)}">${fmtPct(v)}</span>`;
+const FTDG=92,fc=v=>v==null?'':v>=.9995?'svgd':(Math.round(v*1000)/10>=FTDG?'svg':'svb'),fsp=v=>`<span class="${fc(v)}">${fmtPct(v)}</span>`;
 function nps(sc){const v=sc.map(x=>+x.s).filter(x=>!isNaN(x));if(!v.length)return null;return Math.round(v.reduce((a,b)=>a+b,0)/v.length*100)/10}
 function compute(R0){
   const P=people(),R=R0||range(),per={};
@@ -9765,7 +9764,7 @@ function dl(cur,prev,kind,lab){
 function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
   const T=[['Parcels',fmtN(a.pc),a.days?`${a.wdates.size} work day${a.wdates.size===1?'':'s'}`:'No results loaded',''],
-   ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
+   ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svgd'?'gold svgd':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':eta>=.9995?'gold svgd':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan compliance',fmtPct(pct(a.cpW,a.cpN)),'Target '+targets().cpG+'%',pct(a.cpW,a.cpN)==null?'none':pct(a.cpW,a.cpN)>=.9995?'gold svgd':grade('cp',pct(a.cpW,a.cpN))==='good'?'good svg':'bad svb'],
    ['Enquiries per 1000',a.days?epkTxt(epk(a.enq,a.pc)):'–',`${fmtN(a.enq)} at fault · Target 1 or less`,a.days?(epk(a.enq,a.pc)===0?'gold svgd':grade('enq',epk(a.enq,a.pc))==='good'?'good svg':'bad svb'):'none'],
@@ -9845,7 +9844,7 @@ function smTrend(keys,who){
     ['Enquiries','At fault, per 1000 parcels. Target 1 or less',A.map(a=>a.days?epk(a.enq,a.pc):null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
     ['Survey','Target 70',A.map(a=>nps(a.scores)),v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
   const row=([l,tg,vals,ok,fmt,h])=>{const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1],pv=vals[vals.length-2];
-    const isOk=(v,i)=>ok(v,vals.slice(0,i).filter(x=>x!=null).pop()),gd=v=>v!=null&&((/2 hr ETA|Scan/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0));
+    const isOk=(v,i)=>ok(v,vals.slice(0,i).filter(x=>x!=null).pop()),gd=v=>v!=null&&((/2 hr ETA|Scan|FTD|First time/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0));
     return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${keys.length===1&&/fewer/.test(tg)?'Target 0, shorter is better':tg}</small><b class="${cur==null?'':gd(cur)?'svgd':isOk(cur,vals.length-1)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><em>${v==null?'':fmt(v)}</em><i class="${v==null?'na':gd(v)?'ok gd':isOk(v,i)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
   return `<section class="card me-trend sm-trend"><h2>Last 4 weeks${who?' · '+esc(who):''}</h2><p class="me-line">One bar a week, the newest on the right.</p>${L.map(row).join('')}<div class="tr-wk">${W.map(m=>`<span>${sh(m)}</span>`).join('')}</div></section>`;
 }
@@ -11559,7 +11558,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281710';
+const VERSION='202610281720';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
