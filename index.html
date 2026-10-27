@@ -4912,21 +4912,21 @@ function go(sec,opts){
 const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
 const VT={
   survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file']},
-  enquiries:{lab:'Edit',e:['[data-eq="new"]','.rimp','.rimpc','.eqx>.head','.eqx>.msg','[data-eq="del"]','[data-eq="save"]','[data-eq="edit"]']},
-  updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save'])},
+  enquiries:{lab:'Edit',e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
+  updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save','cancel'])},
   briefs:{lab:'Edit',e:VTA('tb',['new','del','toggle','rmfile','create'])},
-  leave:{lab:'Edit',e:VTA('lv',['add','del','save']).concat(['[data-lv="view"][data-v="set"]'])},
-  vchecks:{lab:'Edit',e:VTA('vc',['new','edit','del','allok','save'])},
+  leave:{lab:'Edit',e:VTA('lv',['add','addbo','addfor','del','doimport','rmbo','rqcancel','rqdel','rqno','rqok','save','savecfg','share']).concat(['[data-lv="view"][data-v="set"]']),nc:['[data-lv="edit"]']},
+  vchecks:{lab:'Edit',e:VTA('vc',['new','edit','del','allok','save','it','out'])},
   feedback:{lab:'Edit',e:VTA('fb',['del','st'])},
   runs:{lab:'Edit',runs:true},
   sort:{lab:'Edit',nc:['.stb']},
   precards:{lab:'Edit',e:VTA('pc',['add','del','save','share'])},
-  lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','share'])},
+  lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','drm','share'])},
   staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
-  timesheets:{lab:'Edit',e:VTA('ts',['addp','del']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
-  invoices:{lab:'Edit',e:['[data-iv="tab"][data-v="make"]','[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],v:['[data-iv="tab"][data-v="sub"]'],tabs:'[data-iv="tab"]'},
-  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames']).concat(['[data-un="view"][data-v="form"]']),v:['[data-un="view"][data-v="req"]','[data-un="view"][data-v="done"]'],tabs:'[data-un="view"]'},
-  reports:{lab:'Edit',e:VTA('rp',['file','del'])}
+  timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo','pclear']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
+  invoices:{lab:'Edit',e:['[data-iv="tab"][data-v="make"]','[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'].concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="sub"]'],tabs:'[data-iv="tab"]'},
+  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','inc','dec','clear']).concat(['[data-un="view"][data-v="form"]']),v:['[data-un="view"][data-v="req"]','[data-un="view"][data-v="done"]'],tabs:'[data-un="view"]'},
+  reports:{lab:'Edit',e:VTA('rp',['file','del','close','msave','rmph','unfile'])}
 };
 let vtMode='view',vtObs=null,vtBusy=false;
 function vtSec(){return document.getElementById(MOD[cur]||'')}
@@ -12065,7 +12065,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291400';
+const VERSION='202610291430';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
