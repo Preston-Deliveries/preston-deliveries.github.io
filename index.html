@@ -4369,6 +4369,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool>.tabs.pvseg,:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_wmonth),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_cycle),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool #v_wkSub{display:none!important}
+#sh-main #v_pk{margin:0 0 14px}
+#sh-main #mod-timesheets .ckdl{margin:-4px 2px 10px;color:var(--sh-muted);font-weight:700}
 /* the Summary date picker, shared by every page with dates */
 #sh-main .pkx{--g:#0B6B5C;--gs:#DCEFEA;display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--sh-line);border-radius:16px;background:var(--sh-surface);margin:0 0 14px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .pkx{--g:#43C2A8;--gs:#163A33}}
@@ -4522,6 +4525,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     <button type="button" role="tab" id="v_tabW" aria-selected="true" aria-controls="v_viewW">Week</button>
     <button type="button" role="tab" id="v_tabC" aria-selected="false" aria-controls="v_viewC">Month</button>
   </div>
+  <div class="pkx" id="v_pk"></div>
 
   <div class="panel" id="v_sharePanel">
     <div class="row" style="align-items:center">
@@ -4901,7 +4905,7 @@ function go(sec,opts){
 const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
 const VT={
   survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file']},
-  enquiries:{lab:'Edit',e:['[data-eq="new"]','.rimp','.rimpc','[data-eq="del"]','[data-eq="save"]','[data-eq="edit"]']},
+  enquiries:{lab:'Edit',e:['[data-eq="new"]','.rimp','.rimpc','.eqx>.head','.eqx>.msg','[data-eq="del"]','[data-eq="save"]','[data-eq="edit"]']},
   updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save'])},
   briefs:{lab:'Edit',e:VTA('tb',['new','del','toggle','rmfile','create'])},
   leave:{lab:'Edit',e:VTA('lv',['add','del','save']).concat(['[data-lv="view"][data-v="set"]'])},
@@ -6585,7 +6589,25 @@ const HOW=`<div class="how"><div class="h">How points work</div><div class="ln">
 const head=(t,s)=>`<div class="band"><div class="t">${t}</div><div class="s">${s}</div></div><div class="stripe"></div>`;
 
 // Weekly board
-function renderWkSub(){const box=$("wkSub");if(!box)return;
+function renderPk(){const box=$("pk");if(!box)return;
+  const isW=$("tabW").getAttribute("aria-selected")==="true";
+  const ml=k=>{const d=addDays(fromISO(k),14);return [d.toLocaleDateString("en-AU",{month:"short"}),String(d.getFullYear())]};
+  const chip=(a,v,on,b,sm,has)=>`<button type="button" ${a}="${v}" aria-pressed="${on}" class="${has?"":"dim"}"><b>${b}</b><small>${sm}${has?" \u2022":""}</small></button>`;
+  let c="";
+  if(isW){const cs=sel.cycleStart;c=[1,2,3,4].map(n=>{const st=addDays(fromISO(cs),(n-1)*7);const has=saved.some(x=>x.id===docIdFor(cs,n));return chip("data-svw",n,n===sel.week,"Week "+n,st.getDate()+" "+st.toLocaleDateString("en-AU",{month:"short"}),has)}).join("")}
+  else{const cur=$("cycle").value||NOW_CYCLE,m=cycles();c=[-3,-2,-1,0].map(k=>toISO(addDays(fromISO(cur),28*k))).map(k=>{const[a,b]=ml(k);return chip("data-svc",k,k===cur,a,b,!!(m[k]&&m[k].length))}).join("")}
+  box.innerHTML=`<div class="pseg2" role="group" aria-label="Period"><button type="button" data-sv="w" aria-pressed="${isW}">Week</button><button type="button" data-sv="c" aria-pressed="${!isW}">Month</button></div>
+  <div class="pchips"><button type="button" class="pnav" data-svn="-1" aria-label="Earlier">\u2039</button><div class="pchs">${c}</div><button type="button" class="pnav" data-svn="1" aria-label="Later">\u203a</button></div>`}
+function svOpt(selEl,k,label){if(![...selEl.options].some(o=>o.value===k)){const o=document.createElement("option");o.value=k;o.textContent=label;selEl.appendChild(o)}selEl.value=k}
+setTimeout(()=>{const box=$("pk");if(!box)return;box.addEventListener("click",e=>{
+  const sv=e.target.closest("[data-sv]");if(sv){(sv.dataset.sv==="w"?$("tabW"):$("tabC")).click();renderPk();return}
+  const w=e.target.closest("[data-svw]");if(w){$("week").value=w.dataset.svw;$("week").dispatchEvent(new Event("change"));renderPk();return}
+  const c=e.target.closest("[data-svc]");if(c){svOpt($("cycle"),c.dataset.svc,monthName(c.dataset.svc));$("cycle").dispatchEvent(new Event("change"));renderPk();return}
+  const n=e.target.closest("[data-svn]");if(n){const isW=$("tabW").getAttribute("aria-selected")==="true",d=+n.dataset.svn;
+    if(isW){const k=toISO(addDays(fromISO(sel.cycleStart),28*d));if(k>NOW_CYCLE)return;svOpt($("wmonth"),k,monthName(k));$("wmonth").dispatchEvent(new Event("change"))}
+    else{const k=toISO(addDays(fromISO($("cycle").value||NOW_CYCLE),28*d));if(k>NOW_CYCLE)return;svOpt($("cycle"),k,monthName(k));$("cycle").dispatchEvent(new Event("change"))}
+    renderPk();return}});renderPk()},0);
+function renderWkSub(){setTimeout(renderPk,0);const box=$("wkSub");if(!box)return;
   box.innerHTML=[1,2,3,4].map(n=>{const st=addDays(fromISO(sel.cycleStart),(n-1)*7);const has=saved.some(x=>x.id===docIdFor(sel.cycleStart,n));return `<button type="button" data-w="${n}" aria-pressed="${n===sel.week}" class="${has?"has":""}"><b>Week ${n}</b><small>${st.getDate()} ${st.toLocaleDateString("en-AU",{month:"short"})}</small></button>`}).join("")}
 function renderWeek(){
   const has=!!cur;
@@ -6679,6 +6701,7 @@ function tab(which){
   $("tabW").setAttribute("aria-selected",w); $("tabC").setAttribute("aria-selected",!w);
   $("viewW").hidden=!w; $("viewC").hidden=w;
   w?fit("fit","board",1280):renderCycle();
+  setTimeout(renderPk,0);
 }
 $("tabW").addEventListener("click",()=>tab("w"));
 $("tabC").addEventListener("click",()=>tab("c"));
@@ -9718,9 +9741,14 @@ const normA=a=>String(a||'').toLowerCase().replace(/\b(place|pl|street|st|road|r
 const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const inPer=(dt,k)=>{const P=PER[k],d=String(dt||'');return P.mode==='all'||(P.mode==='year'?d.startsWith(P.y):d.startsWith(P.m))};
 const perLab=k=>{const P=PER[k];return P.mode==='all'?'All time':P.mode==='year'?P.y:MONL[+P.m.slice(5)-1]+' '+P.m.slice(0,4)};
-function perBar(k,dates){const P=PER[k],ms=[...new Set(dates.map(d=>String(d||'').slice(0,7)).filter(x=>/^\d{4}-\d\d$/.test(x)).concat([PM0]))].sort().reverse(),ys=[...new Set(ms.map(x=>x.slice(0,4)))];
-  return `<div class="pbar"><div class="pseg" role="group" aria-label="Period">${[['month','Month'],['year','Year'],['all','All']].map(([v,l])=>`<button type="button" data-eq="pmode" data-k="${k}" data-v="${v}" aria-pressed="${P.mode===v}">${l}</button>`).join('')}</div>
-   ${P.mode==='month'?`<select id="eq_pm_${k}" aria-label="Month">${ms.map(x=>`<option value="${x}" ${x===P.m?'selected':''}>${MONL[+x.slice(5)-1]} ${x.slice(0,4)}</option>`).join('')}</select>`:P.mode==='year'?`<select id="eq_py_${k}" aria-label="Year">${ys.map(x=>`<option ${x===P.y?'selected':''}>${x}</option>`).join('')}</select>`:''}</div>`}
+function perBar(k,dates){const P=PER[k],have=new Set(dates.map(d=>String(d||'').slice(0,7)));
+  const mAdd=(m,n)=>{const d=new Date(+m.slice(0,4),+m.slice(5)-1+n,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+  const chip=(v,on,b,sm,dot)=>`<button type="button" data-eq="pchip" data-k="${k}" data-v="${v}" aria-pressed="${on}" class="${dot?'':'dim'}"><b>${b}</b><small>${sm}${dot?' •':''}</small></button>`;
+  let c='';
+  if(P.mode==='month')c=[-3,-2,-1,0].map(n=>mAdd(P.m,n)).map(m=>chip(m,m===P.m,MONL[+m.slice(5)-1].slice(0,3),m.slice(0,4),have.has(m))).join('');
+  else if(P.mode==='year')c=[-2,-1,0].map(n=>String(+P.y+n)).map(y=>chip(y,y===P.y,y,'Jan to Dec',[...have].some(m=>m.startsWith(y)))).join('');
+  return `<div class="pbar"><div class="pkx" style="flex:1 1 100%;margin:0"><div class="pseg2" role="group" aria-label="Period">${[['month','Month'],['year','Year'],['all','All']].map(([v,l])=>`<button type="button" data-eq="pmode" data-k="${k}" data-v="${v}" aria-pressed="${P.mode===v}">${l}</button>`).join('')}</div>
+   ${c?`<div class="pchips"><button type="button" class="pnav" data-eq="pnv" data-k="${k}" data-v="-1" aria-label="Earlier">‹</button><div class="pchs">${c}</div><button type="button" class="pnav" data-eq="pnv" data-k="${k}" data-v="1" aria-label="Later">›</button></div>`:''}</div></div>`}
 const enqs=()=>Object.values(recs).filter(x=>x.kind!=='ncr');
 const ncrs=()=>Object.values(recs).filter(x=>x.kind==='ncr').sort((a,b)=>String(b.issued).localeCompare(String(a.issued)));
 const monFrom=n=>n.respAt||n.signAt||n.issued;
@@ -9931,6 +9959,8 @@ document.addEventListener('click',async ev=>{
   const el=ev.target.closest('[data-eq]');if(!el||!document.getElementById('mod-enquiries').contains(el))return;
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
   if(a==='pmode'){PER[el.dataset.k].mode=v;render();return}
+  if(a==='pchip'){const P=PER[el.dataset.k];if(P.mode==='year')P.y=v;else P.m=v;render();return}
+  if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
   if(a==='nnew'){nDraft={issue:'sig'};nNew=[];msg=null;render();window.scrollTo(0,0);return}
   if(a==='nopen'){nOpen=v;msg=null;render();window.scrollTo(0,0);return}
@@ -10846,8 +10876,17 @@ function ckRange(){
 }
 function ckStep(n){
   const T=nowDay(),b=ckDay||T;let x;
-  if(ckPer==='week')x=add(b,7*n);else if(ckPer==='month'){const d=fromIso(b.slice(0,8)+'01');d.setMonth(d.getMonth()+n);x=iso(d)}else x=add(b,n);
+  if(ckPer==='week')x=add(b,28*n);else if(ckPer==='month'){const d=fromIso(b.slice(0,8)+'01');d.setMonth(d.getMonth()+n);x=iso(d)}else x=add(b,7*n);
   ckDay=x>=T?null:x;
+}
+function ckPick(){
+  const T=nowDay(),b=ckDay||T;const chip=(v,on,bb,sm,dim)=>`<button type="button" data-ts="ckpick" data-v="${v}" aria-pressed="${on}" class="${dim?'dim':''}" ${v>T?'disabled':''}><b>${bb}</b><small>${sm}</small></button>`;
+  let c='';
+  if(ckPer==='day'){const m=monday(b);c=[0,1,2,3,4,5].map(i=>{const d=add(m,i),x=fromIso(d);return chip(d,d===b,DOW[x.getDay()].slice(0,3),x.getDate()+' '+MON[x.getMonth()].slice(0,3),d>T)}).join('')}
+  else if(ckPer==='week'){const k=Math.floor(Math.round((fromIso(monday(b))-fromIso('2026-10-05'))/864e5)/28),cs=add('2026-10-05',28*k);c=[0,1,2,3].map(i=>{const f=add(cs,7*i),x=fromIso(f);return chip(f,f===monday(b),'Week '+(i+1),x.getDate()+' '+MON[x.getMonth()].slice(0,3),f>T)}).join('')}
+  else{const d=fromIso(b.slice(0,8)+'01');c=[-3,-2,-1,0].map(k=>{const x=new Date(d.getFullYear(),d.getMonth()+k,1);const f=iso(x);return chip(f,k===0,MONL[x.getMonth()].slice(0,3),String(x.getFullYear()),false)}).join('')}
+  return `<div class="pkx"><div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['month','Month']].map(([k,l])=>`<button type="button" data-ts="ckper" data-v="${k}" aria-pressed="${k===ckPer}">${l}</button>`).join('')}</div>
+   <div class="pchips"><button type="button" class="pnav" data-ts="ckprev" aria-label="Earlier">\u2039</button><div class="pchs">${c}</div><button type="button" class="pnav" data-ts="cknext" aria-label="Later">\u203a</button></div></div>`;
 }
 function ckAgg(from,to){
   const T=nowDay(),by={};const get=p=>by[p.id]=by[p.id]||{p,ins:[],outs:[],noIn:[],noOut:[]};
@@ -10880,8 +10919,8 @@ function checkHTML(){
   const box=(cls,title,count,people,extra,empty,open)=>`<details class="ckc ${cls}" ${open?'open':''}><summary><h3>${title}</h3><span class="nn">${count}</span><small class="np">${count===1?'person':'people'}</small></summary>${people.length?`<div class="ckl">${people.map(r=>chip(r,extra(r))).join('')}</div>`:`<p class="none">${empty}</p>`}</details>`;
   const unit=day?'':' shifts';
   return `<section class="card ckk"><div class="ckh"><h2>Clock in check</h2>
-     <div class="ckseg" role="tablist">${[['day','Day'],['week','Week'],['month','Month']].map(([k,l])=>`<button type="button" role="tab" data-ts="ckper" data-v="${k}" aria-selected="${k===ckPer}">${l}</button>`).join('')}</div></div>
-   <div class="ckd"><button type="button" class="sh-btn sm" data-ts="ckprev" aria-label="Back">‹</button><b>${esc(R.label)}</b><button type="button" class="sh-btn sm" data-ts="cknext" aria-label="Forward" ${R.cur?'disabled':''}>›</button>${R.cur?'':'<button type="button" class="sh-btn sm" data-ts="cktoday">Now</button>'}</div>
+</div>
+   ${ckPick()}<p class="ckdl">${esc(R.label)}</p>
    <div class="ckg">
     ${box('in','Clocked in',ins.length,ins,r=>day?'in '+nice12(r.ins[0].t):r.ins.length+' day'+(r.ins.length===1?'':'s'),'No one has clocked in.',false)}
     ${box('out','Clocked out',outs.length,outs,r=>day?'out '+nice12(r.outs[0].t):r.outs.length+' day'+(r.outs.length===1?'':'s'),'No one has clocked out.',false)}
@@ -10968,6 +11007,7 @@ document.addEventListener('click',e=>{
   if(a==='ckwa'){window.open('https://wa.me/?text='+encodeURIComponent(ckMsg()),'_blank','noopener');return}
   if(a==='ckcopy'){const t=ckMsg(),ok=$('ckok');(async()=>{try{await navigator.clipboard.writeText(t);if(ok)ok.textContent='Copied. Paste it in the WhatsApp group.'}catch(x){if(ok)ok.textContent='Could not copy on this phone. Use Share on WhatsApp.'}})();return}
   if(a==='cktoday'){ckDay=null;render();return}
+  if(a==='ckpick'){const T=nowDay(),v=el.dataset.v;ckDay=v>=T?null:v;if(window.needHist)window.needHist(ckRange().from,TSC);render();return}
   if(a==='prev'||a==='next'){wk=add(monday(wk),a==='prev'?-7:7);dsel=null;dselUser=false;render();return}
   if(a==='latest'){wk=latest();dsel=null;dselUser=false;render();return}
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
@@ -12015,7 +12055,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291200';
+const VERSION='202610291300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
