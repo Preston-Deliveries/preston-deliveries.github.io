@@ -4369,6 +4369,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+:root:root:root #sh-main#sh-main#sh-main #mod-results .rb-pdf{display:flex!important;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px}
+#mod-results .rb-pdf svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+:root:root:root #sh-main#sh-main#sh-main#sh-main #r_savePng{display:none!important}
 #sh-main #mod-briefs .row .ldel{width:100%;justify-content:center}
 :root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool>.tabs.pvseg,:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_wmonth),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_cycle),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool #v_wkSub{display:none!important}
 #sh-main #v_pk{margin:0 0 14px}
@@ -6355,7 +6358,7 @@ function mountBoard(box,rows){
   box.classList.remove("rt");
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
-  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div>
+  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div><button type="button" class="sh-btn rb-pdf" data-rb="pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5"/><path d="M5 19h14"/></svg>Download PDF</button>
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries per 1k</span><span role="columnheader">First time delivery</span><span role="columnheader">Survey score</span><span role="columnheader">Total score</span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=3-1e-9&&r.rank;
@@ -6365,7 +6368,7 @@ function mountBoard(box,rows){
   </div>
   <p class="rb-key">Ranked by total score: 1 point a day each for 2 hr ETA, scan compliance and enquiries, averaged over the days worked, out of 3. ${view==="day"?"":`Needs ${NEED[view]} days worked to get a place.`} Green is on target, red is missed.</p>`;
   if(box.__wiredB)return;box.__wiredB=true;
-  box.addEventListener("click",e=>{if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
+  box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
 }
 /* the picture for the team: always light, sized for a phone, every driver ranked */
@@ -6419,6 +6422,35 @@ async function shareBoard(btn){
   if(btn){btn.disabled=false;btn.innerHTML=old}
 }
 window.__resultsBoard=()=>boardCanvas(liveRows());
+/* one A4 page PDF of the ranked results */
+function ldS(src){return new Promise((ok,no)=>{const e=document.createElement("script");e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
+async function boardPdf(btn){
+  const rows=liveRows();if(!rows.length)return;const old=btn.innerHTML;btn.disabled=true;btn.textContent="Making the PDF\u2026";
+  try{
+    if(!window.jspdf)await ldS("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
+    if(!window.jspdf.jsPDF.API.autoTable)await ldS("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js");
+    const {jsPDF}=window.jspdf,doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const W=210,M=10,n=rows.length,top=34,bottom=22,rh=Math.max(4.6,Math.min(9,(297-top-bottom)/(n+1))),fs=Math.max(6.5,Math.min(11,rh*1.35));
+    doc.setFillColor(15,26,42);doc.rect(0,0,W,26,"F");doc.setFillColor(242,120,45);doc.rect(0,26,W,1.6,"F");
+    doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  \u00b7  CONTRACT 1161",M,9);
+    doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text("Driver results",M,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(perLabel(),M,23.5);
+    const nR=rows.filter(r=>r.rank).length,col={g:[30,138,76],gd:[30,138,76],b:[198,40,40],n:[138,148,166]},RK={k1:[212,160,23],k2:[154,164,177],k3:[184,115,51],kt:[30,138,76],kb:[198,40,40]};
+    const body=rows.map(r=>{const V=bVals(r);return [r.rank?String(r.rank):"\u2013",(r.name||r.login)+(r.rank?"":"  (not ranked, "+r.days+" day"+(r.days===1?"":"s")+")"),...V.map(v=>v[1]),scTxt(r)]});
+    doc.autoTable({head:[["#","DRIVER","2 HR ETA","SCAN %","ENQ / 1K","FTD","SURVEY","SCORE / 3"]],body,startY:top,margin:{left:M,right:M,bottom:bottom},theme:"plain",
+      styles:{fontSize:fs,cellPadding:{top:(rh-fs*0.35)/2,bottom:(rh-fs*0.35)/2,left:1.5,right:1.5},textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2}},
+      headStyles:{fontStyle:"bold",textColor:[90,102,128],fontSize:Math.max(6.5,fs-1.5)},
+      columnStyles:{0:{halign:"center",cellWidth:10,fontStyle:"bold"},1:{cellWidth:"auto",fontStyle:"bold"},2:{halign:"center",cellWidth:20},3:{halign:"center",cellWidth:20},4:{halign:"center",cellWidth:20},5:{halign:"center",cellWidth:18},6:{halign:"center",cellWidth:18},7:{halign:"right",cellWidth:20,fontStyle:"bold"}},
+      alternateRowStyles:{fillColor:[244,246,250]},
+      didParseCell:d=>{if(d.section!=="body")return;const r=rows[d.row.index];if(d.column.index>=2&&d.column.index<=6){const c=bVals(r)[d.column.index-2][2];d.cell.styles.textColor=col[c]||col.n;d.cell.styles.fontStyle="bold"}
+        if(d.column.index===0){const k=rkClass(r,nR);if(RK[k]){d.cell.styles.textColor=RK[k]}}}});
+    const y=297-bottom+6;doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(90,102,128);
+    doc.text(`Targets: 2 hr ETA ${T().etaG}%  \u00b7  Scan ${T().cpG??99}%  \u00b7  Enquiries 1 or less per 1k  \u00b7  FTD 92%  \u00b7  Survey 70`,M,y);
+    doc.text(`Score: 1 point a day each for ETA, scan and enquiries, out of 3.${view==="day"?"":" Needs "+NEED[view]+" days to get a place."} Green on target, red missed.`,M,y+4.5);
+    const blob=doc.output("blob"),name=("1161 results "+perLabel()).replace(/[^\w ]+/g,"").replace(/\s+/g," ").trim()+".pdf";
+    if(downloads){try{await downloads.save({filename:name,data:blob})}catch(e){if(!e||e.code!=="declined")throw e}}
+    else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+  }catch(e){console.warn(e);const sm=$("shareMsg");if(sm){sm.textContent="Could not make the PDF. Check your connection and try again.";sm.hidden=false;sm.classList.add("err")}}
+  btn.disabled=false;btn.innerHTML=old}
 let LIVE=false;
 async function goLive(){
   try{
@@ -12079,7 +12111,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291800';
+const VERSION='202610291830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
