@@ -1,6 +1,7 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
 const CACHE = 'pds-app-v1';
+/* sw 2: saved copy first */
 const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
@@ -33,18 +34,29 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* The app page itself: try for the newest version first, use the saved copy if the signal is poor */
+  /* The app page itself: open the saved copy straight away so it starts fast,
+     then fetch the newest copy in the background. If it is a newer version, tell the app so it can refresh. */
   if (req.mode === 'navigate' && url.origin === location.origin) {
-    e.respondWith((async () => {
+    const fresh = (async () => {
       const c = await caches.open(CACHE);
-      const net = fetch(new Request(url.origin + url.pathname, { cache: 'no-cache', credentials: 'same-origin' }))
-        .then(r => { if (r.ok) c.put('./', r.clone()); return r });
-      try { return await timeout(net, 5000) }
-      catch (x) {
-        const saved = await c.match('./');
-        if (saved) return saved;
-        return net;
+      const r = await fetch(new Request(url.origin + url.pathname, { cache: 'no-cache', credentials: 'same-origin' }));
+      if (!r.ok) return r;
+      const saved = await c.match('./');
+      await c.put('./', r.clone());
+      if (saved) {
+        const a = saved.headers.get('etag'), b = r.headers.get('etag');
+        if (!(a && b && a === b)) {
+          const [ot, nt] = await Promise.all([saved.clone().text(), r.clone().text()]);
+          const ov = (ot.match(/const VERSION='(\d+)'/) || [])[1] || '', nv = (nt.match(/const VERSION='(\d+)'/) || [])[1] || '';
+          if (nv && nv > ov) for (const cl of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) cl.postMessage({ type: 'c1161-update', v: nv });
+        }
       }
+      return r;
+    })();
+    e.respondWith((async () => {
+      const saved = await (await caches.open(CACHE)).match('./');
+      if (saved) { e.waitUntil(fresh.catch(() => {})); return saved }
+      return fresh;
     })());
     return;
   }

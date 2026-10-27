@@ -12572,7 +12572,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303300';
+const VERSION='202610303400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12909,11 +12909,20 @@ window.__webVersion=VERSION;
 let vLast=0,vTag=null;
 async function checkVersion(){
   if(Date.now()-vLast<3*60e3)return;vLast=Date.now();
-  try{const h=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});const tag=h.ok?(h.headers.get('etag')||h.headers.get('last-modified')||''):'';if(tag&&vTag===tag)return;vTag=tag||null}catch(e){}
+  try{const h=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});const tag=h.ok?(h.headers.get('etag')||h.headers.get('last-modified')||''):'';const first=vTag===null;if(tag&&vTag===tag)return;vTag=tag||null;if(first&&tag&&navigator.serviceWorker&&navigator.serviceWorker.controller)return}catch(e){}
   try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);
     if(m&&m[1]!==VERSION&&m[1]>VERSION){const k='c1161_v_'+m[1];try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+m[1]+location.hash)}}catch(e){}
 }
 setTimeout(checkVersion,1500);
+/* The phone's saved copy opens first; if a newer version arrives in the background, refresh once */
+const vBorn=Date.now();
+function goNew(v){const k='c1161_v_'+v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v+location.hash)}
+if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type!=='c1161-update'||!d.v||!(d.v>VERSION))return;
+  const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if(Date.now()-vBorn<15000&&!typing){goNew(d.v);return}
+  if(document.getElementById('upd-pop'))return;const b=document.createElement('button');b.id='upd-pop';b.type='button';b.textContent='New version ready. Tap to refresh.';
+  b.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:99999;background:#0d6b3a;color:#fff;border:0;border-radius:999px;padding:12px 20px;font:600 15px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25)';
+  b.onclick=()=>goNew(d.v);document.body.appendChild(b);});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkVersion()});
 
 (async()=>{
