@@ -4369,6 +4369,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+#sh-main #mod-summary .lvsum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}
+#sh-main #mod-summary .lvsum>div{border:1px solid var(--sh-line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+#sh-main #mod-summary .lvsum b{font-size:1.8rem;line-height:1;color:var(--sh-ink)}#sh-main #mod-summary .lvsum span{font-weight:700;color:var(--sh-ink)}#sh-main #mod-summary .lvsum small{color:var(--sh-muted)}
 :root:root:root #sh-main#sh-main#sh-main #mod-results .rb-pdf{display:flex!important;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px}
 #mod-results .rb-pdf svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 :root:root:root #sh-main#sh-main#sh-main#sh-main #r_savePng{display:none!important}
@@ -4916,7 +4919,7 @@ function go(sec,opts){
 const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
 const VT={
   survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file'],v:['#v_tblW','#v_fit','#v_emptyW','#v_shotBox','#v_save','#v_save4','#v_viewC','#v_pk .pseg2','#v_sharePanel','#v_status4']},
-  enquiries:{lab:'Edit',e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
+  enquiries:{lab:'Edit',nc:['[data-eq="f"]'],e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
   updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save','cancel'])},
   briefs:{lab:'Edit',e:VTA('tb',['new','del','ldel','toggle','rmfile','create'])},
   leave:{lab:'Edit',e:VTA('lv',['add','addbo','addfor','del','doimport','rmbo','rqcancel','rqdel','rqno','rqok','save','savecfg','share']).concat(['[data-lv="view"][data-v="set"]']),nc:['[data-lv="edit"]']},
@@ -4942,6 +4945,8 @@ function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vt
   const FLT='.srch,.pkx,.pbar,.pc-sel,.rt-f,.ctl,.flt,.filters,.bar,.mini,label.mini,.vtab,.dm-tools,.tools,.q-row,.lk-bar';
   sec.querySelectorAll('input:not([type=hidden]),textarea,select,.card.mgr button').forEach(x=>{if(cur==='invoices'||x.type==='search'||x.type==='file'||x.closest(FLT)||x.matches('.q,.dm-q,.lk-q,.tray-search'))return;x.classList.add('vt-ro')});
   sec.querySelectorAll('button,label.sh-btn').forEach(b=>{const t=(b.textContent||'').trim();if(/^(\+ |Add |Add$|Save(?! image)|Delete|Tap again to delete|Remove|Mark |Done$|Paste |Sign and submit|Clear$|Remind|Send latest|Hide from drivers|Show to drivers|Cancel$|✕$)/.test(t)&&!b.closest('.vtab'))b.classList.add('vt-e')});
+  /* back buttons always stay, so you can get out of any screen */
+  sec.querySelectorAll('button,a').forEach(b=>{if(/^\s*\u2039/.test(b.textContent||''))b.classList.remove('vt-e','vt-nc','vt-ro')});
   vtBusy=false}
 function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
   if(on&&getComputedStyle(on).display==='none'){const nx=L.find(b=>getComputedStyle(b).display!=='none');if(nx)nx.click()}}
@@ -4952,7 +4957,7 @@ function vtClose(sec){/* leaving Edit: close any open editor so View shows the n
   {const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}
   for(let i=0;i<3;i++){const b=[...sec.querySelectorAll('button,a')].find(x=>x.offsetParent&&!x.closest('.vtab')&&Object.values(x.dataset||{}).some(v=>/^(cancel|ncancel|back|nback|close|plno|rimpno|addno|delno|noimport|edClose)$/.test(v)));if(!b)break;
     const oc=window.confirm;window.confirm=()=>true;try{b.click()}finally{window.confirm=oc}}}
-function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;if(mode==='view'&&sec.dataset.vt==='edit')vtClose(sec);vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
+function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;if(mode==='view'&&sec.dataset.vt==='edit'){const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
   if(cur==='survey'&&mode==='edit'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}
   if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
   setTimeout(vtFixTabs,0)}
@@ -4965,7 +4970,7 @@ function vtEnter(sec,mode){
   if(!vtObs){vtObs=new MutationObserver(()=>{if(vtBusy)return;clearTimeout(vtObs.t);vtObs.t=setTimeout(()=>{const s=vtSec();if(!s||!s.dataset.vt)return;if(!s.querySelector(':scope>.vtab'))vtSwitch(s,VT[cur]);vtTag();vtFixTabs()},30)})}
   vtObs.disconnect();vtObs.observe(el,{childList:true,subtree:true});
 }
-document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;vtSet(b.dataset.vt);window.scrollTo(0,0)});
+document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;const y=window.scrollY;vtSet(b.dataset.vt);requestAnimationFrame(()=>window.scrollTo(0,y))});
 /* in View, a tap on anything that changes data does nothing */
 ['click','input','change','focusin'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.isTrusted)return;const t=e.target;if(!t||!t.closest)return;const sec=t.closest('.sh-sec[data-vt="view"]');if(!sec)return;const x=t.closest('.vt-nc,.vt-e,.vt-ro');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(ev==='focusin'&&t.blur)t.blur()},true));
 window.addEventListener('app:role',()=>{try{vtEnter(cur,'view')}catch(e){}});
@@ -10312,7 +10317,7 @@ function dl(cur,prev,kind,lab){
 }
 function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
-  const T=[['Parcels',fmtN(a.pc),a.days?`${a.wdates.size} work day${a.wdates.size===1?'':'s'}`:'No results loaded',''],
+  const T=[['Parcels',fmtN(a.pc),a.days?`${a.wdates.size} work day${a.wdates.size===1?'':'s'} · average ${fmtN(Math.round(a.pc/(scope.t==='drv'?Math.max(1,a.wdates.size):a.days)))} a day${scope.t==='drv'?'':' per driver'}`:'No results loaded',''],
    ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svgd'?'gold svgd':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':eta>=.9995?'gold svgd':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan compliance',fmtPct(pct(a.cpW,a.cpN)),'Target '+targets().cpG+'%',pct(a.cpW,a.cpN)==null?'none':pct(a.cpW,a.cpN)>=.9995?'gold svgd':grade('cp',pct(a.cpW,a.cpN))==='good'?'good svg':'bad svb'],
@@ -10448,7 +10453,10 @@ function driverHTML(C,k){
     const OUT={pass:'Pass',minor:'Pass, fix needed',fail:'Fail'};const cls={pass:'no',minor:'warn',fail:'yes'};
     return `<section class="card"><h2>Vehicle checks</h2>${V.length?`<div class="tw"><table class="tb stk"><thead><tr><th>Date</th><th>Van</th><th>Result</th><th>Needs fixing</th><th>Checked by</th></tr></thead><tbody>${V.map(v=>`<tr class="${v.date>=C.R.from&&v.date<=C.R.to?'inp':''}"><td>${esc(longD(v.date))}</td><td>${esc([v.rego,v.vehicle].filter(Boolean).join(' · '))}</td><td><span class="ft ${cls[v.outcome]||''}">${esc(OUT[v.outcome]||'')}</span></td><td>${esc([Object.entries(v.items||{}).filter(([,x])=>x==='fix').map(([k])=>k).join(', '),v.notes,v.action?'Action: '+v.action:''].filter(Boolean).join(' · '))}</td><td>${esc(v.checker||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No vehicle checks on record.</div>'}</section>`})()+
    (()=>{const B=Object.values(S.leave).filter(b=>b&&normName(b.name)===normName(p.name)).sort((x,y)=>String(y.from).localeCompare(String(x.from)));
-    return `<section class="card"><h2>Leave</h2>${B.length?`<div class="tw"><table class="tb"><thead><tr><th>From</th><th>To</th><th class="r">Weekdays</th><th>Note</th></tr></thead><tbody>${B.map(b=>`<tr class="${b.to>=C.R.from&&b.from<=C.R.to?'inp':''}"><td>${esc(longD(b.from))}</td><td>${esc(longD(b.to))}</td><td class="r">${(b.days||[]).filter(x=>![0,6].includes(fromIso(x).getDay())).length}</td><td>${esc(b.note||'')}${b.to>=TODAY?' <span class="ft warn">Upcoming</span>':''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No leave on record.</div>'}</section>`})()+
+    const wd=b=>(b.days||[]).filter(x=>![0,6].includes(fromIso(x).getDay()));
+    const inP=B.reduce((n,b)=>n+wd(b).filter(x=>x>=C.R.from&&x<=C.R.to&&x<=TODAY).length,0),up=B.reduce((n,b)=>n+wd(b).filter(x=>x>TODAY).length,0);
+    const lab=String(C.R.label||'this period');
+    return `<section class="card"><h2>Leave</h2><div class="lvsum"><div><b>${inP}</b><span>day${inP===1?'':'s'} of leave taken</span><small>${esc(lab)}</small></div><div><b>${up}</b><span>day${up===1?'':'s'} booked ahead</span><small>From tomorrow on</small></div></div>${B.length?`<div class="tw"><table class="tb"><thead><tr><th>From</th><th>To</th><th class="r">Weekdays</th><th>Note</th></tr></thead><tbody>${B.map(b=>`<tr class="${b.to>=C.R.from&&b.from<=C.R.to?'inp':''}"><td>${esc(longD(b.from))}</td><td>${esc(longD(b.to))}</td><td class="r">${(b.days||[]).filter(x=>![0,6].includes(fromIso(x).getDay())).length}</td><td>${esc(b.note||'')}${b.to>=TODAY?' <span class="ft warn">Upcoming</span>':''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No leave on record.</div>'}</section>`})()+
    (()=>{const U=Object.values(S.uniorders).filter(o=>o&&normName(o.name)===normName(p.name)).sort((x,y)=>String(y.requestedAt).localeCompare(String(x.requestedAt)));if(!U.length)return '';
     return `<section class="card"><h2>Uniform orders</h2><div class="tw"><table class="tb"><thead><tr><th>Requested</th><th>Items</th><th>Status</th></tr></thead><tbody>${U.map(o=>`<tr><td>${esc(o.requestedAt?longD(String(o.requestedAt).slice(0,10)):'')}</td><td>${esc((o.items||[]).map(i=>(i.q||1)+' x '+[i.id,i.fit,i.size].filter(Boolean).join(' ')).join(', '))}</td><td>${o.status==='completed'?'Completed':'Requested'}</td></tr>`).join('')}</tbody></table></div></section>`})();
 }
@@ -12111,7 +12119,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291900';
+const VERSION='202610292000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
