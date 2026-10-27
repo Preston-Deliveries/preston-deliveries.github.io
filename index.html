@@ -4348,9 +4348,25 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results .perrow #r_perSeg{display:grid!important;width:auto!important;flex:1 1 auto!important}
 :root:root:root #sh-main #mod-summary :has(>.pchs){display:flex}:root:root:root #sh-main #mod-summary .pchs{flex:1 1 auto!important;width:auto!important}
 
-:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(.sel-done):not([hidden]),:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(.sel-done):not([hidden]){display:flex!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .seg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pseg2:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pvseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .tabs:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .modes:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .lvseg:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .ao-wk:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .sv-wk:not(.sel-done):not([hidden]):not(.vt-hide),:root:root:root #sh-main#sh-main#sh-main#sh-main .pchs:not(.sel-done):not([hidden]):not(.vt-hide){display:flex!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel{display:flex!important;align-items:center;gap:10px;width:100%!important;max-width:none!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .pc-sel select{flex:1 1 auto!important;width:auto!important;max-width:none!important;min-width:0}
+</style>
+<style id="vtabs">
+/* View / Edit switch: always first on the page */
+:root:root #sh-main .sh-sec>.vtab{display:grid!important;grid-template-columns:1fr 1fr;margin:4px 0 14px}
+:root:root #sh-main .sh-sec>.vtab button{min-height:50px;font-size:1.05rem;font-weight:800}
+:root:root #sh-main .sh-sec[data-vt="view"] .vt-e,:root:root #sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt] .vt-hide{display:none!important}
+:root:root #sh-main .sh-sec[data-vt="view"] .vt-nc{pointer-events:none}
+:root:root #sh-main .sh-sec[data-vt="view"] .vt-nc .pen{display:none!important}
+:root:root #sh-main .sh-sec[data-vt="view"] .vt-ro{pointer-events:none;background:transparent!important;border-color:transparent!important;-webkit-appearance:none;appearance:none}
+@media (min-width:900px){:root:root #sh-main .sh-sec>.vtab{max-width:none}}
+
+:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab,:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs{display:grid!important;grid-template-columns:1fr 1fr;gap:4px;padding:4px!important;margin:12px 16px 14px!important;width:auto!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;background:var(--sh-surface)!important;box-shadow:none!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs{margin:0 0 14px!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button,:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button{min-height:48px;border:0!important;border-radius:10px!important;background:transparent!important;color:var(--sh-ink)!important;font:800 1.05rem var(--sh-body)!important;box-shadow:none!important;opacity:1!important}
+:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button[aria-pressed="true"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button[aria-pressed="true"]{background:#1F3A5F!important;color:#fff!important}
+@media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -4401,6 +4417,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
 </div>
 <div class="wrap" id="r_tool" data-tab="view">
+  <div class="seg rtabs" id="r_tabs" role="group" aria-label="View or import"><button type="button" data-rtab="view" aria-pressed="true">View</button><button type="button" data-rtab="import" aria-pressed="false">Import</button></div>
   <header class="top">
     <div>
       <div class="eyebrow">Contract Q01161</div>
@@ -4413,7 +4430,6 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     </div>
   </header>
 
-  <div class="seg rtabs" id="r_tabs" role="group" aria-label="View or import"><button type="button" data-rtab="view" aria-pressed="true">View</button><button type="button" data-rtab="import" aria-pressed="false">Import</button></div>
   <section class="card imp" id="r_stepAdd">
     <h2><span class="step">1</span>Add the day's emails</h2>
     <div class="days" id="r_days" role="group" aria-label="Pick a day"></div>
@@ -4855,7 +4871,55 @@ function go(sec,opts){
   if(!opts.keepScroll) window.scrollTo(0,0);
   if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
+  try{vtEnter(sec,opts.act?'edit':'view')}catch(e){console.warn(e)}
 }
+/* View / Edit (or Import) switch at the top of every admin page that has something to change.
+   View hides the add, edit, delete and upload controls; Edit shows them. Each page opens on View. */
+const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
+const VT={
+  survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file']},
+  enquiries:{lab:'Edit',e:['[data-eq="new"]','.rimp','.rimpc','[data-eq="del"]','[data-eq="save"]','[data-eq="edit"]']},
+  updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save'])},
+  briefs:{lab:'Edit',e:VTA('tb',['new','del','toggle','rmfile','create'])},
+  leave:{lab:'Edit',e:VTA('lv',['add','del','save']).concat(['[data-lv="view"][data-v="set"]'])},
+  vchecks:{lab:'Edit',e:VTA('vc',['new','edit','del','allok','save'])},
+  feedback:{lab:'Edit',e:VTA('fb',['del','st'])},
+  runs:{lab:'Edit',runs:true},
+  sort:{lab:'Edit',nc:['.stb']},
+  precards:{lab:'Edit',e:VTA('pc',['add','del','save','share'])},
+  lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','share'])},
+  staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
+  timesheets:{lab:'Edit',e:VTA('ts',['addp','del']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
+  invoices:{lab:'Edit',e:['[data-iv="tab"][data-v="make"]','[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],v:['[data-iv="tab"][data-v="sub"]'],tabs:'[data-iv="tab"]'},
+  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames']).concat(['[data-un="view"][data-v="form"]']),v:['[data-un="view"][data-v="req"]','[data-un="view"][data-v="done"]'],tabs:'[data-un="view"]'},
+  reports:{lab:'Edit',e:VTA('rp',['file','del'])}
+};
+let vtMode='view',vtObs=null,vtBusy=false;
+function vtSec(){return document.getElementById(MOD[cur]||'')}
+function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vtBusy=true;
+  const tag=(L,cls)=>{sec.querySelectorAll('.'+cls).forEach(x=>x.classList.remove(cls));(L||[]).forEach(q=>sec.querySelectorAll(q).forEach(x=>x.classList.add(cls)))};
+  tag(c.e,'vt-e');tag(c.v,'vt-v');tag(c.nc,'vt-nc');tag((c.ro||[]).map(q=>q.replace(/^#mod-\w+ /,'')),'vt-ro');
+  if(c.runs){const m=sec.querySelector('.modes:not(.pcs)');if(m)m.classList.add('vt-hide')}
+  vtBusy=false}
+function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
+  if(on&&getComputedStyle(on).display==='none'){const nx=L.find(b=>getComputedStyle(b).display!=='none');if(nx)nx.click()}}
+function vtSwitch(sec,c){let w=sec.querySelector(':scope>.vtab');
+  if(!w){w=document.createElement('div');w.className='seg rtabs vtab';w.setAttribute('role','group');w.setAttribute('aria-label','View or '+c.lab.toLowerCase());sec.prepend(w)}
+  w.innerHTML=`<button type="button" data-vt="view" aria-pressed="${vtMode==='view'}">View</button><button type="button" data-vt="edit" aria-pressed="${vtMode==='edit'}">${c.lab}</button>`;return w}
+function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
+  if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
+  setTimeout(vtFixTabs,0)}
+function vtEnter(sec,mode){
+  document.querySelectorAll('.sh-sec[data-vt]').forEach(x=>{if(x.id!==MOD[sec]){delete x.dataset.vt;const w=x.querySelector(':scope>.vtab');if(w)w.remove()}});
+  if(sec==='results'){const b=document.querySelector('#r_tabs [data-rtab="'+(mode==='edit'?'import':'view')+'"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click();return}
+  const el=document.getElementById(MOD[sec]||'');if(!el)return;
+  if(role!=='mgr'||!VT[sec]){delete el.dataset.vt;const w=el.querySelector(':scope>.vtab');if(w)w.remove();return}
+  vtSet(mode);
+  if(!vtObs){vtObs=new MutationObserver(()=>{if(vtBusy)return;clearTimeout(vtObs.t);vtObs.t=setTimeout(()=>{const s=vtSec();if(!s||!s.dataset.vt)return;if(!s.querySelector(':scope>.vtab'))vtSwitch(s,VT[cur]);vtTag();vtFixTabs()},30)})}
+  vtObs.disconnect();vtObs.observe(el,{childList:true,subtree:true});
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;vtSet(b.dataset.vt);window.scrollTo(0,0)});
+window.addEventListener('app:role',()=>{try{vtEnter(cur,'view')}catch(e){}});
 function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
@@ -11900,7 +11964,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291000';
+const VERSION='202610291100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
