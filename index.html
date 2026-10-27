@@ -5916,7 +5916,7 @@ function renderTargets(){
     i.onchange=()=>{const v=num(i.value);if(v!=null){settings.targets[k]=v;saveSettings();renderAll()}};l.append(i);box.append(l)}
 }
 function renderSub(){const box=document.getElementById("r_perSub");if(box)box.innerHTML=subHTML()}
-function subHTML(){const ar=(d,l)=>`<button type="button" class="sn" data-sn="${d}" aria-label="${l}">${d<0?"‹":"›"}</button>`;return ar(-1,"Earlier")+`<div class="snx">${subIn()}</div>`+ar(1,"Later")}
+function subHTML(){const ar=(d,l)=>`<button type="button" class="sn" data-sn="${d}" aria-label="${l}">${d<0?"‹":"›"}</button>`;return view==="cycle"?ar(-1,"Earlier month")+`<div class="snx">${subIn()}</div>`+ar(1,"Later month"):`<div class="snx">${subIn()}</div>`}
 function subIn(){
   if(view==="day"){return DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("")}
   if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
@@ -11878,7 +11878,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290800';
+const VERSION='202610290830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
