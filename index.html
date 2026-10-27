@@ -4596,6 +4596,28 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 :root:root:root #sh-main#sh-main#sh-main #mod-results .rb-dl .sh-btn{width:100%!important;margin:0!important;min-height:46px;display:flex!important;align-items:center;justify-content:center;gap:6px;grid-column:auto!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .rb-dl{display:flex!important;flex-wrap:nowrap!important;gap:8px}
 :root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .rb-dl>.sh-btn{flex:1 1 0!important;width:auto!important;min-width:0!important}
+
+/* Morning check, driver of the week, good streak */
+.mc h2{margin:0 0 6px}
+.mc .mc-ck{all:unset;box-sizing:border-box;display:block;width:100%;padding:14px;margin-top:8px;border-radius:14px;background:var(--sh-sunk,rgba(127,127,127,.06));cursor:pointer}
+.mc .mc-n{font-size:1.05rem;color:var(--sh-muted)}.mc .mc-n b{font-size:2rem;color:var(--sh-ink);font-weight:800;margin-right:2px}
+.mc .mc-t{margin-left:6px;font-weight:700;color:var(--sh-ink)}
+.mc .mc-bar{display:block;height:8px;border-radius:99px;background:rgba(127,127,127,.18);margin:10px 0 4px;overflow:hidden}.mc .mc-bar i{display:block;height:100%;background:#1f9d55;border-radius:99px}
+.mc .mc-not{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}.mc .mc-not small{width:100%;font-weight:700;color:var(--sh-muted);text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}
+.mc .mc-not em{font-style:normal;font-weight:700;font-size:.9rem;padding:5px 10px;border-radius:99px;background:rgba(214,69,65,.12);color:#b42318}
+.mc .mc-all{display:block;margin-top:8px;font-weight:700;color:#1f9d55}
+.mc .dh-do.bad b{color:#b42318}.mc .mc-ok{margin:12px 2px 0;font-weight:700;color:#1f9d55}
+.dotw{display:flex!important;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(242,201,76,.28),rgba(242,201,76,.08))!important;border-color:rgba(183,121,31,.45)!important}
+.dotw .tr{font-size:2.4rem;line-height:1}.dotw .tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dotw small{font-weight:700;color:#8a5a12;text-transform:uppercase;letter-spacing:.04em;font-size:.72rem}.dotw b{font-size:1.35rem;font-weight:800}.dotw em{font-style:normal;font-weight:800;color:#8a5a12}
+.dotw.me{box-shadow:0 0 0 3px rgba(242,201,76,.55)}
+.dh-week .flame{display:flex;align-items:center;gap:6px;margin-top:10px;padding:8px 12px;border-radius:12px;background:rgba(240,110,40,.12);color:#b4440e;font-size:.98rem}.dh-week .flame i{font-style:normal;font-size:1.3rem}
+.mc .mc-n,.mc .mc-t{display:inline}
+:root[data-theme="dark"] .dotw small,:root[data-theme="dark"] .dotw em{color:#F2C94C}:root[data-theme="dark"] .dh-week .flame{color:#ffb38a}:root[data-theme="dark"] .mc .mc-not em,:root[data-theme="dark"] .mc .dh-do.bad b{color:#ff9b94}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dotw small,:root:not([data-theme="light"]) .dotw em{color:#F2C94C}:root:not([data-theme="light"]) .dh-week .flame{color:#ffb38a}:root:not([data-theme="light"]) .mc .mc-not em,:root:not([data-theme="light"]) .mc .dh-do.bad b{color:#ff9b94}}
+
+#sh-home .dh-week .st4 small{white-space:normal;line-height:1.1;min-height:2.2em;display:flex;align-items:center;justify-content:center;text-align:center}
+#sh-home .dh-week .st4 b{font-size:1.08rem}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5214,6 +5236,48 @@ function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
    <div class="ao-wk">${wk.map(d=>{const n=who(d).length,k=iso(d);return `<button type="button" data-aod="${k}" aria-pressed="${k===aoSel}" class="${n?'off':'in'}${k===iso(t0)?' now':''}"><small>${DN[d.getDay()]}</small><b>${n}</b></button>`}).join('')}</div>
    ${sd?`<div class="ao-sel">${row(DN[sd.getDay()]+' '+sd.getDate(),sd)}</div>`:'<p class="ao-tip">Tap a day to see who is off.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+/* Morning check: who is clocked on, enquiries without a fault decision, invoices not in yet, papers expiring */
+const MC={st:false,staff:{},clock:{},enq:{},inv:{},worked:null,prev:null};
+function mcIso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function mcAdd(s,n){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return mcIso(d)}
+function mcNice(s){const d=new Date(s+'T12:00:00');return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}
+const MC_OFFICE=['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR','OFFICE'];
+async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){MC.st=false;return}
+  const D=d=>window.__D?window.__D(d):d.data(),T=mcIso(new Date());
+  const live=(q,set)=>{try{q.onSnapshot(sn=>{const m={};for(const d of sn.docs){const v=D(d);if(v)m[d.id]=v}set(m);adminMorning()},()=>{})}catch(e){}};
+  live(db.collection('staff'),m=>MC.staff=m);
+  live(db.collection('clock').where('date','==',T),m=>MC.clock=m);
+  live(db.collection('enqlog'),m=>MC.enq=m);
+  live(db.collection('invlog'),m=>MC.inv=m);
+  /* last pay period: 4 weeks from Monday 5 Oct 2026, Monday to Saturday of the 4th week */
+  const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,25);MC.prev=[s,e];
+  if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
+}
+function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
+  const T=mcIso(new Date()),sun=new Date().getDay()===0,P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
+  const norm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
+  let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(norm))}catch(e){}
+  const drv=Object.entries(P).filter(([,p])=>(p.runs||[]).filter(Boolean).length&&!MC_OFFICE.includes(String(p.role||'').toUpperCase())&&String(p.role||'').toUpperCase()!=='RELIEF');
+  const on=new Set(Object.values(MC.clock).filter(c=>c&&c.start).map(c=>c.staff));
+  const off=drv.filter(([id,p])=>!on.has(id)&&offN.has(norm([p.first,p.last].join(''))));
+  const offIds=new Set(off.map(x=>x[0]));const notYet=drv.filter(([id])=>!on.has(id)&&!offIds.has(id)).map(([,p])=>nm(p)).filter(Boolean).sort();
+  const onN=on.size,exp=onN+notYet.length;
+  const rows=[];
+  const enqN=Object.values(MC.enq).filter(e=>e&&e.kind!=='ncr'&&!e.fault).length;
+  if(enqN)rows.push(['enquiries',enqN+(enqN===1?' enquiry needs':' enquiries need')+' a fault decision','At fault, partly or not at fault','']);
+  if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from===MC.prev[0]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
+    if(miss.length)rows.push(['invoices',miss.length+(miss.length===1?' invoice':' invoices')+' not in yet','For '+mcNice(MC.prev[0])+' to '+mcNice(MC.prev[1])+': '+miss.join(', '),''])}
+  const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];const ex=[];
+  for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
+  ex.sort((a,b)=>a.n-b.n);
+  if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
+  const ready=Object.keys(P).length>0;
+  const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
+   ${sun?'<div class="mc-ck"><span class="mc-n">Sunday</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
+   ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" data-qa="${sec}" data-act=""><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
+   ${rows.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
@@ -5235,14 +5299,16 @@ function renderHome(){
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
-   <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
+   <div id="ah_morn"></div>
    <div id="ah_todo"></div>
+   <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
+   <div id="ah_dotw"></div>
    <div id="ah_off"></div>
    <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>After you change sort sheets, run sheets, results, the survey, leave, precards, lockers or contacts, send them so drivers see the latest.</p>
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section>
   </div>`;
-  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminTodo();adminOff();return;
+  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminMorning();adminTodo();adminOff();(async()=>{const fill=async()=>{if(!window.ME||!ME.dotw){setTimeout(fill,300);return}const x=await ME.dotw();const el=$('ah_dotw');if(el&&el.__h!==x){el.__h=x;el.innerHTML=x}};fill()})();return;
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
@@ -7492,7 +7558,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['insDue','Insurance expiry'],['licDue','Licence expiry'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -7540,6 +7606,9 @@ function optCells(p){
 const RDAYS=30,todayIso=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dueIn=p=>{if(!p.regoDue)return null;const a=new Date(p.regoDue+'T00:00:00'),b=new Date(todayIso()+'T00:00:00');return Math.round((a-b)/864e5)};
 const niceDue=s=>{if(!s)return '';const[y,m,d]=s.split('-').map(Number);return d+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]+' '+y};
+const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];
+const daysTo=s=>{if(!s)return null;const a=new Date(s+'T00:00:00'),b=new Date(todayIso()+'T00:00:00');return Math.round((a-b)/864e5)};
+const expTxt=(n,s)=>n<0?'Expired '+niceDue(s):n===0?'Expires today':'Expires '+niceDue(s)+' ('+n+' day'+(n===1?'':'s')+')';
 const dueTxt=p=>{const n=dueIn(p);if(n==null)return '';return n<0?`Rego overdue since ${niceDue(p.regoDue)}`:n===0?'Rego due today':n<=RDAYS?`Rego due ${niceDue(p.regoDue)} (${n} day${n===1?'':'s'})`:`Rego due ${niceDue(p.regoDue)}`};
 /* list laid out like the Directory: a colour for each group, initials, run tags and a call button */
 const DGROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
@@ -7567,7 +7636,7 @@ function render(){
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
       <div class="act"><button type="button" class="sh-btn primary" data-dm="add">+ Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
-    ${(()=>{const D=Object.values(people).filter(p=>p.regoDue&&dueIn(p)<=RDAYS).sort((a,b)=>String(a.regoDue).localeCompare(String(b.regoDue)));return D.length?`<section class="card rgsoon"><h2>Rego due soon</h2>${D.map(p=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(p.id)}"><b>${esc(fullName(p))}</b><span>${esc(p.rego||'')}</span><span class="svb">${esc(dueTxt(p).replace(/^Rego /,''))}</span></button>`).join('')}</section>`:''})()}
+    ${(()=>{const D=[];for(const p of Object.values(people))for(const[k,l]of EXP){const n=daysTo(p[k]);if(n!=null&&n<=RDAYS)D.push({p,k,l,n})}D.sort((a,b)=>a.n-b.n);return D.length?`<section class="card rgsoon"><h2>Expiring soon</h2>${D.map(z=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(z.p.id)}"><b>${esc(fullName(z.p))}</b><span>${esc(z.l)}${z.k==='regoDue'&&z.p.rego?' '+esc(z.p.rego):''}</span><span class="svb">${esc(expTxt(z.n,z.p[z.k]))}</span></button>`).join('')}</section>`:''})()}
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
 </div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
@@ -7579,14 +7648,14 @@ function render(){
   </div>`;
 }
 function detailHTML(){
-  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',ecName:'',ecPhone:'',notes:''}:people[openId];
+  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',insDue:'',licDue:'',ecName:'',ecPhone:'',notes:''}:people[openId];
   if(!p){openId=null;return render()}
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
     :k==='pw'?`<label class="f" for="dm_f_pw">${l}<span class="pwrow"><input type="password" id="dm_f_pw" value="${esc(val(k))}" autocomplete="new-password"><button type="button" class="sh-btn" data-dm="pwshow">Show</button></span></label>`
-    :`<label class="f" for="dm_f_${k}">${l}<input type="${k==='email'?'email':k==='regoDue'?'date':k==='mobile'||k==='ecPhone'?'tel':'text'}" id="dm_f_${k}" value="${esc(val(k))}" ${ph?`placeholder="${esc(ph)}"`:''} autocomplete="off"></label>`;
+    :`<label class="f" for="dm_f_${k}">${l}<input type="${k==='email'?'email':/Due$/.test(k)?'date':k==='mobile'||k==='ecPhone'?'tel':'text'}" id="dm_f_${k}" value="${esc(val(k))}" ${ph?`placeholder="${esc(ph)}"`:''} autocomplete="off"></label>`;
   const grp=(t,keys)=>`<div class="sect">${t}</div>`+FIELDS.filter(f=>keys.includes(f[0])).map(inp).join('');
   return `<div class="dm">
     <button type="button" class="sh-btn back" data-dm="back">‹ All drivers</button>
@@ -7594,7 +7663,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego','regoDue'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates',['regoDue','insDue','licDue'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -8846,6 +8915,21 @@ function tiles4(x,sv,withFtd){const t=targets();
 function pcsHTML(x){const n=x&&x.pc!=null?+x.pc:null,d=x?x.days:0;return `<div class="dt pcs"><small>Parcels</small><b>${n==null?'–':n.toLocaleString('en-AU')}</b><span class="st">${n==null?'No results yet':Math.round(n/Math.max(1,d)).toLocaleString('en-AU')+' a day'}</span><span class="tg">${n==null?'':d+' work day'+(d===1?'':'s')}</span></div>`}
 function tileHTML([l,v,ok,tg,pf],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${pf?' gold':''}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
 function moveTxt(r,p,lab){if(!r||!p||r.rank==null||p.rank==null)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
+/* Driver of the week: the best Contract Score last week. Needs 3 days worked. Ties go to more parcels. */
+function nameFor(k){let N=window.__runNames;try{if(!N&&window.parent!==window)N=window.parent.__runNames}catch(e){}return tc((N||{})[k]||'')||k}
+function dotw(){if(!data||!data.days)return null;
+  const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
+  const r1=v=>Math.round(v*100)/100;
+  const t0=dayOf(new Date()),mon=addD(t0,-((fromIso(t0).getDay()+6)%7));
+  for(const back of [7,14]){const wd=[0,1,2,3,4,5].map(i=>addD(mon,i-back));const by={},dy={},pp={};
+    for(const dt of wd){const d=data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const s=dayP(r);if(s==null)continue;const k=dkey(l);by[k]=(by[k]||0)+s;dy[k]=(dy[k]||0)+1;pp[k]=(pp[k]||0)+(+r.pc||0)}}
+    const Q=Object.keys(by).filter(k=>dy[k]>=3).map(k=>[k,by[k]/dy[k],pp[k]]).sort((a,b)=>(r1(b[1])-r1(a[1]))||(b[2]-a[2]));
+    if(Q.length){const[k,avg]=Q[0];const mine=myKeys().has(k);return{k,name:(mine&&me&&me.name&&nameFor(k)===k)?tc(me.name):nameFor(k),avg,from:wd[0],to:addD(wd[0],5),mine:myKeys().has(k),sh:P.sh}}}
+  return null}
+function dotwHTML(w){if(!w)return '';return `<section class="dh-card dotw${w.mine?' me':''}"><span class="tr" aria-hidden="true">🏆</span><span class="tx"><small>Driver of the week · ${esc(w.sh(w.from))} to ${esc(w.sh(w.to))}</small><b>${esc(w.name)}</b><span>Contract Score <em>${window.SCORE.fmt(w.avg)}</em>${w.mine?'. That is you. Great work!':''}</span></span></section>`}
+/* good streak: days worked in a row with a Contract Score of 96 or more, counting back from the last day worked */
+function flame(){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();let n=0;
+  for(let i=all.length-1;i>=0;i--){const s=dayP(myRow(data.days[all[i]].rows));if(s==null)continue;if(s<96-1e-9)break;n++}return n}
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
   try{await load()}catch(e){}
@@ -8865,11 +8949,13 @@ async function homeCards(){
   const news=(S().notices||[]).slice().sort((a,c)=>String(c.postedAt||'').localeCompare(String(a.postedAt||''))).slice(0,2);
   box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do" data-nav="${z.nav}"><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
      :`<section class="dh-card dh-done"><b>✓ All done</b><span>Nothing to do right now.</span></section>`}
+   ${dotwHTML(dotw())}
    <button type="button" class="dh-card dh-week" data-nav="me">
-     <span class="hd"><b>This week</b><small>${esc(P.sh(wd[0]))} to ${esc(P.sh(addD(wd[0],5)))}</small></span>
+     <span class="hd"><b>My week so far</b><small>${esc(P.sh(wd[0]))} to ${esc(P.sh(addD(wd[0],5)))}</small></span>
      ${x?`<span class="rk">${rk?(rk.rank!=null?`<b class="${rkc(rk)}">${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`):''}</span>${rk&&rk.rank==null?`<span class="nrt">${esc(nrTxt(rk))}</span>`:''}${rk?scoreHTML(x,rk,true):''}${moveTxt(rk,prk,'last week')}
      <span class="st4">${T.map(z=>`<span class="s ${z[2]==null?'none':z[2]?'ok':'bad'}${z[4]?' gold':''}"><small>${z[0]}</small><b>${z[1]==null?'–':esc(z[1])}</b><i>${z[2]==null?'':z[2]?'✓':'✗'}</i></span>`).join('')}</span>
      <span class="msg ${have&&hit===have?'ok':''}">${have&&hit===have?'★ Great week. You hit every target.':have?`${hit} of ${have} on target`:''}</span>
+     ${(n=>n>=2?`<span class="flame"><i aria-hidden="true">🔥</i><b>${n} days in a row</b> at 96 or more</span>`:'')(flame())}
      ${wins.length?`<span class="win">★ ${esc(wins[0])}</span>`:''}`:`<span class="nores">No results for this week yet. They show here after the office loads them.</span>`}
      <span class="go">See my profile<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
    </button>
@@ -8915,7 +9001,7 @@ async function paySummary(){
   let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
   const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
   e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
-window.ME={profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
+window.ME={dotw:async()=>{try{await load()}catch(e){}return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -12572,7 +12658,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303400';
+const VERSION='202610303500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
