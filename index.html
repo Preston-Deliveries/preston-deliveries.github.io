@@ -4220,27 +4220,15 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
  :root:root[data-theme="dark"] .sh-side .sh-links button.tab[aria-current="page"] .sm{color:#E9EDEF!important}
  :root:root[data-theme="dark"] .sh-side .sh-links .bdg{box-shadow:0 0 0 2px #111B21!important}
 }
-/* FULL THIN BORDERS: every card is outlined in the colour of its group or result */
-:root:root .dm-t{border:1.5px solid color-mix(in srgb,var(--tc,var(--sh-line)) 55%,transparent)!important}
-:root:root .ah-qa .qa{border:1.5px solid color-mix(in srgb,var(--tc,var(--sh-line)) 55%,transparent)!important;box-shadow:none!important}
-:root:root .dh-todo{border:1.5px solid color-mix(in srgb,var(--act) 60%,transparent)!important}
-:root:root .dh-todo .dh-do{border:1px solid color-mix(in srgb,var(--tc,var(--act)) 45%,transparent)!important}
-:root:root .dh-card:not(.dh-todo):not(.dh-done),:root:root .ah-off{border:1.5px solid var(--sh-line)!important}
-:root:root .dh-week{border:1.5px solid color-mix(in srgb,var(--sh-ink) 18%,transparent)!important}
-:root:root .dh-done{border:1.5px solid color-mix(in srgb,var(--ok) 45%,transparent)!important}
-:root:root .dt.ok,:root:root .dh-week .st4 .s.ok{box-shadow:none!important;border:1.5px solid color-mix(in srgb,var(--ok) 50%,transparent)!important}
-:root:root .dt.bad,:root:root .dh-week .st4 .s.bad{box-shadow:none!important;border:1.5px solid color-mix(in srgb,var(--bad) 50%,transparent)!important}
-:root:root .dt.gold,:root:root .dh-week .st4 .s.gold{box-shadow:none!important;border:1.5px solid color-mix(in srgb,var(--gold) 60%,transparent)!important}
-:root:root #sh-main #mod-leave .lvr{border:1.5px solid var(--lc)!important}
-:root:root #sh-main #mod-summary .tile{border:1.5px solid var(--sh-line)!important}
-:root:root #sh-main #mod-summary .tile:is(.good,.svg){border-color:color-mix(in srgb,var(--ok) 55%,transparent)!important}
-:root:root #sh-main #mod-summary .tile:is(.bad,.svb){border-color:color-mix(in srgb,var(--bad) 55%,transparent)!important}
-:root:root #sh-main #mod-summary .tile:is(.gold,.svgd){border-color:color-mix(in srgb,var(--gold) 65%,transparent)!important}
-:root:root #sh-main .rt .rtk .tk:has(b.g){border:1.5px solid color-mix(in srgb,var(--ok) 55%,transparent)!important}
-:root:root #sh-main .rt .rtk .tk:has(b.b){border:1.5px solid color-mix(in srgb,var(--bad) 55%,transparent)!important}
-:root:root #sh-main .rt .rtk .tk:has(b.gd){border:1.5px solid color-mix(in srgb,var(--gold) 65%,transparent)!important}
-:root:root #sh-main .sh-sec:is(.g-perf,.g-news,.g-team,.g-road,.g-admin,.g-start) .card{border:1.5px solid color-mix(in srgb,var(--g) 45%,transparent)!important}
-:root:root #sh-main .sh-sec .card .card{border-color:var(--sh-line)!important}
+/* DIRECTORY STYLE everywhere: content sits in plain cards with a thin grey border; the colour is in the titles */
+:root:root :is(.dm-t,.ah-qa .qa,.dh-card,.ah-off,.dh-week,.dh-todo .dh-do,.dt,.dh-week .st4 .s,#sh-main #mod-summary .tile,#sh-main .rt .rtk .tk,#sh-main .sh-sec .card,.dr-fb>div){border:1px solid var(--sh-line)!important;box-shadow:none!important}
+:root:root :is(.dt.ok,.dt.bad,.dt.gold,.dh-week .st4 .s.ok,.dh-week .st4 .s.bad,.dh-week .st4 .s.gold,.dr-fb .need,.dr-fb .good,.dh-todo,.dh-done){background:var(--sh-surface)!important}
+:root:root .dh-todo{border-left-width:1px!important}
+:root:root .dh-card h2,:root:root .ah-off .ao-h b,:root:root .dh-week .hd b{color:var(--act)!important}
+:root:root .g-perf{--gt:#5E4A93}:root:root .g-news{--gt:#7A5A10}:root:root .g-team{--gt:#2F6B4C}:root:root .g-road{--gt:#2F5191}:root:root .g-admin{--gt:#9A4F20}:root:root .g-start{--gt:#2F6B5C}
+@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .g-perf{--gt:#B4A8D6}:root:root:not([data-theme="light"]) .g-news{--gt:#D9BE76}:root:root:not([data-theme="light"]) .g-team{--gt:#93C8AA}:root:root:not([data-theme="light"]) .g-road{--gt:#9CB5DF}:root:root:not([data-theme="light"]) .g-admin{--gt:#E6AA82}:root:root:not([data-theme="light"]) .g-start{--gt:#8FC7B5}}
+:root:root[data-theme="dark"] .g-perf{--gt:#B4A8D6}:root:root[data-theme="dark"] .g-news{--gt:#D9BE76}:root:root[data-theme="dark"] .g-team{--gt:#93C8AA}:root:root[data-theme="dark"] .g-road{--gt:#9CB5DF}:root:root[data-theme="dark"] .g-admin{--gt:#E6AA82}:root:root[data-theme="dark"] .g-start{--gt:#8FC7B5}
+:root:root #sh-main .sh-sec .card>h2,:root:root #sh-main .sh-sec .card>.ch>h2,:root:root #sh-main .sh-sec .card>summary h2,:root:root #sh-main .sh-sec .card>header h2{color:var(--gt,var(--sh-ink))!important}
 /* red number badges: a little softer */
 :root:root .bdg{background:#C9453F!important}
 </style><div class="sh-app">
@@ -11706,7 +11694,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281850';
+const VERSION='202610281900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
