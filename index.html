@@ -4268,6 +4268,12 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root .sh-side .sh-links .sh-grp:not(.g-start) [data-nav]{--g:inherit}
 :root:root #sh-menu .am-g:not(.am-me) .dm-t{--tc:var(--gc);--tbg:color-mix(in srgb,var(--gc) 14%,transparent)}
 </style>
+<style id="homeline">
+/* Home and My results: the same coloured line under the top bar as every other page */
+:root:root body:has(#sh-ph[hidden]) .sh-mtop{box-shadow:inset 0 -2px 0 #0B6B5C!important}
+@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) body:has(#sh-ph[hidden]) .sh-mtop{box-shadow:inset 0 -2px 0 #43C2A8!important}}
+:root:root[data-theme="dark"] body:has(#sh-ph[hidden]) .sh-mtop{box-shadow:inset 0 -2px 0 #43C2A8!important}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4523,7 +4529,7 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers','reports']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','clock']},{k:'team',name:'Team',secs:['leave','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'News and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','clock']},{k:'team',name:'Team',secs:['leave','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices','reports']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
 window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
@@ -11726,7 +11732,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290330';
+const VERSION='202610290400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
