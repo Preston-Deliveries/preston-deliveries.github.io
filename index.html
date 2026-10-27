@@ -4545,9 +4545,8 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #nt-pop button{border:0;border-radius:10px;font:800 .95rem system-ui,sans-serif;min-height:42px;padding:0 14px;background:#E9B10A;color:#13213A;cursor:pointer}
 #nt-pop button.x{background:transparent;color:#fff;font-size:1.4rem;padding:0 6px}
 @media (min-width:900px){#nt-pop{left:auto;right:24px;bottom:24px;width:440px}}
-:root:root #sh-main .dr-tiles .dt.pcs{border-color:var(--sh-accent)!important;background:var(--sh-accent-soft)!important}
 :root:root #sh-main .dr-tiles .dt.pcs b{color:var(--sh-ink)!important}
-:root:root #sh-main .dr-tiles .dt.pcs .tg{font-size:.95rem;color:var(--sh-ink);opacity:.85}
+:root:root #sh-main .dr-tiles .dt.pcs .st{color:var(--sh-accent)!important}
 @media (max-width:899.98px){.sh-links .tab>.bdg.nb{display:none!important}}
 </style>
 <div class="sh-app">
@@ -8754,7 +8753,7 @@ function tiles4(x,sv,withFtd){const t=targets();
   if(withFtd){T.splice(3,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%',!!(x&&x.ftd!=null&&x.ftd>=.9995)])}
   return T}
 /* parcels for the period: total, work days and the average a day, like the Summary page */
-function pcsHTML(x){const n=x&&x.pc!=null?+x.pc:null,d=x?x.days:0;return `<div class="dt pcs wide"><small>Parcels</small><b>${n==null?'–':n.toLocaleString('en-AU')}</b><span class="tg">${n==null?'No results loaded yet':`${d} work day${d===1?'':'s'} · average ${Math.round(n/Math.max(1,d)).toLocaleString('en-AU')} a day`}</span></div>`}
+function pcsHTML(x){const n=x&&x.pc!=null?+x.pc:null,d=x?x.days:0;return `<div class="dt pcs"><small>Parcels</small><b>${n==null?'–':n.toLocaleString('en-AU')}</b><span class="st">${n==null?'No results yet':Math.round(n/Math.max(1,d)).toLocaleString('en-AU')+' a day'}</span><span class="tg">${n==null?'':d+' work day'+(d===1?'':'s')}</span></div>`}
 function tileHTML([l,v,ok,tg,pf],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${pf?' gold':''}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
 function moveTxt(r,p,lab){if(!r||!p||r.rank==null||p.rank==null)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
 async function homeCards(){
@@ -8798,7 +8797,7 @@ function driverHTML(){
   ${pkHTML(P)}
   <section class="dr-rank"><small>${when} · ${esc(per.label.replace(/^Week \d of the pay cycle · /,''))}</small>
    ${x&&rk?`<div class="rk">${rk.rank!=null?`<b class="${rkc(rk)}">${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`}</div>${rk.rank==null?`<p class="nrt">${esc(nrTxt(rk))}</p>`:''}<p class="avgp">${(Math.round(rk.avg*10)/10).toFixed(1)} points a day, out of 3</p>${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
-  <div class="dr-tiles">${pcsHTML(x)}${T.map((z,i)=>tileHTML(z,i===4)).join('')}</div>
+  <div class="dr-tiles">${T.map(z=>tileHTML(z,false)).join('')}${pcsHTML(x)}</div>
   ${fb.good.length||fb.need.length?`<section class="dr-fb">${fb.need.length?`<div class="need"><h3>Work on</h3><ul>${fb.need.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}${fb.good.length?`<div class="good"><h3>Going well</h3><ul>${fb.good.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}</section>`:''}
   ${trendHTML(true)}
   ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf dr-said"><h2>What customers said</h2>${sv.said.slice(0,3).map(z=>`<p class="me-q">“${esc(z)}”</p>`).join('')}</section>`:''}
@@ -12476,7 +12475,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610301800';
+const VERSION='202610301900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
