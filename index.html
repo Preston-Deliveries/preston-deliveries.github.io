@@ -4369,6 +4369,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+:root:root:root #sh-main#sh-main#sh-main #mod-timesheets .ckwa,:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckwa"],:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckcopy"]{display:none!important}
+#sh-main #mod-timesheets .tsback{align-self:flex-start;margin-bottom:10px}
+:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="pclear"]:not(.tsback){display:none!important}
 #sh-main #mod-summary .lvsum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}
 #sh-main #mod-summary .lvsum>div{border:1px solid var(--sh-line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
 #sh-main #mod-summary .lvsum b{font-size:1.8rem;line-height:1;color:var(--sh-ink)}#sh-main #mod-summary .lvsum span{font-weight:700;color:var(--sh-ink)}#sh-main #mod-summary .lvsum small{color:var(--sh-muted)}
@@ -4930,7 +4933,7 @@ const VT={
   precards:{lab:'Edit',e:VTA('pc',['add','del','save','share'])},
   lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','drm','share'])},
   staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
-  timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo','pclear']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
+  timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
   invoices:{lab:'Edit',e:['[data-iv="tab"][data-v="make"]','[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'].concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="sub"]'],tabs:'[data-iv="tab"]'},
   uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','inc','dec','clear']).concat(['[data-un="view"][data-v="form"]']),v:['[data-un="view"][data-v="req"]','[data-un="view"][data-v="done"]'],tabs:'[data-un="view"]'},
   reports:{lab:'Edit',e:VTA('rp',['file','del','msave','rmph','unfile'])}
@@ -11000,7 +11003,7 @@ function render(){
   if(!wk)wk=latest();
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:'';
   if(mode==='mgr'&&window.needHist){window.needHist(ckRange().from,TSC);if(person)window.needHist(periodRange()[0],TSC);else if(wk)window.needHist(monday(wk),TSC)}
-  if(person){box.innerHTML=`<div class="tsx">${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
+  if(person){box.innerHTML=`<div class="tsx"><button type="button" class="sh-btn back tsback" data-ts="pclear">\u2039 All drivers</button>${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
   const W=weekHTML();checkStat();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
    ${searchHTML()}
@@ -12119,7 +12122,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610292000';
+const VERSION='202610292030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
