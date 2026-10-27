@@ -3862,7 +3862,7 @@ html.drvui .dr .persub button{min-height:56px}html.drvui .dr .persub button b{fo
 .dr-rank{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:18px;margin:14px 0;display:flex;flex-direction:column;gap:8px}
 .dr-rank small{color:var(--sh-muted);font-size:.98rem;font-weight:700}.dr-rank .rk b{font:800 3.4rem/1 var(--sh-body)}
 .dr-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 14px}
-.dt{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:3px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
+div.dt{border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:3px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
 .dt.ok{background:var(--okbg);border-color:transparent}.dt.bad{background:var(--badbg);border-color:transparent}
 .dt small{font-weight:800;font-size:.9rem;color:var(--sh-muted)}.dt b{font:800 2.1rem/1.1 var(--sh-body);color:var(--sh-ink)}
 .dt.ok b,.dt.ok .st{color:var(--ok)}.dt.bad b,.dt.bad .st{color:var(--bad)}.dt.none b{color:var(--sh-muted)}
@@ -4198,7 +4198,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
  :root:root[data-theme="dark"] .sh-side .sh-links .bdg{box-shadow:0 0 0 2px #111B21!important}
 }
 /* DIRECTORY STYLE everywhere: content sits in plain cards with a thin grey border; the colour is in the titles */
-:root:root :is(.dm-t,.ah-qa .qa,.dh-card,.ah-off,.dh-week,.dh-todo .dh-do,.dt,.dh-week .st4 .s,#sh-main #mod-summary .tile,#sh-main .rt .rtk .tk,#sh-main .sh-sec .card,.dr-fb>div){border:1px solid var(--sh-line)!important;box-shadow:none!important}
+:root:root :is(.dm-t,.ah-qa .qa,.dh-card,.ah-off,.dh-week,.dh-todo .dh-do,div.dt,.dh-week .st4 .s,#sh-main #mod-summary .tile,#sh-main .rt .rtk .tk,#sh-main .sh-sec .card,.dr-fb>div){border:1px solid var(--sh-line)!important;box-shadow:none!important}
 :root:root :is(.dt.ok,.dt.bad,.dt.gold,.dh-week .st4 .s.ok,.dh-week .st4 .s.bad,.dh-week .st4 .s.gold,.dr-fb .need,.dr-fb .good,.dh-todo,.dh-done){background:var(--sh-surface)!important}
 :root:root .dh-todo{border-left-width:1px!important}
 :root:root .dh-card h2,:root:root .ah-off .ao-h b,:root:root .dh-week .hd b{color:var(--act)!important}
@@ -4431,6 +4431,13 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root #sh-main :has(>.dlw){flex-wrap:wrap}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .has-dl{display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important}
 </style>
+<style id="deskcol">
+/* desktop: every page uses one centred column, so everything on it lines up */
+@media (min-width:900px){
+ :root:root #sh-main>.sh-sec{max-width:1120px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+ :root:root #sh-main>.sh-sec .colfree{max-width:none!important;margin-left:0!important;margin-right:0!important;width:auto}
+}
+@media (min-width:900px){:root:root:root:root #sh-main#sh-main #mod-guide .bar-in{max-width:none!important;padding-left:16px!important;padding-right:16px!important}:root:root:root:root #sh-main#sh-main #mod-guide .ctrls{max-width:none!important;flex:1 1 100%!important;width:100%}:root:root:root:root #sh-main#sh-main #mod-guide .ctrls>select{flex:0 0 260px}:root:root:root:root #sh-main#sh-main #mod-guide .searchbox{flex:1 1 auto}}</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -5008,6 +5015,7 @@ function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':
   const S=sec.getBoundingClientRect();let L=1e9,Rr=-1e9;
   sec.querySelectorAll('*').forEach(e=>{if(e.children.length||e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0||b.height<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
   sec.querySelectorAll('.card,section,table,.tw').forEach(e=>{if(e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
+  {const sc=getComputedStyle(sec);L=S.left+Math.max(16,parseFloat(sc.paddingLeft||0));Rr=S.right-Math.max(16,parseFloat(sc.paddingRight||0))}/* one shared column on desktop: line up with its inner edges */
   if(!(Rr>L)||Rr-L<300){reset();return}
   all.forEach(x=>{x.style.setProperty('margin-left',Math.round(L-S.left)+'px','important');x.style.setProperty('width',Math.round(Rr-L)+'px','important')});
   /* the title banner keeps its full-width background, its words line up with the content */
@@ -12164,7 +12172,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300200';
+const VERSION='202610300400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12559,6 +12567,16 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
  let t=0;const q=()=>{clearTimeout(t);t=setTimeout(tag,60)};
  const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,400);return}new MutationObserver(q).observe(m,{childList:true,subtree:true});tag()};go();
 })();
+</script>
+<script>
+/* desktop: inner page wrappers fill the shared column instead of their own narrower widths */
+(function(){function free(){const sec=document.querySelector('#sh-main>.sh-sec:not([hidden])');if(!sec)return;const wide=matchMedia('(min-width:900px)').matches;
+  sec.querySelectorAll('*').forEach(e=>{if(e.closest('table,.rb,.pchs,.pseg2,.vtab'))return;const cs=getComputedStyle(e);const mw=parseFloat(cs.maxWidth);
+    const on=wide&&cs.maxWidth.endsWith('px')&&mw>=560&&/^(block|flex|grid|flow-root)$/.test(cs.display)&&e.getBoundingClientRect().width>=500;
+    if(on&&!e.classList.contains('colfree'))e.classList.add('colfree');else if(!wide&&e.classList.contains('colfree'))e.classList.remove('colfree')});
+  if(window.__vtAlign)window.__vtAlign()}
+ let t=0;const q=()=>{clearTimeout(t);t=setTimeout(free,120)};
+ const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,400);return}new MutationObserver(q).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});window.addEventListener('resize',q);free()};go();})();
 </script>
 </body>
 </html>
