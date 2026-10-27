@@ -4584,6 +4584,8 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 :root:root:root #mod-results .rb .rb-d{grid-column:1/4}
 :root:root:root #mod-results .rb-s{grid-column:4}
 @media (min-width:900px){:root:root:root #mod-results .rb-r{grid-template-columns:minmax(220px,2.2fr) repeat(4,1fr) 1fr}:root:root:root #mod-results .rb .rb-d,:root:root:root #mod-results .rb-s{grid-column:auto}}
+:root:root #mod-results .rb-r.nr .rk{background:#7A8496!important;color:#fff!important}
+:root:root #mod-results .rb-r.nr .rb-s b{color:var(--sh-muted)!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6553,7 +6555,8 @@ function bVals(r){
    ["Scan compliance",r.cp==null?"–":p1(r.cp),r.cp==null?"n":c(r.rt.nc)],
    ["Enquiries",(()=>{const f=Math.round(+r.enq||0),p=Math.round(+r.enqP||0);return p?`${f} + ${p} partly`:String(f)})(),(+r.enq||0)>0?"b":(+r.enqP||0)>0?"b":"gd"]];
 }
-function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";if(r.rank<=10)return "kt";if(n>10&&r.rank>n-10)return "kb";return ""}
+/* place circle: gold, silver, bronze for the top 3, then green for a Contract Score of 96 or more, red under 96, grey if not qualified */
+function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";return (r.avg||0)>=96-1e-9?"kt":"kb"}
 const scTxt=r=>window.SCORE.fmt(r.avg||0);
 function mountBoard(box,rows){
   box.classList.remove("rt");
@@ -8691,8 +8694,8 @@ function resultsRank(dates){
   if(dy[mine]<need||pp[mine]<pn)return{rank:null,of:Q.length,days:dy[mine],need,pc:pp[mine],pn,avg};
   const i=Q.findIndex(([k])=>k===mine);let rk=i+1;while(rk>1&&r1(Q[rk-2][1])===r1(Q[i][1])&&Q[rk-2][2]===Q[i][2])rk--;return{rank:rk,of:Q.length,days:dy[mine],need,pc:pp[mine],pn,avg};
 }
-/* place colours: 1st gold, 2nd silver, 3rd bronze, 4th to 10th green, the bottom 10 red */
-const rkc=r=>!r||r.rank==null?'':r.rank===1?'rk1':r.rank===2?'rk2':r.rank===3?'rk3':r.rank<=10?'rkg':r.rank>r.of-10?'rkb':'';
+/* place colours: 1st gold, 2nd silver, 3rd bronze, then green for a Contract Score of 96 or more, red under 96 */
+const rkc=r=>!r||r.rank==null?'':r.rank===1?'rk1':r.rank===2?'rk2':r.rank===3?'rk3':(r.avg||0)>=96-1e-9?'rkg':'rkb';
 const nrTxt=r=>r.days<r.need?`You worked ${r.days} day${r.days===1?'':'s'}. A place needs ${r.need} days${r.pn?' and '+r.pn.toLocaleString('en-AU')+' parcels':''}.`:`You delivered ${Math.round(r.pc||0).toLocaleString('en-AU')} parcels. A place needs ${(r.pn||0).toLocaleString('en-AU')}.`;
 /* the score out of 100 with the three counted parts underneath */
 function scoreHTML(x,rk,small){const S=window.SCORE;const sc=x&&x.sc;if(!sc)return '';const v=rk?rk.avg:sc.score;
@@ -12556,7 +12559,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610302800';
+const VERSION='202610302900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
