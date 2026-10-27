@@ -4331,7 +4331,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 #mod-results #r_perSub{display:flex!important;align-items:stretch;gap:6px}
 #mod-results #r_perSub .snx{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;min-width:0}
 #mod-results #r_perSub .snx .pc{display:flex;align-items:center;justify-content:center;font-weight:700;text-align:center}
-#mod-results .perrow{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+#mod-results .perrow{display:none!important;align-items:center;gap:8px;flex-wrap:nowrap}
 #mod-results .perrow #r_perSeg{flex:1 1 auto;min-width:0}
 :root:root #sh-main #mod-results .perrow #r_perSeg{display:grid!important;grid-template-columns:repeat(3,1fr);width:auto!important;flex:1 1 auto!important}
 :root:root #sh-main #mod-results .perrow #r_perSeg button{padding-left:4px!important;padding-right:4px!important;min-width:0!important}
@@ -4367,6 +4367,29 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button,:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button{min-height:48px;border:0!important;border-radius:10px!important;background:transparent!important;color:var(--sh-ink)!important;font:800 1.05rem var(--sh-body)!important;box-shadow:none!important;opacity:1!important}
 :root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button[aria-pressed="true"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button[aria-pressed="true"]{background:#1F3A5F!important;color:#fff!important}
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
+</style>
+<style id="pkx">
+/* the Summary date picker, shared by every page with dates */
+#sh-main .pkx{--g:#0B6B5C;--gs:#DCEFEA;display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--sh-line);border-radius:16px;background:var(--sh-surface);margin:0 0 14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main .pkx{--g:#43C2A8;--gs:#163A33}}
+:root[data-theme="dark"] #sh-main .pkx{--g:#43C2A8;--gs:#163A33}
+#sh-main#sh-main .pkx .pseg2{display:inline-flex!important;gap:4px;padding:4px!important;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface);width:auto}
+#sh-main#sh-main .pkx .pseg2 button{all:unset;cursor:pointer;padding:9px 18px!important;border-radius:10px!important;font:700 .95rem var(--sh-body);color:var(--sh-ink)!important;background:transparent!important;text-align:center}
+#sh-main#sh-main .pkx .pseg2 button[aria-pressed="true"]{background:var(--g)!important;color:#0B1220!important}
+#sh-main#sh-main .pkx .pchips{display:flex!important;align-items:stretch;gap:8px;margin-top:4px;width:100%;flex-basis:100%;grid-column:1/-1}
+#sh-main#sh-main .pkx .pchs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;flex:1;min-width:0}
+#sh-main#sh-main .pkx .pchs button{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 4px!important;border:1px solid var(--sh-line)!important;border-radius:12px!important;background:var(--sh-surface)!important;min-width:0;text-align:center}
+#sh-main#sh-main .pkx .pchs button b{font:700 .92rem var(--sh-body);color:var(--sh-ink);white-space:nowrap}
+#sh-main#sh-main .pkx .pchs button small{font-size:.74rem;color:var(--sh-muted);white-space:nowrap}
+#sh-main#sh-main .pkx .pchs button.dim b,#sh-main#sh-main .pkx .pchs button.dim small{opacity:.55}
+#sh-main#sh-main .pkx .pchs button[aria-pressed="true"]{border-color:var(--g)!important;background:var(--gs)!important}
+#sh-main#sh-main .pkx .pchs button[aria-pressed="true"] b,#sh-main#sh-main .pkx .pchs button[aria-pressed="true"] small{color:var(--g)!important;opacity:1}
+#sh-main#sh-main .pkx .pnav{all:unset;cursor:pointer;display:grid!important;place-items:center;width:30px;border-radius:10px!important;border:1px solid var(--sh-line)!important;color:var(--sh-muted)!important;font-size:1.2rem;background:transparent!important}
+@media (max-width:700px){#sh-main#sh-main .pkx .pseg2{display:flex!important;width:100%;box-sizing:border-box}#sh-main#sh-main .pkx .pseg2 button{flex:1;padding:9px 0!important}#sh-main#sh-main .pkx .pchs{gap:5px}#sh-main#sh-main .pkx .pchs button{padding:7px 2px!important}#sh-main#sh-main .pkx .pchs button b{font-size:.8rem}#sh-main#sh-main .pkx .pchs button small{font-size:.66rem}#sh-main#sh-main .pkx .pnav{width:24px}#sh-main#sh-main .pkx .pchips{gap:5px}}
+#sh-main#sh-main .pkx .pseg2{display:flex!important;width:100%;box-sizing:border-box}
+#sh-main#sh-main .pkx .pseg2 button{flex:1}
+:root:not([data-theme="dark"]) #sh-main#sh-main .pkx .pseg2 button[aria-pressed="true"]{color:#fff!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main .pkx .pseg2 button[aria-pressed="true"]{color:#0B1220!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -4455,7 +4478,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 
   <div class="seg pvseg vw" role="group" aria-label="Day, week or month" id="r_perSeg"><button type="button" data-rv="day" aria-pressed="false">Day</button><button type="button" data-rv="week" aria-pressed="true">Week</button><button type="button" data-rv="cycle" aria-pressed="false">Month</button></div>
   <div class="mnav vw" id="r_mnav"></div>
-  <div class="persub vw" id="r_perSub" role="group" aria-label="Choose"></div>
+  <div class="persub vw pkx" id="r_perSub" role="group" aria-label="Choose"></div>
   <section class="card vw" id="r_stepShare">
     <h2><span class="step">3</span>Share with drivers</h2>
     <div class="row-actions">
@@ -6000,7 +6023,15 @@ function renderTargets(){
     i.onchange=()=>{const v=num(i.value);if(v!=null){settings.targets[k]=v;saveSettings();renderAll()}};l.append(i);box.append(l)}
 }
 function renderSub(){const box=document.getElementById("r_perSub");if(box)box.innerHTML=subHTML()}
-function subHTML(){const ar=(d,l)=>`<button type="button" class="sn" data-sn="${d}" aria-label="${l}">${d<0?"‹":"›"}</button>`;const mn=document.getElementById("r_mnav");if(mn)mn.innerHTML=view==="cycle"?ar(-1,"Earlier month")+ar(1,"Later month"):"";return `<div class="snx">${subIn()}</div>`}
+function subHTML(){
+  const chip=(a,v,on,b,sm,dot,dim)=>`<button type="button" ${a}="${v}" aria-pressed="${on}" class="${dim?"dim":""}"><b>${b}</b><small>${sm}${dot?" \u2022":""}</small></button>`;
+  let chips="";const ci=cycleInfo(weekId);
+  if(view==="day")chips=DAYS.map(([k,nm])=>{const h=!!week.days[k];return chip("data-sd",k,k===selDay,nm.slice(0,3),short(dayDate(k)),h,!h)}).join("");
+  else if(view==="week")chips=[1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const h=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return chip("data-sw",id,n===ci.no,"Week "+n,short(fromIso(id)),h,!h)}).join("");
+  else chips=[-3,-2,-1,0].map(k=>{const f=addDays(ci.start,28*k),mid=addDays(f,14);return chip("data-sc",iso(f),k===0,MONTHS[mid.getMonth()],String(mid.getFullYear()),false,false)}).join("");
+  const mn=document.getElementById("r_mnav");if(mn)mn.innerHTML="";
+  return `<div class="pseg2" role="group" aria-label="Period">${[["day","Day"],["week","Week"],["cycle","Month"]].map(([v,l])=>`<button type="button" data-rv="${v}" aria-pressed="${view===v}">${l}</button>`).join("")}</div>
+  <div class="pchips"><button type="button" class="pnav" data-sn="-1" aria-label="Earlier">\u2039</button><div class="pchs">${chips}</div><button type="button" class="pnav" data-sn="1" aria-label="Later">\u203a</button></div>`}
 function subIn(){
   if(view==="day"){return DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("")}
   if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
@@ -6463,7 +6494,9 @@ function wire(){
   ["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("over")}));
   drop.addEventListener("drop",ev=>handleFiles(ev.dataTransfer.files));
   const setView=v=>{view=v;if($("viewSel")&&$("viewSel").value!==v)$("viewSel").value=v;[["viewWeek","week"],["viewDay","day"],["viewCycle","cycle"]].forEach(([id,k])=>$(id).setAttribute("aria-pressed",String(k===v)));document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv===v)));renderSub();drawBoard()};
-  document.getElementById("r_perSub").addEventListener("click",async e=>{const n=null;if(n){await openWeek(iso(addDays(fromIso(weekId),(view==="cycle"?28:7)*(+n.dataset.sn))));renderAll();return}const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
+  document.getElementById("r_perSub").addEventListener("click",async e=>{const rv=e.target.closest("[data-rv]");if(rv){setView(rv.dataset.rv);return}
+    const n=e.target.closest("[data-sn]");if(n){await openWeek(iso(addDays(fromIso(weekId),(view==="day"?7:28)*(+n.dataset.sn))));renderAll();return}
+    const sc=e.target.closest("[data-sc]");if(sc){const keep=cycleInfo(weekId).no-1;await openWeek(iso(addDays(fromIso(sc.dataset.sc),7*keep)));renderAll();return}const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
   {const sg=document.getElementById("r_perSeg"),mn=document.getElementById("r_mnav");const row=document.createElement("div");row.className="perrow vw";sg.before(row);row.append(sg,mn);
    mn.addEventListener("click",async e=>{const n=e.target.closest("[data-sn]");if(!n)return;await openWeek(iso(addDays(fromIso(weekId),28*(+n.dataset.sn))));renderAll()})}
   document.getElementById("r_perSeg").addEventListener("click",e=>{const b=e.target.closest("[data-rv]");if(b)setView(b.dataset.rv)});
@@ -8313,7 +8346,7 @@ const CYC0='2026-10-05';
 function periods(){
   const all=Object.keys((data&&data.days)||{}).filter(k=>Object.keys(data.days[k].rows||{}).length).sort();
   const mine=all.filter(k=>myRow(data.days[k].rows));
-  const D=all[all.length-1]||dayOf(new Date());const dd=mine[mine.length-1]||D;
+  const D=ANC||all[all.length-1]||dayOf(new Date());const dd=ANC?([...mine].reverse().find(x=>x<=addD(ANC,6))||ANC):(mine[mine.length-1]||D);
   const dow=(fromIso(D).getDay()+6)%7,mon=addD(D,-dow);
   const k=Math.floor(Math.round((fromIso(D)-fromIso(CYC0))/864e5)/28),cs=addD(CYC0,k*28);
   const sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]};
@@ -8325,11 +8358,28 @@ function periods(){
   const pickD=wdays.includes(PDAY)?PDAY:([...wdays].reverse().find(d=>mine.includes(d))||[...wdays].reverse().find(d=>all.includes(d))||(wdays.includes(dd)?dd:wdays[0]));
   const subW=weeks.map((w,i)=>({w,n:i+1,on:w===wmon,has:mine.some(d=>d>=w&&d<=addD(w,6))}));
   const subD=wdays.map(d=>({d,on:d===pickD,has:mine.includes(d)}));
-  const cyc={cs,ce:addD(cs,27)};
-  return{subW,subD,cyc,sh,day:{dates:[pickD],label:longDay(pickD)},week:{dates:Array.from({length:7},(_,i)=>addD(wmon,i)),label:'Week '+wkNo+' of the pay cycle · '+sh(wmon)+' to '+sh(addD(wmon,5))},
+  const cyc={cs,ce:addD(cs,27)};const cycs=[-3,-2,-1,0].map(k=>addD(cs,28*k));
+  return{subW,subD,cyc,cycs,cs,wmon,pickD,sh,day:{dates:[pickD],label:longDay(pickD)},week:{dates:Array.from({length:7},(_,i)=>addD(wmon,i)),label:'Week '+wkNo+' of the pay cycle · '+sh(wmon)+' to '+sh(addD(wmon,5))},
     cycle:{dates:Array.from({length:28},(_,i)=>addD(cs,i)),label:'Pay cycle '+sh(cs)+' to '+sh(addD(cs,27))}};
 }
-let PWK=null,PDAY=null;
+let PWK=null,PDAY=null,ANC=null;
+const MONL=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function pkHTML(P){
+  const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const chip=(a,v,on,b,sm,has)=>`<button type="button" ${a}="${v}" aria-pressed="${on}" class="${has?'':'dim'}"><b>${b}</b><small>${sm}${has?' \u2022':''}</small></button>`;
+  let c='';
+  if(PER==='day')c=P.subD.map(x=>chip('data-pd',x.d,x.on,DN[fromIso(x.d).getDay()],P.sh(x.d),x.has)).join('');
+  else if(PER==='week')c=P.subW.map(x=>chip('data-pw',x.w,x.on,'Week '+x.n,P.sh(x.w),x.has)).join('');
+  else c=P.cycs.map(f=>{const m=fromIso(addD(f,14));return chip('data-pcy',f,f===P.cs,MONL[m.getMonth()],String(m.getFullYear()),true)}).join('');
+  return `<div class="pkx me-pk"><div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Month']].map(([k,l])=>`<button type="button" data-per="${k}" aria-pressed="${k===PER}">${l}</button>`).join('')}</div>
+  ${(PER==='cycle'||isAdminView())?`<div class="pchips"><button type="button" class="pnav" data-pnv="-1" aria-label="Earlier">\u2039</button><div class="pchs">${c}</div><button type="button" class="pnav" data-pnv="1" aria-label="Later">\u203a</button></div>`:`<div class="pchips"><div class="pchs">${c}</div></div>`}</div>`;
+}
+const TRIED=new Set();
+async function ensureDays(from){
+  const need=Array.from({length:28},(_,i)=>addD(from,i)).filter(x=>!(data&&data.days&&data.days[x])&&!TRIED.has(x)&&x<=dayOf(new Date()));
+  if(!need.length||!db)return;need.forEach(x=>TRIED.add(x));
+  await Promise.all(need.map(x=>db.doc('days/'+x).get().then(sn=>{if(sn.exists){const v=window.__D(sn);if(v&&v.rows){if(data&&data.days)data.days[x]=v;if(pickData&&pickData.days)pickData.days[x]=v}}}).catch(()=>{})));
+}
 function subRowHTML(P){
   const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   if(PER==='day')return `<div class="persub g-perf" role="group" aria-label="Choose a day">${P.subD.map(x=>`<button type="button" data-pd="${x.d}" aria-pressed="${x.on}" class="${x.has?'has':''}"><b>${DN[fromIso(x.d).getDay()]}</b><small>${P.sh(x.d)}</small></button>`).join('')}</div>`;
@@ -8435,8 +8485,7 @@ function profileHTML(){
     <div class="me-who"><h1>${esc(me.name||'Your profile')}</h1><p>${[me.roleLabel||(me.admin?'Manager':'Driver'),me.login].filter(Boolean).map(x=>/^42\d\d$/.test(x)?`<span class="pcol dg-${x}">${x}</span>`:esc(x)).join(' · ')}</p>${me.email?`<small>${esc(me.email)}</small>`:''}
     ${run?`<div class="me-run"><span><small>Run</small><b>${esc(run.login||run.id)}</b></span>${run.postcode?`<span><small>Postcode</small><b class="pcol dg-${esc(run.postcode)}">${esc(run.postcode)}</b></span>`:''}${run.bay?`<span><small>Bay</small><b>${esc(run.bay)}</b></span>`:''}${Array.isArray(run.streets)?`<span><small>Streets</small><b>${run.streets.length}</b></span>`:''}</div>`:''}</div>
   </section>
-  <div class="me-seg g-perf" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
-  ${subRowHTML(P)}
+  ${pkHTML(P)}
   <p class="me-per">${esc(per.label)}</p>
   ${statsHTML(per,x,sv,own)}
   ${trendHTML(own)}
@@ -8458,7 +8507,10 @@ document.addEventListener('click',e=>{
   const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
   const rb=e.target.closest('[data-me="run"]');if(rb)openRun(rb.dataset.login);
   const pd=e.target.closest('[data-pd]');if(pd&&document.getElementById('me_box')&&document.getElementById('me_box').contains(pd)){PDAY=pd.dataset.pd;renderProfile();return}
-  const pw=e.target.closest('[data-pw]');if(pw&&document.getElementById('me_box')&&document.getElementById('me_box').contains(pw)){PWK=pw.dataset.pw;PDAY=null;renderProfile();return}
+  const inMe=el=>el&&document.getElementById('me_box')&&document.getElementById('me_box').contains(el);
+  const pw=e.target.closest('[data-pw]');if(inMe(pw)){ANC=pw.dataset.pw;PDAY=null;renderProfile();return}
+  const pcy=e.target.closest('[data-pcy]');if(inMe(pcy)){ANC=pcy.dataset.pcy;PDAY=null;ensureDays(ANC).then(renderProfile);renderProfile();return}
+  const pnv=e.target.closest('[data-pnv]');if(inMe(pnv)){const P=periods(),n=+pnv.dataset.pnv;const base=PER==='day'?P.wmon:PER==='week'?P.cs:P.cs;ANC=addD(base,(PER==='day'?7:28)*n);if(ANC>dayOf(new Date()))ANC=null;PDAY=null;const cs=periods().cs;ensureDays(cs).then(renderProfile);renderProfile();return}
   const pb=e.target.closest('[data-per]');if(pb){PER=pb.dataset.per;try{localStorage.setItem('me1161_per',PER)}catch(x){}renderProfile()}
 });
 function openRun(l){l=l||(me&&me.login);try{if(window.RUNS&&RUNS.openLogin&&l&&RUNS.openLogin(l))return}catch(x){}if(window.APP)APP.go('runs')}
@@ -8500,7 +8552,7 @@ async function homeCards(){
   for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
   const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
     if(dd>=0&&dd<=7&&!sent)todo.push({ic:'money',t:'Send your invoice',s:'Due '+niceDay(due)+(dd===0?' (today)':dd===1?' (tomorrow)':'')+'.',nav:'invoices'})}
-  const k0=PWK,k1=PDAY;PWK=null;PDAY=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1}
+  const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
   const wd=P.week.dates,x=statsFor(wd),rk=x?resultsRank(wd):null,prk=x?resultsRank(wd.map(d=>addD(d,-7))):null;
   const sv=mySurvey('weekly',P.cyc?{cs:P.cyc.cs,wk:(P.subW.find(z=>z.on)||{}).n}:null);
   const T=tiles4(x,sv,false),hit=T.filter(z=>z[2]===true).length,have=T.filter(z=>z[2]!=null).length;
@@ -8527,8 +8579,7 @@ function driverHTML(){
   const when={day:'This day',week:'This week',cycle:'This pay cycle'}[PER];
   return `<div class="dr">
   <div class="dr-who"><b>${esc(tc(me.name||''))}</b>${run?`<span>Run ${esc(run.login||run.id)}${run.postcode?` · <em class="pcol dg-${esc(run.postcode)}">${esc(run.postcode)}</em>`:''}</span>`:''}</div>
-  <div class="me-seg dseg" role="tablist" aria-label="Period">${[['day','Day'],['week','Week'],['cycle','Pay cycle']].map(([k,l])=>`<button type="button" role="tab" data-per="${k}" aria-selected="${k===PER}">${l}</button>`).join('')}</div>
-  ${subRowHTML(P)}
+  ${pkHTML(P)}
   <section class="dr-rank"><small>${when} · ${esc(per.label.replace(/^Week \d of the pay cycle · /,''))}</small>
    ${x&&rk?`<div class="rk">${rk.rank!=null?`<b class="${rkc(rk)}">${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`}</div>${rk.rank==null?`<p class="nrt">${esc(nrTxt(rk))}</p>`:''}<p class="avgp">${(Math.round(rk.avg*10)/10).toFixed(1)} points a day, out of 3</p>${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
   <div class="dr-tiles">${T.map((z,i)=>tileHTML(z,i===4)).join('')}</div>
@@ -8541,7 +8592,7 @@ function driverHTML(){
 async function paySummary(){
   const el0=document.getElementById('iv_sum');if(!el0)return;
   try{await load()}catch(e){}const el=document.getElementById('iv_sum');if(!el||!me)return;
-  const k0=PWK,k1=PDAY;PWK=null;PDAY=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1}
+  const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
   const D=P.cycle.dates,x=statsFor(D),h=clockedFor(D);const t=dayOf(new Date());
   const sd=d=>{const z=fromIso(d);return DOW[z.getDay()]+' '+z.getDate()};
   el.innerHTML=`<section class="ps"><div class="hd"><h2>This pay period so far</h2><small>${esc(P.sh(D[0]))} to ${esc(P.sh(D[D.length-1]))}</small></div>
@@ -11964,7 +12015,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291100';
+const VERSION='202610291200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
