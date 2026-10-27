@@ -4369,6 +4369,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
+#sh-main #mod-briefs .row .ldel{width:100%;justify-content:center}
 :root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool>.tabs.pvseg,:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_wmonth),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool .field:has(#v_cycle),:root:root:root #sh-main#sh-main#sh-main#sh-main#sh-main #v_tool #v_wkSub{display:none!important}
 #sh-main #v_pk{margin:0 0 14px}
 #sh-main #mod-timesheets .ckdl{margin:-4px 2px 10px;color:var(--sh-muted);font-weight:700}
@@ -4914,7 +4915,7 @@ const VT={
   survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file']},
   enquiries:{lab:'Edit',e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
   updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save','cancel'])},
-  briefs:{lab:'Edit',e:VTA('tb',['new','del','toggle','rmfile','create'])},
+  briefs:{lab:'Edit',e:VTA('tb',['new','del','ldel','toggle','rmfile','create'])},
   leave:{lab:'Edit',e:VTA('lv',['add','addbo','addfor','del','doimport','rmbo','rqcancel','rqdel','rqno','rqok','save','savecfg','share']).concat(['[data-lv="view"][data-v="set"]']),nc:['[data-lv="edit"]']},
   vchecks:{lab:'Edit',e:VTA('vc',['new','edit','del','allok','save','it','out'])},
   feedback:{lab:'Edit',e:VTA('fb',['del','st'])},
@@ -4943,7 +4944,11 @@ function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;con
 function vtSwitch(sec,c){let w=sec.querySelector(':scope>.vtab');
   if(!w){w=document.createElement('div');w.className='seg rtabs vtab';w.setAttribute('role','group');w.setAttribute('aria-label','View or '+c.lab.toLowerCase());sec.prepend(w)}
   w.innerHTML=`<button type="button" data-vt="view" aria-pressed="${vtMode==='view'}">View</button><button type="button" data-vt="edit" aria-pressed="${vtMode==='edit'}">${c.lab}</button>`;return w}
-function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
+function vtClose(sec){/* leaving Edit: close any open editor so View shows the normal page */
+  {const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}
+  for(let i=0;i<3;i++){const b=[...sec.querySelectorAll('button,a')].find(x=>x.offsetParent&&!x.closest('.vtab')&&Object.values(x.dataset||{}).some(v=>/^(cancel|ncancel|back|nback|close|plno|rimpno|addno|delno|noimport|edClose)$/.test(v)));if(!b)break;
+    const oc=window.confirm;window.confirm=()=>true;try{b.click()}finally{window.confirm=oc}}}
+function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;if(mode==='view'&&sec.dataset.vt==='edit')vtClose(sec);vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
   if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
   setTimeout(vtFixTabs,0)}
 function vtEnter(sec,mode){
@@ -7782,7 +7787,7 @@ const MON=['January','February','March','April','May','June','July','August','Se
 const fmt=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${+m[3]} ${MON[+m[2]-1]} ${m[1]}`:(iso||'')};
 const fmtShort=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||'');return m?`${+m[3]} ${MON[+m[2]-1].slice(0,3)}`:''};
 let docDate='',docFacility='';
-let sigs={},me=null,pad={strokes:[],agree:false,busy:false,err:''},mode='wait', db=null, briefs={}, openId=null, creating=false, armDel=false, msg=null, busy=null, pageCache={}, zoomSrc=null;
+let armL=null,sigs={},me=null,pad={strokes:[],agree:false,busy:false,err:''},mode='wait', db=null, briefs={}, openId=null, creating=false, armDel=false, msg=null, busy=null, pageCache={}, zoomSrc=null;
 const isMgr=()=>mode==='mgr';
 const monOpen={};
 function months(v){const out=[],by={};v.forEach((b,i)=>{const m=/^(\d{4})-(\d{2})/.exec(b.date||'');const key=m?m[1]+'-'+m[2]:'none';if(!by[key]){by[key]={key,label:m?`${MON[+m[2]-1]} ${m[1]}`:'No date',items:[]};out.push(by[key])}by[key].items.push({b,i})});return out}
@@ -7873,7 +7878,7 @@ function render(){
     ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>`<div class="row"><button type="button" class="item" data-tb="open" data-v="${esc(b.id)}">
       <span class="date"><b>${esc(fmtShort(b.date))}</b><small>${esc(String(b.date||'').slice(0,4))}</small></span>
       <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}${!isMgr()&&me?(mySig(b.id)?' <span class="sgd">Signed ✓</span>':' <span class="tosign">Please sign</span>'):''}${isMgr()?` <span class="cntsig">${sigsFor(b.id).length} signed</span>`:''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
-      <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button>`:''}</div>`).join('')}</div></details>`).join('')
+      <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button><button type="button" class="sh-btn danger ldel ${armL===b.id?'arm':''}" data-tb="ldel" data-v="${esc(b.id)}">${armL===b.id?'Tap again to delete':'Delete this brief'}</button>`:''}</div>`).join('')}</div></details>`).join('')
       :`<div class="empty">${isMgr()?'No team briefs yet. Add the first one with the button above.':'No team brief has been posted yet.'}</div>`}
     ${olderBtn()}
   </div>`;
@@ -8075,7 +8080,8 @@ async function signSheet(btn,bid){
 }
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-tb]');if(!el||!document.getElementById('mod-briefs').contains(el))return;
-  const a=el.dataset.tb;if(a!=='del')armDel=false;
+  const a=el.dataset.tb;if(a!=='del')armDel=false;if(a!=='ldel')armL=null;
+  if(a==='ldel'){const v=el.dataset.v;if(armL!==v){armL=v;render();setTimeout(()=>{if(armL===v){armL=null;render()}},3500);return}armL=null;openId=v;armDel=true;delBrief();return}
   if(a==='older'){if(olderBusy)return;olderBusy=true;render();window.needHist('',isMgr()?['briefs','briefsigs']:['briefs']).then(()=>{olderBusy=false;render()});return}
   if(a==='remind'){const b=briefs[el.dataset.v];if(!b)return;const L=sigsFor(b.id);const ns=notSigned.filter(n=>!L.some(x=>x.staff===n.id)).map(n=>n.name);if(!ns.length)return;
     const t='Reminder: please read and sign the team brief'+(b.title?' "'+b.title+'"':'')+' in the PDS app.\n\nNot signed yet:\n'+ns.join('\n')+'\n\n'+location.origin+location.pathname+'#briefs';
@@ -12067,7 +12073,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291530';
+const VERSION='202610291630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
