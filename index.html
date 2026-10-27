@@ -9620,8 +9620,8 @@ const epkTxt=v=>v==null?'–':v>=9999?'n/a':(Math.round(v*10)/10).toFixed(1);
 const PTS={good:1,bad:0,none:0};
 function dayPoints(r){return(r.eta==null||r.eta===''?1:PTS[grade('eta',r.eta)])+(r.cp==null||r.cp===''?1:PTS[grade('cp',+r.cp)])+(grade('enq',epk(r.enq,r.pc))==='good'?1:-1)}
 /* ---------- aggregate ---------- */
-function blank(){return{days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,cpW:0,cpN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
-function addRow(a,date,r){a.days++;const pc=+r.pc||0;a.pc+=pc;
+function blank(){return{wdates:new Set(),days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,cpW:0,cpN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
+function addRow(a,date,r){a.days++;a.wdates.add(date);const pc=+r.pc||0;a.pc+=pc;
   if(r.ftd!=null&&r.ftd!==''){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
   if(r.cp!=null&&r.cp!==''){a.cpW+=r.cp*(pc||1);a.cpN+=(pc||1)}
@@ -9653,7 +9653,7 @@ function shiftOf(id){const o=S.timesheets[id]||{},c=S.clock[id]||null;if(o.remov
   const xp=o.xp!=null&&o.xp!==''?+o.xp:(c&&c.extra!=null?+c.extra:null),tl=o.tl?yn(o.tl):(c&&c.twoLoads!=null?!!c.twoLoads:null),hp=o.hp?yn(o.hp):(c&&c.held!=null?!!c.held:null),hc=o.hc!=null&&o.hc!==''?+o.hc:(c&&c.heldCount?+c.heldCount:null);
   const a=toMin(start),b=toMin(finish);const hrs=a!=null&&b!=null&&b>a?Math.max(0,b-a-(brk||0)):null;
   return{date:id.slice(0,10),start,finish,brk,hrs,xp,tl,hp,hc,note:o.note||'',src:c?(c.startLate||c.startEdited?'Entered':'Tapped'):'Typed'}}
-function sumOf(keys,per){const a=blank();for(const k of keys){const x=per[k];if(!x)continue;for(const f of ['days','pc','ftdW','ftdN','etaW','etaN','cpW','cpN','nc','enq','pts','max','fault','leave','wd','mins','xp','tl','hp'])a[f]+=x[f];a.scores.push(...x.scores);a.enqRecs.push(...x.enqRecs)}return a}
+function sumOf(keys,per){const a=blank();for(const k of keys){const x=per[k];if(!x)continue;if(x.wdates)x.wdates.forEach(d=>a.wdates.add(d));for(const f of ['days','pc','ftdW','ftdN','etaW','etaN','cpW','cpN','nc','enq','pts','max','fault','leave','wd','mins','xp','tl','hp'])a[f]+=x[f];a.scores.push(...x.scores);a.enqRecs.push(...x.enqRecs)}return a}
 const pct=(w,n)=>n?w/n:null;
 const fmtPct=v=>v==null?'–':(v*100).toFixed(1)+'%';
 const fmtN=v=>Number(v||0).toLocaleString('en-AU');
@@ -9701,12 +9701,12 @@ function dl(cur,prev,kind,lab){
 }
 function tiles(a,extra,pa){
   const eta=pct(a.etaW,a.etaN),ftd=pct(a.ftdW,a.ftdN),n=nps(a.scores);
-  const T=[['Parcels',fmtN(a.pc),a.days?`${fmtN(a.days)} driver day${a.days===1?'':'s'}`:'No results loaded',''],
+  const T=[['Parcels',fmtN(a.pc),a.days?`${a.wdates.size} work day${a.wdates.size===1?'':'s'}`:'No results loaded',''],
    ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan compliance',fmtPct(pct(a.cpW,a.cpN)),'Target '+targets().cpG+'%',pct(a.cpW,a.cpN)==null?'none':grade('cp',pct(a.cpW,a.cpN))==='good'?'good svg':'bad svb'],
    ['Enquiries per 1000',a.days?epkTxt(epk(a.enq,a.pc)):'–',`${fmtN(a.enq)} at fault · Target 1 or less`,a.days?(grade('enq',epk(a.enq,a.pc))==='good'?'good svg':'bad svb'):'none'],
-   ['Survey score',n==null?'–':String(n),a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'No survey for this period',n==null?'none':n>=70?'good svg':'bad svb'],
+   ['Survey score',n==null?'–':String(n),'Target 70 · '+(a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'no surveys yet'),n==null?'none':n>=70?'good svg':'bad svb'],
    ...(extra||[])];
   const L=PC&&PC.R?PC.R.lab:'',pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
   const D=pa&&PC?[dl(a.pc,pa.days?pa.pc:null,'chg',L),dl(ftd,pf,'pct',L),dl(eta,pe,'pct',L),dl(pct(a.cpW,a.cpN),pct(pa.cpW,pa.cpN),'pct',L),dl(epk(a.enq,a.pc),pa.days?epk(pa.enq,pa.pc):null,'down1',L),dl(n,pn,'nps',L)]:[];
@@ -11498,7 +11498,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281530';
+const VERSION='202610281540';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
