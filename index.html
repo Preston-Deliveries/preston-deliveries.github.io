@@ -4848,12 +4848,12 @@ window.SCORE=(()=>{
     const n=rows.length;return{score:s/n,enq:e/n,eta:t/n,scan:c/n,days:n,f,p}}
   const fmt=v=>v==null?'–':(v>=99.95?'100':Math.min(99.9,Math.round(v*10)/10).toFixed(1));
   const lost=v=>v<0.05?'0':'−'+(Math.round(v*10)/10).toFixed(1);
-  /* places: 3 days and 600 parcels in a week, 12 days and 2,400 parcels in a pay cycle (month) */
-  const NEED={day:{d:1,pc:0},week:{d:3,pc:600},cycle:{d:12,pc:2400}};
+  /* places: 3 days and 200 parcels in a week, 12 days and 800 parcels in a pay cycle (month) */
+  const NEED={day:{d:1,pc:0},week:{d:3,pc:200},cycle:{d:12,pc:800}};
   const RULES=[['Enquiries','40 points for each at fault enquiry, 20 for partly at fault, 0 for not at fault. At most 60 a day.'],
     ['2 hr ETA','1 point for every 1% below 100%. At most 30 a day.'],
     ['Scan compliance','1 point for every 0.5% below 100%. At most 10 a day.']];
-  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the score works</summary><p>Every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. First time delivery and the survey are shown, but they are not part of the score. A place on the board needs 3 days and 600 parcels in a week, or 12 days and 2,400 parcels in a month.</p></details>`;
+  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the score works</summary><p>Every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. First time delivery and the survey are shown, but they are not part of the score. A place on the board needs 3 days and 200 parcels in a week, or 12 days and 800 parcels in a month.</p></details>`;
   return{day,period,fmt,lost,NEED,RULES,howHTML}})();
 window.__uvDb=async()=>{const d=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!d)return null;
   const sub=(q,f,e)=>{const u=q.onSnapshot(x=>{try{f(x)}catch(_){}},x=>{try{e&&e(x)}catch(_){}});window.__uvSubs.push(u);return u};
@@ -6170,9 +6170,9 @@ function weekRows(weeks){
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq,sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,enqP,sc:SC,points:sum(rs.map(dayPts)),max:days*100}});
 }
 function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r0])=>{const r=Object.assign({},r0,{enq:fe(d,login),enqP:feP(d,login)});return r}).map((r,i)=>[Object.keys(d.rows)[i],r]).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk(r.enq,r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,enqP:+r.enqP||0,sc:window.SCORE.period([r]),points:dayPts(r),max:100}))}
-/* ranking: the average score a day worked, out of 100. A place needs 3 days and 600 parcels in a week,
-   12 days and 2,400 parcels in a pay cycle (1 day for a single day). Ties go to the driver with more parcels. */
-const NEED={day:1,week:3,cycle:12},PCNEED={day:0,week:600,cycle:2400};
+/* ranking: the average score a day worked, out of 100. A place needs 3 days and 200 parcels in a week,
+   12 days and 800 parcels in a pay cycle (1 day for a single day). Ties go to the driver with more parcels. */
+const NEED={day:1,week:3,cycle:12},PCNEED={day:0,week:200,cycle:800};
 function scoreSort(rows,need){need=need||NEED[view]||1;const pn=need>=12?PCNEED.cycle:need>=3?PCNEED.week:0;
   return rows.map(r=>({...r,avg:r.days?r.points/r.days:0,q:(r.days||1)>=need&&(+r.pc||0)>=pn,need,star:r.days&&r.points/r.days>=99.95})).sort((a,b)=>(b.q-a.q)||cmp(a,b)||a.login.localeCompare(b.login));
 }
@@ -8675,11 +8675,11 @@ function metricRank(dates,kind){
   const K=myKeys(),i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&Math.abs(L[rk-2][1]-L[i][1])<1e-9)rk--;return{rank:rk,of:L.length};
 }
 function resultsBy(dates){const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}return by}
-/* place among drivers by average score a day worked, out of 100. A place needs 3 days and 600 parcels in a week,
-   12 days and 2,400 parcels in a pay cycle, 1 day for one day. Ties go to more parcels. */
+/* place among drivers by average score a day worked, out of 100. A place needs 3 days and 200 parcels in a week,
+   12 days and 800 parcels in a pay cycle, 1 day for one day. Ties go to more parcels. */
 function resultsRank(dates){
   const by={},dy={},pp={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r);dy[k]=(dy[k]||0)+1;pp[k]=(pp[k]||0)+(+r.pc||0)}}
-  const need=dates.length>7?12:dates.length>1?3:1,pn=need>=12?2400:need>=3?600:0,K=myKeys(),mine=Object.keys(by).find(k=>K.has(k));if(!mine)return null;
+  const need=dates.length>7?12:dates.length>1?3:1,pn=need>=12?(window.SCORE.NEED.cycle.pc):need>=3?(window.SCORE.NEED.week.pc):0,K=myKeys(),mine=Object.keys(by).find(k=>K.has(k));if(!mine)return null;
   const r1=v=>Math.round(v*10)/10;
   const Q=Object.keys(by).filter(k=>dy[k]>=need&&pp[k]>=pn).map(k=>[k,by[k]/dy[k],pp[k]]).sort((a,b)=>(r1(b[1])-r1(a[1]))||(b[2]-a[2]));const avg=by[mine]/dy[mine];
   if(dy[mine]<need||pp[mine]<pn)return{rank:null,of:Q.length,days:dy[mine],need,pc:pp[mine],pn,avg};
@@ -12549,7 +12549,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610302000';
+const VERSION='202610302100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
