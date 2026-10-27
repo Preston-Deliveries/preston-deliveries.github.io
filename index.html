@@ -4654,6 +4654,13 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 
 #sh-main #mod-invoices .im table.tb.sublist tr:not(.none) td:nth-child(4){grid-column:1/-1;grid-row:auto;text-align:left}
 #sh-main #mod-invoices .im table.tb.sublist td:nth-child(4) .why,#sh-main #mod-invoices .im table.tb.sublist td:nth-child(4) .tlk{display:block;margin-top:6px;text-align:left;line-height:1.35}
+
+.mc .mc-sc{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(242,120,45,.10)}.mc .mc-sc h3{margin:0 0 4px;font-size:1rem;color:#b4440e}
+.mc .mc-scr{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(242,120,45,.25)}.mc .mc-scr:first-of-type{border-top:0}
+.mc .mc-scr .tx{flex:1;min-width:0;display:flex;flex-direction:column}.mc .mc-scr small{color:var(--sh-muted)}
+.mc .mc-scr button{all:unset;cursor:pointer;padding:10px 14px;border-radius:12px;font-weight:800;background:rgba(31,157,85,.16);color:#167a42;white-space:nowrap}.mc .mc-scr button:disabled{opacity:.5}
+:root[data-theme="dark"] .mc .mc-sc h3{color:#ffb38a}:root[data-theme="dark"] .mc .mc-scr button{color:#6fdc9b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mc .mc-sc h3{color:#ffb38a}:root:not([data-theme="light"]) .mc .mc-scr button{color:#6fdc9b}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5273,7 +5280,7 @@ function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
    ${sd?`<div class="ao-sel">${row(DN[sd.getDay()]+' '+sd.getDate(),sd)}</div>`:'<p class="ao-tip">Tap a day to see who is off.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 /* Morning check: who is clocked on, enquiries without a fault decision, invoices not in yet, papers expiring */
-const MC={st:false,staff:{},clock:{},enq:{},inv:{},worked:null,prev:null};
+const MC={st:false,staff:{},clock:{},enq:{},inv:{},leave:{},worked:null,prev:null,scBusy:{}};
 function mcIso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function mcAdd(s,n){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return mcIso(d)}
 function mcNice(s){const d=new Date(s+'T12:00:00');return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}
@@ -5285,6 +5292,7 @@ async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__
   live(db.collection('clock').where('date','==',T),m=>MC.clock=m);
   live(db.collection('enqlog'),m=>MC.enq=m);
   live(db.collection('invlog'),m=>MC.inv=m);
+  live(db.collection('leave'),m=>MC.leave=m);
   /* last pay period: 4 weeks from Monday 5 Oct 2026, Monday to Saturday of the 4th week */
   const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,25);MC.prev=[s,e];
   if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
@@ -5307,12 +5315,16 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];const ex=[];
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
   ex.sort((a,b)=>a.n-b.n);
+  /* scanners to collect: leave of 1 week or more starting in the next 7 days */
+  const lvLong=b=>{const dd=(b.days||[]).length,sp=b.from&&b.to?Math.round((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5)+1:0;return dd>=5||sp>=7};
+  const scn=Object.entries(MC.leave).filter(([,b])=>b&&b.from&&b.from>=T&&b.from<=mcAdd(T,7)&&lvLong(b)&&!b.scanIn&&!b.office).sort((a,b)=>a[1].from.localeCompare(b[1].from));
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
   const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
    ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
-   ${rows.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
+   ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Get their scanner back before they go.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
+   ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
@@ -5346,6 +5358,8 @@ function adminLoads(){const el=$('ah_tl');if(!el||role!=='mgr')return;if(!TL.day
       :`<button type="button" class="tl-u" data-tl="undo" data-v="${esc(r.id)}">Undo</button>`}</div>`).join('')}</div>`:''}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 function tlBy(){const me=window.__webMe||{};const em=String(me.email||'').toLowerCase();const p=Object.values(MC.staff).find(s=>String(s.email||'').toLowerCase()===em);return p?(String(p.first||'').toLowerCase().replace(/\b\w/g,x=>x.toUpperCase())):(me.name||'Manager')}
+document.addEventListener('click',async e=>{const s=e.target.closest&&e.target.closest('[data-scan]');if(!s||role!=='mgr')return;const id=s.dataset.scan;MC.scBusy[id]=true;adminMorning();
+  try{const db=window.__getDb?await window.__getDb():null;if(db)await db.doc('leave/'+id).update({scanIn:true,scanInAt:new Date().toISOString()})}catch(x){homeMsg={err:true,t:'Could not save that just now. Check your connection.'}}delete MC.scBusy[id];adminMorning()});
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-tlgo]');if(g){const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}});
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-tl]');if(!b||role!=='mgr')return;const a=b.dataset.tl,id=b.dataset.v;
   if(a==='tab'){TL.tab=id;adminLoads();return}
@@ -8578,7 +8592,7 @@ async function who(){
   return m;
 }
 async function fetchData(m){
-    const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null};
+    const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null,lv:[]};
     const now=new Date();
     const tasks=[];
     const days=Array.from({length:36},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
@@ -8590,6 +8604,7 @@ async function fetchData(m){
       tasks.push(Promise.all(days.map(x=>db.doc('clock/'+x+'_'+m.staff).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
       tasks.push(db.collection('briefs').get().then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
         await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+m.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
+      tasks.push(db.collection('leavereq').where('staff','==',m.staff).get().then(sn=>{d.lv=sn.docs.map(x=>window.__D(x)).filter(v=>v&&v.staff===m.staff&&v.status==='approved')}).catch(()=>{}));
       tasks.push((async()=>{try{const q=db.collection('invlog').where('sid','==',m.staff);const sn=await q.get();d.inv=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(v=>!v.sid||v.sid===m.staff).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}catch(e){}})());
     }
     await Promise.all(tasks);
@@ -9020,6 +9035,7 @@ async function homeCards(){
   const L=build();badge(unread(L));
   const todo=[],t=dayOf(new Date());
   try{const un=window.__ntUnread?window.__ntUnread():[];if(un.length)todo.push({ic:'brief',t:un.length>1?'Read '+un.length+' new updates':'Read the new update',s:String(un[0].title||''),nav:'updates'})}catch(e){}
+  for(const v of (data&&data.lv)||[]){if(!v.from||!v.to)continue;const sp=Math.round((fromIso(v.to)-fromIso(v.from))/864e5)+1;if(sp<7||v.from<t||v.from>addD(t,7))continue;todo.push({ic:'brief',t:'Hand in your scanner',s:'Before your holiday on '+niceDay(v.from)+'. Give it to the office or a supervisor.',nav:'leave'});break}
   const b=data&&data.briefs[0];if(b&&data.sigs[b.id]===false)todo.push({ic:'brief',t:'Sign the team brief',s:'Read it, then tap Sign.',nav:'briefs'});
   for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
   const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
@@ -12751,7 +12767,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610304300';
+const VERSION='202610304400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
