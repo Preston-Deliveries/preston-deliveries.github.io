@@ -6,6 +6,7 @@
 <title>Contract 1161</title>
 <meta name="description" content="Preston Delivery Service, Contract 1161">
 <meta name="theme-color" content="#0F1A2A">
+<script>try{var t=localStorage.getItem("theme1161");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <meta name="robots" content="noindex,nofollow">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -4118,6 +4119,18 @@ html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).open{--lc:#5CCB8E}html[
 @media (prefers-color-scheme:dark){html:not([data-theme="light"]) #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}html:not([data-theme="light"]) #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}html:not([data-theme="light"]) #sh-main #mod-leave .lvr .pp{background:rgba(255,255,255,.12)}}
 html[data-theme="dark"] #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}html[data-theme="dark"] #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}html[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}html[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}html[data-theme="dark"] #sh-main #mod-leave .lvr .pp{background:rgba(255,255,255,.12)}
 #sh-main #mod-leave .lvkey span{background:var(--lc)!important;color:#fff!important}
+.dm-theme{margin:20px 0 0;padding:14px;border:1px solid var(--sh-line);border-radius:16px;background:var(--sh-surface)}
+.dm-theme h2{margin:0 0 10px;font:800 1rem var(--sh-body);color:var(--act)}
+.dm-theme p{margin:8px 0 0;font-size:.85rem;color:var(--sh-muted)}
+.thseg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:var(--sh-sunk,rgba(127,127,127,.1))}
+.thseg button{all:unset;box-sizing:border-box;text-align:center;cursor:pointer;padding:10px 4px;border-radius:9px;font-weight:800;color:var(--sh-muted);min-height:44px}
+:root:root .thseg button[aria-pressed=true]{background:#1F3A5F;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+html[data-theme="dark"] .thseg button[aria-pressed=true]{background:#3A5A85}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) .thseg button[aria-pressed=true]{background:#3A5A85}}
+.sh-thm{display:none}
+@media (min-width:900px){.sh-side .sh-thm{display:flex;gap:4px;order:3;margin:10px 8px 0;padding:4px;border-radius:10px;border:1px solid rgba(127,127,127,.3)}
+.sh-side .sh-thm button{flex:1;padding:8px 6px;border:0;border-radius:7px;background:transparent;color:inherit;opacity:.7;font:700 .88rem var(--sh-body);cursor:pointer}
+.sh-side .sh-thm button[aria-pressed="true"]{background:#1F3A5F;color:#fff;opacity:1}}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -4744,10 +4757,10 @@ const AMENU=[['Every day','day',[['results','Load the daily results'],['timeshee
  ['Office','office',[['invoices','Driver invoices'],['uniform','Uniform orders'],['reports','Incidents and hazards'],['feedback','Driver messages']]],
  ['Me','me',[['me','My profile'],['clock','My start and finish']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+'<button type="button" class="dm-out" data-sh="signout">Sign out</button>';setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}"><span class="ic">${ICONS[x]||''}</span><b>${esc(NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+`<section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`;setTimeout(applyNavBadges,0);return}
   const SUB={runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, injury or hazard',feedback:'A private message',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_MENU.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
-  <div class="dm-also">${['briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
+  <div class="dm-also">${['briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><section class="dm-theme"><h2>Screen</h2><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div><p>Auto follows your phone's setting.</p></section><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
 let aoSel=null;
@@ -11694,7 +11707,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281900';
+const VERSION='202610271530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12049,6 +12062,24 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 })();
 })();
 
+</script>
+<script>
+(function(){
+ const get=()=>{try{return localStorage.getItem('theme1161')||'auto'}catch(e){return 'auto'}};
+ window.__theme=get;
+ function apply(t){const r=document.documentElement;if(t==='light'||t==='dark')r.setAttribute('data-theme',t);else r.removeAttribute('data-theme');
+   const dark=t==='dark'||(t!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',dark?'#0A0F17':'#0F1A2A');
+   document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===t)));
+   document.querySelectorAll('.sh-thm [data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===(dark?'dark':'light'))));
+   try{document.querySelectorAll('iframe').forEach(f=>{try{f.contentWindow.__applyTheme&&f.contentWindow.__applyTheme(t)}catch(e){}})}catch(e){}}
+ window.__applyTheme=apply;
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-theme-set]');if(!b)return;let t=b.dataset.themeSet;
+   if(t==='toggle'){const cur=get();const dark=cur==='dark'||(cur==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);t=dark?'light':'dark'}
+   try{localStorage.setItem('theme1161',t)}catch(x){}apply(t)});
+ function side(){const sd=document.querySelector('.sh-side');if(!sd||sd.querySelector('.sh-thm'))return;const b=document.createElement('div');b.className='sh-thm';b.setAttribute('role','group');b.setAttribute('aria-label','Light or dark screen');b.innerHTML='<button type="button" data-theme-set="light">☀ Light</button><button type="button" data-theme-set="dark">☾ Dark</button>';sd.appendChild(b);apply(get())}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',side);else side();setTimeout(side,1500);
+ apply(get());
+})();
 </script>
 </body>
 </html>
