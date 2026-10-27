@@ -4388,7 +4388,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main#sh-main#sh-main #mod-uniform .tabs [data-un="view"][data-v="form"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-uniform>.unord,:root:root:root #sh-main#sh-main#sh-main #mod-invoices>.unord{display:flex!important;justify-content:center;width:calc(100% - 32px);margin:0 16px 14px;min-height:52px;font-size:1.05rem}
 :root:root:root #sh-main#sh-main#sh-main :is(#mod-uniform,#mod-invoices)>.unord[hidden]{display:none!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices .tabs [data-iv="tab"][data-v="make"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
+:root[data-role="mgr"]:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices .tabs [data-iv="tab"][data-v="make"],:root[data-role="mgr"]:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets .ckwa,:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckwa"],:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckcopy"]{display:none!important}
 #sh-main #mod-timesheets .tsback{align-self:flex-start;margin-bottom:10px}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="pclear"]:not(.tsback){display:none!important}
@@ -4438,6 +4438,68 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
  :root:root #sh-main>.sh-sec .colfree{max-width:none!important;margin-left:0!important;margin-right:0!important;width:auto}
 }
 @media (min-width:900px){:root:root:root:root #sh-main#sh-main #mod-guide .bar-in{max-width:none!important;padding-left:16px!important;padding-right:16px!important}:root:root:root:root #sh-main#sh-main #mod-guide .ctrls{max-width:none!important;flex:1 1 100%!important;width:100%}:root:root:root:root #sh-main#sh-main #mod-guide .ctrls>select{flex:0 0 260px}:root:root:root:root #sh-main#sh-main #mod-guide .searchbox{flex:1 1 auto}}</style>
+<style id="iwiz">
+/* step by step invoice maker */
+#mod-invoices .iw{gap:16px}
+#mod-invoices .iw h3{margin:0;font:800 1.15rem var(--sh-body);color:var(--sh-ink)}
+#mod-invoices .iw-q{display:flex;flex-direction:column;gap:12px;padding:6px 0 4px}
+#mod-invoices .iw-q h3{font-size:1.4rem;line-height:1.25}
+#mod-invoices .iw-n{margin:0;font:800 .78rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-accent)}
+#mod-invoices .iw-big{display:flex;flex-direction:column;gap:10px}
+#mod-invoices .iw-big button,#mod-invoices .iw-per button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;min-height:60px;padding:14px 18px;border-radius:12px;border:2px solid var(--sh-line);background:var(--sh-sunk);color:var(--sh-ink);font:700 1.12rem var(--sh-body);cursor:pointer}
+#mod-invoices .iw-big button small,#mod-invoices .iw-per button small{font:500 .9rem var(--sh-body);color:var(--sh-muted)}
+#mod-invoices .iw-big button[aria-pressed="true"],#mod-invoices .iw-per button[aria-pressed="true"]{border-color:var(--sh-accent);background:var(--sh-accent-soft)}
+#mod-invoices .iw-back{align-self:flex-start;border:0;background:none;color:var(--sh-accent);font:700 1rem var(--sh-body);padding:8px 0;cursor:pointer}
+#mod-invoices .iw-rate{display:flex;align-items:center;gap:10px;font:700 1.3rem var(--sh-body);color:var(--sh-ink)}
+#mod-invoices .iw-rate input{width:150px;font:800 1.6rem var(--sh-body);padding:10px 12px;border-radius:10px}
+#mod-invoices .iw-rate span:last-child{font-size:1rem;color:var(--sh-muted)}
+#mod-invoices .iw-next{min-height:54px;font-size:1.1rem;width:100%}
+#mod-invoices .iw-ans{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 14px;border-radius:10px;background:var(--sh-sunk);border:1px solid var(--sh-line);font-size:.95rem;color:var(--sh-muted)}
+#mod-invoices .iw-ans b{color:var(--sh-ink)}
+#mod-invoices .iw-ans .sh-btn{margin-left:auto}
+#mod-invoices .iw-sec{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--sh-line);padding-top:16px}
+#mod-invoices .iw-per{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#mod-invoices .iw-per button{min-height:56px;font-size:1rem;padding:10px 14px}
+#mod-invoices .iw-other summary{cursor:pointer;color:var(--sh-accent);font-weight:700;padding:4px 0}
+#mod-invoices .iw-other .row{margin-top:8px}
+#mod-invoices .iw-prog{margin:0;padding:8px 12px;border-radius:8px;background:#FFF1D6;color:#6B3A00;font-size:.95rem}
+#mod-invoices .iw-prog.ok{background:#DDF5E6;color:#0F5A2E}
+#mod-invoices .iw-wk{margin:6px 0 -2px;font:800 .78rem var(--sh-body);letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)}
+#mod-invoices .iw-day{border:2px solid var(--sh-line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;background:var(--sh-surface)}
+#mod-invoices .iw-day.ok{border-color:#22A35A;background:rgba(34,163,90,.08)}
+#mod-invoices .iw-dh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:1.08rem;color:var(--sh-ink)}
+#mod-invoices .iw-dt{font-weight:800}
+#mod-invoices .iw-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px}
+#mod-invoices .iw-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+#mod-invoices .iw-f>span{font-size:.82rem;font-weight:700;color:var(--sh-muted)}
+#mod-invoices .iw-f input{font-size:1.1rem;padding:10px 12px;min-height:46px;box-sizing:border-box;width:100%}
+#mod-invoices .iw-f small{font-size:.8rem;color:var(--sh-muted)}
+#mod-invoices .iw-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+#mod-invoices .iw-seg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:46px;padding:6px 8px;border-radius:10px;border:2px solid var(--sh-line);background:var(--sh-sunk);color:var(--sh-ink);font:700 1rem var(--sh-body);cursor:pointer}
+#mod-invoices .iw-seg button small{font:500 .78rem var(--sh-body);color:var(--sh-muted)}
+#mod-invoices .iw-seg button[aria-pressed="true"]{background:var(--sh-accent);border-color:var(--sh-accent);color:var(--sh-accent-ink)}
+#mod-invoices .iw-seg button[aria-pressed="true"] small{color:inherit;opacity:.85}
+#mod-invoices .iw-src{margin:0;font-size:.9rem;color:var(--sh-muted)}
+#mod-invoices .iw-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;border-top:1px dashed var(--sh-line);padding-top:10px}
+#mod-invoices .iw-tick{display:flex;align-items:center;gap:10px;font:800 1.05rem var(--sh-body);color:var(--sh-ink);cursor:pointer;min-height:44px}
+#mod-invoices .iw-tick input{width:28px;height:28px;accent-color:#22A35A;margin:0}
+#mod-invoices .iw .lk{display:inline;font-size:.88rem}
+#mod-invoices .iw .lk.il{margin-left:4px}
+#mod-invoices .iw-add{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+#mod-invoices .iw-x{border:1px solid var(--sh-line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--sh-sunk)}
+#mod-invoices .iw-x.bad{border-color:#E0A100}
+#mod-invoices .iw-bad{color:#B45309;font-weight:700}
+#mod-invoices .iw-sum{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:12px;background:var(--sh-sunk);border:1px solid var(--sh-line)}
+#mod-invoices .iw-sum div{display:flex;justify-content:space-between;gap:16px;font-size:.98rem;color:var(--sh-ink)}
+#mod-invoices .iw-sum small{color:var(--sh-muted)}
+#mod-invoices .iw-sum .iw-st{border-top:1px solid var(--sh-line);padding-top:6px}
+#mod-invoices .iw-sum .tot{border-top:2px solid var(--sh-ink);padding-top:8px;font-size:1.2rem}
+#mod-invoices .iw-left{margin:0;padding:10px 12px;border-radius:8px;background:#FFF1D6;color:#6B3A00;font-weight:700}
+#mod-invoices .iw-acts{flex-direction:column;align-items:stretch}
+#mod-invoices .iw-acts .sh-btn{width:100%;min-height:52px;font-size:1.05rem;justify-content:center}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .iw-prog,:root:not([data-theme="light"]) #mod-invoices .iw-left{background:#3A2A0C;color:#FFD48A}:root:not([data-theme="light"]) #mod-invoices .iw-prog.ok{background:#0F3320;color:#8BE3AE}:root:not([data-theme="light"]) #mod-invoices .iw-bad{color:#FFB547}}
+:root[data-theme="dark"] #mod-invoices .iw-prog,:root[data-theme="dark"] #mod-invoices .iw-left{background:#3A2A0C;color:#FFD48A}:root[data-theme="dark"] #mod-invoices .iw-prog.ok{background:#0F3320;color:#8BE3AE}:root[data-theme="dark"] #mod-invoices .iw-bad{color:#FFB547}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -11461,13 +11523,14 @@ const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,abn:'',address:''
 let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
 const RATEK=['gst','hourly','r1','r2','rx','rh'],MEK=['abn','address','phone','email','acct','bsb','acctNo'];
 let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false,ticks={};
+let ans={gst:null,pay:null,rh:''},step='',asked=false,extras=[],addOpen=false;
 const P=()=>staff[sid]||{};
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
 async function init(r){
   if(ready)return;ready=true;role=r==='drv'?'drv':'mgr';
   try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db)return;
-  to=TODAY;from=add(TODAY,-27);
+  [from,to]=defPeriod();
   if(role==='mgr'){
     const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
     coll('staff',m=>staff=m);coll('days',m=>{const o={};for(const[k,v]of Object.entries(m))if(v&&v.rows)o[v.date||k]=v;days=o});
@@ -11485,10 +11548,17 @@ async function init(r){
   try{db.collection('invlog').where('sid','==',sid).onSnapshot(s2=>{const m={};for(const d of s2.docs)m[d.id]=__D(d);logs=m;paint()},()=>{})}catch(e){}
   cfg=mergeCfg(sid);invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();
 }
+function lastCfg(id){const L=Object.values(logs).filter(x=>x.sid===id&&x.cfg&&x.cfg.pay).sort((a,b)=>String(b.at).localeCompare(String(a.at)));return L[0]?L[0].cfg:null}
+function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function mergeCfg(id){const p=staff[id]||{},ic=cfgs[id]||{},im=mes[id]||{};const c={...DEFC,phone:p.mobile||'',email:p.email||''};
   for(const k of MEK){const v=im[k]!==undefined&&im[k]!==''?im[k]:ic[k];if(v!==undefined&&v!=='')c[k]=v}
   for(const k of RATEK)if(ic[k]!==undefined&&ic[k]!=='')c[k]=ic[k];
-  if(ic.gst===undefined&&im.gst!==undefined)c.gst=im.gst;return c}
+  if(ic.gst===undefined&&im.gst!==undefined)c.gst=im.gst;
+  /* what the driver answered last time wins for GST, how they are paid and their hourly rate */
+  const lc=lastCfg(id);if(lc){if(lc.gst!=null)c.gst=!!lc.gst;c.pay=lc.pay;if(+lc.rh>0)c.rh=+lc.rh}
+  if(!c.pay)c.pay=c.hourly?'h':'p';c.hourly=c.pay==='h';return c}
+function officeRates(id){const ic=cfgs[id]||{};const o={};for(const k of['r1','r2','rx'])o[k]=ic[k]!==undefined&&ic[k]!==''?+ic[k]:DEFC[k];return o}
 async function loadDrv(){if(role!=='drv'||!sid||!from||!to||to<from)return;const key=from+to;if(drvKey===key)return;drvKey=key;
   try{const c=db.collection('days');const q=c.range?await c.range(from,add(to,1)):await c.get();for(const d of q.docs){const v=__D(d);if(v&&v.rows)days[v.date||d.id]=v}}catch(e){}
   const ds=[];for(let d=from;d<=to;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
@@ -11503,10 +11573,11 @@ async function payFor(id,a,b){await init(window.APP&&APP.role==='mgr'?'mgr':'drv
   if(role==='mgr'){let t=0;while((!staff[id]||!Object.keys(cfgs).length)&&t<20){await new Promise(r=>setTimeout(r,150));t++}if(!staff[id])return null}
   await loadRange(a,b,id);
   const ks=sid,kc=cfg;sid=id;cfg=mergeCfg(id);
-  try{const t={l1:0,l2:0,xp:0,hr:0};for(let d=a;d<=b;d=add(d,1)){if(fromIso(d).getDay()===0)continue;const x=dayData(d);if(!x)continue;
-      if(cfg.hourly)t.hr+=num(x.hrs);else if(x.pc!=null){if(x.tl)t.l2+=x.pc;else t.l1+=x.pc}if(x.xp)t.xp+=num(x.xp)}
-    const sub=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh,gst=cfg.gst?Math.round(sub*10)/100:0;
-    return{gstReg:!!cfg.gst,hourly:!!cfg.hourly,total:Math.round((sub+gst)*100)/100}}finally{sid=ks;cfg=kc}}
+  try{let sub=0;for(let d=a;d<=b;d=add(d,1)){if(fromIso(d).getDay()===0)continue;const x=dayData(d);if(!x)continue;
+      const t=cfg.pay==='h'?'h':cfg.pay==='p'?'p':(x.pc!=null?'p':'h');const ld=x.tl?2:1;
+      sub+=t==='h'?num(x.hrs)*num(cfg.rh):num(x.pc)*lr(ld)+num(x.xp)*xr(ld)}
+    const gst=cfg.gst?Math.round(sub*10)/100:0;
+    return{gstReg:!!cfg.gst,hourly:cfg.pay==='h',total:Math.round((sub+gst)*100)/100}}finally{sid=ks;cfg=kc}}
 function need(){if(role==='drv'){loadDrv();return}if(from&&window.needHist)window.needHist(from,['days','clock','timesheets'])}
 
 /* ---------- work out each day ---------- */
@@ -11521,73 +11592,135 @@ function dayData(date){
   const st=o.start||c.start,fi=o.finish||c.finish,br=o.brk!==undefined&&o.brk!==''?+o.brk:(c.brk!=null?+c.brk:0);
   let hrs=null;if(st&&fi){const a=mins(st),b=mins(fi);if(a!=null&&b!=null&&b>a)hrs=Math.round(((b-a-(br||0))/60)*100)/100}
   if(pc==null&&!c.start&&!o.start&&xp==null)return null;
-  return{pc,tl,tlSet,xp,hrs,worked:!!(c.start||o.start)}
+  return{pc,tl,tlSet,xp,hrs,st,fi,br,worked:!!(c.start||o.start)}
 }
+/* the answers: GST, how they are paid, their hourly rate. Remembered from the last invoice and on this phone. */
+const lr=ld=>+ld===2?num(cfg.r2):num(cfg.r1);
+const xr=ld=>lr(ld)+num(cfg.rx);
+function dayTotal(v){return v.t==='h'?num(v.hr)*num(v.rh):num(v.pc)*lr(v.ld)+num(v.xp)*xr(v.ld)}
+function knownAns(id){const s=lsGet('im_ans_'+id),l=lastCfg(id);return !!((s&&s.pay)||(l&&l.pay))}
+function loadAns(id){const ic=cfgs[id]||{},im=mes[id]||{},a={gst:null,pay:null,rh:''};
+  for(const s of[lsGet('im_ans_'+id),lastCfg(id)]){if(!s)continue;if(a.gst===null&&s.gst!=null)a.gst=!!s.gst;if(!a.pay&&s.pay)a.pay=s.pay;if(a.rh===''&&s.rh!=null&&s.rh!==''&&+s.rh>0)a.rh=+s.rh}
+  if(a.gst===null){if(im.gst!==undefined)a.gst=!!im.gst;else if(ic.gst!==undefined)a.gst=!!ic.gst}
+  if(!a.pay&&ic.hourly!==undefined)a.pay=ic.hourly?'h':'p';
+  if(a.rh===''&&ic.rh&&ic.hourly)a.rh=+ic.rh;
+  return a}
+function syncCfg(){if(!cfg)return;cfg.gst=!!ans.gst;cfg.pay=ans.pay||'p';cfg.rh=ans.rh===''?0:num(ans.rh);cfg.hourly=ans.pay==='h'}
+function saveAns(){if(sid&&role==='drv')lsSet('im_ans_'+sid,ans);syncCfg()}
+function defType(auto){if(ans.pay==='h')return 'h';if(ans.pay==='p')return 'p';if(auto&&auto.pc!=null)return 'p';if(auto&&auto.hrs)return 'h';return 'p'}
 function rows(){
-  if(!sid||!from||!to||to<from)return[];const out=[];const m0=from;
-  for(let d=from;d<=to;d=add(d,1)){const w=fromIso(d).getDay();if(w===0)continue;const k=Math.floor((fromIso(d)-fromIso(m0))/864e5);const wk=Math.floor(k/7),di=(w+6)%7;
-    const auto=dayData(d);const a={l1:'',l2:'',xp:'',hr:''};
-    if(auto){if(cfg.hourly){a.hr=auto.hrs??''}else{if(auto.pc!=null){if(auto.tl)a.l2=auto.pc;else a.l1=auto.pc}}if(auto.xp)a.xp=auto.xp}
-    const v={...a,...(ov[d]||{})};
-    if(w===6&&!auto&&!ov[d])continue;
-    if(role==='drv'&&!auto&&!ov[d])continue;
-    out.push({d,wk,di,auto,v,edited:!!ov[d],note:auto&&!cfg.hourly&&auto.pc==null&&auto.worked?(role==='drv'?'No parcel count yet. Type it in.':'No parcel count. Load Driver Results for this day.'):''})}
+  if(!sid||!from||!to||to<from)return[];const out=[];
+  for(let d=from;d<=to;d=add(d,1)){const w=fromIso(d).getDay();if(w===0)continue;const k=Math.floor((fromIso(d)-fromIso(from))/864e5);const wk=Math.floor(k/7),di=(w+6)%7;
+    const auto=dayData(d),o=ov[d]||{};
+    if(!auto&&!o.add)continue;if(o.off)continue;
+    const a={t:defType(auto),pc:auto&&auto.pc!=null?auto.pc:'',ld:auto&&auto.tl?2:1,xp:auto&&auto.xp?auto.xp:'',hr:auto&&auto.hrs!=null?auto.hrs:'',rh:ans.rh===''?'':+ans.rh};
+    const v={...a,...o};delete v.add;delete v.off;if(ans.pay!=='b')v.t=ans.pay==='h'?'h':'p';
+    out.push({d,wk,di,auto,v,added:!!o.add&&!auto})}
   return out}
-function totals(R){const t={l1:0,l2:0,xp:0,hr:0};for(const r of R)for(const k in t)t[k]+=num(r.v[k]);
-  const sub=t.l1*cfg.r1+t.l2*cfg.r2+t.xp*cfg.rx+t.hr*cfg.rh;const gst=cfg.gst?Math.round(sub*10)/100:0;return{...t,sub:Math.round(sub*100)/100,gst,total:Math.round((sub+gst)*100)/100}}
-function nextNo(){const L=Object.values(logs).filter(x=>x.sid===sid).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '1';const m=/^(.*?)(\d+)$/.exec(L[0].no||'');return m?m[1]+String(+m[2]+1).padStart(m[2].length,'0'):''}
+function offDays(){return Object.keys(ov).filter(d=>ov[d]&&ov[d].off&&d>=from&&d<=to).sort()}
+function totals(R){const t={l1:0,l2:0,xp:0,xp1:0,xp2:0,hr:0,hp:0,ex:0};
+  for(const r of R){const v=r.v;if(v.t==='h'){t.hr+=num(v.hr);t.hp+=num(v.hr)*num(v.rh)}else{if(+v.ld===2){t.l2+=num(v.pc);t.xp2+=num(v.xp)}else{t.l1+=num(v.pc);t.xp1+=num(v.xp)}t.xp+=num(v.xp)}}
+  for(const x of extras)t.ex+=num(x.amt);
+  const r2=n=>Math.round(n*100)/100;const sub=t.l1*lr(1)+t.l2*lr(2)+t.xp1*xr(1)+t.xp2*xr(2)+t.hp+t.ex;const gst=cfg.gst?r2(sub*0.1):0;
+  return{...t,hr:r2(t.hr),hp:r2(t.hp),ex:r2(t.ex),sub:r2(sub),gst,total:r2(r2(sub)+gst)}}
+function nextNo(){const L=Object.values(logs).filter(x=>x.sid===sid).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '1';const m=/^(.*?)(\d+)$/.exec(L[0].no||'');return m?m[1]+String(+m[2]+1).padStart(m[2].length,'0'):String(L.length+1)}
 function lastLog(){return Object.values(logs).filter(x=>x.sid===sid).sort((a,b)=>String(b.at).localeCompare(String(a.at)))[0]}
+/* a draft is kept on this phone so nothing is lost if the app is closed half way */
+const dKey=()=>'im_draft_'+sid+'_'+from;
+function saveDraft(){if(!sid||!from||loadingDraft||draftFor!==dKey())return;lsSet(dKey(),{ov,ticks,extras,invNo,to})}
+let loadingDraft=false,draftFor='';
+function loadDraft(){ov={};ticks={};extras=[];draftFor=sid&&from?dKey():'';const d=sid&&from?lsGet(dKey()):null;if(d&&d.to===to){ov=d.ov||{};ticks=d.ticks||{};extras=d.extras||[];if(d.invNo)invNo=d.invNo}}
+function defPeriod(){const p0=period(0);return(fromIso(TODAY)-fromIso(p0[0]))/864e5<7?period(-1):p0}
+const fmtT=t=>{const m=mins(t);if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return(h%12||12)+':'+pad(mm)+(h<12?' am':' pm')};
+const fmtH=x=>x==null||x===''?'':Math.floor(x)+'h '+String(Math.round((x%1)*60)).padStart(2,'0')+'m';
 
 /* ---------- screen ---------- */
+function firstName(){return tc(P().first||nameOf(P()).split(' ')[0]||'this driver')}
 function html(){
   if(!db)return '<div class="empty">Could not connect to the saved data. Reload the page.</div>';
-  const people=Object.entries(staff).map(([id,p])=>({id,n:nameOf(p),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
-  const[cs,ce]=period(0),[ls,le]=period(-1);
   if(role==='drv'&&!sid)return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so you cannot make an invoice here. Ask the office to check your email on the Drivers page.</div>';
-  let h=(role==='drv'?`<section class="card im"><h2>Make my invoice</h2><p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p><p class="sub">Pick the dates. Your parcels come from Driver Results, and your loads and extra parcels from what you answered when you clocked out. Check every day, then submit it to the office.</p>`:`<section class="card im"><h2>Make an invoice</h2><p class="sub">Pick the driver and the dates. Parcels come from Driver Results, 2 loads and extra parcels from Clock In and Timesheets. Check it, change anything, then download.</p>`)+`
-   ${role==='drv'?'':`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`}
-   <div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label>
-    <div class="quick"><button type="button" class="sh-btn sm" data-im="per" data-v="-1">Last pay period<small>${esc(short(ls))} to ${esc(short(le))}</small></button><button type="button" class="sh-btn sm" data-im="per" data-v="0">This pay period<small>${esc(short(cs))} to ${esc(short(ce))}</small></button></div></div>`;
-  if(from&&to&&(fromIso(to)-fromIso(from))/864e5>27)h+=`<p class="warn">The invoice template holds 4 weeks. Pick 4 weeks or less.</p>`;
+  const people=Object.entries(staff).map(([id,p])=>({id,n:nameOf(p),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
+  const me=role==='drv';const you=me?'you':firstName(),your=me?'your':firstName()+'’s';
+  let h=`<section class="card im iw"><h2>${me?'Make my invoice':'Make an invoice'}</h2>`;
+  if(!me)h+=`<div class="row"><label class="f grow"><span>Driver</span><select id="im_sid"><option value="">Choose a driver</option>${people.map(x=>`<option value="${esc(x.id)}" ${sid===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label></div>`;
+  else h+=`<p class="who">${esc(nameOf(P()))}${(P().runs||[]).filter(Boolean).length?' <small>'+esc((P().runs||[]).filter(Boolean).join(', '))+'</small>':''}</p>`;
   if(!sid)return h+'</section>';
-  const p=P(),R=rows(),T=totals(R),last=lastLog();
-  h+=`<div class="row"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
-     <p class="sub last">${last?`Last invoice: number ${esc(last.no)}, ${esc(nice(last.from))} to ${esc(nice(last.to))}, ${money(last.total)}.`:(role==='drv'?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p></div>
-   <details class="cfg" ${showCfg?'open':''}><summary>${role==='drv'?'My invoice details':esc(nameOf(p))+'’s invoice details'} <small>${cfg.gst?'GST registered':'Not GST registered'} · ${cfg.hourly?'Paid by the hour, '+money(cfg.rh):'Per parcel, '+money(cfg.r1)+' and '+money(cfg.r2)} ${cfg.abn?'· ABN '+esc(cfg.abn):'· No ABN saved'}</small></summary>
-    <div class="grid">
-     ${role==='drv'&&cfgs[sid]&&cfgs[sid].gst!==undefined?`<p class="ro">GST: <b>${cfg.gst?'Registered':'Not registered'}</b>. Set by the office.</p>`:`<div class="seg2"><span>GST</span><button type="button" data-im="c" data-k="gst" data-v="1" aria-pressed="${cfg.gst}">Registered</button><button type="button" data-im="c" data-k="gst" data-v="0" aria-pressed="${!cfg.gst}">Not registered</button></div>`}
-     ${role==='drv'?`<p class="ro">Your rates, set by the office: ${cfg.hourly?money(cfg.rh)+' an hour':money(cfg.r1)+' a parcel (1 load), '+money(cfg.r2)+' a parcel (2 loads), '+money(cfg.rx)+' an extra parcel'}.</p>`:`<div class="seg2"><span>Paid</span><button type="button" data-im="c" data-k="hourly" data-v="0" aria-pressed="${!cfg.hourly}">Per parcel</button><button type="button" data-im="c" data-k="hourly" data-v="1" aria-pressed="${cfg.hourly}">By the hour</button></div>
-     ${[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel rate ($)'],['rh','Hourly rate ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}`}
-     ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
-    </div><div class="acts"><button type="button" class="sh-btn primary" data-im="savecfg">${role==='drv'?'Save my details':'Save details for next time'}</button><span class="sub">${role==='drv'?'Only you and the office can see these.':'Only managers and this driver can see these.'}</span></div></details>`;
-  const showHr=cfg.hourly||R.some(r=>num(r.v.hr));const fmtH=x=>x==null?'':Math.floor(x)+'h '+String(Math.round((x%1)*60)).padStart(2,'0')+'m';
-  const needTick=R.filter(r=>num(r.v.l1)||num(r.v.l2)),ticked=needTick.filter(r=>ticks[r.d]).length,allTicked=ticked===needTick.length;
-  let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;
-  h+=`<div class="tickbar ${allTicked?'ok':''}"><span><b>${ticked} of ${needTick.length}</b> days checked. Tick each day once you have checked the parcels are in the right column: 1 load or 2 loads.</span>${needTick.length&&!allTicked?'<button type="button" class="sh-btn sm" data-im="tickall">Tick all</button>':''}</div>
-   <div class="tw"><table class="tb days"><thead><tr><th>Day</th><th class="c">Checked</th><th class="r">1 load</th><th class="c"></th><th class="r">2 load</th><th class="r">Extra parcels</th>${showHr?'<th class="r">Paid hours</th>':''}<th class="r">Day total</th><th class="r">Hours worked</th></tr></thead><tbody>`;
-  let wk=-1;const nc=showHr?9:8;
-  for(const r of R){if(r.wk!==wk){wk=r.wk;h+=`<tr class="wk"><td colspan="${nc}">Week ${wk+1}${wk>3?' (outside the 4 week template)':''}</td></tr>`}
-    const dt=num(r.v.l1)*cfg.r1+num(r.v.l2)*cfg.r2+num(r.v.xp)*cfg.rx+num(r.v.hr)*cfg.rh;const hasP=num(r.v.l1)||num(r.v.l2);
-    const said=r.auto&&r.auto.worked?(r.auto.tlSet?`Driver said ${r.auto.tl?'2 loads':'1 load'}`:'Driver did not answer loads'):'';
-    const LB={l1:'1 load',l2:'2 load',xp:'Extra parcels',hr:'Paid hours'};const inp=k=>`<td class="r in-${k}" data-l="${LB[k]}"><input type="number" min="0" step="${k==='hr'?'0.25':'1'}" data-imd="${r.d}" data-k="${k}" value="${esc(r.v[k])}" aria-label="${k} ${r.d}"></td>`;
-    h+=`<tr class="${r.edited?'ed':''} ${r.auto?'':'none'} ${ticks[r.d]?'tk':''}"><td><b>${esc(short(r.d))}</b>${said?`<small class="sd ${r.auto.tlSet?'':'q'}">${said}</small>`:''}${r.note?`<small class="nt">${esc(r.note)}</small>`:''}${r.edited?`<button type="button" class="lk" data-im="undo" data-v="${r.d}">Undo change</button>`:''}</td>
-     <td class="c ck" data-l="Checked">${hasP?`<label class="tick"><input type="checkbox" data-imt="${r.d}" ${ticks[r.d]?'checked':''} aria-label="Checked ${esc(short(r.d))}"><span></span></label>`:''}</td>${inp('l1')}<td class="c sw">${hasP?`<button type="button" class="swap" data-im="swap" data-v="${r.d}" title="Move parcels to the other column" aria-label="Move parcels between 1 load and 2 load">⇄</button>`:''}</td>${inp('l2')}${inp('xp')}${showHr?inp('hr'):''}
-     <td class="r dtot">${dt?money(dt):''}</td><td class="r wk2">${r.auto&&r.auto.hrs?`<span class="wl">Worked </span>`+fmtH(r.auto.hrs):''}</td>
-</tr>`}
-  h+=`</tbody><tfoot><tr><td>Totals</td><td class="c">${ticked}/${needTick.length}</td><td class="r">${T.l1||''}</td><td></td><td class="r">${T.l2||''}</td><td class="r">${T.xp||''}</td>${showHr?`<td class="r">${T.hr||''}</td>`:''}<td class="r">${money(T.sub)}</td><td class="r">${worked?fmtH(worked):''}</td></tr></tfoot></table></div>
-   <div class="sum"><div><span>Subtotal${cfg.gst?' (ex GST)':''}</span><b>${money(T.sub)}</b></div>${cfg.gst?`<div><span>GST (10%)</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total due${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div><div class="wh"><span>Hours worked (for your info)</span><b>${worked?fmtH(worked):'None recorded'}</b></div></div>
-   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${logs[logId(sid,from)]?`<p class="subd">Already submitted for this pay period on ${esc(nice(String(logs[logId(sid,from)].submittedAt||logs[logId(sid,from)].at||'').slice(0,10)))} (${esc(STAT[logs[logId(sid,from)].status]||'Submitted')}). Submitting again replaces it.</p>`:''}
-   <div class="acts"><button type="button" class="sh-btn primary" data-im="submit" ${busy||!allTicked?'disabled':''}>${logs[logId(sid,from)]?'Submit again':'Submit invoice'}</button><button type="button" class="sh-btn" data-im="pdf" ${busy||!allTicked?'disabled':''}>PDF</button><button type="button" class="sh-btn" data-im="xlsx" ${busy||!allTicked?'disabled':''}>Excel</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">See submitted invoices</button>':''}
-    <span class="sub">${allTicked?'Rows in grey had no work recorded. Type over any number to change it.':'Tick every day with parcels to unlock Submit.'}</span></div></section>`;
+  if(!asked&&step!=='days'&&knownAns(sid)){ans=loadAns(sid);syncCfg();step='days'}
+  const nQ=ans.pay==='p'?2:3;
+  /* question 1 */
+  if(step==='gst')return h+`<div class="iw-q"><p class="iw-n">Question 1 of ${nQ}</p><h3>${me?'Are you registered for GST?':'Is '+esc(you)+' registered for GST?'}</h3><p class="sub">Not sure? Ask the office before you send it.</p>
+    <div class="iw-big">${[['1','Yes, registered for GST'],['0','No, not registered']].map(([v,l])=>`<button type="button" data-im="ans" data-k="gst" data-v="${v}" aria-pressed="${ans.gst!==null&&(ans.gst?'1':'0')===v}">${l}</button>`).join('')}</div></div></section>`;
+  if(step==='pay')return h+`<div class="iw-q"><p class="iw-n">Question 2 of ${nQ}</p><h3>${me?'How are you paid?':'How is '+esc(you)+' paid?'}</h3>
+    <div class="iw-big">${[['p','By parcel',money(cfg.r1)+' a parcel, '+money(cfg.r2)+' on 2 load days'],['h','By the hour','Hours come from '+your+' timesheet'],['b','Both','Some days by parcel, some days by the hour']].map(([v,l,s])=>`<button type="button" data-im="ans" data-k="pay" data-v="${v}" aria-pressed="${ans.pay===v}">${l}<small>${esc(s)}</small></button>`).join('')}</div>
+    <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
+  if(step==='rate')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your hourly rate?':'What is '+esc(your)+' hourly rate?'}</h3><p class="sub">You can change it on any day later if that day had a different rate.</p>
+    <label class="iw-rate"><span>$</span><input type="number" inputmode="decimal" step="0.01" min="0" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>
+    <button type="button" class="sh-btn primary iw-next" data-im="rateok" ${num(ans.rh)>0?'':'disabled'}>Next</button>
+    <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
+  /* the days */
+  const R=rows(),T=totals(R),last=lastLog(),off=offDays();const[cs,ce]=period(0),[ls,le]=period(-1);
+  const PAYL={p:'By parcel',h:'By the hour',b:'Parcel and hourly'};
+  h+=`<div class="iw-ans"><span>GST: <b>${ans.gst?'Registered':'Not registered'}</b></span><span>Paid: <b>${PAYL[ans.pay]||'By parcel'}</b></span>${ans.pay!=='p'?`<span>Rate: <b>${money(ans.rh)} an hour</b></span>`:''}<button type="button" class="sh-btn sm" data-im="chg">Change answers</button></div>
+   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per">${[[-1,'Last pay period',ls,le],[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))}</small></button>`).join('')}</div>
+    <details class="iw-other" ${(from===cs&&to===ce)||(from===ls&&to===le)?'':'open'}><summary>Other dates</summary><div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label></div></details>
+    ${me&&logs[logId(sid,from)]&&(logs[logId(sid,from)].status||'submitted')!=='submitted'?`<p class="iw-left">The office has already ${logs[logId(sid,from)].status==='paid'?'paid':'checked'} your invoice for these dates. Call the office if something needs changing.</p>`:''}
+    ${from&&to&&(fromIso(to)-fromIso(from))/864e5>27?'<p class="warn">An invoice holds 4 weeks. Pick 4 weeks or less.</p>':''}</div>`;
+  const nT=R.filter(r=>ticks[r.d]).length;
+  h+=`<div class="iw-sec"><h3>Check each day</h3><p class="sub">${me?'We filled in what we know. Fix anything that is wrong, then tick':'Fix anything that is wrong, then tick'} <b>This day is right</b> on every day.</p>
+   <p class="iw-prog ${R.length&&nT===R.length?'ok':''}"><b>${nT} of ${R.length}</b> days ticked</p>`;
+  if(!R.length)h+=`<div class="empty">${me?'No work found for you in these dates. Add a day below if you worked.':'No work found for '+esc(you)+' in these dates.'}</div>`;
+  let wk=-1;
+  for(const r of R){const v=r.v,a=r.auto,d=r.d,tk=!!ticks[d],H=v.t==='h';
+    if(r.wk!==wk){wk=r.wk;h+=`<p class="iw-wk">Week ${wk+1}</p>`}
+    const inp=(k,lab,extra,step2)=>`<label class="iw-f"><span>${lab}</span><input type="number" inputmode="${k==='pc'||k==='xp'?'numeric':'decimal'}" min="0" step="${step2||'1'}" data-imd="${d}" data-k="${k}" value="${esc(v[k])}" aria-label="${esc(lab)} ${esc(short(d))}">${extra?`<small>${extra}</small>`:''}</label>`;
+    const seg=(k,opts)=>`<div class="iw-seg" role="group">${opts.map(([val,l,s])=>`<button type="button" data-im="dset" data-d="${d}" data-k="${k}" data-v="${val}" aria-pressed="${String(v[k])===String(val)}">${l}${s?`<small>${s}</small>`:''}</button>`).join('')}</div>`;
+    h+=`<div class="iw-day ${tk?'ok':''}" id="iwd-${d}"><div class="iw-dh"><b>${esc(DAYN[r.di])} ${fromIso(d).getDate()} ${MON[fromIso(d).getMonth()]}</b><span class="iw-dt">${money(dayTotal(v))}</span></div>
+     ${ans.pay==='b'?seg('t',[['p','Parcels'],['h','Hourly']]):''}`;
+    if(!H){h+=`<div class="iw-g">${inp('pc','Parcels',a&&a.pc!=null?'From Driver Results':'No count found. Type it in.')}
+       <div class="iw-f"><span>Loads</span>${seg('ld',[[1,'1 load',money(cfg.r1)],[2,'2 loads',money(cfg.r2)]])}<small>${a&&a.tlSet?(me?'You said ':'Said ')+(a.tl?'2 loads':'1 load')+' at finish':'Pick 1 or 2 loads'}</small></div>
+       ${inp('xp','Extra parcels',money(xr(v.ld))+' each'+(a&&a.xp!=null?', from '+your+' timesheet':''))}</div>`}
+    else{h+=`<p class="iw-src">${a&&a.st&&a.fi?'Timesheet: '+esc(fmtT(a.st))+' to '+esc(fmtT(a.fi))+(a.br?', '+a.br+' min break':'')+' = '+fmtH(a.hrs):'No times in the timesheet for this day. Type the hours.'}</p>
+       <div class="iw-g">${inp('hr','Hours','e.g. 7.5 is 7 and a half hours','0.25')}${inp('rh','Rate, $ an hour',num(v.rh)!==num(ans.rh)?'Different from '+your+' usual '+money(ans.rh):'','0.01')}</div>`}
+    h+=`<div class="iw-foot"><label class="iw-tick"><input type="checkbox" data-imt="${d}" ${tk?'checked':''}><span>This day is right</span></label><button type="button" class="lk" data-im="rm" data-v="${d}">${me?'I did not work this day':'Take this day off'}</button></div></div>`}
+  h+=`<div class="iw-add">${addOpen?`<label class="f"><span>Which day?</span><input type="date" id="im_addd" min="${esc(from)}" max="${esc(to)}"></label><button type="button" class="lk" data-im="addx">Cancel</button>`:`<button type="button" class="sh-btn" data-im="addday">+ Add a day ${me?'I':'they'} worked</button>`}</div>
+   ${off.length?`<p class="sub">Taken off this invoice: ${off.map(d=>`${esc(short(d))} <button type="button" class="lk il" data-im="back1" data-v="${d}">Put back</button>`).join(', ')}</p>`:''}</div>`;
+  /* extra work */
+  h+=`<div class="iw-sec"><h3>Extra work</h3><p class="sub">Only if the boss asked ${me?'you':esc(you)} to do extra work for a set amount, like $300 for the day. Say what it was for.</p>
+   ${extras.map((x,i)=>{const bad=num(x.amt)>0&&!String(x.why||'').trim();return `<div class="iw-x ${bad?'bad':''}"><div class="iw-g"><label class="iw-f"><span>Day</span><input type="date" data-imx="${i}" data-k="d" value="${esc(x.d||'')}"></label><label class="iw-f"><span>Amount, $</span><input type="number" inputmode="decimal" min="0" step="0.01" data-imx="${i}" data-k="amt" value="${esc(x.amt)}"></label></div>
+     <label class="iw-f"><span>What was it for?</span><input data-imx="${i}" data-k="why" value="${esc(x.why||'')}" placeholder="e.g. Helped at the depot all day"></label>${bad?'<small class="iw-bad">Say what it was for.</small>':''}<button type="button" class="lk" data-im="xrm" data-v="${i}">Remove</button></div>`}).join('')}
+   <button type="button" class="sh-btn" data-im="xadd">+ Add extra work</button></div>`;
+  /* details on the invoice */
+  const miss=['abn','bsb','acctNo'].filter(k=>!String(cfg[k]||'').trim());
+  h+=`<details class="cfg iw-det" ${showCfg||miss.length||!String(invNo||'').trim()?'open':''}><summary>${me?'Your details on the invoice':esc(your)+' details on the invoice'} <small>${miss.length?'<b class="iw-bad">Missing: '+miss.map(k=>({abn:'ABN',bsb:'BSB',acctNo:'account number'})[k]).join(', ')+'</b>':'ABN '+esc(cfg.abn)+' · Invoice no. '+esc(invNo)}</small></summary>
+   <div class="grid"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
+    ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
+    ${me?'':[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel adds ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
+   </div><p class="sub">${last?`Last invoice${last.no?' number '+esc(last.no):''}: ${esc(nice(last.from))}${last.to?' to '+esc(nice(last.to)):''}, ${money(last.T?last.T.total:last.total)}.`:(me?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p>
+   <div class="acts"><button type="button" class="sh-btn" data-im="savecfg">Save details for next time</button></div></details>`;
+  /* totals */
+  const line=(l,q,r,amt)=>amt?`<div><span>${l}${q!==''?` <small>${q} × ${money(r)}</small>`:''}</span><b>${money(amt)}</b></div>`:'';
+  const hrs={};for(const r of R)if(r.v.t==='h'&&num(r.v.hr)){const k=num(r.v.rh).toFixed(2);hrs[k]=(hrs[k]||0)+num(r.v.hr)}
+  h+=`<div class="iw-sum">${line('Parcels, 1 load',T.l1,lr(1),T.l1*lr(1))}${line('Parcels, 2 loads',T.l2,lr(2),T.l2*lr(2))}${line('Extra parcels, 1 load days',T.xp1,xr(1),T.xp1*xr(1))}${line('Extra parcels, 2 load days',T.xp2,xr(2),T.xp2*xr(2))}
+    ${Object.entries(hrs).map(([rt,q])=>line('Hours',Math.round(q*100)/100,+rt,q*rt)).join('')}${line('Extra work','',0,T.ex)}
+    ${cfg.gst?`<div class="iw-st"><span>Subtotal (ex GST)</span><b>${money(T.sub)}</b></div><div><span>GST 10%</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div></div>`;
+  const left=[];if(!R.length&&!extras.some(x=>num(x.amt)))left.push('There is nothing to invoice yet');if(R.length&&nT<R.length)left.push('Tick '+(R.length-nT)+' more day'+(R.length-nT===1?'':'s'));
+  if(extras.some(x=>num(x.amt)>0&&!String(x.why||'').trim()))left.push('Say what the extra work was for');if(R.some(r=>r.v.t==='h'&&num(r.v.hr)&&!num(r.v.rh)))left.push('Add the hourly rate');if(!String(invNo||'').trim())left.push('Add an invoice number in the details below');
+  const prev=logs[logId(sid,from)],locked=me&&prev&&(prev.status||'submitted')!=='submitted';const ok=!left.length&&!locked;
+  h+=`${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${prev?`<p class="subd">Already sent for these dates${prev.submittedAt||prev.at?' on '+esc(nice(String(prev.submittedAt||prev.at).slice(0,10))):''} (${esc(STAT[prev.status]||'Submitted')}).${locked?'':' Sending again replaces it.'}</p>`:''}
+   ${ok||!left.length?'':`<p class="iw-left">${esc(left.join('. '))}.</p>`}
+   <div class="acts iw-acts"><button type="button" class="sh-btn primary" data-im="submit" ${busy||!ok?'disabled':''}>${prev?'Send again':me?'Send my invoice to the office':'Submit invoice'}</button><button type="button" class="sh-btn" data-im="pdf" ${busy||left.length?'disabled':''}>Download PDF</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">'+(me?'See my invoices':'See submitted invoices')+'</button>':''}</div></section>`;
   return h;
 }
 let lastToast=null;
 function toast(){if(!msg||msg===lastToast)return;lastToast=msg;let t=document.getElementById('im_toast');if(!t){t=document.createElement('div');t.id='im_toast';t.setAttribute('role','status');document.body.appendChild(t)}
   t.textContent=msg.t;t.className=msg.err?'err show':'show';clearTimeout(t._h);t._h=setTimeout(()=>{t.className=t.className.replace(' show','')},4500)}
-function paint(){toast();const box=document.getElementById('im_root');if(!box)return;const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
-  box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
-function pick(id){sid=id;ov={};ticks={};msg=null;const p=staff[id]||{};cfg=mergeCfg(id);invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();showCfg=!cfgs[id]&&!mes[id];need();paint()}
+function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);const pos=a&&a.selectionStart;
+  box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
+let pickedFor='';
+function pick(id){sid=id;pickedFor=id;msg=null;cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
+  invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
+function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
 /* ---------- files ---------- */
 function loadScript(src,test){return new Promise((ok,no)=>{if(test())return ok();const e=document.createElement('script');e.src=src;e.onload=()=>ok();e.onerror=()=>no();document.head.appendChild(e)})}
@@ -11604,9 +11737,11 @@ async function save(blob,name){const dl=window.__UVDL||((window.__UVDL||(window.
 const fname=(inv,ext)=>`Invoice ${inv.no||''} ${inv.name} ${inv.from} to ${inv.to}.${ext}`.replace(/\s+/g,' ');
 const logId=(s,f)=>s+'_'+f;
 /* a full copy of the invoice as it stands, so it can be printed again later exactly the same */
-function snap(){const R=rows(),T=totals(R);let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;const p=P();
-  return{sid,name:nameOf(p),run:(p.runs||[]).filter(Boolean).join(', '),no:invNo,date:invDate,from,to,cfg:{...cfg},
-    rows:R.filter(r=>['l1','l2','xp','hr'].some(k=>num(r.v[k]))).map(r=>({d:r.d,wk:r.wk,di:r.di,l1:num(r.v.l1),l2:num(r.v.l2),xp:num(r.v.xp),hr:num(r.v.hr),worked:r.auto&&r.auto.hrs||0,said:r.auto&&r.auto.tlSet?(r.auto.tl?2:1):0})),
+function snap(){syncCfg();const R=rows(),T=totals(R);let worked=0;for(const r of R)if(r.auto&&r.auto.hrs)worked+=r.auto.hrs;const p=P();
+  return{v:2,sid,name:nameOf(p),run:(p.runs||[]).filter(Boolean).join(', '),no:invNo,date:invDate,from,to,cfg:{...cfg,pay:ans.pay||'p',rh:num(ans.rh)},
+    rows:R.map(r=>{const v=r.v,H=v.t==='h',ld=+v.ld===2?2:1;return{d:r.d,wk:r.wk,di:r.di,t:H?'h':'p',ld:H?0:ld,pc:H?0:num(v.pc),xp:H?0:num(v.xp),hr:H?num(v.hr):0,rh:H?num(v.rh):0,
+      l1:!H&&ld===1?num(v.pc):0,l2:!H&&ld===2?num(v.pc):0,amt:Math.round(dayTotal(v)*100)/100,worked:r.auto&&r.auto.hrs||0,said:r.auto&&r.auto.tlSet?(r.auto.tl?2:1):0}}),
+    extras:extras.filter(x=>num(x.amt)>0).map(x=>({d:x.d||'',amt:num(x.amt),why:String(x.why||'').trim()})),
     T,worked:Math.round(worked*100)/100}}
 async function buildXlsx(inv){
   await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>window.JSZip);const c=inv.cfg;
@@ -11629,7 +11764,53 @@ async function buildXlsx(inv){
   let wb=await zip.file('xl/workbook.xml').async('string');wb=wb.replace(/<calcPr([^>]*?)\/>/,(m,a)=>'<calcPr'+a.replace(/ fullCalcOnLoad="[^"]*"/,'')+' fullCalcOnLoad="1"/>');zip.file('xl/workbook.xml',wb);
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
 const C={INK:[22,30,45],MUT:[96,108,124],LINE:[214,220,228],NAVY:[19,33,58],SOFT:[244,246,249]};
-function drawInvoice(doc,inv){
+function drawInvoice(doc,inv){return inv&&inv.v===2?drawInvoice2(doc,inv):drawInvoice1(doc,inv)}
+/* the invoice made by the step by step maker: parcel days and hourly days, each hourly day with its own rate, and extra work with the reason */
+function drawInvoice2(doc,inv){
+  const W=210,M=14,{INK,MUT,LINE,NAVY,SOFT}=C,c=inv.cfg,T=inv.T,R=inv.rows||[],X=inv.extras||[];
+  const r1=num(c.r1),r2=num(c.r2),rx=num(c.rx),lrt=ld=>ld===2?r2:r1;
+  doc.setFillColor(...NAVY);doc.rect(0,0,W,24,'F');doc.setFillColor(233,177,10);doc.rect(0,24,W,1.2,'F');
+  doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(c.gst?'TAX INVOICE':'INVOICE',M,15);
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.text('SUBCONTRACTOR DELIVERY SERVICES',W-M,15,{align:'right'});
+  let y=33;const col=(x,yy,title,lines)=>{doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text(title,x,yy);let k=yy+4.6;doc.setFont('helvetica','normal');doc.setFontSize(8.8);doc.setTextColor(...INK);for(const[l,v]of lines){if(l){doc.setTextColor(...MUT);doc.text(l,x,k);doc.setTextColor(...INK);doc.text(String(v||''),x+24,k)}else doc.text(String(v||''),x,k);k+=4.3}return k};
+  const y1=col(M,y,'FROM (SUBCONTRACTOR)',[['Name',inv.name],['ABN',c.abn],['Address',c.address],['Phone',c.phone],['Email',c.email]]);
+  const y2=col(115,y,'INVOICE DETAILS',[['Invoice No.',inv.no],['Invoice Date',nice(inv.date)],['Period From',nice(inv.from)],['Period To',nice(inv.to)]]);
+  y=Math.max(y1,y2)+3;
+  const y3=col(M,y,'PAYMENT DETAILS',[['Account',c.acct],['BSB',c.bsb],['Account No.',c.acctNo]]);
+  const y4=col(115,y,'BILL TO',[['','Preston Delivery Service Pty Ltd'],['','7/10 Ivan Street, Arundel QLD 4214'],['','Ph 0424 512 661'],['','ABN 56 109 175 046']]);
+  y=Math.max(y3,y4)+3;
+  /* summary lines, worked out first so the day rows can shrink to keep it on one page */
+  const S=[];if(T.l1)S.push(['Parcels, 1 load',T.l1,r1]);if(T.l2)S.push(['Parcels, 2 loads',T.l2,r2]);if(T.xp1)S.push(['Extra parcels, 1 load days',T.xp1,r1+rx]);if(T.xp2)S.push(['Extra parcels, 2 load days',T.xp2,r2+rx]);
+  const hg={};for(const r of R)if(r.t==='h'&&num(r.hr)){const k=num(r.rh).toFixed(2);hg[k]=(hg[k]||0)+num(r.hr)}for(const[k,q]of Object.entries(hg))S.push(['Hours at '+money(+k),Math.round(q*100)/100,+k]);
+  if(T.ex)S.push(['Extra work','',T.ex]);
+  const wks=[...new Set(R.map(r=>r.wk))];
+  const sumH=10+S.length*4.8+(c.gst?11:0)+14+(c.gst?0:6)+8;
+  const xH=X.length?7+X.length*4.6:0;
+  const rh=Math.max(3.5,Math.min(5,(286-y-13-sumH-xH)/Math.max(1,R.length+wks.length)));const fs=rh<4.2?7.4:8.4;
+  const cx={day:M+2,pc:84,ld:100,xp:122,hr:142,rt:166,tot:W-M-2};
+  doc.setFillColor(...NAVY);doc.rect(M,y,W-2*M,6.5,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(7.2);
+  doc.text('DAY',cx.day,y+4.4);[['PARCELS','pc'],['LOAD','ld'],['EXTRA','xp'],['HOURS','hr'],['$ / HOUR','rt'],['DAY TOTAL','tot']].forEach(([t,k])=>doc.text(t,cx[k],y+4.4,{align:'right'}));y+=6.5;
+  const fq=n=>String(Math.round(num(n)*100)/100);
+  let wk=-1;const flush=w=>{if(w<0)return;const L=R.filter(r=>r.wk===w);const t={pc:0,xp:0,hr:0,s:0};for(const r of L){t.pc+=num(r.pc);t.xp+=num(r.xp);t.hr+=num(r.hr);t.s+=num(r.amt)}
+    doc.setFillColor(...SOFT);doc.rect(M,y,W-2*M,rh,'F');doc.setFont('helvetica','bold');doc.setFontSize(fs);doc.setTextColor(...INK);doc.text('Week '+(w+1)+' total',cx.day,y+rh*.72);
+    if(t.pc)doc.text(fq(t.pc),cx.pc,y+rh*.72,{align:'right'});if(t.xp)doc.text(fq(t.xp),cx.xp,y+rh*.72,{align:'right'});if(t.hr)doc.text(fq(t.hr),cx.hr,y+rh*.72,{align:'right'});doc.text(money(t.s),cx.tot,y+rh*.72,{align:'right'});doc.setFont('helvetica','normal');y+=rh+.8};
+  doc.setFont('helvetica','normal');doc.setFontSize(fs);
+  for(const r of R){if(r.wk!==wk){flush(wk);wk=r.wk}doc.setTextColor(...INK);const b=y+rh*.72;doc.text(DAYN[r.di]+'  '+fromIso(r.d).getDate()+' '+MON[fromIso(r.d).getMonth()],cx.day,b);
+    if(r.t==='h'){if(num(r.hr))doc.text(fq(r.hr),cx.hr,b,{align:'right'});doc.text(money(r.rh),cx.rt,b,{align:'right'})}
+    else{if(num(r.pc))doc.text(fq(r.pc),cx.pc,b,{align:'right'});doc.text(r.ld===2?'2 loads':'1 load',cx.ld,b,{align:'right'});if(num(r.xp))doc.text(fq(r.xp),cx.xp,b,{align:'right'})}
+    doc.text(money(r.amt),cx.tot,b,{align:'right'});doc.setDrawColor(...LINE);doc.setLineWidth(.15);doc.line(M,y+rh,W-M,y+rh);y+=rh}
+  flush(wk);y+=3;
+  if(X.length){doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('EXTRA WORK',M,y+3);y+=5;doc.setFont('helvetica','normal');doc.setFontSize(8.4);
+    for(const x of X){doc.setTextColor(...INK);const t=(x.d?short(x.d)+'   ':'')+x.why;doc.text(doc.splitTextToSize(t,W-2*M-36)[0],M+2,y+3.2);doc.text(money(x.amt),cx.tot,y+3.2,{align:'right'});doc.setDrawColor(...LINE);doc.line(M,y+4.6,W-M,y+4.6);y+=4.6}y+=2}
+  const sx=100;doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('SUMMARY',sx,y+3);y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.4);
+  for(const[l,q,rt]of S){doc.setTextColor(...INK);doc.text(l,sx,y);if(q!==''){doc.text(String(q),sx+58,y,{align:'right'});doc.text(money(rt),sx+76,y,{align:'right'});doc.text(money(q*rt),W-M-2,y,{align:'right'})}else doc.text(money(rt),W-M-2,y,{align:'right'});y+=4.8}
+  doc.setDrawColor(...LINE);doc.line(sx,y-2.6,W-M,y-2.6);y+=2;
+  if(c.gst){doc.setFontSize(9);doc.text('Subtotal (ex GST)',sx,y);doc.text(money(T.sub),W-M-2,y,{align:'right'});y+=5.3;doc.text('GST (10%)',sx,y);doc.text(money(T.gst),W-M-2,y,{align:'right'});y+=5.3}
+  doc.setFillColor(...NAVY);doc.rect(sx-3,y-5,W-M-sx+3,9,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.text(c.gst?'TOTAL DUE (inc GST)':'TOTAL DUE',sx,y+1);doc.text(money(T.total),W-M-2,y+1,{align:'right'});y+=11;
+  if(!c.gst){doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...MUT);doc.text('No GST has been charged as the supplier is not registered for GST.',M,y);y+=5}
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...MUT);doc.text('Thank you for your services!',W/2,Math.min(Math.max(y+5,250),290),{align:'center'})}
+function drawInvoice1(doc,inv){
   const W=210,M=14,{INK,MUT,LINE,NAVY,SOFT}=C,c=inv.cfg,T=inv.T,R=inv.rows;
   doc.setFillColor(...NAVY);doc.rect(0,0,W,24,'F');doc.setFillColor(233,177,10);doc.rect(0,24,W,1.2,'F');
   doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text(c.gst?'TAX INVOICE':'INVOICE',M,15);
@@ -11691,7 +11872,7 @@ async function saveCfg(){const me2={};for(const k of MEK)me2[k]=cfg[k]||'';me2.a
   if(role==='drv'){if(!(cfgs[sid]&&cfgs[sid].gst!==undefined))me2.gst=!!cfg.gst;await db.doc('invme/'+sid).set(me2);mes[sid]=me2;return}
   const rc={};for(const k of RATEK)rc[k]=cfg[k];await db.doc('invcfg/'+sid).set(rc);cfgs[sid]=rc;await db.doc('invme/'+sid).set(me2);mes[sid]=me2}
 async function submit(){
-  const inv=snap();if(!inv.rows.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
+  const inv=snap();if(!inv.rows.length&&!inv.extras.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
   if(!invNo.trim()){msg={err:true,t:'Add an invoice number first.'};paint();return}
   busy=true;msg={t:'Submitting…'};paint();
   const id=logId(sid,from);const prev=logs[id];
@@ -11720,6 +11901,20 @@ function myListHTML(){
 /* Check a submitted invoice against the office rates and the day records. Anything that doesn't line up is shown in yellow. */
 let histFor='';
 function checkInv(x){
+  if(x&&x.v===2&&x.rows&&x.T){const out=[],oc=officeRates(x.sid),xc=x.cfg||{},ic=cfgs[x.sid]||{};
+    if(['r1','r2','rx'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001))out.push('parcel rates are different from the set rates');
+    if(ic.gst!==undefined&&!!ic.gst!==!!xc.gst)out.push(xc.gst?'charged GST but is set as not registered':'no GST but is set as registered');
+    if(ic.hourly&&+ic.rh>0&&x.rows.some(r=>r.t==='h'&&Math.abs(num(r.rh)-num(ic.rh))>0.001))out.push('hourly rate is different from '+money(ic.rh));
+    const lrt=ld=>ld===2?oc.r2:oc.r1;let sub=0;for(const r of x.rows)sub+=r.t==='h'?num(r.hr)*num(r.rh):num(r.pc)*lrt(r.ld)+num(r.xp)*(lrt(r.ld)+oc.rx);for(const e of x.extras||[])sub+=num(e.amt);
+    sub=Math.round(sub*100)/100;const tot=Math.round((sub+(xc.gst?Math.round(sub*10)/100:0))*100)/100;if(Math.abs(num(x.T.total)-tot)>0.01)out.push('at the set rates the total would be '+money(tot));
+    if((x.extras||[]).length)out.push('extra work '+money((x.extras||[]).reduce((a,e)=>a+num(e.amt),0))+': '+(x.extras||[]).map(e=>e.why).join('; '));
+    const keep=sid,ds=[];sid=x.sid;
+    try{for(const r of x.rows){const a=dayData(r.d);if(!a)continue;let off=false;
+      if(r.t==='h'){if(a.hrs!=null&&Math.abs(num(r.hr)-a.hrs)>0.01)off=true}
+      else{if(a.pc!=null&&num(r.pc)!==a.pc)off=true;if(a.xp!=null&&num(r.xp)!==num(a.xp))off=true;if(a.tlSet&&(r.ld===2)!==!!a.tl)off=true}
+      if(off)ds.push(nice(r.d))}}catch(e){}finally{sid=keep}
+    if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
+    return out}
   const out=[];if(!x||!x.rows||!x.T)return out;
   const oc=mergeCfg(x.sid),xc=x.cfg||{};
   if(['r1','r2','rx','rh'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001)||!!xc.gst!==!!oc.gst||!!xc.hourly!==!!oc.hourly)out.push('rates are different from the rates set for this driver');
@@ -11774,21 +11969,34 @@ async function exportSum(){if(typeof XLSX==='undefined')await window.loadXLSX();
   for(const x of L){const T=x.T||{};aoa.push([x.name,x.run||'',x.no,x.date,x.from,x.to,T.l1||0,T.l2||0,T.xp||0,T.hr||0,x.worked||0,T.sub||0,T.gst||0,T.total||x.total||0,STAT[x.status]||'Submitted'])}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[22,10,10,11,11,11,10,10,10,9,10,11,9,11,10].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Invoices');
   const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});save(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Invoice summary ${lper} to ${add(lper,25)}.xlsx`).then(()=>{msg={t:'Summary saved.'};paint()}).catch(()=>{})}
-function openLog(id){const x=logs[id];if(!x)return;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;const p=staff[sid]||{};cfg={...DEFC,phone:p.mobile||'',email:p.email||'',...(cfgs[sid]||{}),...(x.cfg||{})};
-  ov={};ticks={};for(const r of x.rows||[]){ov[r.d]={l1:r.l1||'',l2:r.l2||'',xp:r.xp||'',hr:r.hr||''};ticks[r.d]=true}showCfg=false;msg={t:'Opened the submitted invoice. Change anything, then submit again to replace it.'};need();setView('make')}
+function openLog(id){const x=logs[id];if(!x)return;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;cfg=mergeCfg(sid);
+  for(const k of MEK)if(x.cfg&&x.cfg[k]!==undefined)cfg[k]=x.cfg[k];
+  const xc=x.cfg||{};ans={gst:!!xc.gst,pay:xc.pay||(xc.hourly?'h':'p'),rh:+xc.rh>0?+xc.rh:''};syncCfg();asked=true;step='days';addOpen=false;
+  ov={};ticks={};for(const r of x.rows||[]){if(x.v===2)ov[r.d]={add:true,t:r.t,pc:r.t==='h'?'':r.pc,ld:r.ld||1,xp:r.t==='h'?'':(r.xp||''),hr:r.t==='h'?r.hr:'',rh:r.t==='h'?r.rh:(ans.rh||'')};
+    else{const H=num(r.hr)>0;ov[r.d]={add:true,t:H?'h':'p',pc:H?'':(num(r.l1)||num(r.l2)),ld:num(r.l2)?2:1,xp:r.xp||'',hr:H?r.hr:'',rh:H?num(xc.rh):''}}ticks[r.d]=true}
+  extras=(x.extras||[]).map(e=>({...e}));showCfg=false;msg={t:'Opened the sent invoice. Change anything, then send it again to replace it.'};need();setView('make')}
 function setView(v){view=v;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?(role==='drv'?'mine':'sub'):'make');else paint()}
 
 /* ---------- events ---------- */
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
+function iwTop(){const n=document.querySelector('#im_root .iw');if(n){const y=n.getBoundingClientRect().top+window.scrollY-70;window.scrollTo(0,Math.max(0,y))}}
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]');if(!inMe(el))return;const a=el.dataset.im,v=el.dataset.v;
-  if(a==='per'){[from,to]=period(+v);ov={};ticks={};need();msg=null;paint();return}
-  if(a==='c'){cfg[el.dataset.k]=v==='1';ov={};paint();return}
-  if(a==='savecfg'){try{await saveCfg();msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
-  if(a==='undo'){delete ov[v];delete ticks[v];paint();return}
-  if(a==='swap'){const r=rows().find(x=>x.d===v);if(r){ov[v]={...r.v,l1:r.v.l2,l2:r.v.l1};ticks[v]=true}paint();return}
-  if(a==='tickall'){for(const r of rows())if(num(r.v.l1)||num(r.v.l2))ticks[r.d]=true;paint();return}
+  if(a==='ans'){asked=true;const k=el.dataset.k;if(k==='gst'){ans.gst=v==='1';step='pay'}else if(k==='pay'){ans.pay=v;step=v==='p'?'days':'rate'}saveAns();msg=null;paint();iwTop();return}
+  if(a==='rateok'){if(num(ans.rh)>0){step='days';saveAns();paint();iwTop()}return}
+  if(a==='back'){step=step==='rate'?'pay':'gst';paint();return}
+  if(a==='chg'){asked=true;step='gst';paint();iwTop();return}
+  if(a==='per'){const[x,y]=period(+v);setPeriod(x,y);return}
+  if(a==='dset'){const d=el.dataset.d,k=el.dataset.k;ov[d]={...(ov[d]||{}),[k]:k==='ld'?+v:v};paint();return}
+  if(a==='rm'){ov[v]={...(ov[v]||{}),off:true};delete ticks[v];paint();return}
+  if(a==='back1'){if(ov[v]){delete ov[v].off;if(!Object.keys(ov[v]).length)delete ov[v]}paint();return}
+  if(a==='addday'){addOpen=true;paint();const n=document.getElementById('im_addd');if(n)n.focus();return}
+  if(a==='addx'){addOpen=false;paint();return}
+  if(a==='xadd'){extras.push({d:'',amt:'',why:''});paint();const n=document.querySelector(`#im_root [data-imx="${extras.length-1}"][data-k="amt"]`);if(n)n.focus();return}
+  if(a==='xrm'){extras.splice(+v,1);paint();return}
+  if(a==='savecfg'){try{syncCfg();await saveCfg();msg={t:'Details saved for next time.'};showCfg=false}catch(x){msg={err:true,t:'Could not save just now.'}}paint();return}
   if(a==='submit'){submit();return}
-  if(a==='xlsx'||a==='pdf'){dlOne(snap(),a,el);return}
+  if(a==='pdf'){dlOne(snap(),'pdf',el);return}
+  if(a==='xlsx'){dlOne(snap(),'xlsx',el);return}
   if(a==='golist'){msg=null;lper=from;setView('list');return}
   if(a==='lf'){lf=v;paint();return}
   if(a==='pall'){printAll(el);return}
@@ -11801,18 +12009,22 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
 });
 document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_sid'){if(t.value)pick(t.value);else{sid='';paint()}return}
-  if(t.id==='im_from'){from=t.value;ov={};ticks={};need();paint();return}
-  if(t.id==='im_to'){to=t.value;ov={};ticks={};need();paint();return}
-  if(t.id==='im_date'){invDate=t.value||TODAY;return}
-  if(t.id==='im_lper'){lper=t.value;paint();return}
+  if(t.id==='im_from'){if(t.value)setPeriod(t.value,to);return}
+  if(t.id==='im_to'){if(t.value)setPeriod(from,t.value);return}
+  if(t.id==='im_date'){invDate=t.value||TODAY;saveDraft();return}
+  if(t.id==='im_no'){paint();return}
+  if(t.id==='im_addd'){const d=t.value;if(d&&d>=from&&d<=to){if(fromIso(d).getDay()===0){msg={err:true,t:'Sundays are not work days.'};paint();return}const o={...(ov[d]||{})};delete o.off;o.add=true;ov[d]=o;addOpen=false;paint();const n=document.getElementById('iwd-'+d);if(n)n.scrollIntoView({block:'center'})}else if(d){msg={err:true,t:'Pick a day between '+nice(from)+' and '+nice(to)+'.'};paint()}return}
+  if(t.dataset.imx&&t.dataset.k==='why'){paint();return}
   if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
-  if(t.id==='im_no'){invNo=t.value;return}
-  if(t.dataset.imc){const k=t.dataset.imc;cfg[k]=['r1','r2','rx','rh'].includes(k)?(t.value===''?'':+t.value):t.value;if(['r1','r2','rx','rh'].includes(k))paint();return}
-  if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;const cur=rows().find(r=>r.d===d);const base=cur?{...cur.v}:{l1:'',l2:'',xp:'',hr:''};ov[d]={...base,...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
-document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('cfg')&&inMe(e.target))showCfg=e.target.open},true);
+  if(t.id==='im_no'){invNo=t.value;saveDraft();return}
+  if(t.id==='im_rh'){ans.rh=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="rateok"]');if(b)b.disabled=!(num(ans.rh)>0);return}
+  if(t.dataset.imc){const k=t.dataset.imc;cfg[k]=['r1','r2','rx','rh'].includes(k)?(t.value===''?'':+t.value):t.value;if(['r1','r2','rx'].includes(k))paint();return}
+  if(t.dataset.imx){const i=+t.dataset.imx,k=t.dataset.k;if(!extras[i])return;extras[i][k]=k==='amt'?(t.value===''?'':+t.value):t.value;if(k==='why'){saveDraft();return}paint();return}
+  if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;ov[d]={...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
+document.addEventListener('toggle',e=>{if(e.target.classList&&e.target.classList.contains('iw-det')&&inMe(e.target))showCfg=e.target.open},true);
 
-window.INVMAKE={pay:payFor,async mount(v,r){view=v||'make';await init(r);if(role==='drv'&&sid&&!cfg){cfg=mergeCfg(sid)}need();paint()}};
+window.INVMAKE={pay:payFor,async mount(v,r){view=v||'make';await init(r);if(role==='drv'&&sid&&pickedFor!==sid){pick(sid);return}need();paint()}};
 })();
 
 </script>
@@ -12172,7 +12384,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300400';
+const VERSION='202610300500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
