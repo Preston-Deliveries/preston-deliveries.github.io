@@ -9869,8 +9869,7 @@ function driverHTML(C,k){
   const bl=back&&back.s.t==='pc'?'Drivers in '+back.s.v:'Whole contract';
   return `<button type="button" class="sh-btn back smback" data-sm="back">‹ ${esc(bl)}</button><section class="card prof"><div class="ph"><h2>${esc(p.name)}</h2>${p.nos.map(x=>`<span class="dno">${esc(x)}</span>`).join('')}${p.pc?`<span class="pcb">${esc(p.pc)}</span>`:''}</div></section>`+
    tiles(a,[],PC?(PC.per[k]||blank()):null)+
-   `<section class="card"><h2>Day by day</h2>${days.length?`<div class="tw"><table class="tb ddt"><thead><tr><th>Day</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">2HR ETA</th><th class="r"><abbr title="Scan compliance">Scan</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th></tr></thead><tbody>
-    ${days.map(r=>`<tr><td>${esc(longD(r.date).replace(/ \d{4}$/,''))}</td><td class="r">${fmtN(r.pc)}</td><td class="r">${fsp(r.ftd)}</td><td class="r">${dot(grade('eta',r.eta))}${fmtPct(r.eta)}</td><td class="r">${r.cp==null||r.cp===''?'–':dot(grade('cp',+r.cp))+fmtPct(+r.cp)}</td><td class="r">${dot(grade('enq',epk(r.enq,r.pc)))}${+(r.enq||0)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No results for this driver in this period.</div>'}</section>`+
+   ''+
    (()=>{const cr=Object.values(S.compliance).filter(r=>r&&r.date>=C.R.from&&r.date<=C.R.to&&normName(r.name)===normName(p.name)).sort((x,y)=>x.date.localeCompare(y.date));if(!cr.length)return '';const hm=m=>m==null?'':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
     return `<section class="card"><h2>Start and finish</h2><div class="tw"><table class="tb stk"><thead><tr><th>Day</th><th>Start</th><th>Finish</th><th class="r">Hours</th><th class="r">Km</th><th>2 loads</th><th class="r">Extra</th><th>Issues</th></tr></thead><tbody>${cr.map(r=>{const st=r.start||{},f=r.finish||{},h=st.min!=null&&f.min!=null&&f.min>st.min?((f.min-st.min)/60).toFixed(1):'',k=st.odo!=null&&f.odo!=null?f.odo-st.odo:'';const is=[st.safe==='No'?'Not roadworthy':'',f.faults==='Yes'?'New fault':'',f.left==='Yes'?'Parcels left in van':'',st.own==='No'?'Other vehicle '+(st.rego||''):''].filter(Boolean).join(', ');return `<tr><td>${esc(longD(r.date))}</td><td>${st.min!=null?hm(st.min):'<b class="miss">Missing</b>'}</td><td>${f.min!=null?hm(f.min):'<b class="miss">Missing</b>'}</td><td class="r">${h}</td><td class="r">${k}</td><td>${esc(f.two||'')}</td><td class="r">${f.extra||''}</td><td>${esc(is)}</td></tr>`}).join('')}</tbody></table></div></section>`})()+
    (()=>{const L=a.shifts.slice().sort((x,y)=>y.date.localeCompare(x.date));
@@ -11542,7 +11541,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281620';
+const VERSION='202610281630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
