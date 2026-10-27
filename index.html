@@ -11596,7 +11596,7 @@ function dayData(date){
 }
 /* the answers: GST, how they are paid, their hourly rate. Remembered from the last invoice and on this phone. */
 const lr=ld=>+ld===2?num(cfg.r2):num(cfg.r1);
-const xr=ld=>lr(ld)+num(cfg.rx);
+const xr=ld=>num(cfg.rx);
 function dayTotal(v){return v.t==='h'?num(v.hr)*num(v.rh):num(v.pc)*lr(v.ld)+num(v.xp)*xr(v.ld)}
 function knownAns(id){const s=lsGet('im_ans_'+id),l=lastCfg(id);return !!((s&&s.pay)||(l&&l.pay))}
 function loadAns(id){const ic=cfgs[id]||{},im=mes[id]||{},a={gst:null,pay:null,rh:''};
@@ -11678,7 +11678,7 @@ function html(){
      ${ans.pay==='b'?seg('t',[['p','Parcels'],['h','Hourly']]):''}`;
     if(!H){h+=`<div class="iw-g">${inp('pc','Parcels',a&&a.pc!=null?'From Driver Results':'No count found. Type it in.')}
        <div class="iw-f"><span>Loads</span>${seg('ld',[[1,'1 load',money(cfg.r1)],[2,'2 loads',money(cfg.r2)]])}<small>${a&&a.tlSet?(me?'You said ':'Said ')+(a.tl?'2 loads':'1 load')+' at finish':'Pick 1 or 2 loads'}</small></div>
-       ${inp('xp','Extra parcels',money(xr(v.ld))+' each'+(a&&a.xp!=null?', from '+your+' timesheet':''))}</div>`}
+       ${inp('xp','Extra parcels','Already in the parcels. Adds '+money(cfg.rx)+' each'+(a&&a.xp!=null?', from '+your+' timesheet':''))}</div>`}
     else{h+=`<p class="iw-src">${a&&a.st&&a.fi?'Timesheet: '+esc(fmtT(a.st))+' to '+esc(fmtT(a.fi))+(a.br?', '+a.br+' min break':'')+' = '+fmtH(a.hrs):'No times in the timesheet for this day. Type the hours.'}</p>
        <div class="iw-g">${inp('hr','Hours','e.g. 7.5 is 7 and a half hours','0.25')}${inp('rh','Rate, $ an hour',num(v.rh)!==num(ans.rh)?'Different from '+your+' usual '+money(ans.rh):'','0.01')}</div>`}
     h+=`<div class="iw-foot"><label class="iw-tick"><input type="checkbox" data-imt="${d}" ${tk?'checked':''}><span>This day is right</span></label><button type="button" class="lk" data-im="rm" data-v="${d}">${me?'I did not work this day':'Take this day off'}</button></div></div>`}
@@ -11694,13 +11694,13 @@ function html(){
   h+=`<details class="cfg iw-det" ${showCfg||miss.length||!String(invNo||'').trim()?'open':''}><summary>${me?'Your details on the invoice':esc(your)+' details on the invoice'} <small>${miss.length?'<b class="iw-bad">Missing: '+miss.map(k=>({abn:'ABN',bsb:'BSB',acctNo:'account number'})[k]).join(', ')+'</b>':'ABN '+esc(cfg.abn)+' · Invoice no. '+esc(invNo)}</small></summary>
    <div class="grid"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
     ${[['abn','ABN'],['phone','Phone'],['email','Email'],['address','Address'],['acct','Bank account name'],['bsb','BSB'],['acctNo','Account number']].map(([k,l])=>`<label class="f ${k==='address'?'wide':''}"><span>${l}</span><input data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
-    ${me?'':[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel adds ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
+    ${me?'':[['r1','1 load rate ($ a parcel)'],['r2','2 load rate ($ a parcel)'],['rx','Extra parcel adds on top ($)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.01" min="0" data-imc="${k}" value="${esc(cfg[k])}"></label>`).join('')}
    </div><p class="sub">${last?`Last invoice${last.no?' number '+esc(last.no):''}: ${esc(nice(last.from))}${last.to?' to '+esc(nice(last.to)):''}, ${money(last.T?last.T.total:last.total)}.`:(me?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p>
    <div class="acts"><button type="button" class="sh-btn" data-im="savecfg">Save details for next time</button></div></details>`;
   /* totals */
   const line=(l,q,r,amt)=>amt?`<div><span>${l}${q!==''?` <small>${q} × ${money(r)}</small>`:''}</span><b>${money(amt)}</b></div>`:'';
   const hrs={};for(const r of R)if(r.v.t==='h'&&num(r.v.hr)){const k=num(r.v.rh).toFixed(2);hrs[k]=(hrs[k]||0)+num(r.v.hr)}
-  h+=`<div class="iw-sum">${line('Parcels, 1 load',T.l1,lr(1),T.l1*lr(1))}${line('Parcels, 2 loads',T.l2,lr(2),T.l2*lr(2))}${line('Extra parcels, 1 load days',T.xp1,xr(1),T.xp1*xr(1))}${line('Extra parcels, 2 load days',T.xp2,xr(2),T.xp2*xr(2))}
+  h+=`<div class="iw-sum">${line('Parcels, 1 load',T.l1,lr(1),T.l1*lr(1))}${line('Parcels, 2 loads',T.l2,lr(2),T.l2*lr(2))}${line('Extra parcels, on top',T.xp,num(cfg.rx),T.xp*num(cfg.rx))}
     ${Object.entries(hrs).map(([rt,q])=>line('Hours',Math.round(q*100)/100,+rt,q*rt)).join('')}${line('Extra work','',0,T.ex)}
     ${cfg.gst?`<div class="iw-st"><span>Subtotal (ex GST)</span><b>${money(T.sub)}</b></div><div><span>GST 10%</span><b>${money(T.gst)}</b></div>`:''}<div class="tot"><span>Total${cfg.gst?' (inc GST)':''}</span><b>${money(T.total)}</b></div></div>`;
   const left=[];if(!R.length&&!extras.some(x=>num(x.amt)))left.push('There is nothing to invoice yet');if(R.length&&nT<R.length)left.push('Tick '+(R.length-nT)+' more day'+(R.length-nT===1?'':'s'));
@@ -11780,7 +11780,7 @@ function drawInvoice2(doc,inv){
   const y4=col(115,y,'BILL TO',[['','Preston Delivery Service Pty Ltd'],['','7/10 Ivan Street, Arundel QLD 4214'],['','Ph 0424 512 661'],['','ABN 56 109 175 046']]);
   y=Math.max(y3,y4)+3;
   /* summary lines, worked out first so the day rows can shrink to keep it on one page */
-  const S=[];if(T.l1)S.push(['Parcels, 1 load',T.l1,r1]);if(T.l2)S.push(['Parcels, 2 loads',T.l2,r2]);if(T.xp1)S.push(['Extra parcels, 1 load days',T.xp1,r1+rx]);if(T.xp2)S.push(['Extra parcels, 2 load days',T.xp2,r2+rx]);
+  const S=[];if(T.l1)S.push(['Parcels, 1 load',T.l1,r1]);if(T.l2)S.push(['Parcels, 2 loads',T.l2,r2]);if(T.xp)S.push(['Extra parcels, on top',T.xp,rx]);
   const hg={};for(const r of R)if(r.t==='h'&&num(r.hr)){const k=num(r.rh).toFixed(2);hg[k]=(hg[k]||0)+num(r.hr)}for(const[k,q]of Object.entries(hg))S.push(['Hours at '+money(+k),Math.round(q*100)/100,+k]);
   if(T.ex)S.push(['Extra work','',T.ex]);
   const wks=[...new Set(R.map(r=>r.wk))];
@@ -11905,7 +11905,7 @@ function checkInv(x){
     if(['r1','r2','rx'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001))out.push('parcel rates are different from the set rates');
     if(ic.gst!==undefined&&!!ic.gst!==!!xc.gst)out.push(xc.gst?'charged GST but is set as not registered':'no GST but is set as registered');
     if(ic.hourly&&+ic.rh>0&&x.rows.some(r=>r.t==='h'&&Math.abs(num(r.rh)-num(ic.rh))>0.001))out.push('hourly rate is different from '+money(ic.rh));
-    const lrt=ld=>ld===2?oc.r2:oc.r1;let sub=0;for(const r of x.rows)sub+=r.t==='h'?num(r.hr)*num(r.rh):num(r.pc)*lrt(r.ld)+num(r.xp)*(lrt(r.ld)+oc.rx);for(const e of x.extras||[])sub+=num(e.amt);
+    const lrt=ld=>ld===2?oc.r2:oc.r1;let sub=0;for(const r of x.rows)sub+=r.t==='h'?num(r.hr)*num(r.rh):num(r.pc)*lrt(r.ld)+num(r.xp)*oc.rx;for(const e of x.extras||[])sub+=num(e.amt);
     sub=Math.round(sub*100)/100;const tot=Math.round((sub+(xc.gst?Math.round(sub*10)/100:0))*100)/100;if(Math.abs(num(x.T.total)-tot)>0.01)out.push('at the set rates the total would be '+money(tot));
     if((x.extras||[]).length)out.push('extra work '+money((x.extras||[]).reduce((a,e)=>a+num(e.amt),0))+': '+(x.extras||[]).map(e=>e.why).join('; '));
     const keep=sid,ds=[];sid=x.sid;
@@ -12384,7 +12384,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300500';
+const VERSION='202610300600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
