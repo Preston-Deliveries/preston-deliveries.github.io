@@ -4588,6 +4588,10 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 :root:root #mod-results .rb-r.nr .rb-s b{color:var(--sh-muted)!important}
 #mod-results .rb-pic{display:flex!important;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px!important;min-height:46px}
 #mod-results .rb-pic svg,#mod-results .rb-pdf svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2}
+:root:root #mod-results .rb-r.kp .rk{background:#7C3AED!important;color:#fff!important}
+:root:root .rk b.rkp,:root:root .dh-week .rk b.rkp{color:#7C3AED!important}
+@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .rk b.rkp,:root:root:not([data-theme="light"]) .dh-week .rk b.rkp{color:#A78BFA!important}}
+:root:root[data-theme="dark"] .rk b.rkp,:root:root[data-theme="dark"] .dh-week .rk b.rkp{color:#A78BFA!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6557,8 +6561,9 @@ function bVals(r){
    ["Scan compliance",r.cp==null?"–":p1(r.cp),r.cp==null?"n":c(r.rt.nc)],
    ["Enquiries",(()=>{const f=Math.round(+r.enq||0),p=Math.round(+r.enqP||0);return p?`${f} + ${p} partly`:String(f)})(),(+r.enq||0)>0?"b":(+r.enqP||0)>0?"b":"gd"]];
 }
-/* place circle: gold, silver, bronze for the top 3, then green for a Contract Score of 96 or more, red under 96, grey if not qualified */
-function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";return (r.avg||0)>=96-1e-9?"kt":"kb"}
+/* place circle: gold, silver, bronze for the top 3, purple for 4th to 10th, then green for a Contract Score of 96 or more,
+   red under 96, grey if not qualified. Purple and green need 96 or more. */
+function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";const ok=(r.avg||0)>=96-1e-9;return ok&&r.rank<=10?"kp":ok?"kt":"kb"}
 const scTxt=r=>window.SCORE.fmt(r.avg||0);
 function mountBoard(box,rows){
   box.classList.remove("rt");
@@ -6597,7 +6602,7 @@ async function boardCanvas(rows){
   g.textAlign="center";[["PARCELS",""],["2 HR","ETA"],["SCAN","%"],["ENQUIRIES",""]].forEach(([a,b],i)=>{const cx=CX[i];g.fillText(a,cx,b?hy-22:hy);if(b)g.fillText(b,cx,hy)});
   g.textAlign="right";g.fillText("CONTRACT",X.sc,hy-22);g.fillText("SCORE",X.sc,hy);
   g.fillStyle=col.line;g.fillRect(M,HEAD+COLH-6,W-2*M,3);
-  const nR=rows.filter(r=>r.rank).length,RK={k1:"#D4A017",k2:"#9AA4B1",k3:"#B87333",kt:"#1E8A4C",kb:"#C62828",nr:"#7A8496","":"#5a6680"};
+  const nR=rows.filter(r=>r.rank).length,RK={k1:"#D4A017",k2:"#9AA4B1",k3:"#B87333",kp:"#7C3AED",kt:"#1E8A4C",kb:"#C62828",nr:"#7A8496","":"#5a6680"};
   rows.forEach((r,i)=>{const y=HEAD+COLH+i*RH;if(i%2)g.fillStyle=col.alt,g.fillRect(0,y,W,RH);
     const cy=y+RH/2;const k=rkClass(r,nR);
     g.fillStyle=RK[k]||RK[""];g.beginPath();g.arc(X.rk+26,cy,26,0,Math.PI*2);g.fill();
@@ -6613,7 +6618,7 @@ async function boardCanvas(rows){
   g.fillText(`2 hr ETA minus 1 per 1% below 100% (max 30).`,M,fy+30);
   g.fillText(`Scan compliance minus 1 per 0.5% below 100% (max 10).`,M,fy+60);
   g.fillText(`The score is the average of the days worked.${view==="day"?"":" A place needs "+NEED[view]+" days worked."}`,M,fy+90);
-  g.font=`700 22px ${F}`;g.fillStyle=col.g;g.fillText("Green: 96 or more",M,fy+130);g.fillStyle=col.b;g.fillText("Red: under 96",M+240,fy+130);g.fillStyle=col.n;g.fillText("Grey: not qualified",M+440,fy+130);
+  g.font=`700 22px ${F}`;g.fillStyle="#7C3AED";g.fillText("Purple: top 10",M,fy+130);g.fillStyle=col.g;g.fillText("Green: 96 or more",M+190,fy+130);g.fillStyle=col.b;g.fillText("Red: under 96",M+420,fy+130);g.fillStyle=col.n;g.fillText("Grey: not qualified",M+610,fy+130);
   return cv;
 }
 async function shareBoard(btn){
@@ -6642,7 +6647,7 @@ async function boardPdf(btn){
     doc.setFillColor(15,26,42);doc.rect(0,0,W,26,"F");doc.setFillColor(242,120,45);doc.rect(0,26,W,1.6,"F");
     doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  \u00b7  CONTRACT 1161",M,9);
     doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text("Driver results",M,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(perLabel(),M,23.5);
-    const nR=rows.filter(r=>r.rank).length,col={g:[30,138,76],gd:[30,138,76],b:[198,40,40],n:[138,148,166],pc:[20,33,58]},RK={k1:[212,160,23],k2:[154,164,177],k3:[184,115,51],kt:[30,138,76],kb:[198,40,40]};
+    const nR=rows.filter(r=>r.rank).length,col={g:[30,138,76],gd:[30,138,76],b:[198,40,40],n:[138,148,166],pc:[20,33,58]},RK={k1:[212,160,23],k2:[154,164,177],k3:[184,115,51],kp:[124,58,237],kt:[30,138,76],kb:[198,40,40]};
     const body=rows.map(r=>{const V=bVals(r);return [r.rank?String(r.rank):"\u2013",(r.name||r.login)+(r.rank?"":"  (not ranked, "+r.days+" day"+(r.days===1?"":"s")+")"),...V.map(v=>v[1]),scTxt(r)]});
     doc.autoTable({head:[["#","DRIVER","PARCELS","2 HR ETA","SCAN %","ENQUIRIES","CONTRACT SCORE"]],body,startY:top,margin:{left:M,right:M,bottom:bottom},theme:"plain",
       styles:{fontSize:fs,cellPadding:{top:(rh-fs*0.35)/2,bottom:(rh-fs*0.35)/2,left:1.5,right:1.5},textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2}},
@@ -8699,7 +8704,7 @@ function resultsRank(dates){
   const i=Q.findIndex(([k])=>k===mine);let rk=i+1;while(rk>1&&r1(Q[rk-2][1])===r1(Q[i][1])&&Q[rk-2][2]===Q[i][2])rk--;return{rank:rk,of:Q.length,days:dy[mine],need,pc:pp[mine],pn,avg};
 }
 /* place colours: 1st gold, 2nd silver, 3rd bronze, then green for a Contract Score of 96 or more, red under 96 */
-const rkc=r=>!r||r.rank==null?'':r.rank===1?'rk1':r.rank===2?'rk2':r.rank===3?'rk3':(r.avg||0)>=96-1e-9?'rkg':'rkb';
+const rkc=r=>!r||r.rank==null?'':r.rank===1?'rk1':r.rank===2?'rk2':r.rank===3?'rk3':(r.avg||0)>=96-1e-9?(r.rank<=10?'rkp':'rkg'):'rkb';
 const nrTxt=r=>r.days<r.need?`You worked ${r.days} day${r.days===1?'':'s'}. A place needs ${r.need} days${r.pn?' and '+r.pn.toLocaleString('en-AU')+' parcels':''}.`:`You delivered ${Math.round(r.pc||0).toLocaleString('en-AU')} parcels. A place needs ${(r.pn||0).toLocaleString('en-AU')}.`;
 /* the score out of 100 with the three counted parts underneath */
 function scoreHTML(x,rk,small){const S=window.SCORE;const sc=x&&x.sc;if(!sc)return '';const v=rk?rk.avg:sc.score;
@@ -12563,7 +12568,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303100';
+const VERSION='202610303200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
