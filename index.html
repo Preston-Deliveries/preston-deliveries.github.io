@@ -4354,19 +4354,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 </style>
 <style id="vtabs">
 /* View / Edit switch: always first on the page */
-:root:root #sh-main .sh-sec>.vtab{display:grid!important;grid-template-columns:1fr 1fr;margin:4px 0 14px}
-:root:root #sh-main .sh-sec>.vtab button{min-height:50px;font-size:1.05rem;font-weight:800}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-e,:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt="view"] .vt-e,:root:root #sh-main .sh-sec[data-vt="edit"] .vt-v,:root:root #sh-main .sh-sec[data-vt] .vt-hide{display:none!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-nc{pointer-events:none!important;cursor:default}
-:root:root #sh-main .sh-sec[data-vt="view"] .vt-nc .pen{display:none!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec[data-vt="view"] .vt-ro{pointer-events:none!important;pointer-events:none;background:transparent!important;border-color:transparent!important;-webkit-appearance:none;appearance:none}
-@media (min-width:900px){:root:root #sh-main .sh-sec>.vtab{max-width:none}}
 
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab,:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs{display:grid!important;grid-template-columns:1fr 1fr;gap:4px;padding:4px!important;margin:12px 16px 14px!important;width:auto!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;background:var(--sh-surface)!important;box-shadow:none!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs{margin:0 0 14px!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button,:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button{min-height:48px;border:0!important;border-radius:10px!important;background:transparent!important;color:var(--sh-ink)!important;font:800 1.05rem var(--sh-body)!important;box-shadow:none!important;opacity:1!important}
-:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab button[aria-pressed="true"],:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-results #r_tabs button[aria-pressed="true"]{background:#1F3A5F!important;color:#fff!important}
-@media (min-width:900px){:root:root:root #sh-main#sh-main#sh-main#sh-main .sh-sec>.vtab{margin:16px 24px 16px!important}}
 </style>
 <style id="pkx">
 @media (min-width:900px){:root:root:root #sh-main#sh-main #mod-guide .bar-in{max-width:860px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}:root:root:root #sh-main#sh-main #mod-guide .ctrls{max-width:none!important;width:100%}}
@@ -4385,10 +4373,8 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root:root #sh-main#sh-main #mod-summary .tb.stk tr.inp{border-left:5px solid #2FA866!important}
 :root:root:root #sh-main#sh-main #mod-summary .tb.stk td:empty{display:none!important}
 @media (max-width:899.98px){:root:root:root #sh-main#sh-main #mod-summary .tb.stk tr{padding-left:12px!important}}
-:root:root:root #sh-main#sh-main#sh-main#sh-main #mod-uniform .tabs [data-un="view"][data-v="form"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-uniform>.unord,:root:root:root #sh-main#sh-main#sh-main #mod-invoices>.unord{display:flex!important;justify-content:center;width:calc(100% - 32px);margin:0 16px 14px;min-height:52px;font-size:1.05rem}
 :root:root:root #sh-main#sh-main#sh-main :is(#mod-uniform,#mod-invoices)>.unord[hidden]{display:none!important}
-:root[data-role="mgr"]:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices .tabs [data-iv="tab"][data-v="make"],:root[data-role="mgr"]:root:root #sh-main#sh-main#sh-main#sh-main #mod-invoices [data-im="lmake"]{display:none!important}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets .ckwa,:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckwa"],:root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="ckcopy"]{display:none!important}
 #sh-main #mod-timesheets .tsback{align-self:flex-start;margin-bottom:10px}
 :root:root:root #sh-main#sh-main#sh-main #mod-timesheets [data-ts="pclear"]:not(.tsback){display:none!important}
@@ -4533,6 +4519,19 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #mod-invoices .iw-sb{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
 #mod-invoices .iw-tag{font-style:normal;font-size:.78rem;font-weight:800;color:#fff;background:#22A35A;border-radius:999px;padding:2px 8px;margin-top:4px}
 </style>
+<style id="tidy2">
+/* page tidy up after taking out View / Edit */
+:root:root #sh-main #mod-updates .nt-add{display:flex;justify-content:center;width:100%;min-height:50px;font-size:1.05rem;margin:0 0 12px}
+:root:root #sh-main #mod-results #r_tabs{margin:0 0 14px}
+:root:root #sh-main #mod-uniform .head .act,:root:root #sh-main #mod-uniform .rh .act{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+:root:root #sh-main #mod-uniform .head .act .sh-btn,:root:root #sh-main #mod-uniform .rh .act .sh-btn{width:100%;justify-content:center;min-height:46px;margin:0}
+:root:root #sh-main #mod-uniform .rh .act .primary{grid-column:1/-1}
+:root:root #sh-main #mod-uniform .rh .act [data-un="togglePaste"]{grid-column:1/-1}
+:root:root #sh-main #mod-timesheets .nav{display:grid!important;grid-template-columns:46px 1fr 46px auto;align-items:center;gap:8px}
+:root:root #sh-main #mod-timesheets .nav h2{text-align:center;font-size:1.15rem;margin:0;min-width:0}
+:root:root #sh-main #mod-timesheets .nav .sh-btn{min-height:44px;justify-content:center;margin:0}
+:root:root:root #sh-main#sh-main :is([data-pc="add"],[data-lk="add"],[data-eq="new"],[data-tb="new"],[data-dm="add"],[data-vc="new"],[data-lv="add"],[data-nt="new"]).sh-btn{display:flex!important;justify-content:center;align-items:center;width:100%!important;max-width:none!important;min-height:50px;font-size:1.05rem;box-sizing:border-box;flex:1 1 100%;grid-column:1/-1}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4582,7 +4581,7 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
 </div>
 <div class="wrap" id="r_tool" data-tab="view">
-  <div class="seg rtabs" id="r_tabs" role="group" aria-label="View or import"><button type="button" data-rtab="view" aria-pressed="true">View</button><button type="button" data-rtab="import" aria-pressed="false">Import</button></div>
+  <div class="seg rtabs" id="r_tabs" role="group" aria-label="Results or load"><button type="button" data-rtab="view" aria-pressed="true">Results</button><button type="button" data-rtab="import" aria-pressed="false">Load new results</button></div>
   <header class="top">
     <div>
       <div class="eyebrow">Contract Q01161</div>
@@ -4836,7 +4835,7 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes, and send a WhatsApp heads up.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes. Drivers see them in the app.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
  drv:{me:'',alerts:'',menu:'',reports:'',feedback:'',clock:'Your start and finish times.',runs:'Your streets, gate codes and notes.',guide:'How we do things, one topic at a time.',briefs:'Read the team brief, then sign it.',leave:'Check which days are free, then ask for time off.',invoices:'See what you have earned and send your invoice.',directory:'Tap a name to call or message.',updates:'Messages from the office.',uniform:'Order your shirts.'}
 };
 let canMgr=false,previewUser=false;
@@ -5037,72 +5036,12 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
   if(!opts.keepScroll) window.scrollTo(0,0);
   if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
-  try{vtEnter(sec,opts.act?'edit':'view')}catch(e){console.warn(e)}
+  try{vtEnter()}catch(e){}
   [60,400,1200].forEach(t=>setTimeout(()=>{try{vtAlign()}catch(e){}},t));
 }
-/* View / Edit (or Import) switch at the top of every admin page that has something to change.
-   View hides the add, edit, delete and upload controls; Edit shows them. Each page opens on View. */
-const VTA=(k,acts)=>acts.map(a=>`[data-${k}="${a}"]`);
-const VT={
-  survey:{lab:'Import',e:['#v_drop','#v_remove','#v_file'],v:['#v_tblW','#v_fit','#v_emptyW','#v_shotBox','#v_save','#v_save4','#v_viewC','#v_pk .pseg2','#v_sharePanel','#v_status4']},
-  enquiries:{lab:'Edit',nc:['[data-eq="f"]'],e:VTA('eq',['new','del','edit','save','cancel','nnew','ndel','ndone','nedit','nsave','nclose','nreopen','nundo','plgo','plcheck','rimpgo']).concat(['.rimp','.rimpc','.eqx>.head','.eqx>.msg'])},
-  updates:{lab:'Edit',e:VTA('nt',['new','edit','del','save','cancel'])},
-  briefs:{lab:'Edit',e:VTA('tb',['new','del','ldel','toggle','rmfile','create'])},
-  leave:{lab:'Edit',e:VTA('lv',['add','addbo','addfor','del','doimport','rmbo','rqcancel','rqdel','rqno','rqok','save','savecfg','share']).concat(['[data-lv="view"][data-v="set"]']),nc:['[data-lv="edit"]']},
-  vchecks:{lab:'Edit',e:VTA('vc',['new','edit','del','allok','save','it','out'])},
-  feedback:{lab:'Edit',e:VTA('fb',['del','st'])},
-  runs:{lab:'Edit',runs:true},
-  sort:{lab:'Edit',nc:['.stb']},
-  precards:{lab:'Edit',e:VTA('pc',['add','del','save','share'])},
-  lockers:{lab:'Edit',e:VTA('lk',['add','del','save','dadd','drm','share'])},
-  staff:{lab:'Edit',e:VTA('dm',['add','del','save'])},
-  timesheets:{lab:'Edit',e:VTA('ts',['addp','addok','addno','del','delok','delno','undo']),ro:['#mod-timesheets .tb input','#mod-timesheets .tb select']},
-  invoices:{lab:'Edit',e:VTA('im',['lopen','lst']).concat(VTA('iv',['edit','save','entry'])),v:['[data-iv="tab"][data-v="tpl"]',':scope .tabs:has([data-iv="tab"])'],tabs:'[data-iv="tab"]:not([data-v="make"])',order:{data:{iv:'tab',v:'make'},label:'+ Make an invoice',on:'.tabs [data-iv="tab"][data-v="make"][aria-pressed="true"]'}},
-  uniform:{lab:'Edit',e:VTA('un',['edit','syncNames','savecfg','bulkDone','bulkReopen','complete','delOrd','reopen','saveReq','savePaste','togglePaste','noPaste','parse','sel','selAll','selNone','clear']),tabs:'[data-un="view"]:not([data-v="form"])',order:{data:{un:'view',v:'form'},label:'+ Order uniform',on:'.tabs [data-un="view"][data-v="form"][aria-pressed="true"]',keep:'[data-un="edit"],[data-un="syncNames"],[data-un="savecfg"]'}},
-  reports:{lab:'Edit',e:VTA('rp',['file','del','msave','rmph','unfile'])}
-};
-let vtMode='view',vtObs=null,vtBusy=false,vtFix1=false;
+/* No View / Edit switch: every page shows its own add, edit and delete buttons where they belong. */
 function vtSec(){return document.getElementById(MOD[cur]||'')}
-function vtTag(){const c=VT[cur],sec=vtSec();if(!sec||!c||role!=='mgr')return;vtBusy=true;
-  const tag=(L,cls)=>{sec.querySelectorAll('.'+cls).forEach(x=>x.classList.remove(cls));(L||[]).forEach(q=>sec.querySelectorAll(q).forEach(x=>x.classList.add(cls)))};
-  tag(c.e,'vt-e');tag(c.v,'vt-v');tag(c.nc,'vt-nc');tag((c.ro||[]).map(q=>q.replace(/^#mod-\w+ /,'')),'vt-ro');
-  if(c.runs){const m=sec.querySelector('.modes:not(.pcs)');if(m)m.classList.add('vt-hide')}
-  /* detail screens: read only in View */
-  const FLT='.srch,.pkx,.pbar,.pc-sel,.rt-f,.ctl,.flt,.filters,.bar,.mini,label.mini,.vtab,.dm-tools,.tools,.q-row,.lk-bar';
-  sec.querySelectorAll('input:not([type=hidden]),textarea,select,.card.mgr button').forEach(x=>{if(cur==='invoices'||x.type==='search'||x.type==='file'||x.closest(FLT)||x.matches('.q,.dm-q,.lk-q,.tray-search'))return;x.classList.add('vt-ro')});
-  sec.querySelectorAll('button,label.sh-btn').forEach(b=>{const t=(b.textContent||'').trim();if(/^(\+ |Add |Add$|Save(?! image)|Delete|Tap again to delete|Remove|Mark |Done$|Paste |Sign and submit|Clear$|Remind|Send latest|Hide from drivers|Show to drivers|Cancel$|✕$)/.test(t)&&!b.closest('.vtab'))b.classList.add('vt-e')});
-  /* back buttons always stay, so you can get out of any screen */
-  sec.querySelectorAll('button,a').forEach(b=>{if(/^\s*\u2039/.test(b.textContent||''))b.classList.remove('vt-e','vt-nc','vt-ro')});
-  if(c.order){/* a page's main action has its own button and works in View too (Order uniform, Make an invoice) */
-    const O=c.order;let ob=sec.querySelector(':scope>.unord');if(!ob){ob=document.createElement('button');ob.type='button';ob.className='sh-btn primary unord';Object.assign(ob.dataset,O.data);ob.textContent=O.label;const vt=sec.querySelector(':scope>.vtab');if(vt)vt.after(ob);else sec.prepend(ob)}
-    const onForm=!!sec.querySelector(O.on);ob.hidden=onForm;ob.classList.remove('vt-e','vt-ro','vt-nc');
-    if(onForm)sec.querySelectorAll('.vt-e,.vt-ro,.vt-nc').forEach(x=>{if(!(O.keep&&x.matches(O.keep)))x.classList.remove('vt-e','vt-ro','vt-nc')})}
-  vtBusy=false;requestAnimationFrame(vtAlign)}
-function vtFixTabs(){const c=VT[cur],sec=vtSec();if(!c||!c.tabs||!sec)return;if(cur==='uniform'&&vtFix1){vtFix1=false;const f=sec.querySelector('.tabs [data-un="view"][data-v="form"][aria-pressed="true"]');if(f){const r=sec.querySelector('.tabs [data-un="view"][data-v="req"]');if(r)r.click();return}}
-  if(cur==='invoices'&&vtFix1){vtFix1=false;const mk=sec.querySelector('[data-iv="tab"][data-v="make"][aria-pressed="true"]');if(mk){const sb=sec.querySelector('[data-iv="tab"][data-v="sub"]');if(sb)sb.click();return}}const L=[...sec.querySelectorAll(c.tabs)];const on=L.find(b=>b.getAttribute('aria-pressed')==='true');
-  if(on&&getComputedStyle(on).display==='none'){const nx=L.find(b=>getComputedStyle(b).display!=='none');if(nx)nx.click()}}
-function vtSwitch(sec,c){let w=sec.querySelector(':scope>.vtab');
-  if(!w){w=document.createElement('div');w.className='seg rtabs vtab';w.setAttribute('role','group');w.setAttribute('aria-label','View or '+c.lab.toLowerCase());sec.prepend(w)}
-  w.innerHTML=`<button type="button" data-vt="view" aria-pressed="${vtMode==='view'}">View</button><button type="button" data-vt="edit" aria-pressed="${vtMode==='edit'}">${c.lab}</button>`;return w}
-function vtClose(sec){/* leaving Edit: close any open editor so View shows the normal page */
-  {const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}
-  for(let i=0;i<3;i++){const b=[...sec.querySelectorAll('button,a')].find(x=>x.offsetParent&&!x.closest('.vtab')&&Object.values(x.dataset||{}).some(v=>/^(cancel|ncancel|back|nback|close|plno|rimpno|addno|delno|noimport|edClose)$/.test(v)));if(!b)break;
-    const oc=window.confirm;window.confirm=()=>true;try{b.click()}finally{window.confirm=oc}}}
-function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;vtFix1=true;if(mode==='view'&&sec.dataset.vt==='edit'){const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
-  if(cur==='survey'&&mode==='edit'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}
-  if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
-  setTimeout(vtFixTabs,0);
-  /* looking at one item and tap Edit: go straight into editing it, no second Edit button */
-  if(mode==='edit')setTimeout(()=>{const L=[...sec.querySelectorAll('button')].filter(b=>b.offsetParent&&!b.closest('.vtab')&&Object.values(b.dataset||{}).some(v=>/^(edit|nedit)$/.test(v))&&/^\s*Edit/.test(b.textContent||''));if(L.length===1)L[0].click()},40)}
-function vtEnter(sec,mode){
-  document.querySelectorAll('.sh-sec[data-vt]').forEach(x=>{if(x.id!==MOD[sec]){delete x.dataset.vt;const w=x.querySelector(':scope>.vtab');if(w)w.remove()}});
-  if(sec==='results'){const b=document.querySelector('#r_tabs [data-rtab="'+(mode==='edit'?'import':'view')+'"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click();return}
-  const el=document.getElementById(MOD[sec]||'');if(!el)return;
-  if(role!=='mgr'||!VT[sec]){delete el.dataset.vt;const w=el.querySelector(':scope>.vtab');if(w)w.remove();return}
-  vtSet(mode);
-  if(!vtObs){vtObs=new MutationObserver(()=>{if(vtBusy)return;clearTimeout(vtObs.t);vtObs.t=setTimeout(()=>{const s=vtSec();if(!s||!s.dataset.vt)return;if(!s.querySelector(':scope>.vtab'))vtSwitch(s,VT[cur]);vtTag();vtFixTabs()},30)})}
-  vtObs.disconnect();vtObs.observe(el,{childList:true,subtree:true});
-}
+function vtEnter(){document.querySelectorAll('.sh-sec[data-vt]').forEach(x=>{delete x.dataset.vt});document.querySelectorAll('.sh-sec>.vtab,.sh-sec>.unord').forEach(x=>x.remove())}
 /* on computers, the switch lines up with the page's own content column */
 function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab'),extra=[...sec.querySelectorAll(':scope>.unord')],phIn=document.querySelector('#sh-ph:not([hidden]) .in');
   const all=[w,...extra].filter(Boolean);const reset=()=>{all.forEach(x=>{x.style.marginLeft='';x.style.width=''});if(phIn){phIn.style.marginLeft='';phIn.style.width='';phIn.style.maxWidth=''}};
@@ -5118,10 +5057,7 @@ function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':
     phIn.style.setProperty('margin-left',Math.max(0,ml)+'px','important');phIn.style.setProperty('width',Math.round(Rr-L+ip)+'px','important');phIn.style.setProperty('box-sizing','border-box','important');phIn.style.setProperty('max-width','none','important')}}
 window.__vtAlign=vtAlign;
 window.addEventListener('resize',()=>{clearTimeout(vtAlign.t);vtAlign.t=setTimeout(vtAlign,80)});
-document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;const y=window.scrollY;vtSet(b.dataset.vt);requestAnimationFrame(()=>window.scrollTo(0,y))});
-/* in View, a tap on anything that changes data does nothing */
-['click','input','change','focusin'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.isTrusted)return;const t=e.target;if(!t||!t.closest)return;const sec=t.closest('.sh-sec[data-vt="view"]');if(!sec)return;const x=t.closest('.vt-nc,.vt-e,.vt-ro');if(!x)return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();if(ev==='focusin'&&t.blur)t.blur()},true));
-window.addEventListener('app:role',()=>{try{vtEnter(cur,'view')}catch(e){}});
+
 function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role==='mgr'||key==='briefs'||key==='updates')){el.textContent=text||'';el.hidden=!text}const n=$('sh-nw-'+key);if(n)n.hidden=!isNew(key,text)}
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
@@ -5173,7 +5109,7 @@ function renderHome(){
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
-  const QA=[['updates','[data-nt="new"]','Post an update'],['briefs','[data-tb="new"]','New team brief'],['results','','Load results'],['leave','[data-lv="add"]','Add leave'],['enquiries','[data-eq="new"]','Add enquiry'],['vchecks','[data-vc="new"]','Van check']];
+  const QA=[['updates','[data-nt="new"]','Post an update'],['briefs','[data-tb="new"]','New team brief'],['results','[data-rtab="import"]','Load results'],['leave','[data-lv="add"]','Add leave'],['enquiries','[data-eq="new"]','Add enquiry'],['vchecks','[data-vc="new"]','Van check']];
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
@@ -7501,7 +7437,7 @@ function render(){
   const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   box.innerHTML=`<div class="dm">
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
-      <div class="act"><button type="button" class="sh-btn primary" data-dm="add">Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
+      <div class="act"><button type="button" class="sh-btn primary" data-dm="add">+ Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     ${(()=>{const D=Object.values(people).filter(p=>p.regoDue&&dueIn(p)<=RDAYS).sort((a,b)=>String(a.regoDue).localeCompare(String(b.regoDue)));return D.length?`<section class="card rgsoon"><h2>Rego due soon</h2>${D.map(p=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(p.id)}"><b>${esc(fullName(p))}</b><span>${esc(p.rego||'')}</span><span class="svb">${esc(dueTxt(p).replace(/^Rego /,''))}</span></button>`).join('')}</section>`:''})()}
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
@@ -9245,8 +9181,9 @@ function render(){
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
   if(!isMgr())setTimeout(()=>{if(window.ME&&window.ME.paySummary)window.ME.paySummary()},0);
-  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
   if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
+  if(isMgr()&&!render.once){render.once=true;ivtab='sub'}/* managers open on Submitted invoices */
   if(isMgr()&&ivtab==='mine')ivtab='make';
   if(isMgr()&&(ivtab==='make'||ivtab==='sub')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='sub'?'list':'make');return}
   const due=c.due?`<b>Next invoice due ${esc(nice(c.due))}.</b> `:'';
@@ -9476,7 +9413,7 @@ function cardHTML(n){
    <h2>${esc(n.title)}${n.date?`<span class="dt"> ${esc(longDate(n.date))}</span>`:''}</h2>
    <div class="txt">${bodyHTML(n.body)}</div>
    <p class="meta">${n.live?'Posted':'Saved'} ${esc(postedText(n.postedAt))}${n.edited?' · updated '+esc(postedText(n.edited)):''}</p>
-   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button>${n.live?`<button type="button" class="sh-btn" data-nt="wa" data-v="${esc(n.id)}">WhatsApp heads up</button><button type="button" class="sh-btn" data-nt="copy" data-v="${esc(n.id)}">Copy heads up</button>`:''}</div>`:''}</div></article>`;
+   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button></div>`:''}</div></article>`;
 }
 function render(){
   const box=$('root');if(!box)return;
@@ -9485,8 +9422,8 @@ function render(){
   const L=sorted().filter(n=>!impOnly||n.important),pins=L.filter(n=>n.pinned),rest=L.filter(n=>!n.pinned);
   const G=groups(rest);
   box.innerHTML=`<div class="ntx">
-   <div class="head"><h1>Latest Updates</h1>${isMgr()?'<div class="act"><button type="button" class="sh-btn primary" data-nt="new">+ New update</button></div>':''}</div>
-   <p class="lead">${isMgr()?'Post notices for the team. Drivers see them here as soon as you save. Use the WhatsApp heads up to tell them to check the app.':'Notices from the office. Newest first.'}</p>
+   ${isMgr()?'<button type="button" class="sh-btn primary nt-add" data-nt="new">+ New update</button>':''}
+   <p class="lead">${isMgr()?'Post notices for the team. Drivers see them here as soon as you post.':'Notices from the office. Newest first.'}</p>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div>
    <button type="button" class="chip imp" data-nt="imp" aria-pressed="${impOnly}">Important only</button></div>
@@ -9534,7 +9471,7 @@ async function save(){
   if(!isNew&&!items[id].live&&o.live)o.postedAt=new Date().toISOString(),delete o.edited;
   const was=items[id];
   try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;
-    msg={t:o.live?'Posted. Sending it to the drivers’ link, the page will reload. Then send the WhatsApp heads up.':'Saved as a draft. Drivers can’t see it yet.'};render();
+    msg={t:o.live?'Posted. Drivers can see it now.':'Saved as a draft. Drivers can’t see it yet.'};render();
     if(o.live||(was&&was.live)){const ok=await syncDrivers();if(!ok){msg={err:true,t:'Saved, but it could not be sent to the drivers’ link just now. Edit and save it again to retry.'};render()}}
     setTimeout(()=>document.getElementById('nt_n_'+id)?.scrollIntoView({block:'nearest'}),0)}
   catch(e){msg={err:true,t:'Could not save just now.'};render()}
@@ -9648,6 +9585,7 @@ function render(){
   const box=$('root');if(!box)return;
   if(mode==='wait'){box.innerHTML='';return}
   if(editing&&isMgr()){box.innerHTML=editHTML();return}
+  if(!render.once&&isMgr()){render.once=true;view='req'}/* managers open on the requests */
   const c=cfg(),L=lines(),n=total();
   const open=Object.values(orders).filter(o=>o.status!=='completed'),done=Object.values(orders).filter(o=>o.status==='completed');
   const tabs=isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-un="view" data-v="form" aria-pressed="${view==='form'}">Order form</button><button type="button" data-un="view" data-v="req" aria-pressed="${view==='req'}">Requests${open.length?` <b class="cnt">${open.length}</b>`:''}</button><button type="button" data-un="view" data-v="done" aria-pressed="${view==='done'}">Completed${done.length?` (${done.length})`:''}</button></div>`:'';
@@ -12468,7 +12406,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610301000';
+const VERSION='202610301100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
