@@ -3991,8 +3991,8 @@ html.appui .sh-side .sh-links button:not(.vsw) svg{color:var(--g)!important}
 }
 @media (min-width:900px){html.appui:not(.drvui){font-size:17px}html.appui:not(.drvui) #sh-main :is(.sh-btn.primary,.btn.primary):not(.sm){min-height:46px;font-weight:800;padding-left:18px;padding-right:18px;border-radius:10px}}
 /* Who's off card on admin Home: short overview */
-.ah-off{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:18px;padding:14px 16px}
-.ah-off .ao-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.ah-off{padding:14px 16px!important}
+.ah-off .ao-h{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.ah-off .ao-h span{display:inline-flex;align-items:center;font-weight:800;font-size:.9rem;color:var(--sh-muted)}
 .ah-off .ao-h b{font:800 1.15rem var(--sh-body)}
 .ah-off .ao-h svg{width:22px;height:22px;fill:none;stroke:var(--sh-muted);stroke-width:2.4}
 .ah-off .ao-l{display:flex;align-items:baseline;gap:8px;padding:5px 0;font-size:.95rem;min-width:0}
@@ -4001,9 +4001,9 @@ html.appui .sh-side .sh-links button:not(.vsw) svg{color:var(--g)!important}
 .ah-off .ao-l .nm{color:var(--sh-muted);min-width:0;line-height:1.3}
 .ah-off .ao-l .ok{font-weight:700;color:#1E8A4C}
 .ah-off .ao-wk{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
-.ah-off .ao-wk span{display:flex;flex-direction:column;align-items:center;border-radius:10px;padding:4px 0;line-height:1.15}
-.ah-off .ao-wk span small{font-size:.75rem;font-weight:700;color:var(--sh-muted)}
-.ah-off .ao-wk span b{font-size:1.05rem}
+.ah-off .ao-wk button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;border-radius:10px;padding:5px 0;line-height:1.15;min-height:48px;justify-content:center}.ah-off .ao-wk button[aria-pressed=true]{box-shadow:0 0 0 3px #F2782D inset}.ah-off .ao-sel{margin-top:8px;padding:6px 10px;border-radius:10px;background:rgba(127,127,127,.08)}.ah-off .ao-tip{margin:6px 0 0;font-size:.82rem;color:var(--sh-muted);text-align:center}
+.ah-off .ao-wk button small{font-size:.75rem;font-weight:700;color:var(--sh-muted)}
+.ah-off .ao-wk button b{font-size:1.05rem}
 .ah-off .ao-wk .in{background:rgba(30,138,76,.1)}.ah-off .ao-wk .in b{color:#1E8A4C}
 .ah-off .ao-wk .off{background:rgba(232,113,10,.12)}.ah-off .ao-wk .off b{color:#C2570C}
 .ah-off .ao-wk .now{outline:2px solid var(--sh-ink);outline-offset:-2px}
@@ -4584,6 +4584,7 @@ function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visi
   <div class="dm-also">${['updates','briefs','clock'].filter(x=>v.has(x)).map(s=>`<button type="button" data-nav="${s}"><span class="ic">${ICONS[s]}</span><b>${esc(nm(s))}</b><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div><button type="button" class="dm-out" data-sh="signout">Sign out</button>`}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
+let aoSel=null;
 function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
   const L=window.LEAVE;if(!L||!L.dayMap){setTimeout(adminOff,400);return}
   const m=L.dayMap()||{},pad=n=>String(n).padStart(2,'0'),iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -4595,9 +4596,11 @@ function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
   const row=(lab,d)=>{const w=who(d);return `<div class="ao-l"><span class="k">${lab}</span>${we(d)&&!w.length?'<span class="ok">Weekend</span>':w.length?`<span class="c">${w.length} off</span><span class="nm">${esc(w.join(', '))}</span>`:'<span class="ok">✓ Everyone in</span>'}</div>`};
   const mon=new Date(t0);const dw=(mon.getDay()+6)%7;if(dw>=5)mon.setDate(mon.getDate()+7-dw);else mon.setDate(mon.getDate()-dw);
   const wk=[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d});
-  const html=`<button type="button" class="dh-card ah-off" data-nav="leave"><span class="ao-h"><b>Who’s off</b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+  const sd=aoSel&&wk.find(d=>iso(d)===aoSel);
+  const html=`<section class="dh-card ah-off"><button type="button" class="ao-h" data-nav="leave"><b>Who’s off</b><span>Calendar<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
    ${row('Today',t0)}${row('Tomorrow',t1)}
-   <span class="ao-wk">${wk.map(d=>{const n=who(d).length;return `<span class="${n?'off':'in'}${iso(d)===iso(t0)?' now':''}"><small>${DN[d.getDay()]}</small><b>${n}</b></span>`}).join('')}</span></button>`;
+   <div class="ao-wk">${wk.map(d=>{const n=who(d).length,k=iso(d);return `<button type="button" data-aod="${k}" aria-pressed="${k===aoSel}" class="${n?'off':'in'}${k===iso(t0)?' now':''}"><small>${DN[d.getDay()]}</small><b>${n}</b></button>`}).join('')}</div>
+   ${sd?`<div class="ao-sel">${row(DN[sd.getDay()]+' '+sd.getDate(),sd)}</div>`:'<p class="ao-tip">Tap a day to see who is off.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
@@ -4697,6 +4700,7 @@ document.addEventListener('click',e=>{
   const mo=e.target.closest('[data-sh="more"]');if(mo){openMore();return}
   if(e.target.closest('[data-sh="moreclose"]')){closeMore();return}
   if(e.target.closest('[data-sh="signout"]')){const w=document.querySelector('.web-out');if(w)w.click();return}
+  const aod=e.target.closest('[data-aod]');if(aod){aoSel=aoSel===aod.dataset.aod?null:aod.dataset.aod;adminOff();return}
   const qa=e.target.closest('[data-qa]');if(qa){go(qa.dataset.qa,qa.dataset.act?{act:qa.dataset.act}:{});return}
   const bk=e.target.closest('[data-sh="back"]');if(bk){const p=hist.pop()||(DRV_MENU.includes(cur)?'menu':'home');go(p,{back:true});return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
@@ -11356,7 +11360,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281250';
+const VERSION='202610281300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
