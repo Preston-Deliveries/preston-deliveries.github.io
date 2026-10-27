@@ -4651,6 +4651,9 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .tlk{display:block;margin-top:4px;font-weight:700}.tlk .ok{color:#167a42}.tlk .un{color:#8a5a12}.tlk .no{color:#b42318}
 :root[data-theme="dark"] .tl .tl-b .yes,:root[data-theme="dark"] .tl .tl-p.ok,:root[data-theme="dark"] .tlk .ok{color:#6fdc9b}:root[data-theme="dark"] .tl .tl-b .no,:root[data-theme="dark"] .tl .tl-p.sus,:root[data-theme="dark"] .tlk .no,:root[data-theme="dark"] .tl .tl-s b.r{color:#ff9b94}:root[data-theme="dark"] .tlk .un{color:#F2C94C}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tl .tl-b .yes,:root:not([data-theme="light"]) .tl .tl-p.ok,:root:not([data-theme="light"]) .tlk .ok{color:#6fdc9b}:root:not([data-theme="light"]) .tl .tl-b .no,:root:not([data-theme="light"]) .tl .tl-p.sus,:root:not([data-theme="light"]) .tlk .no,:root:not([data-theme="light"]) .tl .tl-s b.r{color:#ff9b94}:root:not([data-theme="light"]) .tlk .un{color:#F2C94C}}
+
+#sh-main #mod-invoices .im table.tb.sublist tr:not(.none) td:nth-child(4){grid-column:1/-1;grid-row:auto;text-align:left}
+#sh-main #mod-invoices .im table.tb.sublist td:nth-child(4) .why,#sh-main #mod-invoices .im table.tb.sublist td:nth-child(4) .tlk{display:block;margin-top:6px;text-align:left;line-height:1.35}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5287,7 +5290,7 @@ async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__
   if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
 }
 function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
-  const T=mcIso(new Date()),sun=new Date().getDay()===0,P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
+  const T=mcIso(new Date()),sun=tlOff(new Date())&&!Object.values(MC.clock).some(c=>c&&c.start),P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
   const norm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
   let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(norm))}catch(e){}
   const drv=Object.entries(P).filter(([,p])=>(p.runs||[]).filter(Boolean).length&&!MC_OFFICE.includes(String(p.role||'').toUpperCase())&&String(p.role||'').toUpperCase()!=='RELIEF');
@@ -5307,14 +5310,15 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
   const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
-   ${sun?'<div class="mc-ck"><span class="mc-n">Sunday</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
+   ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${rows.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
 const TL={day:null,tab:'all',clock:{},chk:{},subs:[],busy:{}};
-function tlPrevDay(){const d=new Date();d.setDate(d.getDate()-1);if(d.getDay()===0)d.setDate(d.getDate()-1);return mcIso(d)}
+const tlOff=d=>d.getDay()===0||(d.getDay()===6&&d.getMonth()!==11);
+function tlPrevDay(){const d=new Date();d.setDate(d.getDate()-1);while(tlOff(d))d.setDate(d.getDate()-1);return mcIso(d)}
 function tlNice(s){const d=new Date(s+'T12:00:00');return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}
 async function tlWatch(){const day=TL.day;TL.subs.forEach(u=>{try{u()}catch(e){}});TL.subs=[];TL.clock={};TL.chk={};TL.ready=false;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db||TL.day!==day)return;
   const D=d=>window.__D?window.__D(d):d.data();let got=0;
@@ -5345,7 +5349,7 @@ function tlBy(){const me=window.__webMe||{};const em=String(me.email||'').toLowe
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-tlgo]');if(g){const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}});
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-tl]');if(!b||role!=='mgr')return;const a=b.dataset.tl,id=b.dataset.v;
   if(a==='tab'){TL.tab=id;adminLoads();return}
-  if(a==='prev'||a==='next'){const d=new Date(TL.day+'T12:00:00');do{d.setDate(d.getDate()+(a==='prev'?-1:1))}while(d.getDay()===0);const n=mcIso(d);if(n>tlPrevDay())return;TL.day=n;adminLoads();tlWatch();return}
+  if(a==='prev'||a==='next'){const d=new Date(TL.day+'T12:00:00');do{d.setDate(d.getDate()+(a==='prev'?-1:1))}while(tlOff(d));const n=mcIso(d);if(n>tlPrevDay())return;TL.day=n;adminLoads();tlWatch();return}
   let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;const c=TL.clock[id]||{},sid=c.staff||(TL.chk[id]&&TL.chk[id].staff)||'';
   TL.busy[id]=true;adminLoads();
   try{if(a==='ok'||a==='no'){await db.doc('tlcheck/'+id).set({date:TL.day,staff:sid,name:c.name||'',chk:a,by:tlBy(),at:new Date().toISOString(),said:true});
@@ -6417,7 +6421,7 @@ function subHTML(){
 function subIn(){
   if(view==="day"){return DAYS.map(([k,nm])=>`<button type="button" data-sd="${k}" aria-pressed="${k===selDay}" class="${week.days[k]?"has":""}"><b>${nm.slice(0,3)}</b><small>${short(dayDate(k))}</small></button>`).join("")}
   if(view==="week"){const ci=cycleInfo(weekId);return [1,2,3,4].map(n=>{const id=iso(addDays(ci.start,7*(n-1)));const has=id===weekId?Object.keys(week.days).length:(cycleWeeks[id]&&Object.keys(cycleWeeks[id].days||{}).length);return `<button type="button" data-sw="${id}" aria-pressed="${n===ci.no}" class="${has?"has":""}"><b>Week ${n}</b><small>${short(fromIso(id))}</small></button>`}).join("")}
-  const cs=cycleInfo(weekId).start;return `<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,27))}</span>`;
+  const cs=cycleInfo(weekId).start;return `<span class="pc">Pay cycle ${short(cs)} to ${short(addDays(cs,25))}</span>`;
 }
 let rDirty=false;
 try{const sec=document.getElementById('mod-results');if(sec)new MutationObserver(()=>{if(!sec.hidden&&rDirty){rDirty=false;renderAll()}}).observe(sec,{attributes:true,attributeFilter:['hidden']})}catch(e){}
@@ -6697,7 +6701,7 @@ function mountRT(box,rows,multi){
 
 /* ---------- View: ranked by total score, one card per driver on phones, a table on computers ---------- */
 function perLabel(){const m=fromIso(weekId),cs=cycleInfo(weekId).start;
-  return view==="cycle"?"Pay cycle "+short(cs)+" to "+short(addDays(cs,27)):view==="week"?"Week "+short(m)+" to "+short(addDays(m,5)):DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay))}
+  return view==="cycle"?"Pay cycle "+short(cs)+" to "+short(addDays(cs,25)):view==="week"?"Week "+short(m)+" to "+short(addDays(m,5)):DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay))}
 function bVals(r){
   const ek=r.enqK!=null?r.enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc),tf=92;
   const c=x=>x==="gd"?"gd":x==="g"||x==="w"?"g":x==="b"?"b":"n";
@@ -6962,7 +6966,7 @@ const monday=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.se
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 function defaultWeek(iso){const w=Math.round((monday(fromISO(iso))-ANCHOR)/DAY/7);return ((w%4)+4)%4+1}
 function cycleStart(iso,week){return toISO(addDays(monday(fromISO(iso)),-(week-1)*7))}
-function cycleLabel(start){const s=fromISO(start),e=addDays(s,27);return `${s.toLocaleDateString("en-AU",{day:"numeric",month:"short"})} to ${e.toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"})}`}
+function cycleLabel(start){const s=fromISO(start),e=addDays(s,25);return `${s.toLocaleDateString("en-AU",{day:"numeric",month:"short"})} to ${e.toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"})}`}
 
 const TODAY=toISO(new Date()), NOW_WEEK=defaultWeek(TODAY), NOW_CYCLE=cycleStart(TODAY,NOW_WEEK);
 // A week later than the current one belongs to the previous cycle (e.g. uploading week 4 during week 1)
@@ -8802,7 +8806,7 @@ function periods(){
   const subD=wdays.map(d=>({d,on:d===pickD,has:mine.includes(d)}));
   const cyc={cs,ce:addD(cs,27)};const cycs=[-3,-2,-1,0].map(k=>addD(cs,28*k));
   return{subW,subD,cyc,cycs,cs,wmon,pickD,sh,day:{dates:[pickD],label:longDay(pickD)},week:{dates:Array.from({length:7},(_,i)=>addD(wmon,i)),label:'Week '+wkNo+' of the pay cycle · '+sh(wmon)+' to '+sh(addD(wmon,5))},
-    cycle:{dates:Array.from({length:28},(_,i)=>addD(cs,i)),label:'Pay cycle '+sh(cs)+' to '+sh(addD(cs,27))}};
+    cycle:{dates:Array.from({length:28},(_,i)=>addD(cs,i)),label:'Pay cycle '+sh(cs)+' to '+sh(addD(cs,25))}};
 }
 let PWK=null,PDAY=null,ANC=null;
 const MONL=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -9066,7 +9070,7 @@ async function paySummary(){
   const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
   const D=P.cycle.dates,x=statsFor(D),h=clockedFor(D);const t=dayOf(new Date());
   const sd=d=>{const z=fromIso(d);return DOW[z.getDay()]+' '+z.getDate()};
-  el.innerHTML=`<section class="ps"><div class="hd"><h2>This pay period so far</h2><small>${esc(P.sh(D[0]))} to ${esc(P.sh(D[D.length-1]))}</small></div>
+  el.innerHTML=`<section class="ps"><div class="hd"><h2>This pay period so far</h2><small>${esc(P.sh(D[0]))} to ${esc(P.sh(addD(D[0],25)))}</small></div>
    <div class="ps-big" id="ps_earn"><b>…</b><span>Working it out</span></div>
    <div class="ps-grid">
     <div><small>Parcels</small><b>${x&&x.pc!=null?(+x.pc).toLocaleString('en-AU'):'0'}</b></div>
@@ -10625,7 +10629,7 @@ function range(){
   if(period==='day')return{from:anchor,to:anchor,label:longD(anchor),sub:'Day'};
   if(period==='year'){const d=fromIso(anchor),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return{from:y+'-07-01',to:(y+1)+'-06-30',label:'Financial year '+y+'/'+String(y+1).slice(2),sub:'1 Jul '+y+' to 30 Jun '+(y+1)}}
   if(period==='week'){const f=monday(anchor),t=add(f,6);return{from:f,to:t,label:short(f)+' to '+short(add(f,4))+' '+fromIso(t).getFullYear(),sub:'Week'}}
-  const f=cycleStart(anchor),t=add(f,27);return{from:f,to:t,label:monthName(f),sub:short(f)+' to '+short(t)+' '+fromIso(t).getFullYear()};
+  const f=cycleStart(anchor),t=add(f,27),t2=add(f,25);return{from:f,to:t,label:monthName(f),sub:short(f)+' to '+short(t2)+' '+fromIso(t2).getFullYear()};
 }
 function step(n){
   if(period==='day'){let d=anchor;do{d=add(d,n)}while([0,6].includes(fromIso(d).getDay()));anchor=d}
@@ -12250,6 +12254,13 @@ function myListHTML(){
    <p class="sub">Once the office has checked your invoice it can no longer be changed here. Call the office if something is wrong.</p></section>`}
 /* Check a submitted invoice against the office rates and the day records. Anything that doesn't line up is shown in yellow. */
 let histFor='';
+/* 2 loads on this invoice against the morning checks */
+function tlOf(x){const o={ok:[],un:[],no:[],sus:[]};if(!x||!x.rows)return o;
+  for(const r of x.rows){if(r.t==='h'||r.ld!==2)continue;const id=r.d+'_'+x.sid,k=tlc[id],c=clock[id]||{};
+    if(!k)o.un.push(nice(r.d));else if(k.chk==='ok')o.ok.push(nice(r.d));else if(c.twoLoads===true&&c.updatedAt&&String(c.updatedAt)>String(k.at||''))o.sus.push(nice(r.d));else o.no.push(nice(r.d))}
+  return o}
+function tlLine(x){const o=tlOf(x),n=o.ok.length+o.un.length+o.no.length+o.sus.length;if(!n)return '';
+  return `<small class="tlk">2 loads: ${[o.ok.length?`<span class="ok">✓ ${o.ok.length} confirmed</span>`:'',o.un.length?`<span class="un">${o.un.length} not checked</span>`:'',o.no.length?`<span class="no">✗ ${o.no.length} checked as 1 load</span>`:'',o.sus.length?`<span class="no">⚠ ${o.sus.length} changed after the check</span>`:''].filter(Boolean).join(' · ')}</small>`}
 function checkInv(x){
   if(x&&x.v===2&&x.rows&&x.T){const out=[],oc=officeRates(x.sid),xc=x.cfg||{},ic=cfgs[x.sid]||{};
     if(['r1','r2','rx'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001))out.push('parcel rates are different from the set rates');
@@ -12266,13 +12277,7 @@ function checkInv(x){
     if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
     {const L=tlOf(x);if(L.no.length)out.push('2 loads on '+L.no.join(', ')+' but the morning check said 1 load');if(L.sus.length)out.push('driver changed back to 2 loads after the check on '+L.sus.join(', '))}
     return out}
-/* 2 loads on this invoice against the morning checks */
-function tlOf(x){const o={ok:[],un:[],no:[],sus:[]};if(!x||!x.rows)return o;
-  for(const r of x.rows){if(r.t==='h'||r.ld!==2)continue;const id=r.d+'_'+x.sid,k=tlc[id],c=clock[id]||{};
-    if(!k)o.un.push(nice(r.d));else if(k.chk==='ok')o.ok.push(nice(r.d));else if(c.twoLoads===true&&c.updatedAt&&String(c.updatedAt)>String(k.at||''))o.sus.push(nice(r.d));else o.no.push(nice(r.d))}
-  return o}
-function tlLine(x){const o=tlOf(x),n=o.ok.length+o.un.length+o.no.length+o.sus.length;if(!n)return '';
-  return `<small class="tlk">2 loads: ${[o.ok.length?`<span class="ok">✓ ${o.ok.length} confirmed</span>`:'',o.un.length?`<span class="un">${o.un.length} not checked</span>`:'',o.no.length?`<span class="no">✗ ${o.no.length} checked as 1 load</span>`:'',o.sus.length?`<span class="no">⚠ ${o.sus.length} changed after the check</span>`:''].filter(Boolean).join(' · ')}</small>`}
+
   const out=[];if(!x||!x.rows||!x.T)return out;
   const oc=mergeCfg(x.sid),xc=x.cfg||{};
   if(['r1','r2','rx','rh'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001)||!!xc.gst!==!!oc.gst||!!xc.hourly!==!!oc.hourly)out.push('rates are different from the rates set for this driver');
@@ -12746,7 +12751,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610304100';
+const VERSION='202610304300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
