@@ -4320,6 +4320,12 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root #sh-main #mod-results .rb-r{border:1px solid var(--sh-line)!important}
 @media (min-width:900px){:root:root #sh-main #mod-results .rb-r{border:0!important;border-top:1px solid var(--sh-line)!important}:root:root #sh-main #mod-results .rb-r:first-child{border-top:0!important}}
 </style>
+<style id="nogold">
+/* perfect results show green, the same as on target (1st place keeps its gold medal) */
+:root:root:root .svgd,:root:root:root #sh-main .tile.svgd>b,:root:root:root #sh-main .sh-sec.pg .tile.svgd>b,:root:root:root #sh-main .rt .rtk .tk b.g.gd,:root:root:root #sh-main .ms-r b.g.gd,:root:root:root #sh-main #mod-summary td:has(> i.dt.gold),:root:root:root #sh-main .rt td:has(> i.rd.r-gd),:root:root:root .dt.gold b,:root:root:root .dt.gold .st,:root:root:root .dh-week .st4 .s.gold b,:root:root:root .dh-week .st4 .s.gold i,:root:root:root .rb .v-gd,:root:root:root .rb-s.v-gd b{color:var(--ok,#14804A)!important}
+:root:root:root #sh-main .me-trend .tr-c i.gd,:root:root:root #sh-main .rt i.rd.r-gd,:root:root:root #sh-main #mod-summary i.dt.gold{background:var(--ok,#14804A)!important}
+:root:root:root #sh-main .tile.gold{border-top-color:var(--sh-line)!important}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -6211,7 +6217,7 @@ function mountBoard(box,rows){
      ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["ETA","Scan","Enq/1k","FTD","Survey"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b>${scTxt(r)}</b><small>out of 3</small></span></div>`}).join("")}
   </div>
-  <p class="rb-key">Ranked by total score: 1 point a day each for 2 hr ETA, scan compliance and enquiries, averaged over the days worked, out of 3. ${view==="day"?"":`Needs ${NEED[view]} days worked to get a place.`} Green is on target, red is missed, gold is perfect.</p>`;
+  <p class="rb-key">Ranked by total score: 1 point a day each for 2 hr ETA, scan compliance and enquiries, averaged over the days worked, out of 3. ${view==="day"?"":`Needs ${NEED[view]} days worked to get a place.`} Green is on target, red is missed.</p>`;
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
@@ -6223,7 +6229,7 @@ async function boardCanvas(rows){
   const W=1080,M=36,RH=84,HEAD=250,COLH=70,FOOT=150,H=HEAD+COLH+rows.length*RH+FOOT;
   const cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d");
   const F='"Barlow","Barlow Semi Condensed",Arial,sans-serif';
-  const col={ink:"#14213a",mut:"#5a6680",line:"#dde3ec",alt:"#f4f6fa",navy:"#0F1A2A",org:"#F2782D",g:"#1E8A4C",b:"#C62828",gd:"#B8860B",n:"#8A94A6"};
+  const col={ink:"#14213a",mut:"#5a6680",line:"#dde3ec",alt:"#f4f6fa",navy:"#0F1A2A",org:"#F2782D",g:"#1E8A4C",b:"#C62828",gd:"#1E8A4C",n:"#8A94A6"};
   g.fillStyle="#fff";g.fillRect(0,0,W,H);
   g.fillStyle=col.navy;g.fillRect(0,0,W,HEAD);g.fillStyle=col.org;g.fillRect(0,HEAD-8,W,8);
   const lg=await logoImg();if(lg){g.save();const s=120,x=M,y=48;g.beginPath();g.roundRect?g.roundRect(x,y,s,s,24):g.rect(x,y,s,s);g.clip();g.drawImage(lg,x,y,s,s);g.restore()}
@@ -6250,7 +6256,7 @@ async function boardCanvas(rows){
   const fy=HEAD+COLH+rows.length*RH+44;g.textAlign="left";g.fillStyle=col.mut;g.font=`600 23px ${F}`;
   g.fillText(`Targets: 2 hr ETA ${T().etaG}%  ·  Scan ${T().cpG??99}%  ·  Enquiries 1 or less per 1k  ·  FTD 92%  ·  Survey 70`,M,fy);
   g.fillText(`Score: 1 point a day each for ETA, scan and enquiries, out of 3.${view==="day"?"":" Needs "+NEED[view]+" days to get a place."}`,M,fy+36);
-  g.fillStyle=col.g;g.fillText("Green on target",M,fy+76);g.fillStyle=col.b;g.fillText("Red missed",M+210,fy+76);g.fillStyle=col.gd;g.fillText("Gold perfect",M+370,fy+76);
+  g.fillStyle=col.g;g.fillText("Green on target",M,fy+76);g.fillStyle=col.b;g.fillText("Red missed",M+210,fy+76);
   return cv;
 }
 async function shareBoard(btn){
@@ -11864,7 +11870,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290700';
+const VERSION='202610290730';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
