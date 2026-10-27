@@ -4244,7 +4244,24 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root #sh-main .sh-sec .card>h2,:root:root #sh-main .sh-sec .card>.ch>h2,:root:root #sh-main .sh-sec .card>summary h2,:root:root #sh-main .sh-sec .card>header h2{color:var(--gt,var(--sh-ink))!important}
 /* red number badges: a little softer */
 :root:root .bdg{background:#C9453F!important}
-</style><div class="sh-app">
+</style><style id="lvstrong">
+/* leave week rows: bright status colours again */
+:root:root #sh-main #mod-leave .lvr{border-width:2px!important;border-left-width:8px!important}
+:root:root #sh-main #mod-leave .lvr.open{--rbg:#E7F6EC;--lc:#1E8A4C}
+:root:root #sh-main #mod-leave .lvr.one{--rbg:#FFF3D6;--lc:#B26A00}
+:root:root #sh-main #mod-leave .lvr.full{--rbg:#FDE4E2;--lc:#C62828}
+:root:root #sh-main #mod-leave .lvr.bo{--rbg:#ECEFF3;--lc:#5A6576}
+@media (prefers-color-scheme:dark){
+:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}
+:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}
+:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}
+:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}}
+:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.open{--rbg:#123524;--lc:#2FA866}
+:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.one{--rbg:#3A2E0E;--lc:#C98A00}
+:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#3D1A1A;--lc:#D64545}
+:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}
+</style>
+<div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
 <div class="sh-mtop"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-role"></div><div class="sh-vt" hidden></div></div>
@@ -4511,10 +4528,10 @@ const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards',
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','directory','uniform'];
-const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
+const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
 const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets'};
 const ICONS={
  menu:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
@@ -8829,7 +8846,7 @@ function render(){
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.directory;
   const L=list();const shown=L.length;
   box.innerHTML=`<div class="dyx">
-   <div class="head"><h1>Directory</h1></div>
+   <div class="head"><h1>Contacts</h1></div>
    <p class="lead">${isMgr()?'Name, role, phone number and driver number for everyone on the Drivers page.':'Phone numbers for the team. Tap a number to call. Please only use these for work.'}</p>
    ${isMgr()?`<p class="live">\u25CF Live: drivers see changes from the Drivers page straight away.</p>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
@@ -11706,7 +11723,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610282200';
+const VERSION='202610282300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
