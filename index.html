@@ -5833,7 +5833,7 @@ function addRanks(rows){
   const put=(key,val,desc)=>{const L=rows.filter(r=>val(r)!=null).sort((a,b)=>desc?val(b)-val(a):val(a)-val(b));L.forEach((r,i)=>{const p=L[i-1];r[key]=p&&Math.abs(val(p)-val(r))<1e-9?p[key]:i+1});rows.forEach(r=>{r[key+"Of"]=L.length})};
   put("etaRk",r=>r.eta,true);put("ncRk",r=>r.cp==null?null:+r.cp,true);return rows;
 }
-function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))));const P=prevMap();if(P)R.forEach(x=>{x.prev=P[x.key]||null});
+function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?weekRows(cycleList()):view==="week"?weekRows():dayRows(selDay)))));const P=prevMap();/* no up and down arrows for each driver; the Contract 1161 boxes still compare */
   const sv=svFor(weekId,view),pv=view==="day"?null:svFor(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);
   R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});
   R.prevAll=P?Object.values(P):null;R.svT=svTeam(weekId,view);R.svTp=view==="day"?null:svTeam(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);return R}
@@ -11541,7 +11541,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281630';
+const VERSION='202610281640';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
