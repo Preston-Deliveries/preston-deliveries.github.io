@@ -4061,6 +4061,11 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 .rk b.nr,.dr-rank .rk b.nr{font-size:2rem!important;color:var(--sh-muted)}
 .nrt{display:block;margin:4px 0 0;font-weight:700;color:var(--sh-muted);font-size:.95rem}
 .avgp{display:block;margin:4px 0 0;font-weight:700;font-size:.95rem}
+#sh-main #mod-summary .notes .dr-fb{margin:12px 0 0}
+#sh-main #mod-summary .notes .dr-fb li{padding-left:28px!important;position:relative;list-style:none;font-size:1.02rem}
+#sh-main #mod-summary .notes .dr-fb li::before{background:none!important;width:auto!important;height:auto!important;border-radius:0!important;top:0!important;left:4px!important;position:absolute;font-weight:900;font-size:1rem;line-height:1.35}
+#sh-main #mod-summary .notes .dr-fb .good li::before{content:"✓"!important;color:var(--ok)}
+#sh-main #mod-summary .notes .dr-fb .need li::before{content:"✗"!important;color:var(--bad)}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -9795,25 +9800,24 @@ function attention(rows){
 const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
 function bossNotes(C,all,pa,pcs){
   const t=targets(),L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&all.days;
-  const eta=pct(all.etaW,all.etaN),ftd=pct(all.ftdW,all.ftdN),n=nps(all.scores),pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
-  const P=v=>(v*100).toFixed(1)+'%',chg=(c,p,unit)=>{if(!ok||c==null||p==null)return '';const d=c-p;if(Math.abs(d)<(unit==='pts'?.0005:.5))return ', the same as '+L;return unit==='pts'?`, ${d>0?'up':'down'} ${(Math.abs(d)*100).toFixed(1)} points on ${L}`:`, ${fmtN(Math.abs(d))} ${d>0?'more':'fewer'} than ${L}`};
   if(!all.days)return '';
+  const P=v=>(v*100).toFixed(1)+'%',eta=pct(all.etaW,all.etaN),ftd=pct(all.ftdW,all.ftdN),cp=pct(all.cpW,all.cpN),n=nps(all.scores),k=epk(all.enq,all.pc);
   const good=[],watch=[];
-  const vol=`${fmtN(all.pc)} parcels over ${fmtN(all.days)} driver days`+(ok&&pa.pc?`, ${all.pc>=pa.pc?'up':'down'} ${Math.abs(Math.round((all.pc-pa.pc)/pa.pc*100))}% on ${L}`:'')+'.';
-  if(eta!=null)(eta*100>=t.etaG?good:watch).push(`2 hr ETA ${P(eta)} against a ${t.etaG}% target${chg(eta,pe,'pts')}.`);
-  if(ftd!=null)(pf!=null&&ok&&ftd<pf-.005?watch:good).push(`FTD ${P(ftd)}${chg(ftd,pf,'pts')}.`);
-  {const cp=pct(all.cpW,all.cpN),pcp=pa?pct(pa.cpW,pa.cpN):null;if(cp!=null)(cp*100>=t.cpG-1e-9?good:watch).push(`Scan compliance ${P(cp)} against a ${t.cpG}% target${chg(cp,pcp,'pts')}.`)}
-  {const k=epk(all.enq,all.pc),pk=pa&&pa.days?epk(pa.enq,pa.pc):null;(k<=1+1e-9?good:watch).push(all.enq===0?'No at fault customer enquiries.':`${epkTxt(k)} at fault enquiries per 1000 parcels (${fmtN(all.enq)} in total) against a target of 1${ok&&pk!=null&&pk<9999&&Math.abs(k-pk)>=.05?`, ${k<pk?'down':'up'} from ${epkTxt(pk)} on ${L}`:''}.`)}
-  if(n!=null)(n>=70?good:watch).push(`Customer survey score ${n} from ${all.scores.length} customer${all.scores.length===1?'':'s'}${ok&&pn!=null&&n!==pn?`, ${n>pn?'up':'down'} ${Math.round(Math.abs(n-pn)*10)/10} on ${L}`:''}.`);
-  if(C.ncr&&C.ncr.length)watch.push(`${C.ncr.length} NCR${C.ncr.length===1?'':'s'} from the facility manager: ${[...new Set(C.ncr.map(x=>x.driver||x.login))].join(', ')}.`);
-  const R=pcs.filter(x=>x.pc&&GRPS.includes(x.pc)).map(x=>({pc:x.pc,eta:pct(x.a.etaW,x.a.etaN),enq:x.a.enq,nc:x.a.nc})).filter(x=>x.eta!=null);
-  if(R.length>1){const b=[...R].sort((x,y)=>y.eta-x.eta);if(b[0].eta-b[b.length-1].eta>=.003)good.push(`${b[0].pc} has the best 2 hr ETA (${P(b[0].eta)}). ${b[b.length-1].pc} is the lowest (${P(b[b.length-1].eta)}).`)}
-  const hiEnq=R.filter(x=>x.enq).sort((x,y)=>y.enq-x.enq)[0];if(hiEnq&&R.filter(x=>x.enq).length>1)watch.push(`Most enquiries came from ${hiEnq.pc} (${hiEnq.enq}).`);
-  if(all.leave)good.push(`${fmtN(all.leave)} day${all.leave===1?'':'s'} of leave covered.`);
-  const head=!watch.length?'A strong period for the contract.':watch.length<good.length?'A good period overall, with a few things to watch.':watch.length===good.length?'A mixed period. Some areas need attention.':'A tough period. Several areas are below where they should be.';
-  return `<section class="card notes"><div class="ch"><h2>Report</h2></div><p class="lead2"><b>${esc(head)}</b> ${esc(vol)}</p>
-   ${good.length?`<div class="ng"><h4>Going well</h4><ul>${good.map(x=>`<li class="ok">${esc(x)}</li>`).join('')}</ul></div>`:''}
-   ${watch.length?`<div class="ng"><h4>To watch</h4><ul>${watch.map(x=>`<li class="no">${esc(x)}</li>`).join('')}</ul></div>`:''}</section>`;
+  if(eta!=null)(eta*100>=t.etaG-1e-9?good:watch).push(eta*100>=t.etaG-1e-9?`2 hr ETA on target: ${P(eta)}.`:`2 hr ETA below target: ${P(eta)} (target ${t.etaG}%).`);
+  if(ftd!=null)(Math.round(ftd*1000)/10>=FTDG?good:watch).push(Math.round(ftd*1000)/10>=FTDG?`First time delivery on target: ${P(ftd)}.`:`First time delivery below target: ${P(ftd)} (target ${FTDG}%).`);
+  if(cp!=null)(cp*100>=t.cpG-1e-9?good:watch).push(cp*100>=t.cpG-1e-9?`Scan compliance on target: ${P(cp)}.`:`Scan compliance below target: ${P(cp)} (target ${t.cpG}%).`);
+  if(!all.enq)good.push('No at fault customer enquiries.');
+  else (k<=1+1e-9?good:watch).push(`${k<=1+1e-9?'At fault enquiries within target':'Too many at fault enquiries'}: ${epkTxt(k)} per 1000 parcels (${fmtN(all.enq)} in total).`);
+  if(n!=null)(n>=70?good:watch).push(n>=70?`Customers are happy: survey score ${n}.`:`Survey score below target: ${n} (target 70).`);
+  if(C.ncr&&C.ncr.length)watch.push(`${C.ncr.length} NCR${C.ncr.length===1?'':'s'} from the facility manager.`);
+  const R=pcs.filter(x=>x.pc&&GRPS.includes(x.pc)).map(x=>({pc:x.pc,eta:pct(x.a.etaW,x.a.etaN),enq:x.a.enq})).filter(x=>x.eta!=null);
+  if(R.length>1){const b=[...R].sort((x,y)=>y.eta-x.eta)[0];good.push(`Best 2 hr ETA: ${b.pc} (${P(b.eta)}).`)}
+  const hi=R.filter(x=>x.enq).sort((x,y)=>y.enq-x.enq)[0];if(hi&&R.filter(x=>x.enq).length>1)watch.push(`Most at fault enquiries: ${hi.pc} (${hi.enq}).`);
+  const wd=all.wdates?all.wdates.size:0;
+  const vol=`${fmtN(all.pc)} parcels over ${wd} work day${wd===1?'':'s'}`+(ok&&pa.pc?`, ${all.pc>=pa.pc?'up':'down'} ${Math.abs(Math.round((all.pc-pa.pc)/pa.pc*100))}% on ${L}`:'')+'.';
+  const head=!watch.length?'A strong period for the contract.':watch.length<good.length?'A good period, with a few things to work on.':watch.length===good.length?'A mixed period.':'A tough period. Several areas are below target.';
+  return `<section class="card notes"><div class="ch"><h2>How it went</h2></div><p class="lead2"><b>${esc(head)}</b> ${esc(vol)}</p>
+   <div class="dr-fb">${watch.length?`<div class="need"><h3>Work on</h3><ul>${watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}${good.length?`<div class="good"><h3>Going well</h3><ul>${good.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}</div></section>`;
 }
 /* last 4 weeks as small bars for whatever is showing: whole contract, a postcode or one driver */
 function smTrend(keys,who){
@@ -11541,7 +11545,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281640';
+const VERSION='202610281655';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
