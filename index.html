@@ -9540,8 +9540,15 @@ FRI 9/10 DANIEL T 1 at fault
 19/10 RYAN 1 at fault
 15/10 SIMON 1 at fault
 14/10 SIMON 1 at fault`;
+/* the 1161 Performance Report for 12 to 16 Oct 2026: every enquiry, by login and day, all at fault (Jonathan, 27 Oct 2026) */
+const SEED_REPORT=[['2026-10-12','KAHSAYG',1],['2026-10-13','RAMSAYJ3',1],['2026-10-15','FRESSADII',2],['2026-10-15','KARROL2',1],['2026-10-15','RAMSAYJ3',1],['2026-10-16','WATSONC25',1]];
 let seeded=false;
 async function seedOnce(){if(seeded||mode!=='mgr'||!db||!staff.length)return;seeded=true;
+  {const now=new Date().toISOString();let n=0;
+    for(const[date,login,c]of SEED_REPORT)for(let i=1;i<=c;i++){const id='imp-'+date+'-'+login+'-'+i;if(recs[id])continue;const p=byLogin(login);
+      const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date,caseNo:'',login,driver:p?p.name:login,address:'',details:'Imported from the 1161 Performance Report.',supervisor:'',fault:'yes',note:'',source:'report',createdAt:now,updatedAt:now};
+      try{await db.doc('enqlog/'+id).set(doc);recs[id]=Object.assign({id},doc);n++}catch(e){}}
+    if(n)msg={t:n+' enquiries from the 12 to 16 Oct report were added as at fault.'}}
   const rows=parseList(SEED),miss=[],seen={},now=new Date().toISOString();let added=0;
   for(const x of rows){if(!x.login){miss.push(x);continue}
     for(let i=0;i<x.n;i++){const k=x.date+'-'+x.login;seen[k]=(seen[k]||0)+1;const id='seed-'+k+'-'+seen[k];if(recs[id])continue;
@@ -11526,7 +11533,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281550';
+const VERSION='202610281600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
