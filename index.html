@@ -4074,6 +4074,42 @@ html.appui:not(.drvui)[data-theme="dark"] .t-me,html.appui:not(.drvui)[data-them
 :root:root .rk b.rk1,:root:root .dh-week .rk b.rk1{color:#B8860B!important}:root:root .rk b.rk2,:root:root .dh-week .rk b.rk2{color:#7D8794!important}:root:root .rk b.rk3,:root:root .dh-week .rk b.rk3{color:#A0522D!important}:root:root .rk b.rkg,:root:root .dh-week .rk b.rkg{color:#14804A!important}:root:root .rk b.rkb,:root:root .dh-week .rk b.rkb{color:#C62828!important}
 @media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .svgd,:root:root:not([data-theme="light"]) #sh-main .tile.svgd>b,:root:root:not([data-theme="light"]) #sh-main .sh-sec.pg .tile.svgd>b,:root:root:not([data-theme="light"]) #sh-main .rt .rtk .tk b.g.gd,:root:root:not([data-theme="light"]) #sh-main .ms-r b.g.gd,:root:root:not([data-theme="light"]) #sh-main #mod-summary td:has(> i.dt.gold),:root:root:not([data-theme="light"]) #sh-main .rt td:has(> i.rd.r-gd),:root:root:not([data-theme="light"]) .dt.gold b,:root:root:not([data-theme="light"]) .dt.gold .st,:root:root:not([data-theme="light"]) .dh-week .st4 .s.gold b,:root:root:not([data-theme="light"]) .dh-week .st4 .s.gold i{color:#F2C94C!important}:root:root:not([data-theme="light"]) #sh-main .me-trend .tr-c i.gd,:root:root:not([data-theme="light"]) #sh-main .rt i.rd.r-gd,:root:root:not([data-theme="light"]) #sh-main #mod-summary i.dt.gold{background:#F2C94C!important}:root:root:not([data-theme="light"]) #sh-main .tile.gold{border-top-color:#F2C94C!important}:root:root:not([data-theme="light"]) .rk b.rk1,:root:root:not([data-theme="light"]) .dh-week .rk b.rk1{color:#F2C94C!important}:root:root:not([data-theme="light"]) .rk b.rk2,:root:root:not([data-theme="light"]) .dh-week .rk b.rk2{color:#C9D1DB!important}:root:root:not([data-theme="light"]) .rk b.rk3,:root:root:not([data-theme="light"]) .dh-week .rk b.rk3{color:#E3A26A!important}:root:root:not([data-theme="light"]) .rk b.rkg,:root:root:not([data-theme="light"]) .dh-week .rk b.rkg{color:#5CCB8E!important}:root:root:not([data-theme="light"]) .rk b.rkb,:root:root:not([data-theme="light"]) .dh-week .rk b.rkb{color:#F48A8A!important}}
 :root:root[data-theme="dark"] .svgd,:root:root[data-theme="dark"] #sh-main .tile.svgd>b,:root:root[data-theme="dark"] #sh-main .sh-sec.pg .tile.svgd>b,:root:root[data-theme="dark"] #sh-main .rt .rtk .tk b.g.gd,:root:root[data-theme="dark"] #sh-main .ms-r b.g.gd,:root:root[data-theme="dark"] #sh-main #mod-summary td:has(> i.dt.gold),:root:root[data-theme="dark"] #sh-main .rt td:has(> i.rd.r-gd),:root:root[data-theme="dark"] .dt.gold b,:root:root[data-theme="dark"] .dt.gold .st,:root:root[data-theme="dark"] .dh-week .st4 .s.gold b,:root:root[data-theme="dark"] .dh-week .st4 .s.gold i{color:#F2C94C!important}:root:root[data-theme="dark"] #sh-main .me-trend .tr-c i.gd,:root:root[data-theme="dark"] #sh-main .rt i.rd.r-gd,:root:root[data-theme="dark"] #sh-main #mod-summary i.dt.gold{background:#F2C94C!important}:root:root[data-theme="dark"] #sh-main .tile.gold{border-top-color:#F2C94C!important}:root:root[data-theme="dark"] .rk b.rk1,:root:root[data-theme="dark"] .dh-week .rk b.rk1{color:#F2C94C!important}:root:root[data-theme="dark"] .rk b.rk2,:root:root[data-theme="dark"] .dh-week .rk b.rk2{color:#C9D1DB!important}:root:root[data-theme="dark"] .rk b.rk3,:root:root[data-theme="dark"] .dh-week .rk b.rk3{color:#E3A26A!important}:root:root[data-theme="dark"] .rk b.rkg,:root:root[data-theme="dark"] .dh-week .rk b.rkg{color:#5CCB8E!important}:root:root[data-theme="dark"] .rk b.rkb,:root:root[data-theme="dark"] .dh-week .rk b.rkb{color:#F48A8A!important}
+/* LEAVE CALENDAR: simple and clear, same for drivers and admin */
+#sh-main #mod-leave .lvx>.head,#sh-main #mod-leave .lvx>.lead{display:none}
+#sh-main #mod-leave .lvbig{width:100%;min-height:56px!important;font-size:1.1rem!important;margin:0 0 12px;order:4}
+#sh-main #mod-leave .lvseg{display:grid;grid-template-columns:1fr 1fr;background:var(--sh-sunk,rgba(127,127,127,.1));border-radius:14px;padding:4px;gap:4px;margin:0 0 12px;order:5}
+#sh-main #mod-leave .lvseg button{all:unset;box-sizing:border-box;text-align:center;cursor:pointer;padding:10px;border-radius:10px;font-weight:800;font-size:1rem;color:var(--sh-muted);min-height:44px}
+#sh-main #mod-leave .lvseg button[aria-pressed=true]{background:var(--sh-surface);color:var(--sh-ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+#sh-main #mod-leave .lvnav{display:flex;align-items:center;gap:10px;margin:0 0 12px;order:6}
+#sh-main #mod-leave .lvnav .nb{all:unset;box-sizing:border-box;cursor:pointer;width:52px;height:52px;border-radius:14px;border:1px solid var(--sh-line);background:var(--sh-surface);display:grid;place-items:center;font-size:1.8rem;font-weight:800;color:var(--sh-ink);flex:none}
+#sh-main #mod-leave .lvnav .t{flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+#sh-main #mod-leave .lvnav .t b{font:800 1.2rem var(--sh-body)}
+#sh-main #mod-leave .lvnav .t small{color:var(--sh-muted);font-weight:700;font-size:.85rem}
+#sh-main #mod-leave .lvnav .tl{all:unset;cursor:pointer;color:#1E8A4C;font-weight:800;font-size:.9rem;text-decoration:underline}
+#sh-main #mod-leave .lvw{display:flex;flex-direction:column;gap:8px;order:7}
+#sh-main #mod-leave .lvr{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:6px solid var(--lc,var(--sh-line))}
+#sh-main #mod-leave .lvr.now{box-shadow:0 0 0 2px var(--sh-ink) inset}
+#sh-main #mod-leave .lvr .d{flex:none;width:44px;display:flex;flex-direction:column;align-items:center;line-height:1.05}
+#sh-main #mod-leave .lvr .d small{font-weight:800;color:var(--sh-muted);font-size:.85rem;text-transform:uppercase}
+#sh-main #mod-leave .lvr .d b{font:800 1.6rem var(--sh-body)}
+#sh-main #mod-leave .lvr .m{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+#sh-main #mod-leave .lvr .m>b{font-size:1.05rem}
+#sh-main #mod-leave .lvr .ppl{display:flex;flex-wrap:wrap;gap:6px}
+#sh-main #mod-leave .lvr .pp{all:unset;box-sizing:border-box;font-size:.92rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--sh-sunk,rgba(127,127,127,.12));color:var(--sh-ink);cursor:default}
+#sh-main #mod-leave .lvr button.pp{cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+#sh-main #mod-leave .lvr .pp.of{opacity:.6}
+#sh-main #mod-leave .lvr .pill{flex:none;font-weight:800;font-size:.85rem;padding:6px 10px;border-radius:999px;background:var(--lbg);color:var(--lc);white-space:nowrap}
+#sh-main #mod-leave .lvr.open,#sh-main #mod-leave .lvkey .open{--lc:#1E8A4C;--lbg:rgba(30,138,76,.13)}
+#sh-main #mod-leave .lvr.one,#sh-main #mod-leave .lvkey .one{--lc:#B26A00;--lbg:rgba(242,170,40,.2)}
+#sh-main #mod-leave .lvr.full,#sh-main #mod-leave .lvkey .full{--lc:#C62828;--lbg:rgba(198,40,40,.13)}
+#sh-main #mod-leave .lvr.bo,#sh-main #mod-leave .lvkey .bo{--lc:#5A6576;--lbg:rgba(90,101,118,.15)}
+#sh-main #mod-leave .lvkey{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;order:6}
+#sh-main #mod-leave .lvkey span{font-size:.85rem;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--lbg);color:var(--lc)}
+#sh-main #mod-leave .lvlim{order:8;margin:12px 0 0;color:var(--sh-muted);font-size:.95rem;text-align:center}
+#sh-main #mod-leave .lvx>.sub{order:8}
+#sh-main #mod-leave .cal,#sh-main #mod-leave .daydet{order:7}
+@media (prefers-color-scheme:dark){html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).open{--lc:#5CCB8E}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).one{--lc:#F2C94C}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).full{--lc:#F48A8A}html:not([data-theme="light"]) #mod-leave :is(.lvr,.lvkey span).bo{--lc:#AAB4C3}html:not([data-theme="light"]) #sh-main #mod-leave .lvnav .tl{color:#5CCB8E}}
+html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).open{--lc:#5CCB8E}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).one{--lc:#F2C94C}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).full{--lc:#F48A8A}html[data-theme="dark"] #mod-leave :is(.lvr,.lvkey span).bo{--lc:#AAB4C3}
 /* admin Menu and Home */
 .am-g{margin:0 0 20px}.am-g h2{margin:0 0 10px;font:800 1.05rem var(--sh-body);color:var(--sh-muted);letter-spacing:.02em}
 .am-g .dm-t{min-height:118px;position:relative}
@@ -4368,7 +4404,7 @@ const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards',
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','leave','invoices','reports','feedback','guide','directory','uniform'];
-const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Time off',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
+const DNAMES={home:'Home',me:'My results',alerts:'News',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Message the manager',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'News',briefs:'Team brief',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
 const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Drivers',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Directory',updates:'News',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets'};
@@ -8205,7 +8241,7 @@ function reqList(){return Object.entries(reqs).map(([id,r])=>({id,...r})).sort((
 const pendN=()=>Object.values(reqs).filter(r=>r.status==='pending').length;
 function drvReqHTML(){const mine=reqList();let form='';
   if(rqOpen){const ok=!!(rq.from&&rq.to&&rq.to>=rq.from),days=ok?weekdaysBetween(rq.from,rq.to):[],lg=ok&&isLong(rq.from,rq.to),cl=ok?clashes(days):[];
-   form=`<section class="card rq"><h2>Request time off</h2>
+   form=`<section class="card rq"><h2>Ask for days off</h2>
     <div class="grid"><label class="f" for="lv_rqf">First day off<input type="date" id="lv_rqf" min="${today}" value="${esc(rq.from)}"></label><label class="f" for="lv_rqt">Last day off<input type="date" id="lv_rqt" min="${esc(rq.from||today)}" value="${esc(rq.to)}"></label></div>
     ${ok?`<p class="rq-sum"><b>${days.length} working day${days.length===1?'':'s'}</b> off, ${esc(niceShort(rq.from))} to ${esc(niceShort(rq.to))}.</p>`:''}
     ${cl.length?`<p class="rq-warn">${cl.length} of these days ${cl.length===1?'is':'are'} already full or in a no leave period: ${cl.slice(0,6).map(niceShort).join(', ')}${cl.length>6?' and more':''}. The manager may not be able to approve ${cl.length===1?'it':'them'}.</p>`:''}
@@ -8246,7 +8282,7 @@ function render(){
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.leave;
   box.innerHTML=`<div class="lvx">
    <div class="head"><h1>Leave calendar</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn" data-lv="pdf" title="One page PDF of the month showing">Download PDF</button></div>`:''}</div>
-   <p class="lead">${isMgr()?'Everyone’s booked leave, with how many drivers are off each day against your limit.':'Check a day before you ask for time off. Green days have room, amber has one spot left, red is full.'}</p>
+   <p class="lead">${isMgr()?'Everyone’s booked leave, with how many drivers are off each day against your limit.':'See who is off and ask for days off.'}</p>
    ${!isMgr()?drvReqHTML():''}
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the calendar from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lv="share">Send latest to drivers</button></div>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${busy?`<p class="msg" role="status">${esc(busy)}</p>`:''}
@@ -8255,21 +8291,26 @@ function render(){
    ${view==='req'&&isMgr()?mgrReqHTML():view==='tot'&&isMgr()?totHTML():view==='list'&&isMgr()?listHTML():view==='set'&&isMgr()?setHTML():calHTML()}
   </div>`;
 }
-function calHTML(){
-  return `<div class="cvbar"><div class="tabs" role="group" aria-label="Calendar view"><button type="button" data-lv="cv" data-v="week" aria-pressed="${cv==='week'}">Week</button><button type="button" data-lv="cv" data-v="month" aria-pressed="${cv==='month'}">Month</button></div>${isMgr()?'<button type="button" class="sh-btn primary cvact" data-lv="add">+ Add leave</button>':rqOpen?'':'<button type="button" class="sh-btn primary cvact" data-lv="rqopen">Request time off</button>'}</div>`+(cv==='week'?weekHTML():monthHTML());
+function calHTML(){const L=config().limit||3;
+  return `${isMgr()?'<button type="button" class="sh-btn primary lvbig" data-lv="add">+ Add leave for a driver</button>':rqOpen?'':'<button type="button" class="sh-btn primary lvbig" data-lv="rqopen">Ask for days off</button>'}
+   <div class="lvseg" role="group" aria-label="Calendar view"><button type="button" data-lv="cv" data-v="week" aria-pressed="${cv==='week'}">Week</button><button type="button" data-lv="cv" data-v="month" aria-pressed="${cv==='month'}">Month</button></div>`+(cv==='week'?weekHTML():monthHTML())+
+   `<p class="lvlim">Up to <b>${L}</b> driver${L===1?'':'s'} can be off on the same day.</p>`;
 }
-function legendHTML(){const L=config().limit||3;return `<div class="legend"><span><i class="k open"></i>Room for leave</span><span><i class="k one"></i>1 spot left</span><span><i class="k full"></i>Full</span><span><i class="k bo"></i>No leave period</span><span class="lim">Up to ${L} driver${L===1?'':'s'} off a day</span></div>`}
+function lvNav(kind,title,isNow){const w=kind==='w';return `<div class="lvnav"><button type="button" class="nb" data-lv="${w?'wprev':'prev'}" aria-label="Previous ${w?'week':'month'}">‹</button><div class="t"><b>${title}</b>${isNow?`<small>${w?'This week':'This month'}</small>`:`<button type="button" class="tl" data-lv="today">Back to ${w?'this week':'this month'}</button>`}</div><button type="button" class="nb" data-lv="${w?'wnext':'next'}" aria-label="Next ${w?'week':'month'}">›</button></div>`}
+function legendHTML(){return `<div class="lvkey"><span class="open">Room</span><span class="one">1 spot left</span><span class="full">Full</span><span class="bo">No leave</span></div>`}
+function pillTxt(st,n){const L=config().limit||3;if(st.k==='open'){const r=L-n;return r+' spot'+(r===1?'':'s')+' left'}if(st.k==='one')return '1 spot left';if(st.k==='full')return 'Full';return st.t}
 function weekHTML(){
   const m=dayMap(),showNames=isMgr()||config().showNames,days=[];for(let i=0;i<5;i++){const d=new Date(wk);d.setDate(wk.getDate()+i);days.push(d)}
-  const end=days[4];const title=`${days[0].getDate()} ${MON[days[0].getMonth()].slice(0,3)} to ${end.getDate()} ${MON[end.getMonth()].slice(0,3)} ${end.getFullYear()}`;
-  return `<div class="calbar"><button type="button" class="sh-btn" data-lv="wprev" aria-label="Previous week">‹</button><h2>${title}</h2><button type="button" class="sh-btn" data-lv="wnext" aria-label="Next week">›</button><button type="button" class="sh-btn" data-lv="today">This week</button></div>${legendHTML()}
-   <div class="week">${days.map(d=>{const k=iso(d),o=m[k],st=status(k,o),n=o?o.n:0;
+  const end=days[4];const title=`${days[0].getDate()} ${MON[days[0].getMonth()].slice(0,3)} to ${end.getDate()} ${MON[end.getMonth()].slice(0,3)}`;
+  const isNow=iso(wk)===iso(monday(new Date()));
+  return `${lvNav('w',title,isNow)}
+   <div class="lvw">${days.map(d=>{const k=iso(d),o=m[k],st=status(k,o),n=o?o.n:0;
      const ppl=showNames&&o?o.names.map((x,i)=>({x,id:(o.ids||[])[i]})):[];const off=isMgr()&&o?o.office.map((x,i)=>({x,id:(o.oids||[])[i]})):[];
-     const chip=(p,cls)=>isMgr()&&p.id?`<button type="button" class="pp ${cls}" data-lv="edit" data-v="${esc(p.id)}">${esc(p.x)}</button>`:`<span class="pp ${cls}">${esc(isMgr()?p.x:p.x.split(' ')[0])}</span>`;
-     return `<section class="wd ${st.k} ${k===today?'now':''}"><header><span class="wdn">${DOW[(d.getDay()+6)%7]} <b>${d.getDate()}</b> ${MON[d.getMonth()].slice(0,3)}</span><span class="badge">${esc(st.t)}</span></header>
-       <p class="cnt">${n?`<b>${n}</b> driver${n===1?'':'s'} off`:'Nobody off'}</p>
-       ${ppl.length||off.length?`<div class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</div>`:''}</section>`}).join('')}</div>
-   ${isMgr()?'<p class="sub">Tap a name to edit that booking. Office staff are marked and don’t count toward the limit.</p>':''}`;
+     const chip=(p,cls)=>isMgr()&&p.id?`<button type="button" class="pp ${cls}" data-lv="edit" data-v="${esc(p.id)}">${esc(tc(shortName(p.x)))}</button>`:`<span class="pp ${cls}">${esc(tc(isMgr()?shortName(p.x):p.x.split(' ')[0]))}</span>`;
+     return `<div class="lvr ${st.k}${k===today?' now':''}"><div class="d"><small>${DOW[(d.getDay()+6)%7]}</small><b>${d.getDate()}</b></div>
+       <div class="m"><b>${st.k==='bo'?esc(st.t):n?`${n} off`:'Nobody off'}</b>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
+       <span class="pill">${esc(pillTxt(st,n))}</span></div>`}).join('')}</div>
+   ${isMgr()?'<p class="sub">Tap a name to change or remove that leave. Office staff are shown in grey and don’t count toward the limit.</p>':''}`;
 }
 function monthHTML(){
   const m=dayMap(),first=new Date(month.getFullYear(),month.getMonth(),1),start=new Date(first);start.setDate(1-((first.getDay()+6)%7));
@@ -8277,7 +8318,8 @@ function monthHTML(){
   while(cells.length>35&&cells.slice(35).every(d=>d.getMonth()!==month.getMonth()))cells.splice(35);
   const L=config().limit||3;const showNames=isMgr()||config().showNames;
   const det=sel?dayDetail(sel,m[sel]):'';
-  return `<div class="calbar"><button type="button" class="sh-btn" data-lv="prev" aria-label="Previous month">‹</button><h2>${MON[month.getMonth()]} ${month.getFullYear()}</h2><button type="button" class="sh-btn" data-lv="next" aria-label="Next month">›</button><button type="button" class="sh-btn" data-lv="today">Today</button></div>
+  const nw=new Date();
+  return `${lvNav('m',MON[month.getMonth()]+' '+month.getFullYear(),month.getMonth()===nw.getMonth()&&month.getFullYear()===nw.getFullYear())}
    ${legendHTML()}
    <div class="cal" role="grid" aria-label="${MON[month.getMonth()]} ${month.getFullYear()}">${DOW.slice(0,5).map(d=>`<div class="dow">${d}</div>`).join('')}
    ${cells.filter(d=>d.getDay()!==0&&d.getDay()!==6).map(d=>{const k=iso(d),o=m[k],st=status(k,o),out=d.getMonth()!==month.getMonth();
@@ -11558,7 +11600,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610281730';
+const VERSION='202610281740';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
