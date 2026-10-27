@@ -4159,49 +4159,13 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 #sh-main .persub button[aria-pressed="true"] b{color:var(--g)}
 #sh-main .persub .pc{font-size:.9rem;font-weight:600;color:var(--sh-muted);padding:4px 2px}
 </style><style id="calm">
-/* CALM THEME: brand navy and orange kept, every other colour toned down; thin colour lines instead of big colour blocks */
-:root:root{--ok:#2E7350;--okbg:#EEF5F0;--bad:#A8423B;--badbg:#F8ECEA;--act:#B8622E;--actbg:#FBF2EB;--gold:#97781B}
-@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]){--ok:#86BFA0;--okbg:rgba(134,191,160,.10);--bad:#DA8C85;--badbg:rgba(218,140,133,.10);--act:#E4A276;--actbg:rgba(228,162,118,.10);--gold:#D7B95E}}
-:root:root[data-theme="dark"]{--ok:#86BFA0;--okbg:rgba(134,191,160,.10);--bad:#DA8C85;--badbg:rgba(218,140,133,.10);--act:#E4A276;--actbg:rgba(228,162,118,.10);--gold:#D7B95E}
-/* green, red and gold text everywhere */
-:root:root :is(.svg,#sh-main .tile.svg>b,#sh-main .rt .rtk .tk b.g,#sh-main .ms-r b.g,#sh-main #mod-summary td:has(> i.dt.good),#sh-main .rt td:has(> i.rd.r-g),.dt.ok b,.dt.ok .st,.rk b.rkg){color:var(--ok)!important}
-:root:root :is(.svb,#sh-main .tile.svb>b,#sh-main .rt .rtk .tk b.b,#sh-main .ms-r b.b,#sh-main #mod-summary td:has(> i.dt.bad),#sh-main .rt td:has(> i.rd.r-b),.dt.bad b,.dt.bad .st,.rk b.rkb){color:var(--bad)!important}
-:root:root :is(.svgd,#sh-main .tile.svgd>b,#sh-main .rt .rtk .tk b.g.gd,#sh-main .ms-r b.g.gd,#sh-main #mod-summary td:has(> i.dt.gold),#sh-main .rt td:has(> i.rd.r-gd),.dt.gold b,.dt.gold .st,.dh-week .st4 .s.gold b,.dh-week .st4 .s.gold i,.rk b.rk1){color:var(--gold)!important}
-:root:root #sh-main .me-trend .tr-c i{background:var(--ok)!important;opacity:.85}:root:root #sh-main .me-trend .tr-c i.no{background:var(--bad)!important}:root:root #sh-main .me-trend .tr-c i.gd{background:var(--gold)!important}:root:root #sh-main .me-trend .tr-c i.na{background:var(--sh-line)!important;opacity:1}
-:root:root .dt.ok,:root:root .dh-week .st4 .s.ok{background:var(--okbg)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ok) 35%,transparent)}
-:root:root .dt.bad,:root:root .dh-week .st4 .s.bad{background:var(--badbg)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 35%,transparent)}
-:root:root .dt.gold,:root:root .dh-week .st4 .s.gold{background:color-mix(in srgb,var(--gold) 10%,transparent)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 45%,transparent)}
-:root:root .dr-fb .need{background:var(--badbg)!important;border:1px solid color-mix(in srgb,var(--bad) 30%,transparent)!important}:root:root .dr-fb .good{background:var(--okbg)!important;border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)!important}
-/* page colours: muted */
-:root:root .t-results,:root:root .t-survey,:root:root .t-enquiries,:root:root .t-timesheets{--tc:#6B5B95;--tbg:rgba(107,91,149,.10)}:root:root .t-updates,:root:root .t-briefs,:root:root .t-guide{--tc:#8C6D1F;--tbg:rgba(176,140,40,.12)}:root:root .t-staff,:root:root .t-leave,:root:root .t-directory,:root:root .t-vchecks{--tc:#3D7356;--tbg:rgba(61,115,86,.10)}:root:root .t-directory{--tc:#3A6F6A;--tbg:rgba(58,111,106,.10)}:root:root .t-runs,:root:root .t-sort,:root:root .t-precards,:root:root .t-lockers,:root:root .t-me{--tc:#3F5F96;--tbg:rgba(63,95,150,.10)}:root:root .t-invoices,:root:root .t-uniform,:root:root .t-reports,:root:root .t-feedback{--tc:#A85A2A;--tbg:rgba(200,104,43,.11)}:root:root .t-reports{--tc:#9C4038;--tbg:rgba(156,64,56,.10)}:root:root .t-clock,:root:root .t-alerts,:root:root .t-uniform{--tc:#566170;--tbg:rgba(86,97,112,.10)}
-@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .t-results,:root:root:not([data-theme="light"]) .t-survey,:root:root:not([data-theme="light"]) .t-enquiries,:root:root:not([data-theme="light"]) .t-timesheets{--tc:#ADA1CE}:root:root:not([data-theme="light"]) .t-updates,:root:root:not([data-theme="light"]) .t-briefs,:root:root:not([data-theme="light"]) .t-guide{--tc:#D2B76F}:root:root:not([data-theme="light"]) .t-staff,:root:root:not([data-theme="light"]) .t-leave,:root:root:not([data-theme="light"]) .t-directory,:root:root:not([data-theme="light"]) .t-vchecks{--tc:#8DC1A5}:root:root:not([data-theme="light"]) .t-directory{--tc:#88BEB6}:root:root:not([data-theme="light"]) .t-runs,:root:root:not([data-theme="light"]) .t-sort,:root:root:not([data-theme="light"]) .t-precards,:root:root:not([data-theme="light"]) .t-lockers,:root:root:not([data-theme="light"]) .t-me{--tc:#97AFDA}:root:root:not([data-theme="light"]) .t-invoices,:root:root:not([data-theme="light"]) .t-uniform,:root:root:not([data-theme="light"]) .t-reports,:root:root:not([data-theme="light"]) .t-feedback{--tc:#E0A47E}:root:root:not([data-theme="light"]) .t-reports{--tc:#DD9891}:root:root:not([data-theme="light"]) .t-clock,:root:root:not([data-theme="light"]) .t-alerts,:root:root:not([data-theme="light"]) .t-uniform{--tc:#A9B2BE}}
-:root:root[data-theme="dark"] .t-results,:root:root[data-theme="dark"] .t-survey,:root:root[data-theme="dark"] .t-enquiries,:root:root[data-theme="dark"] .t-timesheets{--tc:#ADA1CE}:root:root[data-theme="dark"] .t-updates,:root:root[data-theme="dark"] .t-briefs,:root:root[data-theme="dark"] .t-guide{--tc:#D2B76F}:root:root[data-theme="dark"] .t-staff,:root:root[data-theme="dark"] .t-leave,:root:root[data-theme="dark"] .t-directory,:root:root[data-theme="dark"] .t-vchecks{--tc:#8DC1A5}:root:root[data-theme="dark"] .t-directory{--tc:#88BEB6}:root:root[data-theme="dark"] .t-runs,:root:root[data-theme="dark"] .t-sort,:root:root[data-theme="dark"] .t-precards,:root:root[data-theme="dark"] .t-lockers,:root:root[data-theme="dark"] .t-me{--tc:#97AFDA}:root:root[data-theme="dark"] .t-invoices,:root:root[data-theme="dark"] .t-uniform,:root:root[data-theme="dark"] .t-reports,:root:root[data-theme="dark"] .t-feedback{--tc:#E0A47E}:root:root[data-theme="dark"] .t-reports{--tc:#DD9891}:root:root[data-theme="dark"] .t-clock,:root:root[data-theme="dark"] .t-alerts,:root:root[data-theme="dark"] .t-uniform{--tc:#A9B2BE}
 /* tiles and quick add: plain card, thin colour line on top */
 :root:root .dm-t{border-top:3px solid var(--tc,var(--sh-line))!important}
 :root:root .ah-qa .qa{border-top:2px solid var(--tc,var(--sh-line))!important;background:var(--sh-surface)!important;box-shadow:inset 0 0 0 1px var(--sh-line)}
-:root:root .am-g h2{color:var(--gc)!important;opacity:.9}
-:root:root .am-day{--gc:#6B5B95}:root:root .am-news{--gc:#8C6D1F}:root:root .am-team{--gc:#3D7356}:root:root .am-road{--gc:#3F5F96}:root:root .am-office{--gc:#A85A2A}:root:root .am-me{--gc:#566170}
 /* To do and Needs you: plain card with a thin orange line, soft icons */
 :root:root .dh-todo{background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-left:4px solid var(--act)!important}
 :root:root .dh-todo .dh-do{background:var(--sh-sunk,rgba(127,127,127,.06))!important}
 :root:root .dh-do .ic{background:var(--tbg,var(--actbg))!important;color:var(--tc,var(--act))!important}
-/* bottom tabs and side menu icons: soft colours */
-:root:root .sh-side .sh-links [data-nav]{--g:#AEB7C2}
-:root:root .sh-side .sh-links [data-nav="home"]{--g:#86BFA0}:root:root .sh-side .sh-links [data-nav="summary"],:root:root .sh-side .sh-links :is([data-nav="results"],[data-nav="timesheets"],[data-nav="enquiries"],[data-nav="survey"]){--g:#ADA1CE}
-:root:root .sh-side .sh-links :is([data-nav="updates"],[data-nav="briefs"],[data-nav="guide"]){--g:#D2B76F}
-:root:root .sh-side .sh-links :is([data-nav="staff"],[data-nav="leave"],[data-nav="directory"],[data-nav="vchecks"]){--g:#8DC1A5}
-:root:root .sh-side .sh-links :is([data-nav="runs"],[data-nav="sort"],[data-nav="precards"],[data-nav="lockers"],[data-nav="me"]){--g:#97AFDA}
-:root:root .sh-side .sh-links :is([data-nav="invoices"],[data-nav="uniform"],[data-nav="reports"],[data-nav="feedback"]){--g:#E0A47E}
-:root:root.drvui .sh-side .sh-links [data-nav="reports"]{--g:#DD9891}:root:root.drvui .sh-side .sh-links [data-nav="feedback"]{--g:#ADA1CE}:root:root.drvui .sh-side .sh-links [data-nav="directory"]{--g:#88BEB6}:root:root.drvui .sh-side .sh-links [data-nav="uniform"]{--g:#A9B2BE}
-:root:root .sh-side .sh-links [data-nav="menu"]{--g:#C3CBD5}
-:root:root .g-perf{--g:#ADA1CE}:root:root .g-news{--g:#D2B76F}:root:root .g-team{--g:#8DC1A5}:root:root .g-road{--g:#97AFDA}:root:root .g-admin{--g:#E0A47E}:root:root .g-start{--g:#86BFA0}
-/* leave rows: lighter fills, thin borders */
-:root:root #sh-main #mod-leave .lvr{border-width:1px!important;border-left-width:6px!important}
-:root:root #sh-main #mod-leave .lvr.open{--rbg:#F2F8F4;--lc:#3D7356}:root:root #sh-main #mod-leave .lvr.one{--rbg:#FBF6E9;--lc:#9A6B12}:root:root #sh-main #mod-leave .lvr.full{--rbg:#FAF0EE;--lc:#A8423B}:root:root #sh-main #mod-leave .lvr.bo{--rbg:#F2F4F6;--lc:#5D6876}
-@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.open{--rbg:#17271F;--lc:#5E9E7B}:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.one{--rbg:#2A2414;--lc:#B08A3A}:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.full{--rbg:#2D1D1C;--lc:#B86862}:root:root:not([data-theme="light"]) #sh-main #mod-leave .lvr.bo{--rbg:#1F252D;--lc:#6B7686}}
-:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.open{--rbg:#17271F;--lc:#5E9E7B}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.one{--rbg:#2A2414;--lc:#B08A3A}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.full{--rbg:#2D1D1C;--lc:#B86862}:root:root[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#1F252D;--lc:#6B7686}
-:root:root #sh-main #mod-leave .lvkey .open{--lc:#3D7356}:root:root #sh-main #mod-leave .lvkey .one{--lc:#9A6B12}:root:root #sh-main #mod-leave .lvkey .full{--lc:#A8423B}:root:root #sh-main #mod-leave .lvkey .bo{--lc:#5D6876}
-:root:root .ck-big.go,:root:root #sh-home .sh-hero .ck-big.go{background:#2E7D55!important}:root:root .ck-big.stop,:root:root #sh-home .sh-hero .ck-big.stop{background:#B5463F!important}
 /* WHATSAPP STYLE BOTTOM BAR (phones): plain bar, grey line icons, the open tab sits in a soft pill */
 @media (max-width:899.98px){
  :root:root .sh-side{background:#FFFFFF!important;border-top:1px solid #E3E7EC!important;box-shadow:none!important}
@@ -4238,12 +4202,8 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root :is(.dt.ok,.dt.bad,.dt.gold,.dh-week .st4 .s.ok,.dh-week .st4 .s.bad,.dh-week .st4 .s.gold,.dr-fb .need,.dr-fb .good,.dh-todo,.dh-done){background:var(--sh-surface)!important}
 :root:root .dh-todo{border-left-width:1px!important}
 :root:root .dh-card h2,:root:root .ah-off .ao-h b,:root:root .dh-week .hd b{color:var(--act)!important}
-:root:root .g-perf{--gt:#5E4A93}:root:root .g-news{--gt:#7A5A10}:root:root .g-team{--gt:#2F6B4C}:root:root .g-road{--gt:#2F5191}:root:root .g-admin{--gt:#9A4F20}:root:root .g-start{--gt:#2F6B5C}
-@media (prefers-color-scheme:dark){:root:root:not([data-theme="light"]) .g-perf{--gt:#B4A8D6}:root:root:not([data-theme="light"]) .g-news{--gt:#D9BE76}:root:root:not([data-theme="light"]) .g-team{--gt:#93C8AA}:root:root:not([data-theme="light"]) .g-road{--gt:#9CB5DF}:root:root:not([data-theme="light"]) .g-admin{--gt:#E6AA82}:root:root:not([data-theme="light"]) .g-start{--gt:#8FC7B5}}
-:root:root[data-theme="dark"] .g-perf{--gt:#B4A8D6}:root:root[data-theme="dark"] .g-news{--gt:#D9BE76}:root:root[data-theme="dark"] .g-team{--gt:#93C8AA}:root:root[data-theme="dark"] .g-road{--gt:#9CB5DF}:root:root[data-theme="dark"] .g-admin{--gt:#E6AA82}:root:root[data-theme="dark"] .g-start{--gt:#8FC7B5}
+:root:root :is(.g-perf,.g-news,.g-team,.g-road,.g-admin,.g-start){--gt:var(--g)}
 :root:root #sh-main .sh-sec .card>h2,:root:root #sh-main .sh-sec .card>.ch>h2,:root:root #sh-main .sh-sec .card>summary h2,:root:root #sh-main .sh-sec .card>header h2{color:var(--gt,var(--sh-ink))!important}
-/* red number badges: a little softer */
-:root:root .bdg{background:#C9453F!important}
 </style><style id="lvstrong">
 /* leave week rows: bright status colours again */
 :root:root #sh-main #mod-leave .lvr{border-width:2px!important;border-left-width:8px!important}
@@ -11720,7 +11680,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610282330';
+const VERSION='202610290000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
