@@ -4222,7 +4222,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root[data-theme="dark"] #sh-main #mod-leave .lvr.bo{--rbg:#232A33;--lc:#6B7686}
 </style>
 <style id="pcbig">
-:root:root #sh-main #mod-summary .scopes.pcbig{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+:root:root #sh-main #mod-summary .scopes.pcbig{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0}
 :root:root #sh-main #mod-summary .scopes.pcbig>button{min-height:52px;padding:10px 4px;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:800 1.1rem var(--sh-body)}
 :root:root #sh-main #mod-summary .scopes.pcbig>button[aria-pressed="true"]{background:#1F3A5F;border-color:#1F3A5F;color:#fff}
 :root:root #sh-main #mod-summary .scopes.pcbig .cur{grid-column:1/-1;justify-self:start}
@@ -10054,7 +10054,7 @@ function render0(){
     <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
     ${perHTML()}
    </div>
-   <div class="scopes pcbig" role="group" aria-label="Postcode">${['4214','4215','4217','4218'].map(p=>['pc:'+p,p]).map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
+   <div class="scopes pcbig" role="group" aria-label="Postcode">${[['all','All'],...['4214','4215','4217','4218'].map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}${scope.t==='drv'?`<span class="cur">${esc(scopeLabel(C))}<button type="button" data-sm="scope" data-v="all" aria-label="Back to whole contract">✕</button></span>`:''}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${body}
    ${(()=>{try{return scope.t==='all'?smTrend(Object.keys(C.P),'Contract 1161'):scope.t==='pc'?smTrend(Object.keys(C.P).filter(k=>C.P[k].pc===scope.v),scope.v):smTrend([scope.v],'')}catch(e){return ''}})()}
@@ -11686,7 +11686,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290030';
+const VERSION='202610290100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
