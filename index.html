@@ -6353,7 +6353,7 @@ function mountBoard(box,rows){
   box.classList.remove("rt");
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
-  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><button type="button" class="rb-share" data-rb="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v5h14v-5"/></svg>Share as picture</button></div>
+  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div></div>
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries per 1k</span><span role="columnheader">First time delivery</span><span role="columnheader">Survey score</span><span role="columnheader">Total score</span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=3-1e-9&&r.rank;
@@ -12073,7 +12073,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610291630';
+const VERSION='202610291700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
