@@ -5749,7 +5749,7 @@ function rate(kind,v){
   if(kind==="cp")return v*100>=(t.cpG??99)-1e-9?"good":"bad";
   if(kind==="enq")return v<=1+1e-9?"good":"bad";
 }
-/* at fault enquiries per 1000 parcels; target 1 or less */
+/* at fault enquiries per 1k parcels; target 1 or less */
 const epk=(e,pc)=>{e=+e||0;pc=+pc||0;if(!e)return 0;return pc?e/pc*1000:9999};
 const epkTxt=v=>v==null?"\u2013":v>=9999?"n/a":(Math.round(v*10)/10).toFixed(1);
 const avg=a=>{const b=a.filter(x=>x!=null);return b.length?b.reduce((s,x)=>s+x,0)/b.length:null};
@@ -5761,7 +5761,7 @@ let cycleWeeks={};
 async function loadCycle(){const s=cycleInfo(weekId).start;const o={};await Promise.all([0,1,2,3].map(async i=>{const id=iso(addDays(s,7*i));o[id]=id===weekId?null:await loadWeekDocs(id)}));cycleWeeks=o}
 function cycleList(){return Object.keys(cycleWeeks).sort().map(id=>id===weekId?week:cycleWeeks[id])}
 /* Points, every day worked: 2 hr ETA at target or above +1, scan compliance at target (99%) or above +1,
-   at fault enquiries at 1 or less per 1000 parcels +1, above that -1.
+   at fault enquiries at 1 or less per 1k parcels +1, above that -1.
    A perfect day is 3. A week or pay period adds up every day worked. FTD is information only and never scored. */
 const PTS={good:1,bad:0,none:0};
 function dayPts(r){const e=r.enq==null||r.enq===""?0:+r.enq;return(r.eta==null||r.eta===""?1:PTS[rate("eta",r.eta)])+(r.cp==null||r.cp===""?1:PTS[rate("cp",+r.cp)])+(rate("enq",epk(e,r.pc))==="good"?1:-1)}
@@ -5950,7 +5950,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   const lines=[
     ["400","2 hr ETA: "+t.etaG+"% or more is on target."],
     ["400","Scan compliance: "+(t.cpG??99)+"% or more is on target."],
-    ["400","Enquiries: at fault only, 1 or less per 1000 parcels is on target."],
+    ["400","Enquiries: at fault only, 1 or less per 1k parcels is on target."],
     ["400","FTD is for information only."]];
   if(isWeek||isCycle)lines.push(["400","Colours show your average day. Numbers show your totals."]);
   fy+=46;
@@ -6101,7 +6101,7 @@ function rtHTML(rows,multi){
   return `<p class="rt-cap">Contract 1161</p><div class="rt-sum rtk">
      ${tl("2 hr ETA",p1(te),"Target "+T().etaG+"%",PA?dlt(te,pe,"pct"):"",te==null?"":te>=.9995?"g gd":te*100>=T().etaG?"g":"b")}
      ${tl("Scan %",tn==null?"\u2013":p1(tn),"Target "+(T().cpG??99)+"%",PA&&tn!=null&&pn!=null?dlt(tn,pn,"pct"):"",tn==null?"":tn>=.9995?"g gd":tn*100>=(T().cpG??99)-1e-9?"g":"b")}
-     ${tl("Enquiries",epkTxt(tk),Math.round(te2||0)+" at fault · per 1000 · Target 1",PA?dlt(tk,pk,"down1"):"",tk===0?"g gd":tk<=1+1e-9?"g":"b")}
+     ${tl("Enquiries",epkTxt(tk),Math.round(te2||0)+" at fault · per 1k · Target 1",PA?dlt(tk,pk,"down1"):"",tk===0?"g gd":tk<=1+1e-9?"g":"b")}
      ${tl("Survey",ST?ST.n:"\u2013",ST?ST.c+" customer"+(ST.c===1?"":"s"):"No surveys yet",ST&&SP?dlt(ST.n,SP.n,"up"):"",ST?(ST.n>=100?"g gd":ST.n>=70?"g":"b"):"")}</div>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-rt="q" placeholder="Search name or number" aria-label="Search drivers" value="${escR(RT.q)}"></label>
@@ -6111,7 +6111,7 @@ function rtHTML(rows,multi){
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
    <div class="rsw"><table class="rsm"><thead><tr>${th("name","Driver","dr")}${multi?th("days","Days","r dy"):""}${th("eta","ETA","r c-eta")}${th("nc","Scan","r c-nc")}${th("enq","Enq","r c-enq")}${th("sv","Survey","r c-sv")}</tr></thead><tbody></tbody></table></div>
-   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA. Scan: scan compliance (target ${T().cpG??99}%). Enq: at fault enquiries per 1000 parcels, target 1 or less. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}, with the number of surveys in brackets.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
+   <p class="rt-key rsk"><span style="white-space:nowrap"><i class="rd r-g"></i>On target</span>&nbsp;&nbsp; <span style="white-space:nowrap"><i class="rd r-b"></i>Missed</span><br>ETA: 2 hr ETA. Scan: scan compliance (target ${T().cpG??99}%). Enq: at fault enquiries per 1k parcels, target 1 or less. Survey: customer survey score for the ${view==="cycle"?"pay period":"week"}, with the number of surveys in brackets.${rows.some(x=>x.prev)?`<br>▲ ▼ compare with ${PLAB[view]||"last week"}. Green is better, red is worse.`:""} Tap a heading to sort.</p>`;
 }
 function mountRT(box,rows,multi){
   box.classList.add("rt");box.__rows=rows;box.__multi=multi;
@@ -8032,7 +8032,7 @@ function rate(kind,v){if(v==null)return '';const t=targets();
   if(kind==='cp')return v*100>=t.cpG-1e-9?'g':'b';
   if(kind==='enq')return v<=1+1e-9?'g':'b';
   return v<=0?'g':'b'}
-/* at fault enquiries per 1000 parcels; target 1 or less */
+/* at fault enquiries per 1k parcels; target 1 or less */
 const epk=(e,pc)=>{e=+e||0;pc=+pc||0;if(!e)return 0;return pc?e/pc*1000:9999};
 const epkTxt=v=>v==null?'–':v>=9999?'n/a':(Math.round(v*10)/10).toFixed(1);
 const PT={g:1,b:0,'':0};
@@ -8058,7 +8058,7 @@ function trendHTML(own){
     ['2 hr ETA','Target '+t.etaG+'%',st.map(x=>x&&x.eta!=null?x.eta*100:null),v=>v>=t.etaG,v=>(Math.round(v*10)/10)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
     ['FTD','Target 92%',st.map(x=>x&&x.ftd!=null?x.ftd*100:null),v=>Math.round(v*10)/10>=92,v=>(Math.round(v*10)/10)+'%',v=>Math.max(6,Math.min(100,(v-80)*5))],
     ['Scan compliance','Target '+t.cpG+'%',st.map(x=>x&&x.cp!=null?x.cp*100:null),v=>v>=t.cpG-1e-9,v=>(Math.round(v*10)/10)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
-    ['Enquiries','At fault, per 1000 parcels. Target 1 or less',st.map(x=>x?x.enqK:null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
+    ['Enquiries','At fault, per 1k parcels. Target 1 or less',st.map(x=>x?x.enqK:null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
     ['Survey','Target 70',sv,v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
   const bars=([l,tg,vals,ok,fmt,h])=>{const gd=v=>v!=null&&((/2 hr ETA|Scan|FTD|First time/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0)||(/Survey/i.test(l)&&v>=100));const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1];
     return `<div class="tr-row"><div class="tr-h"><span>${l}</span><small>${tg}</small><b class="${cur==null?'':gd(cur)?'svgd':ok(cur)?'svg':'svb'}">${cur==null?'–':fmt(cur)}</b></div><div class="tr-bars">${vals.map((v,i)=>`<div class="tr-c" title="Week of ${sh(W[i])}: ${v==null?'no results':fmt(v)}"><em>${v==null?'':fmt(v)}</em><i class="${v==null?'na':gd(v)?'ok gd':ok(v)?'ok':'no'}" style="height:${v==null?4:h?h(v):(v<=0?8:Math.max(14,v/mx*100))}%"></i></div>`).join('')}</div></div>`};
@@ -8159,7 +8159,7 @@ function statsHTML(per,x,sv,own){
       row('First time delivery (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':x.ftd>=.9995?'g gd':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
       row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':x.eta>=.9995?'g gd':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`),t.etaG+'%'),
       row('Scan compliance',(x.cp==null?'–':pctf(x.cp))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(x.cp==null?null:metricRank(per.dates,'nc'))),x.cp==null?'':ncDays.length?'b':x.cp>=.9995?'g gd':'g',ok(ncDays.length,`Under ${t.cpG}% on ${ncDays.map(r=>sh(r.dt)).join(', ')}`),t.cpG+'%'),
-      row('Enquiries (at fault)',epkTxt(x.enqK)+` <small class="mr">${Math.round(x.enq||0)}</small>`,x.enqK===0?'g gd':x.enqK<=1+1e-9?'g':'b',ok(enqDays.length,`Per 1000 parcels. On ${enqDays.map(r=>sh(r.dt)).join(', ')}`),'1 per 1000')].join('')
+      row('Enquiries (at fault)',epkTxt(x.enqK)+` <small class="mr">${Math.round(x.enq||0)}</small>`,x.enqK===0?'g gd':x.enqK<=1+1e-9?'g':'b',ok(enqDays.length,`Per 1k parcels. On ${enqDays.map(r=>sh(r.dt)).join(', ')}`),'1 per 1k')].join('')
      :`<p class="ms-none">No results ${{day:'that day',week:'this week',cycle:'this pay cycle'}[PER]} yet.</p>`}
    </div>
    <div class="ms-sec"><h3>Customer surveys${PER==='day'?' <span class="ms-q">this week</span>':''}</h3>
@@ -8246,7 +8246,7 @@ function streaks(){
 function tiles4(x,sv,withFtd){const t=targets();
   const T=[['2 hr ETA',x&&x.eta!=null?pctf(x.eta):null,x&&x.eta!=null?x.eta*100>=t.etaG:null,'Target '+t.etaG+'%',!!(x&&x.eta!=null&&x.eta>=.9995)],
     ['Scan compliance',x&&x.cp!=null?pctf(x.cp):null,x&&x.cp!=null?x.cp*100>=t.cpG-1e-9:null,'Target '+t.cpG+'%',!!(x&&x.cp!=null&&x.cp>=.9995)],
-    ['Enquiries',x?epkTxt(x.enqK):null,x?x.enqK<=1+1e-9:null,(x&&x.enq?Math.round(x.enq)+' at fault. ':'')+'Target 1 per 1000 parcels',!!(x&&x.enqK===0)],
+    ['Enquiries',x?epkTxt(x.enqK):null,x?x.enqK<=1+1e-9:null,(x&&x.enq?Math.round(x.enq)+' at fault. ':'')+'Target 1 per 1k parcels',!!(x&&x.enqK===0)],
     ['Survey',sv&&sv.found&&sv.avg!=null?String(Math.round(sv.avg*100)/10):null,sv&&sv.found&&sv.avg!=null?sv.avg*10>=70:null,'Target 70',!!(sv&&sv.found&&sv.avg!=null&&sv.avg*10>=100)]];
   if(withFtd){T.splice(3,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%',!!(x&&x.ftd!=null&&x.ftd>=.9995)])}
   return T}
@@ -9848,7 +9848,7 @@ function grade(kind,v){const t=targets();if(v==null||v===''||isNaN(v))return 'no
   if(kind==='nc')return v<=0?'good':'bad';
   if(kind==='cp')return v*100>=t.cpG-1e-9?'good':'bad';
   if(kind==='enq')return v<=1+1e-9?'good':'bad';return 'none'}
-/* at fault enquiries per 1000 parcels; target 1 or less */
+/* at fault enquiries per 1k parcels; target 1 or less */
 const epk=(e,pc)=>{e=+e||0;pc=+pc||0;if(!e)return 0;return pc?e/pc*1000:9999};
 const epkTxt=v=>v==null?'–':v>=9999?'n/a':(Math.round(v*10)/10).toFixed(1);
 const PTS={good:1,bad:0,none:0};
@@ -9941,7 +9941,7 @@ function tiles(a,extra,pa){
    ['First time delivery',fmtPct(ftd),'Target '+FTDG+'%',ftd==null?'':fc(ftd)==='svgd'?'gold svgd':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':eta>=.9995?'gold svgd':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan compliance',fmtPct(pct(a.cpW,a.cpN)),'Target '+targets().cpG+'%',pct(a.cpW,a.cpN)==null?'none':pct(a.cpW,a.cpN)>=.9995?'gold svgd':grade('cp',pct(a.cpW,a.cpN))==='good'?'good svg':'bad svb'],
-   ['Enquiries per 1000',a.days?epkTxt(epk(a.enq,a.pc)):'–',`${fmtN(a.enq)} at fault · Target 1 or less`,a.days?(epk(a.enq,a.pc)===0?'gold svgd':grade('enq',epk(a.enq,a.pc))==='good'?'good svg':'bad svb'):'none'],
+   ['Enquiries per 1k',a.days?epkTxt(epk(a.enq,a.pc)):'–',`${fmtN(a.enq)} at fault · Target 1 or less`,a.days?(epk(a.enq,a.pc)===0?'gold svgd':grade('enq',epk(a.enq,a.pc))==='good'?'good svg':'bad svb'):'none'],
    ['Survey score',n==null?'–':String(n),'Target 70 · '+(a.scores.length?`${a.scores.length} customer${a.scores.length===1?'':'s'}`:'no surveys yet'),n==null?'none':n>=100?'gold svgd':n>=70?'good svg':'bad svb'],
    ...(extra||[])];
   const L=PC&&PC.R?PC.R.lab:'',pe=pa?pct(pa.etaW,pa.etaN):null,pf=pa?pct(pa.ftdW,pa.ftdN):null,pn=pa?nps(pa.scores):null;
@@ -9965,7 +9965,7 @@ function driverTable(rows){
   return `<div class="tw"><table class="tb pct dtb"><thead><tr><th>Driver</th><th class="r">Days</th><th class="r">Parcels</th><th class="r">FTD</th><th class="r">ETA</th><th class="r"><abbr title="Scan compliance">Scan</abbr></th><th class="r"><abbr title="Enquiries">Enq</abbr></th><th class="r"><abbr title="Survey score">Survey</abbr></th></tr></thead><tbody>
   ${rows.map((row,i)=>{const{p,a}=row;const eta=pct(a.etaW,a.etaN),n=nps(a.scores);const g=grpCls(p),gl=grpLbl(p);return `<tr data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="smr ${g}"><td class="smd"><b>${esc(shortNm(p.name)||p.login)}</b><span class="smm">${g?`<span class="smg">${esc(gl)}</span>`:`<span class="sml">${esc(p.pc)}</span>`}</span></td>
    <td class="r">${a.days}</td><td class="r">${fmtN(a.pc)}</td><td class="r">${fsp(pct(a.ftdW,a.ftdN))}</td><td class="r">${gdot('eta',eta)}${fmtPct(eta)}</td><td class="r">${(q=>q==null?'–':gdot('cp',q)+fmtPct(q))(pct(a.cpW,a.cpN))}</td><td class="r">${a.days?gdot('enq',epk(a.enq,a.pc))+epkTxt(epk(a.enq,a.pc)):'–'}${a.enq?` <span class="sub in">(${a.enq})</span>`:''}</td><td class="r">${n==null?'–':`<span class="${n>=100?'svgd':n>=70?'svg':'svb'}">${n}</span>`+` <span class="sub in">(${a.scores.length})</span>`}</td></tr>`}).join('')}
-  </tbody></table></div><p class="hint smk">ETA: 2 hr ETA. Scan: scan compliance (target ${targets().cpG}%). Enq: at fault enquiries per 1000 parcels (target 1 or less), number in brackets.</p>`;
+  </tbody></table></div><p class="hint smk">ETA: 2 hr ETA. Scan: scan compliance (target ${targets().cpG}%). Enq: at fault enquiries per 1k parcels (target 1 or less), number in brackets.</p>`;
 }
 function attention(rows){
   const R=range(),T=targets(),sd=d=>{const x=fromIso(d);return DOW[x.getDay()]+' '+x.getDate()+' '+MON[x.getMonth()].slice(0,3)};
@@ -9994,7 +9994,7 @@ function bossNotes(C,all,pa,pcs){
   if(ftd!=null)(Math.round(ftd*1000)/10>=FTDG?good:watch).push(Math.round(ftd*1000)/10>=FTDG?`First time delivery on target: ${P(ftd)}.`:`First time delivery below target: ${P(ftd)} (target ${FTDG}%).`);
   if(cp!=null)(cp*100>=t.cpG-1e-9?good:watch).push(cp*100>=t.cpG-1e-9?`Scan compliance on target: ${P(cp)}.`:`Scan compliance below target: ${P(cp)} (target ${t.cpG}%).`);
   if(!all.enq)good.push('No at fault customer enquiries.');
-  else (k<=1+1e-9?good:watch).push(`${k<=1+1e-9?'At fault enquiries within target':'Too many at fault enquiries'}: ${epkTxt(k)} per 1000 parcels (${fmtN(all.enq)} in total).`);
+  else (k<=1+1e-9?good:watch).push(`${k<=1+1e-9?'At fault enquiries within target':'Too many at fault enquiries'}: ${epkTxt(k)} per 1k parcels (${fmtN(all.enq)} in total).`);
   if(n!=null)(n>=70?good:watch).push(n>=70?`Customers are happy: survey score ${n}.`:`Survey score below target: ${n} (target 70).`);
   if(C.ncr&&C.ncr.length)watch.push(`${C.ncr.length} NCR${C.ncr.length===1?'':'s'} from the facility manager.`);
   const R=pcs.filter(x=>x.pc&&GRPS.includes(x.pc)).map(x=>({pc:x.pc,eta:pct(x.a.etaW,x.a.etaN),enq:x.a.enq})).filter(x=>x.eta!=null);
@@ -10015,7 +10015,7 @@ function smTrend(keys,who){
     ['2 hr ETA','Target '+t.etaG+'%',A.map(a=>{const v=pct(a.etaW,a.etaN);return v==null?null:v*100}),(v)=>fx(v)>=t.etaG,v=>fx(v)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
     ['FTD','Target 92%',A.map(a=>{const v=pct(a.ftdW,a.ftdN);return v==null?null:v*100}),v=>fx(v)>=92,v=>fx(v)+'%',v=>Math.max(6,Math.min(100,(v-80)*5))],
     ['Scan compliance','Target '+t.cpG+'%',A.map(a=>{const v=pct(a.cpW,a.cpN);return v==null?null:v*100}),(v)=>fx(v)>=t.cpG,v=>fx(v)+'%',v=>Math.max(6,Math.min(100,(v-90)*10))],
-    ['Enquiries','At fault, per 1000 parcels. Target 1 or less',A.map(a=>a.days?epk(a.enq,a.pc):null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
+    ['Enquiries','At fault, per 1k parcels. Target 1 or less',A.map(a=>a.days?epk(a.enq,a.pc):null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
     ['Survey','Target 70',A.map(a=>nps(a.scores)),v=>v>=70,v=>String(v),v=>Math.max(6,v)]];
   const row=([l,tg,vals,ok,fmt,h])=>{const mx=Math.max(1,...vals.filter(v=>v!=null));const cur=vals[vals.length-1],pv=vals[vals.length-2];
     const isOk=(v,i)=>ok(v,vals.slice(0,i).filter(x=>x!=null).pop()),gd=v=>v!=null&&((/2 hr ETA|Scan|FTD|First time/i.test(l)&&v>=99.95)||(/Enquir/i.test(l)&&v<=0)||(/Survey/i.test(l)&&v>=100));
@@ -10119,10 +10119,10 @@ async function pdf(btn){
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
   const C=compute(),R=C.R,NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],INK=[20,32,29],LINE=[211,220,216],ALT=[246,248,247];
-  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan compliance',fmtPct(pct(a.cpW,a.cpN))],['Enquiries per 1000 (at fault)',epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')'],['Survey',n==null?'–':n+' ('+a.scores.length+')']]};
+  const kpi=a=>{const n=nps(a.scores);return [['Parcels',fmtN(a.pc)],['FTD',fmtPct(pct(a.ftdW,a.ftdN))],['2HR ETA',fmtPct(pct(a.etaW,a.etaN))],['Scan compliance',fmtPct(pct(a.cpW,a.cpN))],['Enquiries per 1k (at fault)',epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')'],['Survey',n==null?'–':n+' ('+a.scores.length+')']]};
   let blocks=[],tops;
   const drvBody=rows=>rows.map(({p,a},i)=>[String(i+1),p.name,p.nos.join(', '),p.pc,String(a.days),fmtN(a.pc),fmtPct(pct(a.ftdW,a.ftdN)),fmtPct(pct(a.etaW,a.etaN)),fmtPct(pct(a.cpW,a.cpN)),epkTxt(epk(a.enq,a.pc))+' ('+a.enq+')',nps(a.scores)==null?'–':nps(a.scores)+' ('+a.scores.length+')']);
-  const drvHead=['#','DRIVER','NO.','GROUP','DAYS','PARCELS','FTD','2HR ETA','SCAN %','ENQ /1000','SURVEY'];
+  const drvHead=['#','DRIVER','NO.','GROUP','DAYS','PARCELS','FTD','2HR ETA','SCAN %','ENQ /1K','SURVEY'];
   if(scope.t==='drv'){const p=C.P[scope.v],a=C.per[scope.v]||blank();tops=kpi(a);
     blocks.push({title:'DRIVER',head:['DRIVER NUMBER','LOGIN','POSTCODE','MOBILE','VAN'],body:[[p.nos.join(', '),p.login,p.pc,p.mobile,p.van]]});
     blocks.push({title:'DAY BY DAY',head:['DAY','PARCELS','FTD','2HR ETA','SCAN %','AT FAULT ENQ'],body:a.list.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),fmtN(r.pc),fmtPct(r.ftd),fmtPct(r.eta),(r.cp==null||r.cp===''?'–':fmtPct(+r.cp)),String(+(r.enq||0))])});
@@ -11726,7 +11726,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290230';
+const VERSION='202610290300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
