@@ -4934,6 +4934,7 @@ function go(sec,opts){
   if(!previewChild){try{localStorage.setItem('sec1161',sec)}catch(e){}}
   setTimeout(()=>window.dispatchEvent(new Event('resize')),0);
   try{vtEnter(sec,opts.act?'edit':'view')}catch(e){console.warn(e)}
+  [60,400,1200].forEach(t=>setTimeout(()=>{try{vtAlign()}catch(e){}},t));
 }
 /* View / Edit (or Import) switch at the top of every admin page that has something to change.
    View hides the add, edit, delete and upload controls; Edit shows them. Each page opens on View. */
@@ -4986,7 +4987,9 @@ function vtClose(sec){/* leaving Edit: close any open editor so View shows the n
 function vtSet(mode){const c=VT[cur],sec=vtSec();if(!c||!sec)return;vtFix1=true;if(mode==='view'&&sec.dataset.vt==='edit'){const bg=document.querySelector('[data-act="edClose"]');if(bg)bg.click()}vtMode=mode;sec.dataset.vt=mode;vtSwitch(sec,c);vtTag();
   if(cur==='survey'&&mode==='edit'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}
   if(c.runs&&window.RUNS){const b=sec.querySelector(`[data-act="mode"][data-v="${mode==='edit'?'edit':'sheet'}"]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click()}
-  setTimeout(vtFixTabs,0)}
+  setTimeout(vtFixTabs,0);
+  /* looking at one item and tap Edit: go straight into editing it, no second Edit button */
+  if(mode==='edit')setTimeout(()=>{const L=[...sec.querySelectorAll('button')].filter(b=>b.offsetParent&&!b.closest('.vtab')&&Object.values(b.dataset||{}).some(v=>/^(edit|nedit)$/.test(v))&&/^\s*Edit/.test(b.textContent||''));if(L.length===1)L[0].click()},40)}
 function vtEnter(sec,mode){
   document.querySelectorAll('.sh-sec[data-vt]').forEach(x=>{if(x.id!==MOD[sec]){delete x.dataset.vt;const w=x.querySelector(':scope>.vtab');if(w)w.remove()}});
   if(sec==='results'){const b=document.querySelector('#r_tabs [data-rtab="'+(mode==='edit'?'import':'view')+'"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click();return}
@@ -4997,14 +5000,18 @@ function vtEnter(sec,mode){
   vtObs.disconnect();vtObs.observe(el,{childList:true,subtree:true});
 }
 /* on computers, the switch lines up with the page's own content column */
-function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab');if(!w)return;const extra=[...sec.querySelectorAll(':scope>.unord')];
-  if(!matchMedia('(min-width:900px)').matches){[w,...extra].forEach(x=>{x.style.marginLeft='';x.style.width=''});return}
+function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab'),extra=[...sec.querySelectorAll(':scope>.unord')],phIn=document.querySelector('#sh-ph:not([hidden]) .in');
+  const all=[w,...extra].filter(Boolean);const reset=()=>{all.forEach(x=>{x.style.marginLeft='';x.style.width=''});if(phIn){phIn.style.marginLeft='';phIn.style.width='';phIn.style.maxWidth=''}};
+  if(!matchMedia('(min-width:900px)').matches){reset();return}
   const S=sec.getBoundingClientRect();let L=1e9,Rr=-1e9;
   sec.querySelectorAll('*').forEach(e=>{if(e.children.length||e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0||b.height<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
   sec.querySelectorAll('.card,section,table,.tw').forEach(e=>{if(e.closest('.vtab,.unord')||!e.offsetParent)return;const b=e.getBoundingClientRect();if(b.width<=0)return;L=Math.min(L,b.left);Rr=Math.max(Rr,b.right)});
-  if(!(Rr>L)||Rr-L<300){[w,...extra].forEach(x=>{x.style.marginLeft='';x.style.width=''});return}
-  const R={left:L,width:Rr-L};
-  [w,...extra].forEach(x=>{x.style.setProperty('margin-left',Math.round(R.left-S.left)+'px','important');x.style.setProperty('width',Math.round(R.width)+'px','important')})}
+  if(!(Rr>L)||Rr-L<300){reset();return}
+  all.forEach(x=>{x.style.setProperty('margin-left',Math.round(L-S.left)+'px','important');x.style.setProperty('width',Math.round(Rr-L)+'px','important')});
+  /* the title banner keeps its full-width background, its words line up with the content */
+  if(phIn){const P=phIn.parentElement.getBoundingClientRect(),cs=getComputedStyle(phIn.parentElement);const ml=Math.round(L-P.left-parseFloat(cs.paddingLeft||0));
+    phIn.style.setProperty('margin-left',Math.max(0,ml)+'px','important');phIn.style.setProperty('width',Math.round(Rr-L)+'px','important');phIn.style.setProperty('max-width','none','important')}}
+window.__vtAlign=vtAlign;
 window.addEventListener('resize',()=>{clearTimeout(vtAlign.t);vtAlign.t=setTimeout(vtAlign,80)});
 document.addEventListener('click',e=>{const b=e.target.closest('.vtab [data-vt]');if(!b)return;const y=window.scrollY;vtSet(b.dataset.vt);requestAnimationFrame(()=>window.scrollTo(0,y))});
 /* in View, a tap on anything that changes data does nothing */
@@ -12155,7 +12162,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300000';
+const VERSION='202610300100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
