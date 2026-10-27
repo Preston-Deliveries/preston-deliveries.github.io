@@ -4855,12 +4855,12 @@ window.SCORE=(()=>{
     const n=rows.length;return{score:s/n,enq:e/n,eta:t/n,scan:c/n,days:n,f,p}}
   const fmt=v=>v==null?'–':(v>=99.95?'100':Math.min(99.9,Math.round(v*10)/10).toFixed(1));
   const lost=v=>v<0.05?'0':'−'+(Math.round(v*10)/10).toFixed(1);
-  /* places: 3 days and 200 parcels in a week, 12 days and 800 parcels in a pay cycle (month) */
-  const NEED={day:{d:1,pc:0},week:{d:3,pc:200},cycle:{d:12,pc:800}};
+  /* places: 3 days worked in a week, 12 days in a pay cycle (month). No parcel minimum. */
+  const NEED={day:{d:1,pc:0},week:{d:3,pc:0},cycle:{d:12,pc:0}};
   const RULES=[['Enquiries','40 points for each at fault enquiry, 20 for partly at fault, 0 for not at fault. At most 60 a day.'],
     ['2 hr ETA','1 point for every 1% below 100%. At most 30 a day.'],
     ['Scan compliance','1 point for every 0.5% below 100%. At most 10 a day.']];
-  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the score works</summary><p>Every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. <b>96 or more is green</b>: that is what you score when you hit every target (2 hr ETA 98%, scan compliance 99%, no enquiries). Under 96 is red. First time delivery and the survey are shown, but they are not part of the score. A place on the board needs 3 days and 200 parcels in a week, or 12 days and 800 parcels in a month.</p></details>`;
+  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the score works</summary><p>Every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. <b>96 or more is green</b>: that is what you score when you hit every target (2 hr ETA 98%, scan compliance 99%, no enquiries). Under 96 is red. First time delivery and the survey are shown, but they are not part of the score. A place on the board needs 3 days worked in a week, or 12 days in a month.</p></details>`;
   return{day,period,fmt,lost,NEED,RULES,howHTML}})();
 window.__uvDb=async()=>{const d=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!d)return null;
   const sub=(q,f,e)=>{const u=q.onSnapshot(x=>{try{f(x)}catch(_){}},x=>{try{e&&e(x)}catch(_){}});window.__uvSubs.push(u);return u};
@@ -6177,9 +6177,9 @@ function weekRows(weeks){
     return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq+(enqP||0),sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,enqP,sc:SC,points:sum(rs.map(dayPts)),max:days*100}});
 }
 function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r0])=>{const r=Object.assign({},r0,{enq:fe(d,login),enqP:feP(d,login)});return r}).map((r,i)=>[Object.keys(d.rows)[i],r]).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,enqP:+r.enqP||0,sc:window.SCORE.period([r]),points:dayPts(r),max:100}))}
-/* ranking: the average score a day worked, out of 100. A place needs 3 days and 200 parcels in a week,
-   12 days and 800 parcels in a pay cycle (1 day for a single day). Ties go to the driver with more parcels. */
-const NEED={day:1,week:3,cycle:12},PCNEED={day:0,week:200,cycle:800};
+/* ranking: the average score a day worked, out of 100. A place needs 3 days worked in a week,
+   12 days in a pay cycle (1 day for a single day). Ties go to the driver with more parcels. */
+const NEED={day:1,week:3,cycle:12},PCNEED={day:0,week:0,cycle:0};
 function scoreSort(rows,need){need=need||NEED[view]||1;const pn=need>=12?PCNEED.cycle:need>=3?PCNEED.week:0;
   return rows.map(r=>({...r,avg:r.days?r.points/r.days:0,q:(r.days||1)>=need&&(+r.pc||0)>=pn,need,star:r.days&&r.points/r.days>=99.95})).sort((a,b)=>(b.q-a.q)||cmp(a,b)||a.login.localeCompare(b.login));
 }
@@ -6567,7 +6567,7 @@ function mountBoard(box,rows){
      ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b class="v-${(r.avg||0)>=96-1e-9?"g":"b"}">${scTxt(r)}</b></span></div>`}).join("")}
   </div>
-  <p class="rb-key">Ranked by score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days and ${PCNEED[view].toLocaleString("en-AU")} parcels.`} Ties go to the driver with more parcels.</p>${window.SCORE.howHTML("sc-how")}`;
+  <p class="rb-key">Ranked by score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days worked.`} Ties go to the driver with more parcels.</p>${window.SCORE.howHTML("sc-how")}`;
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
@@ -6646,7 +6646,7 @@ async function boardPdf(btn){
         if(d.column.index===0){const k=rkClass(r,nR);if(RK[k]){d.cell.styles.textColor=RK[k]}}if(d.column.index===6){d.cell.styles.textColor=(r.avg||0)>=96-1e-9?col.g:col.b}}});
     const y=297-bottom+6;doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(90,102,128);
     doc.text(`Score: every day starts at 100. Enquiry at fault minus 40, partly at fault minus 20 (max 60). 2 hr ETA minus 1 per 1% below 100% (max 30).`,M,y);
-    doc.text(`Scan compliance minus 1 per 0.5% below 100% (max 10). Score is the average of days worked.${view==="day"?"":" A place needs "+NEED[view]+" days and "+PCNEED[view].toLocaleString("en-AU")+" parcels."} 96 or more is green.`,M,y+4.5);
+    doc.text(`Scan compliance minus 1 per 0.5% below 100% (max 10). Score is the average of days worked.${view==="day"?"":" A place needs "+NEED[view]+" days worked."} 96 or more is green.`,M,y+4.5);
     const blob=doc.output("blob"),name=("1161 results "+perLabel()).replace(/[^\w ]+/g,"").replace(/\s+/g," ").trim()+".pdf";
     if(downloads){try{await downloads.save({filename:name,data:blob})}catch(e){if(!e||e.code!=="declined")throw e}}
     else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
@@ -8681,8 +8681,8 @@ function metricRank(dates,kind){
   const K=myKeys(),i=L.findIndex(([k])=>K.has(k));if(i<0)return null;let rk=i+1;while(rk>1&&Math.abs(L[rk-2][1]-L[i][1])<1e-9)rk--;return{rank:rk,of:L.length};
 }
 function resultsBy(dates){const by={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r)}}return by}
-/* place among drivers by average score a day worked, out of 100. A place needs 3 days and 200 parcels in a week,
-   12 days and 800 parcels in a pay cycle, 1 day for one day. Ties go to more parcels. */
+/* place among drivers by average score a day worked, out of 100. A place needs 3 days worked in a week,
+   12 days in a pay cycle, 1 day for one day. Ties go to more parcels. */
 function resultsRank(dates){
   const by={},dy={},pp={};for(const dt of dates){const d=data&&data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const k=dkey(l);by[k]=(by[k]||0)+dayP(r);dy[k]=(dy[k]||0)+1;pp[k]=(pp[k]||0)+(+r.pc||0)}}
   const need=dates.length>7?12:dates.length>1?3:1,pn=need>=12?(window.SCORE.NEED.cycle.pc):need>=3?(window.SCORE.NEED.week.pc):0,K=myKeys(),mine=Object.keys(by).find(k=>K.has(k));if(!mine)return null;
@@ -12555,7 +12555,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610302500';
+const VERSION='202610302600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
