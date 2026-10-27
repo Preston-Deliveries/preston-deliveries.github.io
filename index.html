@@ -4274,6 +4274,52 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 :root:root body:has(#sh-ph[hidden]) .sh-mtop{box-shadow:inset 0 -2px 0 var(--topline)!important}
 :root:root #sh-ph.sh-ph,:root:root #sh-ph.sh-ph[class*="g-"]{box-shadow:inset 0 2px 0 var(--topline)!important}
 </style>
+<style id="rboard">
+/* Driver Results: View / Import */
+#mod-results .rtabs{display:grid;grid-template-columns:1fr 1fr;margin:4px 0 14px}
+#mod-results .rtabs button{min-height:50px;font-size:1.05rem;font-weight:800}
+:root:root #sh-main #mod-results #r_tool[data-tab="view"] .imp,:root:root #sh-main #mod-results #r_tool[data-tab="import"] .vw{display:none!important}
+#r_tool[data-tab="view"] #r_stepShare>h2,#r_tool[data-tab="view"] #r_stepShare>.row-actions{display:none!important}
+:root:root #sh-main #r_stepShare{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+.rb-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 12px;flex-wrap:wrap}
+.rb-t1{display:block;font-size:1.25rem;font-weight:800;color:var(--sh-ink)}
+.rb-t2{display:block;color:var(--sh-muted);font-weight:600;font-size:.95rem}
+:root:root .rb-share{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border:0;border-radius:12px;background:#25A35A;color:#fff;font:800 1rem var(--sh-body);cursor:pointer}
+.rb-share svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.rb-share:disabled{opacity:.7}
+.rb{display:flex;flex-direction:column;gap:10px}
+.rb-r{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:12px}
+.rb-h{display:none}
+:root:root .rb .rb-d{all:unset;box-sizing:border-box;grid-row:1;grid-column:1/5;display:flex;align-items:center;gap:12px;cursor:pointer;min-width:0}
+.rb-d .rk{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#5a6680;color:#fff;font-weight:800;font-size:1.05rem}
+.rb-r.k1 .rk{background:#D4A017}.rb-r.k2 .rk{background:#9AA4B1}.rb-r.k3 .rk{background:#B87333}.rb-r.kt .rk{background:#1E8A4C}.rb-r.kb .rk{background:#C62828}.rb-r.nr .rk{background:var(--sh-line);color:var(--sh-muted)}
+.rb-d .nm{min-width:0}.rb-d .nm b{display:block;font-size:1.08rem;color:var(--sh-ink);line-height:1.2}.rb-d .nm small{display:block;color:var(--sh-muted);font-size:.8rem}
+.rb-s{grid-row:1;grid-column:5;text-align:right;align-self:center}
+.rb-c{grid-row:2}.rb-s b{display:block;font-size:1.6rem;font-weight:800;line-height:1;color:var(--sh-ink)}.rb-s small{display:block;color:var(--sh-muted);font-size:.72rem;margin-top:2px}
+.rb-s.v-gd b{color:var(--gold,#B8860B)}
+.rb-c{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;background:var(--sh-sunk,rgba(127,127,127,.06));border-radius:10px;padding:7px 2px;min-width:0}
+.rb-c small{font-size:.72rem;font-weight:700;color:var(--sh-muted);line-height:1.1}
+.rb-c b{font-size:1rem;font-weight:800;white-space:nowrap}
+.rb .v-g{color:var(--ok,#14804A)}.rb .v-b{color:#D32F2F}.rb .v-gd{color:var(--gold,#B8860B)}.rb .v-n{color:var(--sh-muted)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rb .v-b{color:#FF6B6B}}
+:root[data-theme="dark"] .rb .v-b{color:#FF6B6B}
+.rb-key{color:var(--sh-muted);font-size:.85rem;line-height:1.4;margin:12px 2px 0}
+@media (min-width:900px){
+ .rb{gap:0;border:1px solid var(--sh-line);border-radius:14px;overflow:hidden;background:var(--sh-surface)}
+ .rb-r{grid-template-columns:minmax(220px,2.2fr) repeat(5,1fr) 1fr;border:0;border-top:1px solid var(--sh-line);border-radius:0;padding:8px 14px;align-items:center}
+ .rb-r:first-child{border-top:0}
+ .rb-h{display:grid;background:var(--sh-sunk,rgba(127,127,127,.06))}.rb-h span{font-size:.78rem;font-weight:800;color:var(--sh-muted);text-transform:uppercase;text-align:center}.rb-h span:first-child{text-align:left}.rb-h span:last-child{text-align:right}
+ :root:root .rb .rb-d,.rb-s,.rb-c{grid-row:auto;grid-column:auto}
+ .rb-c{background:none;padding:0}.rb-c small{display:none}.rb-c b{font-size:1.05rem}
+ .rb-d .rk{width:32px;height:32px;font-size:.95rem}
+}
+
+:root:root #sh-main .sh-sec #r_stepShare.card{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+:root:root #sh-main #mod-results .rb .rb-d{border:0!important;background:none!important;box-shadow:none!important;padding:0!important;min-height:0!important;border-radius:0!important}
+:root:root #sh-main #mod-results .rb-share{background:#25A35A!important;color:#fff!important;border:0!important;box-shadow:none!important}
+:root:root #sh-main #mod-results .rb-r{border:1px solid var(--sh-line)!important}
+@media (min-width:900px){:root:root #sh-main #mod-results .rb-r{border:0!important;border-top:1px solid var(--sh-line)!important}:root:root #sh-main #mod-results .rb-r:first-child{border-top:0!important}}
+</style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
 <div class="sh-main" id="sh-main">
@@ -4322,7 +4368,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
   <div id="r_dvBoard"></div>
   <div class="dvbar" id="r_dvOwner" hidden=""><button id="r_dvBack">Back to the results tool</button><span class="hint">Only you see this button.</span></div>
 </div>
-<div class="wrap" id="r_tool">
+<div class="wrap" id="r_tool" data-tab="view">
   <header class="top">
     <div>
       <div class="eyebrow">Contract Q01161</div>
@@ -4335,7 +4381,8 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     </div>
   </header>
 
-  <section class="card" id="r_stepAdd">
+  <div class="seg rtabs" id="r_tabs" role="group" aria-label="View or import"><button type="button" data-rtab="view" aria-pressed="true">View</button><button type="button" data-rtab="import" aria-pressed="false">Import</button></div>
+  <section class="card imp" id="r_stepAdd">
     <h2><span class="step">1</span>Add the day's emails</h2>
     <div class="days" id="r_days" role="group" aria-label="Pick a day"></div>
     <label class="drop" id="r_drop" for="r_fileInput">
@@ -4347,7 +4394,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     <div class="clr1" id="r_clear1"></div>
   </section>
 
-  <details class="card" id="r_stepCheck">
+  <details class="card imp" id="r_stepCheck">
     <summary class="chk"><h2><span class="step">2</span><span id="r_checkTitle">Check the day</span></h2><span class="tgl" aria-hidden="true"></span></summary>
     <div class="row-actions" style="justify-content:flex-end">
       <span class="confirm" id="r_clearBox"><button class="danger" id="r_clearDay">Clear this day</button></span>
@@ -4358,9 +4405,9 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     </tr></thead><tbody></tbody></table></div>
   </details>
 
-  <div class="seg pvseg" role="group" aria-label="Day, week or month" id="r_perSeg"><button type="button" data-rv="day" aria-pressed="false">Day</button><button type="button" data-rv="week" aria-pressed="true">Week</button><button type="button" data-rv="cycle" aria-pressed="false">Month</button></div>
-  <div class="persub" id="r_perSub" role="group" aria-label="Choose"></div>
-  <section class="card" id="r_stepShare">
+  <div class="seg pvseg vw" role="group" aria-label="Day, week or month" id="r_perSeg"><button type="button" data-rv="day" aria-pressed="false">Day</button><button type="button" data-rv="week" aria-pressed="true">Week</button><button type="button" data-rv="cycle" aria-pressed="false">Month</button></div>
+  <div class="persub vw" id="r_perSub" role="group" aria-label="Choose"></div>
+  <section class="card vw" id="r_stepShare">
     <h2><span class="step">3</span>Share with drivers</h2>
     <div class="row-actions">
       <label class="viewsel" for="r_viewSel" hidden>Show<select id="r_viewSel"><option value="day">Day</option><option value="week" selected>Week</option><option value="cycle">Month (4 week pay cycle)</option></select></label>
@@ -4374,7 +4421,7 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
     <div class="preview" hidden><canvas id="r_board" width="1080" height="800" aria-label="Driver results board"></canvas></div>
     </section>
 
-  <details class="card" id="r_settings">
+  <details class="card imp" id="r_settings">
     <summary>Targets</summary>
     <div class="targets" id="r_targets"></div>
     <p class="hint">Scan compliance comes from the Compliance % column in the Driver Compliance sheet.</p>
@@ -5888,7 +5935,7 @@ function icon(g,kind,cx,cy,color){
   g.restore();
 }
 function fit(g,text,maxW){if(g.measureText(text).width<=maxW)return text;let t=text;while(t.length>1&&g.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…"}
-function renderRTAdmin(){const b=$("rtAdmin");if(b&&!LIVE)mountRT(b,liveRows(),view!=="day")}
+function renderRTAdmin(){const b=$("rtAdmin");if(b&&!LIVE)mountBoard(b,liveRows())}
 function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   const cv=$("board");const g=cv.getContext("2d");
   const isWeek=view==="week", isCycle=view==="cycle";
@@ -6136,6 +6183,90 @@ function mountRT(box,rows,multi){
     if(a.dataset.rt==="find"){const mr=(box.__rows||[]).find(x=>x.me);if(mr){const k=rgOf(mr.grp),cur=[...box.querySelectorAll("[data-rgo][aria-expanded=true]")].map(b=>b.dataset.rgo);if(!cur.includes(k)){RT.open=cur.concat(k);saveRT();rtBody(box)}}if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
   });
 }
+
+/* ---------- View: ranked by total score, one card per driver on phones, a table on computers ---------- */
+function perLabel(){const m=fromIso(weekId),cs=cycleInfo(weekId).start;
+  return view==="cycle"?"Pay cycle "+short(cs)+" to "+short(addDays(cs,27)):view==="week"?"Week "+short(m)+" to "+short(addDays(m,5)):DAYS.find(d=>d[0]===selDay)[1]+" "+short(dayDate(selDay))}
+function bVals(r){
+  const ek=r.enqK!=null?r.enqK:epk(r.enq,r.pc),tf=92;
+  const c=x=>x==="gd"?"gd":x==="g"||x==="w"?"g":x==="b"?"b":"n";
+  return [
+   ["2 hr ETA",r.eta==null?"–":p1(r.eta),r.eta==null?"n":c(r.rt.eta)],
+   ["Scan compliance",r.cp==null?"–":p1(r.cp),r.cp==null?"n":c(r.rt.nc)],
+   ["Enquiries per 1k",epkTxt(ek),ek===0?"gd":ek<=1+1e-9?"g":"b"],
+   ["First time delivery",r.ftd==null?"–":p1(r.ftd),r.ftd==null?"n":r.ftd>=.9995?"gd":r.ftd*100>=tf-1e-9?"g":"b"],
+   ["Survey score",r.sv==null?"–":String(r.sv),r.sv==null?"n":r.sv>=100?"gd":r.sv>=70?"g":"b"]];
+}
+function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank===2)return "k2";if(r.rank===3)return "k3";if(r.rank<=10)return "kt";if(n>10&&r.rank>n-10)return "kb";return ""}
+const scTxt=r=>(Math.round((r.avg||0)*10)/10).toFixed(1);
+function mountBoard(box,rows){
+  box.classList.remove("rt");
+  if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
+  const nR=rows.filter(r=>r.rank).length;
+  box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><button type="button" class="rb-share" data-rb="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v5h14v-5"/></svg>Share as picture</button></div>
+  <div class="rb" role="table" aria-label="Driver results">
+   <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries per 1k</span><span role="columnheader">First time delivery</span><span role="columnheader">Survey score</span><span role="columnheader">Total score</span></div>
+   ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=3-1e-9&&r.rank;
+     return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR(r.name||r.login)}</b><small>${r.days} day${r.days===1?"":"s"}${r.rank?"":" · not ranked"}</small></span></button>
+     ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["ETA","Scan","Enq/1k","FTD","Survey"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
+     <span class="rb-s${full?" v-gd":""}" role="cell"><b>${scTxt(r)}</b><small>out of 3</small></span></div>`}).join("")}
+  </div>
+  <p class="rb-key">Ranked by total score: 1 point a day each for 2 hr ETA, scan compliance and enquiries, averaged over the days worked, out of 3. ${view==="day"?"":`Needs ${NEED[view]} days worked to get a place.`} Green is on target, red is missed, gold is perfect.</p>`;
+  if(box.__wiredB)return;box.__wiredB=true;
+  box.addEventListener("click",e=>{if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
+    const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
+}
+/* the picture for the team: always light, sized for a phone, every driver ranked */
+let LOGO=null;
+function logoImg(){if(LOGO)return Promise.resolve(LOGO);return new Promise(res=>{const i=new Image();i.onload=()=>{LOGO=i;res(i)};i.onerror=()=>res(null);i.src="icon-192.png"})}
+async function boardCanvas(rows){
+  const W=1080,M=36,RH=84,HEAD=250,COLH=70,FOOT=150,H=HEAD+COLH+rows.length*RH+FOOT;
+  const cv=document.createElement("canvas");cv.width=W;cv.height=H;const g=cv.getContext("2d");
+  const F='"Barlow","Barlow Semi Condensed",Arial,sans-serif';
+  const col={ink:"#14213a",mut:"#5a6680",line:"#dde3ec",alt:"#f4f6fa",navy:"#0F1A2A",org:"#F2782D",g:"#1E8A4C",b:"#C62828",gd:"#B8860B",n:"#8A94A6"};
+  g.fillStyle="#fff";g.fillRect(0,0,W,H);
+  g.fillStyle=col.navy;g.fillRect(0,0,W,HEAD);g.fillStyle=col.org;g.fillRect(0,HEAD-8,W,8);
+  const lg=await logoImg();if(lg){g.save();const s=120,x=M,y=48;g.beginPath();g.roundRect?g.roundRect(x,y,s,s,24):g.rect(x,y,s,s);g.clip();g.drawImage(lg,x,y,s,s);g.restore()}
+  const tx=M+150;g.fillStyle=col.org;g.font=`700 26px ${F}`;g.fillText("PRESTON DELIVERY SERVICE  ·  CONTRACT 1161",tx,82);
+  g.fillStyle="#fff";g.font=`800 62px ${F}`;g.fillText("Driver results",tx,148);
+  g.fillStyle="#C9D6E6";g.font=`600 32px ${F}`;g.fillText(perLabel(),tx,196);
+  // column layout
+  const X={rk:M,nm:M+70,sc:W-M},CX=[455,572,689,800,893];
+  const hy=HEAD+COLH-22;g.fillStyle=col.mut;g.font=`700 22px ${F}`;g.textAlign="left";g.fillText("DRIVER",X.nm,hy);
+  g.textAlign="center";[["2 HR","ETA"],["SCAN","%"],["ENQ","PER 1K"],["FTD",""],["SURVEY",""]].forEach(([a,b],i)=>{const cx=CX[i];g.fillText(a,cx,b?hy-22:hy);if(b)g.fillText(b,cx,hy)});
+  g.textAlign="right";g.fillText("SCORE",X.sc,hy-22);g.fillText("/ 3",X.sc,hy);
+  g.fillStyle=col.line;g.fillRect(M,HEAD+COLH-6,W-2*M,3);
+  const nR=rows.filter(r=>r.rank).length,RK={k1:"#D4A017",k2:"#9AA4B1",k3:"#B87333",kt:"#1E8A4C",kb:"#C62828",nr:"#C3CAD5","":"#5a6680"};
+  rows.forEach((r,i)=>{const y=HEAD+COLH+i*RH;if(i%2)g.fillStyle=col.alt,g.fillRect(0,y,W,RH);
+    const cy=y+RH/2;const k=rkClass(r,nR);
+    g.fillStyle=RK[k]||RK[""];g.beginPath();g.arc(X.rk+26,cy,26,0,Math.PI*2);g.fill();
+    g.fillStyle="#fff";g.textAlign="center";g.font=`800 ${r.rank>=100?22:28}px ${F}`;g.fillText(r.rank?String(r.rank):"–",X.rk+26,cy+10);
+    g.textAlign="left";g.fillStyle=col.ink;g.font=`700 30px ${F}`;let nm=(w=>w.length>1?w[0]+" "+w[w.length-1]:w[0]||r.login)(String(r.name||r.login).trim().split(/\s+/));const mw=CX[0]-60-X.nm-12;
+    while(g.measureText(nm).width>mw&&nm.length>3)nm=nm.slice(0,-2)+"…";if(g.measureText(nm).width>mw)nm=nm.slice(0,-1);
+    g.fillText(nm,X.nm,cy+(r.rank?11:0));if(!r.rank){g.fillStyle=col.mut;g.font=`600 20px ${F}`;g.fillText("Not ranked · "+r.days+" day"+(r.days===1?"":"s"),X.nm,cy+26)}
+    bVals(r).forEach(([l,v,c],j)=>{g.fillStyle=col[c]||col.n;g.font=`800 29px ${F}`;g.textAlign="center";g.fillText(v,CX[j],cy+11)});
+    g.textAlign="right";g.fillStyle=r.rank&&r.avg>=3-1e-9?col.gd:col.ink;g.font=`800 38px ${F}`;g.fillText(scTxt(r),X.sc,cy+13);
+  });
+  const fy=HEAD+COLH+rows.length*RH+44;g.textAlign="left";g.fillStyle=col.mut;g.font=`600 23px ${F}`;
+  g.fillText(`Targets: 2 hr ETA ${T().etaG}%  ·  Scan ${T().cpG??99}%  ·  Enquiries 1 or less per 1k  ·  FTD 92%  ·  Survey 70`,M,fy);
+  g.fillText(`Score: 1 point a day each for ETA, scan and enquiries, out of 3.${view==="day"?"":" Needs "+NEED[view]+" days to get a place."}`,M,fy+36);
+  g.fillStyle=col.g;g.fillText("Green on target",M,fy+76);g.fillStyle=col.b;g.fillText("Red missed",M+210,fy+76);g.fillStyle=col.gd;g.fillText("Gold perfect",M+370,fy+76);
+  return cv;
+}
+async function shareBoard(btn){
+  const rows=liveRows();if(!rows.length)return;
+  const old=btn?btn.innerHTML:"";if(btn){btn.disabled=true;btn.textContent="Making the picture…"}
+  try{
+    const cv=await boardCanvas(rows);const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
+    const name=("1161 results "+perLabel()).replace(/[^\w ]+/g,"").replace(/\s+/g," ").trim()+".png";
+    const file=new File([blob],name,{type:"image/png"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:"Driver results"})}catch(e){if(!e||e.name!=="AbortError")throw e}}
+    else if(downloads){await offer(name,blob,"Picture saved.")}
+    else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+  }catch(e){console.warn(e);const sm=$("shareMsg");if(sm){sm.textContent="Could not make the picture. Try again.";sm.hidden=false;sm.classList.add("err")}}
+  if(btn){btn.disabled=false;btn.innerHTML=old}
+}
+window.__resultsBoard=()=>boardCanvas(liveRows());
 let LIVE=false;
 async function goLive(){
   try{
@@ -6237,6 +6368,7 @@ function wire(){
   document.getElementById("r_perSub").addEventListener("click",async e=>{const d=e.target.closest("[data-sd]");if(d){selDay=d.dataset.sd;renderAll();return}const w=e.target.closest("[data-sw]");if(w&&w.dataset.sw!==weekId){await openWeek(w.dataset.sw);renderAll()}});
   document.getElementById("r_perSeg").addEventListener("click",e=>{const b=e.target.closest("[data-rv]");if(b)setView(b.dataset.rv)});
   $("viewSel").onchange=e=>setView(e.target.value);$("viewWeek").onclick=()=>setView("week");$("viewDay").onclick=()=>setView("day");$("viewCycle").onclick=()=>setView("cycle");
+  document.getElementById("r_tabs").addEventListener("click",e=>{const b=e.target.closest("[data-rtab]");if(!b)return;const t=b.dataset.rtab;$("tool").dataset.tab=t;document.querySelectorAll("#r_tabs [data-rtab]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.rtab===t)));if(t==="view")renderAll();window.scrollTo(0,0)});
   $("savePng").onclick=savePng;$("saveXlsx").onclick=saveXlsx;
   $("shareDrivers").onclick=shareDrivers;$("previewDrivers").onclick=()=>{showDriverView(true);window.scrollTo(0,0)};$("dvBack").onclick=showTool;
 }
@@ -8326,7 +8458,7 @@ async function paySummary(){
   let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
   const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
   e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
-window.ME={profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary};
+window.ME={profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -11732,7 +11864,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610290630';
+const VERSION='202610290700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
