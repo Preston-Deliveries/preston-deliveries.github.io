@@ -8919,24 +8919,27 @@ function tiles4(x,sv,withFtd){const t=targets();
 function pcsHTML(x){const n=x&&x.pc!=null?+x.pc:null,d=x?x.days:0;return `<div class="dt pcs"><small>Parcels</small><b>${n==null?'–':n.toLocaleString('en-AU')}</b><span class="st">${n==null?'No results yet':Math.round(n/Math.max(1,d)).toLocaleString('en-AU')+' a day'}</span><span class="tg">${n==null?'':d+' work day'+(d===1?'':'s')}</span></div>`}
 function tileHTML([l,v,ok,tg,pf],big){return `<div class="dt ${ok==null?'none':ok?'ok':'bad'}${pf?' gold':''}${big?' wide':''}"><small>${l}</small><b>${v==null?'–':esc(v)}</b><span class="st">${ok==null?'No result yet':ok?'✓ On target':'✗ Missed target'}</span><span class="tg">${tg}</span></div>`}
 function moveTxt(r,p,lab){if(!r||!p||r.rank==null||p.rank==null)return '';const d=p.rank-r.rank;return d>0?`<p class="mv up">▲ Up ${d} place${d===1?'':'s'} from ${lab}</p>`:d<0?`<p class="mv dn">▼ Down ${-d} place${d===-1?'':'s'} from ${lab}</p>`:`<p class="mv">Same place as ${lab}</p>`}
-/* Driver of the week: the best Contract Score last week. Needs 3 days worked. Ties go to more parcels. */
+/* Driver of the month: the best Contract Score over the last full pay cycle (4 weeks). Needs 12 days worked.
+   Ties go to more parcels. Until the first pay cycle has finished, it shows who is leading this one so far. */
 function nameFor(k){let N=window.__runNames;try{if(!N&&window.parent!==window)N=window.parent.__runNames}catch(e){}return tc((N||{})[k]||'')||k}
+function cycNow(){const t0=dayOf(new Date()),k=Math.floor(Math.round((fromIso(t0)-fromIso(CYC0))/864e5)/28);return addD(CYC0,k*28)}
 function dotw(){if(!data||!data.days)return null;
-  const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
-  const r1=v=>Math.round(v*100)/100;
-  const t0=dayOf(new Date()),mon=addD(t0,-((fromIso(t0).getDay()+6)%7));
-  for(const back of [7,14]){const wd=[0,1,2,3,4,5].map(i=>addD(mon,i-back));const by={},dy={},pp={};
-    for(const dt of wd){const d=data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const s=dayP(r);if(s==null)continue;const k=dkey(l);by[k]=(by[k]||0)+s;dy[k]=(dy[k]||0)+1;pp[k]=(pp[k]||0)+(+r.pc||0)}}
-    const Q=Object.keys(by).filter(k=>dy[k]>=3).map(k=>[k,by[k]/dy[k],pp[k]]).sort((a,b)=>(r1(b[1])-r1(a[1]))||(b[2]-a[2]));
-    if(Q.length){const[k,avg]=Q[0];const mine=myKeys().has(k);return{k,name:(mine&&me&&me.name&&nameFor(k)===k)?tc(me.name):nameFor(k),avg,from:wd[0],to:addD(wd[0],5),mine:myKeys().has(k),sh:P.sh}}}
+  const r1=v=>Math.round(v*100)/100,sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]},cs=cycNow(),t0=dayOf(new Date());
+  for(const[st,live]of [[addD(cs,-28),false],[cs,true]]){if(st<CYC0)continue;const ds=[0,1,2,3].flatMap(w=>[0,1,2,3,4,5].map(i=>addD(st,w*7+i))).filter(d=>d<=t0);
+    const by={},dy={},pp={};
+    for(const dt of ds){const d=data.days[dt];if(!d)continue;for(const[l,r]of Object.entries(d.rows||{})){const s=dayP(r);if(s==null)continue;const k=dkey(l);by[k]=(by[k]||0)+s;dy[k]=(dy[k]||0)+1;pp[k]=(pp[k]||0)+(+r.pc||0)}}
+    const Q=Object.keys(by).filter(k=>dy[k]>=12).map(k=>[k,by[k]/dy[k],pp[k]]).sort((a,b)=>(r1(b[1])-r1(a[1]))||(b[2]-a[2]));
+    if(Q.length){const[k,avg]=Q[0];const mine=myKeys().has(k);return{k,name:(mine&&me&&me.name&&nameFor(k)===k)?tc(me.name):nameFor(k),avg,from:st,to:addD(st,25),live,mine,sh}}}
   return null}
-function dotwHTML(w){if(!w)return '';return `<section class="dh-card dotw${w.mine?' me':''}"><span class="tr" aria-hidden="true">🏆</span><span class="tx"><small>Driver of the week · ${esc(w.sh(w.from))} to ${esc(w.sh(w.to))}</small><b>${esc(w.name)}</b><span>Contract Score <em>${window.SCORE.fmt(w.avg)}</em>${w.mine?'. That is you. Great work!':''}</span></span></section>`}
+async function dotwLoad(){try{await ensureDays(addD(cycNow(),-28))}catch(e){}}
+function dotwHTML(w){if(!w)return '';return `<section class="dh-card dotw${w.mine?' me':''}"><span class="tr" aria-hidden="true">🏆</span><span class="tx"><small>${w.live?'Leading the month so far':'Driver of the month'} · ${esc(w.sh(w.from))} to ${esc(w.sh(w.to))}</small><b>${esc(w.name)}</b><span>Contract Score <em>${window.SCORE.fmt(w.avg)}</em>${w.mine?(w.live?'. That is you. Keep it up!':'. That is you. Great work!'):''}</span></span></section>`}
 /* good streak: days worked in a row with a Contract Score of 96 or more, counting back from the last day worked */
 function flame(){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();let n=0;
   for(let i=all.length-1;i>=0;i--){const s=dayP(myRow(data.days[all[i]].rows));if(s==null)continue;if(s<96-1e-9)break;n++}return n}
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
   try{await load()}catch(e){}
+  await dotwLoad();
   const box=document.getElementById('dh_cards');if(!box||!me)return;
   const L=build();badge(unread(L));
   const todo=[],t=dayOf(new Date());
@@ -9005,7 +9008,7 @@ async function paySummary(){
   let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
   const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
   e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
-window.ME={dotw:async()=>{try{await load()}catch(e){}return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
+window.ME={dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -12662,7 +12665,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303600';
+const VERSION='202610303700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
