@@ -4632,6 +4632,25 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #ah_dotw .dotw{padding:10px 14px;gap:10px;border-radius:14px}#ah_dotw .dotw .tr{font-size:1.5rem}
 #ah_dotw .dotw .tx{flex-direction:row;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:0}#ah_dotw .dotw small{width:100%;font-size:.66rem}
 #ah_dotw .dotw b{font-size:1rem}#ah_dotw .dotw .tx>span{font-size:.85rem}
+
+/* 2 loads check */
+.tl .tl-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.tl h2{margin:0}
+.tl .tl-day{display:flex;align-items:center;gap:6px}.tl .tl-day b{font-size:.95rem;min-width:92px;text-align:center}
+.tl .tl-day button{all:unset;cursor:pointer;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:1.3rem;font-weight:800;background:var(--sh-sunk,rgba(127,127,127,.08))}.tl .tl-day button:disabled{opacity:.3;cursor:default}
+.tl .tl-s{margin:8px 0 10px;color:var(--sh-muted)}.tl .tl-s b{color:var(--sh-ink)}.tl .tl-s b.r{color:#b42318}
+.tl .tl-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}
+.tl .tl-tabs button{all:unset;cursor:pointer;flex:0 0 auto;padding:8px 14px;border-radius:99px;font-weight:700;font-size:.92rem;background:var(--sh-sunk,rgba(127,127,127,.08));display:flex;gap:6px;align-items:center}
+.tl .tl-tabs button[aria-pressed=true]{background:var(--sh-accent,#1B3F6B);color:var(--sh-accent-ink,#fff)}.tl .tl-tabs i{font-style:normal;font-size:.75rem;background:#d64541;color:#fff;border-radius:99px;padding:1px 7px}
+.tl .tl-r{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--sh-line)}.tl .tl-r:first-child{border-top:0}
+.tl .tl-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.tl .tl-n b{font-size:1.02rem}.tl .tl-n small{color:var(--sh-muted)}
+.tl .tl-b{display:flex;gap:6px}.tl .tl-b button{all:unset;cursor:pointer;padding:10px 14px;border-radius:12px;font-weight:800;font-size:.95rem;white-space:nowrap}
+.tl .tl-b .yes{background:rgba(31,157,85,.14);color:#167a42}.tl .tl-b .no{background:rgba(214,69,65,.14);color:#b42318}.tl .tl-b button:disabled{opacity:.5}
+.tl .tl-u{all:unset;cursor:pointer;font-weight:700;color:var(--sh-muted);padding:8px 10px;text-decoration:underline}
+.tl .tl-p{align-self:flex-start;margin-top:3px;font-size:.78rem;font-weight:800;border-radius:99px;padding:2px 9px}.tl .tl-p.ok{background:rgba(31,157,85,.14);color:#167a42}.tl .tl-p.no{background:rgba(127,127,127,.14);color:var(--sh-muted)}.tl .tl-p.sus{background:rgba(214,69,65,.14);color:#b42318}
+.tl .st-sus{background:rgba(214,69,65,.06);border-radius:12px;padding-left:8px;padding-right:8px}
+.tlk{display:block;margin-top:4px;font-weight:700}.tlk .ok{color:#167a42}.tlk .un{color:#8a5a12}.tlk .no{color:#b42318}
+:root[data-theme="dark"] .tl .tl-b .yes,:root[data-theme="dark"] .tl .tl-p.ok,:root[data-theme="dark"] .tlk .ok{color:#6fdc9b}:root[data-theme="dark"] .tl .tl-b .no,:root[data-theme="dark"] .tl .tl-p.sus,:root[data-theme="dark"] .tlk .no,:root[data-theme="dark"] .tl .tl-s b.r{color:#ff9b94}:root[data-theme="dark"] .tlk .un{color:#F2C94C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tl .tl-b .yes,:root:not([data-theme="light"]) .tl .tl-p.ok,:root:not([data-theme="light"]) .tlk .ok{color:#6fdc9b}:root:not([data-theme="light"]) .tl .tl-b .no,:root:not([data-theme="light"]) .tl .tl-p.sus,:root:not([data-theme="light"]) .tlk .no,:root:not([data-theme="light"]) .tl .tl-s b.r{color:#ff9b94}:root:not([data-theme="light"]) .tlk .un{color:#F2C94C}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5281,6 +5300,7 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   if(enqN)rows.push(['enquiries',enqN+(enqN===1?' enquiry needs':' enquiries need')+' a fault decision','At fault, partly or not at fault','']);
   if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from===MC.prev[0]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
     if(miss.length)rows.push(['invoices',miss.length+(miss.length===1?' invoice':' invoices')+' not in yet','For '+mcNice(MC.prev[0])+' to '+mcNice(MC.prev[1])+': '+miss.join(', '),''])}
+  {const n=tlCount();if(n)rows.push(['timesheets',n+(n===1?' driver':' drivers')+' to check for 2 loads','From '+tlNice(TL.day)+'. Use the 2 loads check above.','tlgo'])}
   const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];const ex=[];
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
   ex.sort((a,b)=>a.n-b.n);
@@ -5288,10 +5308,51 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   const ready=Object.keys(P).length>0;
   const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
    ${sun?'<div class="mc-ck"><span class="mc-n">Sunday</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
-   ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" data-qa="${sec}" data-act=""><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
+   ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${rows.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
+/* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
+const TL={day:null,tab:'all',clock:{},chk:{},subs:[],busy:{}};
+function tlPrevDay(){const d=new Date();d.setDate(d.getDate()-1);if(d.getDay()===0)d.setDate(d.getDate()-1);return mcIso(d)}
+function tlNice(s){const d=new Date(s+'T12:00:00');return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}
+async function tlWatch(){const day=TL.day;TL.subs.forEach(u=>{try{u()}catch(e){}});TL.subs=[];TL.clock={};TL.chk={};TL.ready=false;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db||TL.day!==day)return;
+  const D=d=>window.__D?window.__D(d):d.data();let got=0;
+  const live=(q,set)=>{try{TL.subs.push(q.onSnapshot(sn=>{const m={};for(const d of sn.docs){const v=D(d);if(v&&v.date===day)m[d.id]=v}set(m);if(++got>=2)TL.ready=true;adminLoads();adminMorning()},()=>{}))}catch(e){}};
+  live(db.collection('clock').where('date','==',day),m=>TL.clock=m);
+  live(db.collection('tlcheck').where('date','==',day),m=>TL.chk=m)}
+function tlGrp(sid,c){const p=MC.staff[sid]||{};const G=window.__runGrp||{};const keys=[p.login].concat(p.runs||[]).map(k=>String(k||'').toUpperCase().replace(/\s+/g,'')).filter(Boolean);for(const k of keys)if(G[k])return String(G[k]).toLowerCase();return 'other'}
+function tlRows(){const ids=new Set([...Object.keys(TL.clock).filter(id=>TL.clock[id]&&TL.clock[id].twoLoads===true),...Object.keys(TL.chk)]);
+  return [...ids].map(id=>{const c=TL.clock[id]||{},k=TL.chk[id]||null,sid=c.staff||(k&&k.staff)||id.split('_').slice(1).join('_'),p=MC.staff[sid]||{};
+    const name=[p.first,p.last].filter(Boolean).join(' ')||c.name||(k&&k.name)||sid;const now=c.twoLoads===true;
+    const st=!k?'todo':k.chk==='ok'?(now?'ok':'drop'):(now?'sus':'no');
+    return{id,sid,name:name.toLowerCase().replace(/\b\w/g,x=>x.toUpperCase()),run:(p.runs||[]).filter(Boolean).join(', '),grp:tlGrp(sid,c),st,k}}).sort((a,b)=>({sus:0,todo:1,ok:2,no:3,drop:4}[a.st]-{sus:0,todo:1,ok:2,no:3,drop:4}[b.st])||a.name.localeCompare(b.name))}
+function tlCount(){if(TL.day!==tlPrevDay()||!TL.ready)return null;return tlRows().filter(r=>r.st==='todo'||r.st==='sus').length}
+function adminLoads(){const el=$('ah_tl');if(!el||role!=='mgr')return;if(!TL.day){TL.day=tlPrevDay();tlWatch()}
+  const R=tlRows(),ORD=['4214','4215','4217','4218','xl','relief','sup','office','other'],LAB={xl:'XL',relief:'Relief',sup:'Supervisors',office:'Office',other:'Other'},G=[['all','All']].concat([...new Set(R.map(r=>r.grp))].sort((a,b)=>((ORD.indexOf(a)+1)||50)-((ORD.indexOf(b)+1)||50)||a.localeCompare(b)).map(k=>[k,LAB[k]||k.toUpperCase()]));
+  if(!G.some(([k])=>k===TL.tab))TL.tab='all';const show=R.filter(r=>TL.tab==='all'||r.grp===TL.tab);
+  const left=R.filter(r=>r.st==='todo').length,sus=R.filter(r=>r.st==='sus').length;
+  const pill={todo:'',ok:'<span class="tl-p ok">✓ 2 loads confirmed</span>',no:'<span class="tl-p no">Changed to 1 load</span>',sus:'<span class="tl-p sus">⚠ Driver changed it back to 2 loads</span>',drop:'<span class="tl-p no">Driver changed it to 1 load</span>'};
+  const html=`<section class="dh-card tl"><div class="tl-h"><h2>2 loads check</h2><div class="tl-day"><button type="button" data-tl="prev" aria-label="Day before">‹</button><b>${esc(tlNice(TL.day))}</b><button type="button" data-tl="next" aria-label="Day after" ${TL.day>=tlPrevDay()?'disabled':''}>›</button></div></div>
+   <p class="tl-s">${!TL.ready?'Loading…':R.length?(left?`<b>${left}</b> to check`:'✓ All checked')+(sus?` · <b class="r">${sus} changed back</b>`:''):'Nobody said they did 2 loads this day.'}</p>
+   ${R.length?`<div class="tl-tabs" role="group">${G.map(([k,l])=>{const n=k==='all'?left:R.filter(r=>r.grp===k&&r.st==='todo').length;return `<button type="button" data-tl="tab" data-v="${k}" aria-pressed="${TL.tab===k}">${l}${n?`<i>${n}</i>`:''}</button>`}).join('')}</div>
+   <div class="tl-list">${show.map(r=>`<div class="tl-r st-${r.st}"><div class="tl-n"><b>${esc(r.name)}</b><small>${esc(r.run||'')}${r.k&&r.k.by?(r.run?' · ':'')+'Checked by '+esc(r.k.by):''}</small>${pill[r.st]}</div>
+     ${r.st==='todo'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✓ Yes</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✗ No</button></div>`
+      :r.st==='sus'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}">✓ Allow</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}">✗ 1 load</button></div>`
+      :`<button type="button" class="tl-u" data-tl="undo" data-v="${esc(r.id)}">Undo</button>`}</div>`).join('')}</div>`:''}</section>`;
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+function tlBy(){const me=window.__webMe||{};const em=String(me.email||'').toLowerCase();const p=Object.values(MC.staff).find(s=>String(s.email||'').toLowerCase()===em);return p?(String(p.first||'').toLowerCase().replace(/\b\w/g,x=>x.toUpperCase())):(me.name||'Manager')}
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-tlgo]');if(g){const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}});
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-tl]');if(!b||role!=='mgr')return;const a=b.dataset.tl,id=b.dataset.v;
+  if(a==='tab'){TL.tab=id;adminLoads();return}
+  if(a==='prev'||a==='next'){const d=new Date(TL.day+'T12:00:00');do{d.setDate(d.getDate()+(a==='prev'?-1:1))}while(d.getDay()===0);const n=mcIso(d);if(n>tlPrevDay())return;TL.day=n;adminLoads();tlWatch();return}
+  let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;const c=TL.clock[id]||{},sid=c.staff||(TL.chk[id]&&TL.chk[id].staff)||'';
+  TL.busy[id]=true;adminLoads();
+  try{if(a==='ok'||a==='no'){await db.doc('tlcheck/'+id).set({date:TL.day,staff:sid,name:c.name||'',chk:a,by:tlBy(),at:new Date().toISOString(),said:true});
+      if(a==='no'&&c.twoLoads===true)await db.doc('clock/'+id).update({twoLoads:false})}
+    if(a==='undo'){const k=TL.chk[id];await db.doc('tlcheck/'+id).delete();if(k&&k.chk==='no'&&TL.clock[id]&&TL.clock[id].twoLoads===false)await db.doc('clock/'+id).update({twoLoads:true})}}
+  catch(x){console.warn('2 loads',x);homeMsg={err:true,t:'Could not save the 2 loads check. Check your connection.'}}
+  delete TL.busy[id];adminLoads()});
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
@@ -5320,9 +5381,10 @@ function renderHome(){
    <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>After you change sort sheets, run sheets, results, the survey, leave, precards, lockers or contacts, send them so drivers see the latest.</p>
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section>
+   <div id="ah_tl"></div>
    <div id="ah_morn"></div>
   </div>`;
-  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminMorning();adminTodo();adminOff();(async()=>{const fill=async()=>{if(!window.ME||!ME.dotw){setTimeout(fill,300);return}const x=await ME.dotw();const el=$('ah_dotw');if(el&&el.__h!==x){el.__h=x;el.innerHTML=x}};fill()})();return;
+  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminMorning();adminLoads();adminTodo();adminOff();(async()=>{const fill=async()=>{if(!window.ME||!ME.dotw){setTimeout(fill,300);return}const x=await ME.dotw();const el=$('ah_dotw');if(el&&el.__h!==x){el.__h=x;el.innerHTML=x}};fill()})();return;
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
@@ -11760,7 +11822,7 @@ const ANCHOR='2026-10-05';
 function period(k){const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);const n=Math.floor(d/28)+k;const s=add(ANCHOR,n*28);return[s,add(s,25)]}
 const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,abn:'',address:'',phone:'',email:'',acct:'',bsb:'',acctNo:''};
 
-let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
+let tlc={};let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
 const RATEK=['gst','hourly','r1','r2','rx','rh'],MEK=['abn','address','phone','email','acct','bsb','acctNo'];
 let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false,ticks={};
 let ans={gst:null,pay:null,rh:''},step='',asked=false,extras=[],addOpen=false;
@@ -11774,7 +11836,7 @@ async function init(r){
   if(role==='mgr'){
     const coll=(c,set)=>db.collection(c).onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);set(m);paint()},()=>{});
     coll('staff',m=>staff=m);coll('days',m=>{const o={};for(const[k,v]of Object.entries(m))if(v&&v.rows)o[v.date||k]=v;days=o});
-    coll('clock',m=>clock=m);coll('timesheets',m=>ts=m);coll('invlog',m=>logs=m);coll('invcfg',m=>cfgs=m);coll('invme',m=>mes=m);
+    coll('clock',m=>clock=m);coll('timesheets',m=>ts=m);coll('tlcheck',m=>tlc=m);coll('invlog',m=>logs=m);coll('invcfg',m=>cfgs=m);coll('invme',m=>mes=m);
     return}
   /* a driver: only their own records */
   let me=null;try{let t=0;while(!window.CLOCK&&t<40){await new Promise(r=>setTimeout(r,150));t++}me=window.CLOCK?await window.CLOCK.whoami():null}catch(e){}
@@ -12202,7 +12264,15 @@ function checkInv(x){
       else{if(a.pc!=null&&num(r.pc)!==a.pc)off=true;if(a.xp!=null&&num(r.xp)!==num(a.xp))off=true;if(a.tlSet&&(r.ld===2)!==!!a.tl)off=true}
       if(off)ds.push(nice(r.d))}}catch(e){}finally{sid=keep}
     if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
+    {const L=tlOf(x);if(L.no.length)out.push('2 loads on '+L.no.join(', ')+' but the morning check said 1 load');if(L.sus.length)out.push('driver changed back to 2 loads after the check on '+L.sus.join(', '))}
     return out}
+/* 2 loads on this invoice against the morning checks */
+function tlOf(x){const o={ok:[],un:[],no:[],sus:[]};if(!x||!x.rows)return o;
+  for(const r of x.rows){if(r.t==='h'||r.ld!==2)continue;const id=r.d+'_'+x.sid,k=tlc[id],c=clock[id]||{};
+    if(!k)o.un.push(nice(r.d));else if(k.chk==='ok')o.ok.push(nice(r.d));else if(c.twoLoads===true&&c.updatedAt&&String(c.updatedAt)>String(k.at||''))o.sus.push(nice(r.d));else o.no.push(nice(r.d))}
+  return o}
+function tlLine(x){const o=tlOf(x),n=o.ok.length+o.un.length+o.no.length+o.sus.length;if(!n)return '';
+  return `<small class="tlk">2 loads: ${[o.ok.length?`<span class="ok">✓ ${o.ok.length} confirmed</span>`:'',o.un.length?`<span class="un">${o.un.length} not checked</span>`:'',o.no.length?`<span class="no">✗ ${o.no.length} checked as 1 load</span>`:'',o.sus.length?`<span class="no">⚠ ${o.sus.length} changed after the check</span>`:''].filter(Boolean).join(' · ')}</small>`}
   const out=[];if(!x||!x.rows||!x.T)return out;
   const oc=mergeCfg(x.sid),xc=x.cfg||{};
   if(['r1','r2','rx','rh'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001)||!!xc.gst!==!!oc.gst||!!xc.hourly!==!!oc.hourly)out.push('rates are different from the rates set for this driver');
@@ -12240,7 +12310,7 @@ function listHTML(){
    ${show.map(r=>{const v=r.inv;const ck=v?chk[r.id]||[]:[];return `<tr class="${v?(ck.length?'chk':''):'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
      <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
      <td class="r">${v?money(v.T?v.T.total:v.total):''}</td>
-     <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>${ck.length?`<small class="why">Check: ${esc(ck.join('; '))}</small>`:''}`:''}</td>
+     <td>${v?`<span class="st st-${v.status||'submitted'}">${STAT[v.status]||'Submitted'}</span>${ck.length?`<small class="why">Check: ${esc(ck.join('; '))}</small>`:''}${tlLine(v)}`:''}</td>
      <td class="acts2">${v&&!(v.rows&&v.T)?`<span class="sub old">Made before invoices were saved in full.</span><button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make again</button>`:v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
        ${v.status==='submitted'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Mark checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Mark paid</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo paid</button>`}`
        :`<button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make invoice</button>`}</td></tr>`}).join('')||'<tr><td colspan="5" class="sub">Nobody here.</td></tr>'}
@@ -12676,7 +12746,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610303900';
+const VERSION='202610304000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12766,7 +12836,7 @@ window.__history=function(from,cols){
   return Promise.all(jobs)};
 window.__historyFrom=c=>WIN[c]?hist(c).from:'';
 /* ---------- backup: all the setup data, plus records added since the last backup ---------- */
-const BK_ALL=['staff','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
+const BK_ALL=['staff','tlcheck','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
 const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks','reportimg'];
 window.__backup=async function(onStep){
   let last='';try{const m=await fs.doc('meta/backup').get();if(m.exists)last=m.data().upTo||''}catch(e){}

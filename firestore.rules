@@ -27,7 +27,7 @@ service cloud.firestore {
     function adminOnly(col) {
       return col in ['staff', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
         'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg', 'invcfg', 'invlog', 'invme', 'leavereq'];
+        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg', 'invcfg', 'invlog', 'invme', 'leavereq', 'tlcheck'];
     }
 
     function myStaff() {
