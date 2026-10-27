@@ -4375,10 +4375,10 @@ html.appui .dm-t .bdg.nb,html.appui .dm-t .bdg{position:absolute!important;top:1
 @media (max-width:899.98px){
 :root:root:root #sh-main#sh-main :is(#mod-uniform table.olist tr.on,#mod-invoices table tr.chk,#mod-leave table.tot tr.exp) td{background:transparent!important}
 :root:root:root #sh-main#sh-main #mod-uniform table.olist tr.on{background:var(--sh-accent-soft)!important;border:2px solid #4F8FD8!important}
-:root:root:root #sh-main#sh-main #mod-invoices table tr.chk{background:#FFF6CC!important}
+:root:root:root #sh-main#sh-main #mod-invoices table tr.chk{background:#FFF6CC!important;border-left:4px solid #E0B000!important}
 :root:root:root #sh-main#sh-main #mod-leave table.tot tr.exp{background:var(--sh-sunk)!important}}
-@media (max-width:899.98px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main #mod-invoices table tr.chk{background:#3A3210!important}}
-@media (max-width:899.98px){:root[data-theme="dark"] #sh-main#sh-main #mod-invoices table tr.chk{background:#3A3210!important}}
+@media (max-width:899.98px) and (prefers-color-scheme:dark){:root:root:root:root:not([data-theme="light"]) #sh-main#sh-main #mod-invoices table tr.chk{background:#3A3210!important}}
+@media (max-width:899.98px){:root:root:root:root[data-theme="dark"] #sh-main#sh-main #mod-invoices table tr.chk{background:#3A3210!important}}
 /* Summary lists: rows in the period get a coloured line, not patchy shading; empty boxes hidden on phones */
 :root:root:root #sh-main#sh-main #mod-summary .tb tr.inp td{background:transparent!important}
 :root:root:root #sh-main#sh-main #mod-summary .tb tr.inp{box-shadow:inset 4px 0 0 #2FA866}
@@ -12459,7 +12459,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610300700';
+const VERSION='202610300800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
