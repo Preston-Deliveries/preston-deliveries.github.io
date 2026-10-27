@@ -4828,7 +4828,9 @@ function pageHtml(snap){
   const body=String(window.__PRISTINE||'').replace(/(<script type="application\/json" id="snapshot">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+json+b);
   const mods=[...document.querySelectorAll('script[data-mod]')].map(s=>s.outerHTML).join('\n');
   const RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
-  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style></head><body>'+body+'\n'+mods+'</body></html>';
+  const th=document.getElementById('thm-js');const thm=th&&!/id="thm-js"/.test(body)?th.outerHTML:'';
+  const early='<script>try{var t=localStorage.getItem("theme1161");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}<\/script>';
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+RESET+'</style>'+early+'</head><body>'+body+'\n'+mods+'\n'+thm+'</body></html>';
 }
 async function publish(patch){
   if(window.__collect){Object.assign(window.__collect,patch);return}
@@ -11704,7 +11706,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610282100';
+const VERSION='202610282200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12060,8 +12062,9 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 })();
 
 </script>
-<script>
+<script id="thm-js">
 (function(){
+ if(window.__applyTheme)return;
  const get=()=>{try{return localStorage.getItem('theme1161')||'auto'}catch(e){return 'auto'}};
  window.__theme=get;
  function apply(t){const r=document.documentElement;if(t==='light'||t==='dark')r.setAttribute('data-theme',t);else r.removeAttribute('data-theme');
@@ -12070,6 +12073,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
    document.querySelectorAll('.sh-thm [data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===(dark?'dark':'light'))));
    try{document.querySelectorAll('iframe').forEach(f=>{try{f.contentWindow.__applyTheme&&f.contentWindow.__applyTheme(t)}catch(e){}})}catch(e){}}
  window.__applyTheme=apply;
+ window.addEventListener('storage',e=>{if(e.key==='theme1161')apply(get())});
  document.addEventListener('click',e=>{const b=e.target.closest('[data-theme-set]');if(!b)return;let t=b.dataset.themeSet;
    if(t==='toggle'){const cur=get();const dark=cur==='dark'||(cur==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);t=dark?'light':'dark'}
    try{localStorage.setItem('theme1161',t)}catch(x){}apply(t)});
