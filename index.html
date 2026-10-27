@@ -5316,14 +5316,15 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
   ex.sort((a,b)=>a.n-b.n);
   /* scanners to collect: leave of 1 week or more starting in the next 7 days */
+  const lvEve=f=>{const d=new Date(f+'T12:00:00');do{d.setDate(d.getDate()-1)}while(tlOff(d));return mcIso(d)};
   const lvLong=b=>{const dd=(b.days||[]).length,sp=b.from&&b.to?Math.round((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5)+1:0;return dd>=5||sp>=7};
-  const scn=Object.entries(MC.leave).filter(([,b])=>b&&b.from&&b.from>=T&&b.from<=mcAdd(T,7)&&lvLong(b)&&!b.scanIn&&!b.office).sort((a,b)=>a[1].from.localeCompare(b[1].from));
+  const scn=Object.entries(MC.leave).filter(([,b])=>b&&b.from&&lvEve(b.from)===T&&lvLong(b)&&!b.scanIn&&!b.office).sort((a,b)=>a[1].from.localeCompare(b[1].from));
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
   const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
    ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
-   ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Get their scanner back before they go.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
+   ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Last day before they go. Get their scanner back today.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
    ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
@@ -9035,7 +9036,7 @@ async function homeCards(){
   const L=build();badge(unread(L));
   const todo=[],t=dayOf(new Date());
   try{const un=window.__ntUnread?window.__ntUnread():[];if(un.length)todo.push({ic:'brief',t:un.length>1?'Read '+un.length+' new updates':'Read the new update',s:String(un[0].title||''),nav:'updates'})}catch(e){}
-  for(const v of (data&&data.lv)||[]){if(!v.from||!v.to)continue;const sp=Math.round((fromIso(v.to)-fromIso(v.from))/864e5)+1;if(sp<7||v.from<t||v.from>addD(t,7))continue;todo.push({ic:'brief',t:'Hand in your scanner',s:'Before your holiday on '+niceDay(v.from)+'. Give it to the office or a supervisor.',nav:'leave'});break}
+  for(const v of (data&&data.lv)||[]){if(!v.from||!v.to)continue;const sp=Math.round((fromIso(v.to)-fromIso(v.from))/864e5)+1;if(sp<7)continue;let ev=addD(v.from,-1);while(fromIso(ev).getDay()===0||(fromIso(ev).getDay()===6&&fromIso(ev).getMonth()!==11))ev=addD(ev,-1);if(ev!==t)continue;todo.push({ic:'brief',t:'Hand in your scanner today',s:'Your holiday starts '+niceDay(v.from)+'. Give your scanner to the office or a supervisor before you go.',nav:'leave'});break}
   const b=data&&data.briefs[0];if(b&&data.sigs[b.id]===false)todo.push({ic:'brief',t:'Sign the team brief',s:'Read it, then tap Sign.',nav:'briefs'});
   for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
   const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
@@ -12767,7 +12768,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610304400';
+const VERSION='202610304500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
