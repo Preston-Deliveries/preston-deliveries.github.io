@@ -4531,6 +4531,11 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 :root:root #sh-main #mod-timesheets .nav h2{text-align:center;font-size:1.15rem;margin:0;min-width:0}
 :root:root #sh-main #mod-timesheets .nav .sh-btn{min-height:44px;justify-content:center;margin:0}
 :root:root:root #sh-main#sh-main :is([data-pc="add"],[data-lk="add"],[data-eq="new"],[data-tb="new"],[data-dm="add"],[data-vc="new"],[data-lv="add"],[data-nt="new"]).sh-btn{display:flex!important;justify-content:center;align-items:center;width:100%!important;max-width:none!important;min-height:50px;font-size:1.05rem;box-sizing:border-box;flex:1 1 100%;grid-column:1/-1}
+#mod-uniform .un-send{flex:1 1 100%;min-height:54px;font-size:1.1rem;justify-content:center}
+#mod-uniform .myord ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+#mod-uniform .myord li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--sh-line);border-radius:10px;background:var(--sh-sunk)}
+#mod-uniform .myord .st{font-size:.82rem;padding:3px 10px;border-radius:999px;background:#FFF1D6;color:#6B3A00}
+#mod-uniform .myord .st.done{background:#DDF5E6;color:#0F5A2E}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -9594,7 +9599,7 @@ function render(){
   if(isMgr()&&view!=='form'){box.innerHTML=`<div class="unx">${head}${m}${tabs}${view==='req'?reqHTML(open):doneHTML(done)}</div>`;return}
   const soon=CATS.filter(k=>!ITEMS.some(i=>i.cat===k&&isOn(i)));
   box.innerHTML=`<div class="unx">${head}
-  <p class="lead">Pick your items, fit and size, then send the order to ${esc(c.to)}. Up to ${c.max} items per order. Not sure of your size? Open the size guide on any item.</p>
+  <p class="lead">Pick your items, fit and size, then send the order to ${esc(c.to)} in the app. Up to ${c.max} items per order. Not sure of your size? Open the size guide on any item.</p>
   ${c.note?`<div class="notice" role="note">${esc(c.note)}</div>`:''}
   ${m}
   ${isMgr()&&staffNames.length&&JSON.stringify((c.names||[]).slice().sort())!==JSON.stringify(staffNames)?`<div class="share"><span>The driver list on the order form doesn’t match your Drivers page.</span><button type="button" class="sh-btn primary" data-un="syncNames">Send driver list to drivers</button></div>`:''}
@@ -9607,11 +9612,11 @@ function render(){
   ${guide?guideHTML():''}
   <section class="order" id="un_order"><div class="oh"><h2>Your order</h2><span class="lim ${n>=c.max?'full':''}">${n} of ${c.max} items</span></div>
    ${L.length?`<ul class="lines">${L.map(l=>`<li>${imgTag(l.it)}<span class="ln"><b>${esc(labelOf(l.it))}</b><span>${l.fit!=='u'?esc(fitName(l.fit))+', ':''}size <b>${esc(l.size)}</b></span></span><span class="qty"><button type="button" class="sh-btn" data-un="dec" data-v="${esc(l.k)}" aria-label="One less">−</button><b>${l.q}</b><button type="button" class="sh-btn" data-un="inc" data-v="${esc(l.k)}" aria-label="One more" ${n>=c.max?'disabled':''}>+</button></span></li>`).join('')}</ul>
-   <div class="prev"><span class="lbl">Message that will be sent</span><pre id="un_txt">${esc(orderText())}</pre></div>
-   <div class="foot">${isMgr()?`<button type="button" class="sh-btn primary" data-un="saveReq">Submit request</button>`:`${c.wa?`<button type="button" class="sh-btn primary" data-un="wa">Send on WhatsApp</button>`:''}${c.email?`<button type="button" class="sh-btn ${c.wa?'':'primary'}" data-un="mail">Send by email</button>`:''}`}<button type="button" class="sh-btn" data-un="copy">Copy order</button><span class="sp"></span><button type="button" class="sh-btn danger" data-un="clear">Clear order</button></div>
-   <p class="sub">${isMgr()?'Goes straight into Requests. ':''}Sends to ${esc(c.to)}${c.email?' at '+esc(c.email):''}. Your order stays on this phone until you clear it.</p>`
+   <div class="prev"><span class="lbl">Your order</span><pre id="un_txt">${esc(orderText())}</pre></div>
+   <div class="foot">${isMgr()?`<button type="button" class="sh-btn primary" data-un="saveReq">Submit request</button>`:`<button type="button" class="sh-btn primary un-send" data-un="send" ${sending?'disabled':''}>${sending?'Sending…':'Send my order to the office'}</button>`}<span class="sp"></span><button type="button" class="sh-btn danger" data-un="clear">Clear order</button></div>
+   <p class="sub">${isMgr()?'Goes straight into Requests.':'Goes to '+esc(c.to)+' in the app. No email or message needed.'}</p>`
    :'<div class="empty">Nothing added yet. Choose a fit and size on an item above, then press Add.</div>'}
-  </section></div>`;
+  </section>${!isMgr()?myOrdersHTML():''}</div>`;
 }
 function prodHTML(it){
   const fits=fitsOf(it);const f=finder[it.id]=finder[it.id]||{fit:fits[0]};if(!fits.includes(f.fit))f.fit=fits[0];
@@ -9766,6 +9771,9 @@ document.addEventListener('click',async e=>{
   if(a==='selNone'){sel.clear();render();return}
   if(a==='bulkDone'||a==='bulkReopen'){const ids=[...sel].filter(id=>orders[id]);const upd=a==='bulkDone'?{status:'completed',completedAt:new Date().toISOString()}:{status:'requested',completedAt:''};msg={t:'Saving…'};render();
     try{for(const id of ids){await db.doc('uniorders/'+id).set(Object.assign((({id:_,...r})=>r)(orders[id]),upd));Object.assign(orders[id],upd)}sel.clear();msg={t:`${ids.length} order${ids.length===1?'':'s'} ${a==='bulkDone'?'marked completed':'moved back to requests'}.`}}catch(x){msg={err:true,t:'Some orders could not be saved. Try again.'}}render();return}
+  if(a==='send'){if(!ready())return;const L=lines();if(!L.length)return;sending=true;msg=null;render();
+    try{await sendDrv(L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();msg={t:'Sent. '+cfg().to+' has your order in the app.'}}catch(x){console.warn(x);msg={err:true,t:'Could not send just now'+(x&&x.code?' ('+x.code+')':'')+'. Check your signal and try again.'}}
+    sending=false;render();return}
   if(a==='saveReq'){if(!ready())return;const L=lines();try{await saveOrder(who.name,L.map(l=>({id:l.it.id,fit:l.fit,size:l.size,q:l.q})));cart={};keep();view='req';msg={t:'Request submitted for '+who.name+'.'};who.name=(!isMgr()&&myName)||'';keep()}catch(x){msg={err:true,t:'Could not save just now.'}}render();return}
   if(a==='parse'){parsed=parseOrder($('paste').value);msg=null;render();return}
   if(a==='noPaste'){parsed=null;render();return}
@@ -9782,7 +9790,7 @@ document.addEventListener('click',async e=>{
   if(a==='cancel'){editing=false;draftCfg=null;msg=null;render();return}
   if(a==='rmphoto'){readDraft();delete draftCfg.photos[v];render();return}
   if(a==='savecfg'){const o=readDraft();o.names=staffNames.length?staffNames.slice():(cfg().names||[]);
-    if(!o.email&&!o.wa){msg={err:true,t:'Add an email or a WhatsApp number so drivers can send orders.'};render();return}
+    
     el.disabled=true;msg={t:'Saving and sending to drivers…'};try{await APP.publish({uniform:o})}catch(x){el.disabled=false;msg={err:true,t:'Could not send just now. Try again in a minute.'};render()}return}
 });
 document.addEventListener('change',async e=>{const el=e.target;if(!el.matches||!el.closest||!el.closest('#mod-uniform'))return;
@@ -9795,19 +9803,38 @@ document.addEventListener('input',e=>{const el=e.target;if(el.id!=='un_cm'||!gui
   $('res').innerHTML=resHTML(c,sg);document.querySelectorAll('#mod-uniform .dlg .hl').forEach(x=>x.classList.remove('hl'));
   if(sg){const i=c.sizes.indexOf(sg.size);document.querySelectorAll('#mod-uniform .dlg thead th')[i+1]?.classList.add('hl');document.querySelectorAll('#mod-uniform .dlg tbody tr').forEach(tr=>tr.querySelectorAll('td')[i]?.classList.add('hl'))}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&guide){guide=null;render()}});
-let myName='';
+let myName='',myStaff='',sending=false,mine={};
+const SENT_KEY='un_sent_v1';
+function sentLocal(){try{return JSON.parse(localStorage.getItem(SENT_KEY)||'[]')}catch(e){return[]}}
+function myOrdersHTML(){const L=Object.values(mine).filter(o=>o&&o.items&&o.items.length);const loc=sentLocal().filter(x=>!L.some(o=>Math.abs(Date.parse(o.requestedAt)-Date.parse(x.at))<120000));
+  const all=L.map(o=>({at:o.requestedAt,n:(o.items||[]).reduce((a,i)=>a+(+i.q||0),0),done:o.status==='completed'})).concat(loc.map(x=>({at:x.at,n:x.n,done:false}))).sort((a,b)=>String(b.at).localeCompare(String(a.at))).slice(0,6);
+  if(!all.length)return '';const d=x=>{const t=new Date(x);return isNaN(t)?'':t.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][t.getMonth()]};
+  return `<section class="card myord"><h2>My orders</h2><ul>${all.map(o=>`<li><span>Sent ${esc(d(o.at))} · ${o.n} item${o.n===1?'':'s'}</span><b class="st ${o.done?'done':'req'}">${o.done?'Ready':'With the office'}</b></li>`).join('')}</ul></section>`}
+/* a driver's order goes into the app. If the database rules are not updated yet, it goes as a Feedback message that the manager's app turns into a request. */
+async function sendDrv(items){const d=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null);if(!d)throw new Error('no db');
+  const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  try{await d.doc('uniorders/'+id).set({staff:myStaff,name:who.name,items,status:'requested',requestedAt:new Date().toISOString()})}
+  catch(x){if(!(x&&x.code==='permission-denied'))throw x;
+    await d.doc('feedback/u'+id).set({staff:myStaff,name:who.name,topic:'uniform',text:JSON.stringify({items}),followUp:false,status:'new',at:d.serverTime?d.serverTime():new Date().toISOString()})}
+  const L=sentLocal();L.push({at:new Date().toISOString(),n:items.reduce((a,i)=>a+(+i.q||0),0)});try{localStorage.setItem(SENT_KEY,JSON.stringify(L.slice(-20)))}catch(e){}}
 async function findMe(){
   let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}
   let n=w&&w.name||'';
   try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));const c=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null;if(c&&c.name)n=c.name}catch(e){}
   return String(n||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase()).trim();
 }
-async function start(role){mode=role==='mgr'?'mgr':'drv';load();if(mode!=='mgr'){myName=await findMe();if(myName){who.name=myName;try{keep()}catch(e){}}}render();if(mode!=='mgr')return;
+async function start(role){mode=role==='mgr'?'mgr':'drv';load();if(mode!=='mgr'){myName=await findMe();if(myName){who.name=myName;try{keep()}catch(e){}}}render();
+  if(mode!=='mgr'){try{const c=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null;myStaff=c&&c.staff||'';const d=window.__getDb?await window.__getDb():null;
+      if(d&&myStaff)d.collection('uniorders').where('staff','==',myStaff).onSnapshot(q=>{const o={};for(const x of q.docs)o[x.id]=__D(x);mine=o;const a=document.activeElement;if(!(a&&a.closest&&a.closest('#mod-uniform')))render()},()=>{})}catch(e){}
+    return}
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}if(!db){msg={err:true,t:'Could not connect to saved orders. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();staffNames=s.docs.map(d=>{const p=__D(d);return tcase([p.first,p.last].filter(Boolean).join(' '))}).filter(Boolean).sort()}catch(e){}
   db.collection('uniorders').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));orders=o;
     const n=Object.values(o).filter(x=>x.status!=='completed').length;if(window.APP)APP.stat('uniform',n?n+' open request'+(n===1?'':'s'):'No open requests');
     const a=document.activeElement;if(editing||(a&&a.closest&&a.closest('#mod-uniform .card, #mod-uniform .order')))return;render()},()=>{});
+  try{db.collection('feedback').where('topic','==','uniform').onSnapshot(async q=>{for(const x of q.docs){const f=__D(x);let items=[];try{items=JSON.parse(f.text||'{}').items||[]}catch(e){}
+      if(items.length){try{await db.doc('uniorders/fb_'+x.id).set({staff:f.staff||'',name:f.name||'',items,status:'requested',requestedAt:f.at||new Date().toISOString(),via:'app'})}catch(e){continue}}
+      try{await db.doc('feedback/'+x.id).delete()}catch(e){}}},()=>{})}catch(e){}
   render()}
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -11460,7 +11487,7 @@ async function start(role){
   if(role!=='mgr'){mode='drv';render();loadMe();return}
   mode='mgr';render();if(!db)return;
   const typing=()=>{const a=document.activeElement;return a&&a.closest&&a.closest('#mod-feedback')&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id!=='fb_q'};
-  db.collection('feedback').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);items=m;pushStat();if(!typing())renderKeepSearch()},()=>{msg={err:true,t:'Could not load feedback. Check the app rules have been updated.'};render()});
+  db.collection('feedback').onSnapshot(s=>{const m={};for(const d of s.docs){const v=__D(d);if(v&&v.topic==='uniform')continue;m[d.id]=v}items=m;pushStat();if(!typing())renderKeepSearch()},()=>{msg={err:true,t:'Could not load feedback. Check the app rules have been updated.'};render()});
   db.collection('staff').onSnapshot(s=>{const m={};for(const d of s.docs)m[d.id]=__D(d);staff=m;if(!typing())renderKeepSearch()},()=>{});
 }
 render();
@@ -12406,7 +12433,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610301100';
+const VERSION='202610301200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
