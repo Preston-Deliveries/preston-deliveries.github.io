@@ -3608,7 +3608,7 @@ p.ck-alert{color:#5A3C00!important}
 #sh-main #mod-timesheets table.tsd td:nth-child(10){grid-column:1/-1;grid-row:5}
 #sh-main #mod-timesheets table.tsd td:nth-child(n+3):nth-child(-n+10):not(:nth-child(6))::before{display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
 #sh-main #mod-timesheets table.tsd td:nth-child(3)::before{content:'Start'}#sh-main #mod-timesheets table.tsd td:nth-child(4)::before{content:'Finish'}#sh-main #mod-timesheets table.tsd td:nth-child(5)::before{content:'Break (min)'}
-#sh-main #mod-timesheets table.tsd td:nth-child(7)::before{content:'Extra'}#sh-main #mod-timesheets table.tsd td:nth-child(8)::before{content:'2 loads'}#sh-main #mod-timesheets table.tsd td:nth-child(9)::before{content:'Held'}#sh-main #mod-timesheets table.tsd td:nth-child(10)::before{content:'Note'}
+#sh-main #mod-timesheets table.tsd td:nth-child(7)::before{content:'Extra'}#sh-main #mod-timesheets table.tsd td:nth-child(8)::before{content:'2 loads'}#sh-main #mod-timesheets table.tsd td:nth-child(9)::before{content:'Note'}#sh-main #mod-timesheets table.tsd td:nth-child(10)::before{content:none}
 #sh-main #mod-timesheets table.tsd td input,#sh-main #mod-timesheets table.tsd td select{width:100%;max-width:100%;box-sizing:border-box;min-width:0}
 #sh-main #mod-timesheets table.tsd td:nth-child(6)::before{content:'Hours';display:block;font-size:.66rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-bottom:3px}
 }
@@ -5064,6 +5064,11 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 /* Enquiries and NCRs: no import or paste buttons */
 #mod-enquiries :is(.rimp,.rimpc,.nimp){display:none!important}
 #sh-main#sh-main #mod-lockers .tabs.lk2{display:grid!important;grid-template-columns:1fr 1fr;flex-wrap:nowrap!important}#sh-main#sh-main #mod-lockers .tabs.lk2 button{white-space:nowrap}
+#mod-timesheets .tstabs{display:grid;grid-template-columns:1fr 1fr;margin:4px 0 12px;border:1px solid var(--sh-line);border-radius:12px;overflow:hidden;background:var(--sh-surface)}
+#sh-main #mod-timesheets .tstabs button{min-height:44px;font-weight:800;font-size:1rem;border:0;background:var(--sh-surface);color:var(--sh-ink)}
+#sh-main #mod-timesheets .tstabs button[aria-pressed=true]{background:#7B4BDB;color:#fff}
+#mod-timesheets .tsor{margin:10px 2px 4px}
+#sh-main #mod-timesheets .tsx>.tstabs{order:-10!important}#sh-main #mod-timesheets .tsx>.head{order:-11!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -11602,7 +11607,7 @@ function attention(rows){
   return `<details class="card att-c" ${L.length<=12?'open':''}><summary><h2>Needs attention <span class="cnt">${L.length}</span></h2><span class="tgl"></span></summary>
    <ul class="att fbl">${L.map(({p,I})=>{const g=grpCls(p);return `<li data-sm="drv" data-v="${esc(p.key)}" tabindex="0" class="${g}"><span class="smrk" title="Things to work on">${I.length}</span><span class="fbn"><b>${esc(p.name)}</b><span class="smm">${g?`<span class="smg">${esc(grpLbl(p))}</span>`:''}</span></span><span class="fbs">${I.map(i=>`<span class="fbc ${i.k}" title="${esc(i.d)}">${esc(SHORT[i.k](i))}</span>`).join('')}</span></li>`}).join('')}</ul></details>`;
 }
-const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'',''],['Held parcels',fmtN(a.hp),a.hp?'Days a driver held parcels':'None reported',a.hp?'warn':'']];
+const workTiles=a=>[['Hours worked',a.mins?fmtH(a.mins):'–',a.wd?`${fmtN(a.wd)} shift${a.wd===1?'':'s'} clocked`:'From Clock In and Timesheets',''],['Extra parcels',fmtN(a.xp),a.tl?`${a.tl} day${a.tl===1?'':'s'} with 2 loads`:'','']];
 function bossNotes(C,all,pa,pcs){
   const t=targets(),L=PC&&PC.R?PC.R.lab:'',ok=pa&&pa.days&&all.days;
   if(!all.days)return '';
@@ -12067,7 +12072,7 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return 
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let leave={},ckDay=null,delArm=null,lastDel=null,openWk={},sq='',person=null,per='month',mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
+let tsTab='view',leave={},ckDay=null,delArm=null,lastDel=null,openWk={},sq='',person=null,per='month',mode='wait',db=null,days={},staff={},ts={},clock={},cfg={starts:{},brk:''},wk=null,msg=null,showSet=false,q='',addFor=null,dsel=null,dselUser=false;
 /* ---------- people ---------- */
 function people(){const out={};for(const[id,p]of Object.entries(staff)){const login=dkey(p.login);out[login||'id:'+id]={id,login,name:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', '),role:String(p.role||'').toUpperCase()}}return out}
 function latest(){const ds=Object.keys(days).concat(Object.values(clock).map(c=>c&&c.date).filter(Boolean)).sort();return ds.length?ds[ds.length-1]:TODAY}
@@ -12117,7 +12122,7 @@ function weekHTML(){
   const f=monday(wk),dd=[0,1,2,3,4,5].map(i=>add(f,i));if(Object.keys(clock).some(k=>k.startsWith(add(f,6)+'_')))dd.push(add(f,6));
   let miss=0,tot=0;const seen=new Set();
   const withData=dd.filter(d=>rowsFor(d).length);
-  if(!openWk[f]&&withData.length){openWk[f]=new Set([withData[withData.length-1]])}
+  if(!openWk[f])openWk[f]=new Set();
   const open=openWk[f]||new Set();
   const secs=dd.slice().reverse().map(d=>{const R=rowsFor(d);if(!R.length)return '';
     let dt=0,dm=0;for(const r of R){const e=eff(r);if(e.hrs!=null){dt+=e.hrs;tot+=e.hrs}else{dm++;miss++}seen.add(r.key)}
@@ -12245,16 +12250,20 @@ function render(){
   if(!wk)wk=latest();
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&lastDel?' <button type="button" class="sh-btn sm" data-ts="undo">Undo</button>':''}</p>`:'';
   if(mode==='mgr'&&window.needHist){window.needHist(ckRange().from,TSC);if(person)window.needHist(periodRange()[0],TSC);else if(wk)window.needHist(monday(wk),TSC)}
-  if(person){box.innerHTML=`<div class="tsx"><button type="button" class="sh-btn back tsback" data-ts="pclear">\u2039 All drivers</button>${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
+  const SEG=`<div class="seg tstabs" role="group" aria-label="View or adjust"><button type="button" data-ts="tab" data-v="view" aria-pressed="${tsTab==='view'&&!person}">View</button><button type="button" data-ts="tab" data-v="adjust" aria-pressed="${tsTab==='adjust'||!!person}">Adjust</button></div>`;
+  if(person){box.innerHTML=`<div class="tsx">${SEG}${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
   const W=weekHTML();checkStat();
   box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
-   ${searchHTML()}
+   ${SEG}
    ${m}
-   ${checkHTML()}
+   ${tsTab==='view'?`${checkHTML()}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
+   <p class="hint">To change someone's times, tap Adjust and search their name.</p>`:`${searchHTML()}
+   <p class="hint tsor">Or open a day to add someone who forgot to clock in.</p>
+   <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    ${W.secs}
-   <p class="hint">Newest day first. Tap a day to open or close it. Every shift is logged when the driver taps Start shift and Finish shift in the app. Tapped means they tapped it at the time; Entered later means they typed it afterwards. Type over any time to change it, use + Add someone for a driver who forgot to clock in, or the bin to delete.</p>
+   <p class="hint">Newest day first. Tap a day to open or close it. Every shift is logged when the driver taps Start shift and Finish shift in the app. Tapped means they tapped it at the time; Entered later means they typed it afterwards. Type over any time to change it, use + Add someone for a driver who forgot to clock in, or the bin to delete.</p>`}
   </div>`;
 }
 /* ---------- saving ---------- */
@@ -12269,9 +12278,9 @@ function saveCfg(){clearTimeout(cfgTimer);cfgTimerOn=true;cfgTimer=setTimeout(as
 async function exportRange(from,to,name,pid){
   if(window.needHist)await window.needHist(from,TSC);
   if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};render();return}
-  const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note','Parcels']];
+  const aoa=[['Date','Day','Driver','Driver number','Scanner login','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Note','Parcels']];
   const ds=Object.keys(days).filter(d=>d>=from&&d<=to).concat(Object.values(clock).map(c=>c&&c.date).filter(d=>d&&d>=from&&d<=to)).concat(Object.keys(ts).map(k=>k.slice(0,10)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&d>=from&&d<=to));
-  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){if(pid&&r.key!==pid)continue;const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'',r.pc??''])}
+  for(const d of [...new Set(ds)].sort())for(const r of rowsFor(d)){if(pid&&r.key!==pid)continue;const e=eff(r);aoa.push([d,DOW[fromIso(d).getDay()],r.p.name,r.p.no,r.p.login,e.start,e.finish,e.brk===''?'':+e.brk,e.hrs==null?'':+(e.hrs/60).toFixed(2),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.o.note||'',r.pc??''])}
   if(aoa.length===1){msg={err:true,t:'No days worked in that period yet.'};render();return}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[11,5,26,10,12,7,7,10,7,8,7,10,30,8].map(w=>({wch:w}));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Timesheets');
@@ -12288,13 +12297,13 @@ async function personPdf(btn){
     if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
     const lbl=(PER.find(x=>x[0]===per)||['',''])[1],[a,b]=periodRange();
-    const rows=R.map(r=>{const e=eff(r);return[longD(r.date),e.start?e.start:'',e.finish||'',e.brk===''?'':e.brk,e.hrs==null?'':fmtH(e.hrs),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.hp==null?'':(e.hp?'Yes'+(e.hc?' ('+e.hc+')':''):'No'),e.o.note||'']});
+    const rows=R.map(r=>{const e=eff(r);return[longD(r.date),e.start?e.start:'',e.finish||'',e.brk===''?'':e.brk,e.hrs==null?'':fmtH(e.hrs),e.xp==null?'':e.xp,e.tl==null?'':(e.tl?'Yes':'No'),e.o.note||'']});
     let tot=0,xp=0;for(const r of R){const e=eff(r);if(e.hrs!=null)tot+=e.hrs;xp+=+e.xp||0}
     const {jsPDF}=window.jspdf;let d,fs=9;
     for(;;){d=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
       d.setFont('helvetica','bold');d.setFontSize(16);d.text('Timesheet: '+p.name,12,14);d.setFont('helvetica','normal');d.setFontSize(9);
       d.text('Preston Delivery Service Pty Ltd  |  Contract 1161  |  '+lbl+(a!=='0000'?' ('+longD(a)+' to '+longD(b>TODAY?TODAY:b)+')':'')+(p.no?'  |  '+p.no:''),12,20);
-      d.autoTable({startY:25,head:[['Date','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Held parcels','Note']],body:rows,foot:[['Total ('+R.length+' days)','','','',fmtH(tot),String(xp),'','','']],styles:{fontSize:fs,cellPadding:1.4},headStyles:{fillColor:[27,63,107]},footStyles:{fillColor:[227,234,243],textColor:20,fontStyle:'bold'},margin:{left:12,right:12}});
+      d.autoTable({startY:25,head:[['Date','Start','Finish','Break (min)','Hours','Extra parcels','2 loads','Note']],body:rows,foot:[['Total ('+R.length+' days)','','','',fmtH(tot),String(xp),'','']],styles:{fontSize:fs,cellPadding:1.4},headStyles:{fillColor:[27,63,107]},footStyles:{fillColor:[227,234,243],textColor:20,fontStyle:'bold'},margin:{left:12,right:12}});
       if(d.getNumberOfPages()<=1||fs<=5.5)break;fs-=.5}
     const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads').catch(()=>null):null)||window.__DLSHIM);
     if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
@@ -12319,6 +12328,7 @@ document.addEventListener('click',e=>{
   if(a==='ckpick'){const T=nowDay(),v=el.dataset.v;ckDay=v>=T?null:v;if(window.needHist)window.needHist(ckRange().from,TSC);render();return}
   if(a==='prev'||a==='next'){wk=add(monday(wk),a==='prev'?-7:7);dsel=null;dselUser=false;render();return}
   if(a==='latest'){wk=latest();dsel=null;dselUser=false;render();return}
+  if(a==='tab'){tsTab=el.dataset.v;person=null;sq='';window.scrollTo(0,0);render();return}
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
   if(a==='xy'){const d=fromIso(wk),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;exportRange(y+'-07-01',(y+1)+'-06-30','1161 Timesheets FY'+y+'-'+String(y+1).slice(2)+'.xlsx');return}
   if(a==='copy'){const id=el.dataset.v,cur=cfg.starts[id];const mon=typeof cur==='string'?cur:(cur&&cur[1])||'';if(!mon){msg={err:true,t:'Fill in Monday first, then tap Same all week.'};render();return}cfg.starts={...cfg.starts,[id]:Object.fromEntries(WD.map(([n])=>[n,mon]))};saveCfg();render();return}
@@ -13786,7 +13796,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310700';
+const VERSION='202610310800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
