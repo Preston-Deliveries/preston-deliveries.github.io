@@ -7186,6 +7186,7 @@ function mountBoard(box,rows){
   </div>
   <p class="rb-key">Ranked by Contract Score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days worked.`} Ties go to the driver with more parcels.</p>${window.SCORE.howHTML("sc-how")}`;
   if(box.__wiredB)return;box.__wiredB=true;
+  box.addEventListener("pointerdown",e=>{if(e.target.closest("[data-rbk]")&&window.ME&&ME.warm)ME.warm()},{passive:true});setTimeout(()=>{if(window.ME&&ME.warm)ME.warm()},1500);
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
 }
@@ -9035,18 +9036,21 @@ async function who(){
   m.name=tc(m.name);try{if(m.login)window.__myLogin=m.login}catch(e){}
   return m;
 }
+/* short memory of records already fetched, so opening one driver after another is quick. Today is always fresh. */
+const FMEM={};const fget=(path,day)=>{const c=FMEM[path],live=day>=dayOf(new Date());if(!live&&c&&Date.now()-c.at<10*60e3)return Promise.resolve(c.v);
+  return window.__docCached(db,path,day).then(v=>{if(!live)FMEM[path]={at:Date.now(),v};return v})};
 async function fetchData(m){
     const d={clock:[],briefs:[],sigs:{},inv:[],days:{},tg:null,lv:[],cv:[]};
     const now=new Date();
     const tasks=[];
     const days=Array.from({length:36},(_,i)=>dayOf(new Date(now.getTime()-i*864e5)));
     if(db){
-      tasks.push(Promise.all(days.map(x=>window.__docCached(db,'days/'+x,x).then(v=>{if(v&&v.rows)d.days[x]=v}).catch(()=>{}))));
+      tasks.push(Promise.all(days.map(x=>fget('days/'+x,x).then(v=>{if(v&&v.rows)d.days[x]=v}).catch(()=>{}))));
       if(me&&me.admin)tasks.push(db.doc('settings/main').get().then(s=>{if(s.exists){const v=window.__D(s);if(v&&v.targets)d.tg=v.targets}}).catch(()=>{}));
     }
     if(db&&m.staff){
-      tasks.push(Promise.all(days.map(x=>window.__docCached(db,'clock/'+x+'_'+m.staff,x).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
-      tasks.push(db.collection('briefs').get().then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+      tasks.push(Promise.all(days.map(x=>fget('clock/'+x+'_'+m.staff,x).catch(()=>null))).then(a=>{d.clock=a.filter(Boolean)}));
+      tasks.push((FMEM.__br&&Date.now()-FMEM.__br.at<10*60e3?Promise.resolve(FMEM.__br.v):db.collection('briefs').get().then(sn=>{FMEM.__br={at:Date.now(),v:sn};return sn})).then(async sn=>{d.briefs=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(b=>b.shown).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
         await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+m.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
       {const t0=dayOf(now);let nx=addD(t0,1);while(fromIso(nx).getDay()===0||(fromIso(nx).getDay()===6&&fromIso(nx).getMonth()!==11))nx=addD(nx,1);
        tasks.push(Promise.all([t0,nx].map(x=>db.doc('cover/'+x).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.cv=a.filter(Boolean)}))}
@@ -9565,7 +9569,7 @@ async function paySummary(){
   let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
   const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
   e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
-window.ME={dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(window.APP)APP.go('me');if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
+window.ME={warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -13446,7 +13450,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610308200';
+const VERSION='202610308300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
