@@ -5285,6 +5285,10 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
 }
 #sh-main #mod-timesheets .tsx>.head:not(:has(.dlb:not(.dlw))){display:none!important}
 :root:root body #sh-menu .am-g.am-drv .dm-t.t-leave{--tc:#1E8A4C;--tbg:rgba(30,138,76,.14)}
+#sh-main a.wa-share{display:flex!important;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;min-height:46px;margin:8px 0 12px;border-radius:12px;background:#25D366!important;color:#06341A!important;font-weight:800;text-decoration:none;border:0!important}
+#sh-main a.wa-share svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round}
+#sh-main .nt .foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}#sh-main .nt .foot a.wa-share.sm{width:auto;min-height:40px;margin:0;padding:0 14px;font-size:.88rem}
+#sh-main a.wa-share.bw{margin:6px 0 0;min-height:42px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5728,6 +5732,10 @@ window.loadH2C=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2c
       if(b&&b.tagName===a.tagName&&morph(this,t.content,a,b))return}}catch(e){}
     D.set.call(this,v)}})})();
 window.__D=s=>{const v=s.data();return v==null?v:JSON.parse(JSON.stringify(v))};
+/* share a just posted update or team brief to the drivers' WhatsApp group */
+window.__waBtn=function(w){if(!w)return '';const link=location.origin+location.pathname+'#'+w.sec;
+  const txt=w.sec==='briefs'?'📋 New team brief'+(w.title&&w.title!=='Team brief'?': '+w.title:'')+'\nPlease read it and sign in the PDS app:\n'+link:'📢 New update: '+w.title+'\nRead it in the PDS app:\n'+link;
+  return '<a class="sh-btn wa-share" href="https://wa.me/?text='+encodeURIComponent(txt)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg>Share on WhatsApp</a>'};
 (()=>{if(window.__tbScroll)return;window.__tbScroll=1;let last=0,acc=0,tick=false;
   const run=()=>{tick=false;const t=document.querySelector('.sh-mtop');if(!t)return;const y=Math.max(0,window.scrollY||document.documentElement.scrollTop||0);const d=y-last;last=y;
     if(document.querySelector('#sh-set'))return;
@@ -9296,7 +9304,7 @@ function render(){
     ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>`<div class="row"><button type="button" class="item" data-tb="open" data-v="${esc(b.id)}">
       <span class="date"><b>${esc(fmtShort(b.date))}</b><small>${esc(String(b.date||'').slice(0,4))}</small></span>
       <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}${!isMgr()&&me?(mySig(b.id)?' <span class="sgd">Signed ✓</span>':' <span class="tosign">Please sign</span>'):''}${isMgr()?` <span class="cntsig">${sigsFor(b.id).length} signed</span>`:''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
-      <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button><button type="button" class="sh-btn danger ldel ${armL===b.id?'arm':''}" data-tb="ldel" data-v="${esc(b.id)}">${armL===b.id?'Tap again to delete':'Delete this brief'}</button>`:''}</div>`).join('')}</div></details>`).join('')
+      <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`${b.shown?window.__waBtn({sec:'briefs',title:b.title||'Team brief'}).replace('class="sh-btn wa-share"','class="sh-btn wa-share bw"'):''}<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button><button type="button" class="sh-btn danger ldel ${armL===b.id?'arm':''}" data-tb="ldel" data-v="${esc(b.id)}">${armL===b.id?'Tap again to delete':'Delete this brief'}</button>`:''}</div>`).join('')}</div></details>`).join('')
       :`<div class="empty">${isMgr()?'No team briefs yet. Add the first one with the button above.':'No team brief has been posted yet.'}</div>`}
     ${olderBtn()}
   </div>`;
@@ -9318,7 +9326,7 @@ async function tidyOld(){
 function briefHTML(b){
   if(!b){openId=null;return ''}
   return `<div class="tbx"><div class="topbar"><button type="button" class="sh-btn back" data-tb="back">\u2039 All team briefs</button>${isMgr()?`<button type="button" class="sh-btn primary" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button>`:''}</div>
-   ${isMgr()&&msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${isMgr()&&msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa?window.__waBtn(msg.wa):''}`:''}
    <article class="brief">
     <header class="band"><div><small>Team brief and training</small><h2>${esc(b.title||'Team brief')}</h2><p>${esc(b.facility||'')}</p></div><div class="stamp"><b>${esc(fmt(b.date))}</b></div></header>
     ${(b.topics||[]).length?`<div class="topics"><h3>In this brief</h3><ol>${b.topics.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>`:''}
@@ -9420,7 +9428,7 @@ async function create(){
     const id=useDate+'-'+Math.random().toString(36).slice(2,6);
     const doc={date:useDate,title,facility:useFac.replace(/\s+[\u2013\u2014-]\s+/g,', '),html,topics:topicsFrom(html),files,shown,createdAt:new Date().toISOString()};
     await db.doc('briefs/'+id).set(doc);briefs[id]=Object.assign({id},doc);
-    busy=null;creating=false;openId=id;msg={t:shown?'Added. Drivers can see it now.':'Added. It is hidden from drivers until you show it.'};pushStat();render();window.scrollTo(0,0);
+    busy=null;creating=false;openId=id;msg={t:shown?'Added. Drivers can see it now.':'Added. It is hidden from drivers until you show it.',wa:shown?{sec:'briefs',title}:null};pushStat();render();window.scrollTo(0,0);
   }catch(e){busy=null;msg={err:true,t:e&&e.code==='quota_exceeded'?'Storage is full. Delete some old team briefs and try again.':(e&&e.message&&!/load https/.test(e.message)?e.message:'Could not read those files. Check your connection and try again.')};render()}
 }
 async function addMore(files){
@@ -10767,7 +10775,7 @@ function cardHTML(n){
    <h2>${esc(n.title)}${n.date?`<span class="dt"> ${esc(longDate(n.date))}</span>`:''}</h2>
    <div class="txt">${bodyHTML(n.body)}</div>
    <p class="meta">${n.live?'Posted':'Saved'} ${esc(postedText(n.postedAt))}${n.edited?' · updated '+esc(postedText(n.edited)):''}</p>
-   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button></div>`:''}</div></article>`;
+   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button>${n.live?window.__waBtn({sec:'updates',title:n.title}).replace('class="sh-btn wa-share"','class="sh-btn wa-share sm"'):''}</div>`:''}</div></article>`;
 }
 function render(){
   const box=$('root');if(!box)return;
@@ -10779,7 +10787,7 @@ function render(){
   box.innerHTML=`<div class="ntx">
    ${isMgr()?'<button type="button" class="sh-btn primary nt-add" data-nt="new">+ New update</button>':''}
    <p class="lead">${isMgr()?'Post notices for the team. Drivers see them here as soon as you post.':'Notices from the office. Newest first.'}</p>
-   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa&&isMgr()?window.__waBtn(msg.wa):''}`:''}
    <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div>
    <button type="button" class="chip imp" data-nt="imp" aria-pressed="${impOnly}">Important only</button></div>
    ${pins.length?`<section class="grp pin"><h2>Pinned <span>${pins.length}</span></h2><div class="list">${pins.map(cardHTML).join('')}</div></section>`:''}
@@ -10828,8 +10836,8 @@ async function save(){
   if(!isNew&&!items[id].live&&o.live)o.postedAt=new Date().toISOString(),delete o.edited;
   const was=items[id];
   try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;
-    msg={t:o.live?'Posted. Drivers get a pop up and a red 1 on Updates.':'Saved as a draft. Drivers can’t see it yet.'};render();
-    if(o.live||(was&&was.live)){const ok=await syncDrivers();if(!ok){msg={err:true,t:'Saved, but it could not be sent to the drivers’ link just now. Edit and save it again to retry.'};render()}}
+    msg={t:o.live?'Posted. Drivers get a pop up and a red 1 on Updates.':'Saved as a draft. Drivers can’t see it yet.',wa:o.live?{sec:'updates',title:o.title}:null};render();
+    if(o.live||(was&&was.live)){const ok=await syncDrivers();if(!ok){msg={err:true,t:'Saved, but it could not be sent to the drivers’ link just now. Edit and save it again to retry.',wa:msg&&msg.wa};render()}}
     setTimeout(()=>document.getElementById('nt_n_'+id)?.scrollIntoView({block:'nearest'}),0)}
   catch(e){msg={err:true,t:'Could not save just now.'};render()}
 }
@@ -14041,7 +14049,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610312500';
+const VERSION='202610312600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
