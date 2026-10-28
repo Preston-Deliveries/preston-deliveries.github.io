@@ -4808,12 +4808,10 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #mod-runs .pl-adv{margin-top:14px;border-top:1px solid var(--line);padding-top:8px}#mod-runs .pl-adv summary{cursor:pointer;font-weight:700;color:var(--muted);padding:6px 0}#mod-runs .pl-advb{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 #mod-runs .pl-done2{all:unset;cursor:pointer;display:block;box-sizing:border-box;width:100%;margin-top:16px;padding:14px;border-radius:14px;text-align:center;font-weight:800;background:var(--accent);color:var(--accent-ink)}
 
-.wx-wrap{margin-bottom:0!important}.wx{padding:14px!important}
-.wx-now{display:flex;align-items:center;gap:12px}.wx-ic{font-size:2.4rem;line-height:1}.wx-t{display:flex;flex-direction:column}.wx-t b{font-size:1.9rem;font-weight:800;line-height:1}.wx-t small{color:var(--sh-muted);font-weight:700}
-.wx-d{margin-left:auto;text-align:right;display:flex;flex-direction:column}.wx-d small{color:var(--sh-muted);font-size:.75rem;font-weight:700}.wx-d b{font-size:1.05rem}
-.wx-hrs{display:flex;justify-content:space-between;gap:4px;margin-top:12px;padding-top:10px;border-top:1px solid var(--sh-line)}.wx-hrs span{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1}.wx-hrs small{font-size:.7rem;color:var(--sh-muted);font-weight:700}.wx-hrs i{font-style:normal;font-size:1.2rem}.wx-hrs b{font-size:.85rem}.wx-hrs em{font-style:normal;font-size:.7rem;color:var(--sh-muted);font-weight:700}.wx-hrs em.wet{color:#1F5FA8}.wx-hrs .past{opacity:.45}
-.wx-tip{margin:10px 0 0;padding:9px 11px;border-radius:12px;font-weight:700;font-size:.9rem;background:var(--sh-sunk,rgba(127,127,127,.08))}.wx-tip.rain{background:rgba(31,95,168,.12)}.wx-tip.bad{background:rgba(214,69,65,.14)}.wx-tip.hot{background:rgba(242,120,45,.14)}
-.wx-tm{display:block;margin-top:8px;font-size:.82rem;color:var(--sh-muted);font-weight:700}
+.wx-wrap{margin-bottom:0!important}.wx{padding:10px 14px!important}
+.wx-now{display:flex;align-items:center;gap:8px;white-space:nowrap}.wx-ic{font-size:1.5rem;line-height:1}.wx-t{font-size:1.25rem;font-weight:800}.wx-x{color:var(--sh-muted);font-weight:700;font-size:.85rem;overflow:hidden;text-overflow:ellipsis}
+.wx-d{margin-left:auto;font-weight:700;font-size:.85rem;color:var(--sh-muted)}
+.wx-tip{margin:6px 0 0;font-weight:700;font-size:.82rem}
 :root[data-theme="dark"] .wx-hrs em.wet{color:#8FB8EA}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wx-hrs em.wet{color:#8FB8EA}}
 </style>
 <div class="sh-app">
@@ -5091,6 +5089,9 @@ const RULES=[
  [/^Last week · (.+)$/,m=>'Semana passada · '+D(m[1]),m=>'ਪਿਛਲਾ ਹਫ਼ਤਾ · '+D(m[1])],
  [/^Week of (.+?) · (.+)$/,m=>'Semana de '+D(m[1])+' · '+D(m[2]),m=>D(m[1])+' ਦਾ ਹਫ਼ਤਾ · '+D(m[2])],
  [/^(Today|Yesterday|Mon|Tue|Wed|Thu|Fri|Sat|Sun) · (.+)$/,m=>D(m[1])+' · '+D(m[2]),m=>D(m[1])+' · '+D(m[2])],
+ [/^⛈️ Storms around (.+)\. Lightning: wait in the van\.$/,m=>'⛈️ Tempestades por volta das '+m[1]+'. Raios: espere na van.',m=>'⛈️ '+m[1]+' ਦੇ ਕਰੀਬ ਤੂਫ਼ਾਨ। ਬਿਜਲੀ ਹੋਵੇ ਤਾਂ ਵੈਨ ਵਿੱਚ ਉਡੀਕੋ।'],
+ [/^☔ Rain from (.+)\. Bag your parcels\.$/,m=>'☔ Chuva a partir das '+m[1]+'. Coloque os pacotes em sacos.',m=>'☔ '+m[1]+' ਤੋਂ ਮੀਂਹ। ਪਾਰਸਲ ਲਿਫ਼ਾਫ਼ੇ ਵਿੱਚ ਪਾਓ।'],
+ [/^🥵 Hot day\. Drink water\.$/,m=>'🥵 Dia quente. Beba água.',m=>'🥵 ਗਰਮ ਦਿਨ। ਪਾਣੀ ਪੀਓ।'],
  [/^⛈️ Storms possible around (.+)\. If there is lightning, wait in the van\.$/,m=>'⛈️ Possíveis tempestades por volta das '+m[1]+'. Se houver raios, espere na van.',m=>'⛈️ '+m[1]+' ਦੇ ਕਰੀਬ ਤੂਫ਼ਾਨ ਹੋ ਸਕਦਾ ਹੈ। ਬਿਜਲੀ ਹੋਵੇ ਤਾਂ ਵੈਨ ਵਿੱਚ ਉਡੀਕੋ।'],
  [/^🌧️ Rain likely from (.+)\. Keep parcels dry: bag them and use a covered safe place\.$/,m=>'🌧️ Chuva provável a partir das '+m[1]+'. Mantenha os pacotes secos: use saco e um lugar coberto.',m=>'🌧️ '+m[1]+' ਤੋਂ ਮੀਂਹ ਦੀ ਸੰਭਾਵਨਾ। ਪਾਰਸਲ ਸੁੱਕੇ ਰੱਖੋ: ਲਿਫ਼ਾਫ਼ੇ ਵਿੱਚ ਪਾਓ ਅਤੇ ਢੱਕੀ ਥਾਂ ਵਰਤੋ।'],
  [/^🥵 Hot day, up to (\d+)°\. Drink water and take breaks in the shade\.$/,m=>'🥵 Dia quente, até '+m[1]+'°. Beba água e descanse na sombra.',m=>'🥵 ਗਰਮ ਦਿਨ, '+m[1]+'° ਤੱਕ। ਪਾਣੀ ਪੀਓ ਅਤੇ ਛਾਂ ਵਿੱਚ ਆਰਾਮ ਕਰੋ।'],
@@ -5830,22 +5831,16 @@ window.WX=(()=>{const URL='https://api.open-meteo.com/v1/forecast?latitude=-27.9
  async function get(){if(mem&&Date.now()-mem.at<30*60e3)return mem.d;try{const s=JSON.parse(localStorage.getItem('wx1161')||'null');if(s&&Date.now()-s.at<30*60e3){mem=s;return s.d}}catch(e){}
    if(busy)return busy;busy=fetch(URL).then(r=>r.ok?r.json():null).then(d=>{busy=null;if(d&&d.current){mem={at:Date.now(),d};try{localStorage.setItem('wx1161',JSON.stringify(mem))}catch(e){}}return d}).catch(()=>{busy=null;return mem?mem.d:null});return busy}
  function hm(t){const x=+t.slice(11,13);return x===12?'12pm':x>12?(x-12)+'pm':x+'am'}
- function tips(d,hrs){const T=[],D=d.daily;const rainH=hrs.filter(x=>x.p>=50);const storm=hrs.find(x=>x.c>=95);
-   if(storm)T.push(['bad','⛈️ Storms possible around '+hm(storm.t)+'. If there is lightning, wait in the van.']);
-   else if(rainH.length)T.push(['rain','🌧️ Rain likely from '+hm(rainH[0].t)+'. Keep parcels dry: bag them and use a covered safe place.']);
-   if(D.temperature_2m_max[0]>=32)T.push(['hot','🥵 Hot day, up to '+Math.round(D.temperature_2m_max[0])+'°. Drink water and take breaks in the shade.']);
-   if(D.wind_speed_10m_max[0]>=40)T.push(['wind','💨 Windy. Make sure parcels left on porches cannot blow away.']);
-   if(D.uv_index_max[0]>=8&&!rainH.length)T.push(['sun','🧴 Very high UV. Sunscreen and a hat.']);
-   return T}
+ function tip(d,hrs){const D=d.daily,rain=hrs.filter(x=>x.p>=50),storm=hrs.find(x=>x.c>=95);
+   if(storm)return'⛈️ Storms around '+hm(storm.t)+'. Lightning: wait in the van.';
+   if(rain.length)return'☔ Rain from '+hm(rain[0].t)+'. Bag your parcels.';
+   if(D.temperature_2m_max[0]>=32)return'🥵 Hot day. Drink water.';
+   return''}
  async function render(el){if(!el)return;const d=await get();if(!d||!d.current||!document.body.contains(el)){el.innerHTML='';return}
    const D=d.daily,H=d.hourly,today=D.time[0],now=new Date().getHours();
-   const hrs=H.time.map((t,i)=>({t,c:H.weather_code[i],p:H.precipitation_probability[i],v:H.temperature_2m[i]})).filter(x=>x.t.startsWith(today)&&+x.t.slice(11,13)>=6&&+x.t.slice(11,13)<=17);
-   const show=hrs.filter(x=>+x.t.slice(11,13)%2===0);const tp=tips(d,hrs.filter(x=>+x.t.slice(11,13)>=now));
-   const tm=D.time[1]?`<span class="wx-tm">Tomorrow ${IC(D.weather_code[1])} ${Math.round(D.temperature_2m_max[1])}° · rain ${D.precipitation_probability_max[1]}%</span>`:'';
-   el.innerHTML=`<section class="dh-card wx"><div class="wx-now"><span class="wx-ic">${IC(d.current.weather_code)}</span><span class="wx-t"><b>${Math.round(d.current.temperature_2m)}°</b><small>${TX(d.current.weather_code)}</small></span>
-     <span class="wx-d"><small>Today</small><b>${Math.round(D.temperature_2m_max[0])}° / ${Math.round(D.temperature_2m_min[0])}°</b><small>Rain ${D.precipitation_probability_max[0]}%</small></span></div>
-     <div class="wx-hrs">${show.map(x=>`<span class="${+x.t.slice(11,13)<now-1?'past':''}"><small>${hm(x.t)}</small><i>${IC(x.c)}</i><b>${Math.round(x.v)}°</b><em class="${x.p>=50?'wet':''}">${x.p}%</em></span>`).join('')}</div>
-     ${tp.map(([k,t])=>`<p class="wx-tip ${k}">${t}</p>`).join('')}${tm}</section>`}
+   const hrs=H.time.map((t,i)=>({t,c:H.weather_code[i],p:H.precipitation_probability[i]})).filter(x=>x.t.startsWith(today)&&+x.t.slice(11,13)>=Math.max(6,now)&&+x.t.slice(11,13)<=17);
+   const tp=tip(d,hrs);
+   el.innerHTML=`<section class="dh-card wx"><div class="wx-now"><span class="wx-ic">${IC(d.current.weather_code)}</span><b class="wx-t">${Math.round(d.current.temperature_2m)}°</b><span class="wx-x">${TX(d.current.weather_code)}</span><span class="wx-d">${Math.round(D.temperature_2m_max[0])}° / ${Math.round(D.temperature_2m_min[0])}° · <span>Rain ${D.precipitation_probability_max[0]}%</span></span></div>${tp?`<p class="wx-tip">${tp}</p>`:''}</section>`}
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
@@ -13425,7 +13420,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610307500';
+const VERSION='202610307600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
