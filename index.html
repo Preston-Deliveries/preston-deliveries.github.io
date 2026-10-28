@@ -5334,6 +5334,8 @@ html body #mod-runs .sh-t .r::before{display:block}}
 :root:root #sh-main #mod-uniform .fit{display:flex!important;width:100%!important;align-self:stretch!important}
 :root:root #sh-main #mod-uniform .fit button{flex:1 1 0!important;min-width:0!important;font-size:.72rem!important;padding:7px 0!important;letter-spacing:-.01em;white-space:nowrap}
 @media (min-width:900px){html body #sh-main#sh-main#sh-main>.sh-sec>*>:is(.sh-hero,article.sheet,section.ck){padding:16px 20px 14px!important}}
+#sh-ptr{position:fixed;top:0;left:50%;z-index:9999;width:40px;height:40px;border-radius:50%;background:#fff;color:#16324F;box-shadow:0 2px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font:800 1.2rem system-ui;transform:translate(-50%,-60px);transition:transform .2s;pointer-events:none}
+#sh-ptr span{transition:transform .2s}#sh-ptr.go span{transform:rotate(180deg)}#sh-ptr.spin span{animation:ptrs .8s linear infinite}@keyframes ptrs{to{transform:rotate(360deg)}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6043,13 +6045,14 @@ async function printPage(btn){
   btn.disabled=false;btn.textContent=old;
 }
 function openUserView(){
-  closeUserView();window.__uvStart=cur;
+  let keep=null;try{keep=sessionStorage.getItem('uv1161')}catch(e){}
+  closeUserView();window.__uvStart=cur;try{sessionStorage.setItem('uv1161',keep||'')}catch(e){}
   const wrap=document.createElement('div');wrap.id='sh-uvwrap';wrap.setAttribute('role','dialog');wrap.setAttribute('aria-label','User view');
   const f=document.createElement('iframe');f.title='User view';f.srcdoc=pageHtml(SNAP);wrap.appendChild(f);
   document.body.appendChild(wrap);document.body.classList.add('sh-uv-on');
 }
 window.__closeUV=()=>{let sec=null;try{const f=document.querySelector('#sh-uvwrap iframe');const w=f&&f.contentWindow;sec=w&&w.APP&&w.APP.section;if(w&&sec===w.__uvFirst&&MGR_ONLY.includes(window.__uvStart))sec=null}catch(e){}closeUserView();if(sec&&SECS.includes(sec)&&sec!==cur)go(sec)};
-function closeUserView(){(window.__uvSubs||[]).splice(0).forEach(u=>{try{u()}catch(e){}});const w=document.getElementById('sh-uvwrap');if(w)w.remove();document.body.classList.remove('sh-uv-on')}
+function closeUserView(){try{sessionStorage.removeItem('uv1161')}catch(e){}(window.__uvSubs||[]).splice(0).forEach(u=>{try{u()}catch(e){}});const w=document.getElementById('sh-uvwrap');if(w)w.remove();document.body.classList.remove('sh-uv-on')}
 /* Let drivers know: open WhatsApp with a ready message and a link straight to the page (admin only) */
 const WA_MSG={updates:'Please read the latest update in the PDS app.',briefs:'A new team brief is up. Please read it and sign off in the PDS app.',results:'Driver results have been updated. Check yours in the PDS app.',survey:'The survey ranking has been updated. Check it in the PDS app.'};
 const waLink=s=>location.origin+location.pathname+'#'+s;
@@ -6141,6 +6144,7 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
   if(!opts.back&&sec!==cur){hist.push(cur);if(hist.length>20)hist.shift()}
   if(tabSecs().includes(sec))hist=[];
   cur=sec;
+  if(previewChild){try{sessionStorage.setItem('uv1161',sec)}catch(e){}}
   if(!previewChild){try{const u=location.pathname+location.search+(sec==='home'?'':'#'+encodeURIComponent(sec));if(location.pathname+location.search+location.hash!==u)history.replaceState(null,'',u)}catch(e){}}
   const want=MOD[sec];
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
@@ -6589,9 +6593,17 @@ if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
 else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
 else if(h) first='runs';
-else if(previewChild){try{const v=window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
+else if(previewChild){try{const v=sessionStorage.getItem('uv1161')||window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
 /* the app always opens on Home; if it sat in the background for 15 minutes or more, it goes back to Home too */
 {let hid=0;document.addEventListener('visibilitychange',()=>{if(document.hidden){hid=Date.now();return}if(hid&&Date.now()-hid>=15*60e3&&!previewChild&&cur!=='home'){const a=document.activeElement;if(!(a&&a.matches&&a.matches('input,textarea,select')))try{go('home')}catch(e){}}hid=0})}
+
+/* Driver view sits in a frame, and phones do not pull to refresh inside a frame. Pull down at the top to reload. */
+if(previewChild){(()=>{let y0=null,dy=0,el=null;
+  const bar=()=>{if(!el){el=document.createElement('div');el.id='sh-ptr';el.innerHTML='<span>↓</span>';document.body.appendChild(el)}return el};
+  addEventListener('touchstart',e=>{y0=(scrollY<=0&&e.touches.length===1&&!(e.target.closest&&e.target.closest('input,textarea,select,#sh-set,dialog')))?e.touches[0].clientY:null;dy=0},{passive:true});
+  addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;if(dy<=0||scrollY>0){if(el)el.style.transform='translate(-50%,-60px)';return}const b=bar();const d=Math.min(dy*.5,70);b.style.transition='none';b.style.transform='translate(-50%,'+(d-50)+'px)';b.classList.toggle('go',dy>110)},{passive:true});
+  addEventListener('touchend',()=>{if(y0==null)return;y0=null;if(!el)return;el.style.transition='';if(dy>110&&scrollY<=0){el.classList.add('spin');el.style.transform='translate(-50%,16px)';setTimeout(()=>{try{window.parent.location.reload()}catch(e){location.reload()}},150)}else el.style.transform='translate(-50%,-60px)'},{passive:true});
+})()}
 cur=first;window.__uvFirst=first;
 document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==MOD[first]);
 renderNav();renderHome();
@@ -6603,6 +6615,8 @@ renderNav();renderHome();
   document.documentElement.dataset.role=role;
   window.dispatchEvent(new CustomEvent('app:role',{detail:role}));
   if(MGR_ONLY.includes(cur)&&role!=='mgr') go('home');
+  /* refreshed while in driver view: open driver view again */
+  if(role==='mgr'&&!previewChild){let uv=null;try{uv=sessionStorage.getItem('uv1161')}catch(e){}if(uv!==null){const op=()=>setTimeout(()=>{try{if(!document.getElementById('sh-uvwrap'))openUserView()}catch(e){}},0);if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',op);else op()}}
   renderNav();if(cur==='home')renderHome();else{try{go(cur,{back:true,keepScroll:true})}catch(e){}}/* a refresh on another page draws it again now we know who is signed in */
 })();
 window.addEventListener('DOMContentLoaded',()=>go(cur,{keepScroll:true}));
@@ -14108,7 +14122,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610313100';
+const VERSION='202610313200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
