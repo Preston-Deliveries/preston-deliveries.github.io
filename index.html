@@ -5531,7 +5531,6 @@ function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStar
   if(enqN)rows.push(['enquiries',enqN+(enqN===1?' enquiry needs':' enquiries need')+' a fault decision','At fault, partly or not at fault','']);
   if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from===MC.prev[0]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
     if(miss.length)rows.push(['invoices',miss.length+(miss.length===1?' invoice':' invoices')+' not in yet','For '+mcNice(MC.prev[0])+' to '+mcNice(MC.prev[1])+': '+miss.join(', '),''])}
-  {const n=tlCount();if(n)rows.push(['timesheets',n+(n===1?' driver':' drivers')+' to check for 2 loads','From '+tlNice(TL.day)+'. Use the 2 loads check above.','tlgo'])}
   const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];const ex=[];
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
   ex.sort((a,b)=>a.n-b.n);
@@ -13216,7 +13215,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610305600';
+const VERSION='202610305700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
