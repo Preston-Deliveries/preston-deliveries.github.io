@@ -5148,6 +5148,21 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
 :root:root body #sh-menu .am-row .chev{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;color:var(--sh-muted)}
 :root:root body #sh-menu .am-row .bdg{position:static!important;margin:0!important;flex:none}
 @media (min-width:900px){:root:root #sh-menu .am-g{max-width:640px}}
+/* driver Menu: same neat rows, a little bigger for easy tapping */
+:root:root body #sh-menu .am-drv .dm-t.am-row{min-height:68px!important;padding:12px 14px!important}
+:root:root body #sh-menu .am-drv .am-row .ic{width:44px!important;height:44px!important;border-radius:13px!important}
+:root:root body #sh-menu .am-drv .am-row .ic svg{width:24px!important;height:24px!important}
+:root:root body #sh-menu .am-drv .am-row b{font-size:1.08rem!important}
+:root:root body #sh-menu .am-drv .am-row small{font-size:.84rem!important}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-guide{--tc:#B7791F;--tbg:rgba(242,178,74,.2)}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-reports{--tc:#C62828;--tbg:rgba(198,40,40,.13)}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-runs{--tc:#2F6FED;--tbg:rgba(47,111,237,.14)}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-invoices{--tc:#C2570C;--tbg:rgba(232,113,10,.15)}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-directory{--tc:#0B7A6E;--tbg:rgba(11,122,110,.14)}
+:root:root body #sh-menu .am-g.am-drv .dm-t.t-uniform{--tc:#4B5B75;--tbg:rgba(75,91,117,.16)}
+:root[data-theme="dark"] body #sh-menu .am-g.am-drv .am-row .ic{filter:brightness(1.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #sh-menu .am-g.am-drv .am-row .ic{filter:brightness(1.5)}}
+:root:root body #sh-menu .am-g.am-drv{margin:10px 12px 14px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6023,7 +6038,7 @@ document.addEventListener('click',e=>{if(e.target.closest('#sh-set [data-nav]'))
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
   if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="am-list">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t am-row t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><span class="tx"><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
   const SUB={results:'Everyone\'s results',survey:'Customer survey',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
-  box.innerHTML=`<div class="dm-grid">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
+  box.innerHTML=`<section class="am-g am-drv"><div class="am-list">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t am-row t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div></section>
   `}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
@@ -13903,7 +13918,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311500';
+const VERSION='202610311600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
