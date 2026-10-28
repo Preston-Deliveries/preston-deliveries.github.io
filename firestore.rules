@@ -141,6 +141,11 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff() && resource.data.status == 'pending');
     }
+    // The team list: admins see everyone; a driver can read only their own record (for how often they are paid)
+    match /staff/{id} {
+      allow read: if isAdmin() || (hasAccess() && id == myStaff());
+      allow write: if isAdmin();
+    }
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());
       allow write: if isAdmin();
