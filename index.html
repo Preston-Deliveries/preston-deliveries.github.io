@@ -4739,6 +4739,14 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .fc-r.done b{text-decoration:line-through;opacity:.6}.fc-r.done .iss{opacity:.5}
 :root[data-theme="dark"] .fc-r .iss i,:root[data-theme="dark"] .fc-sf h3 span{color:#ff9b94}:root[data-theme="dark"] .fc-r small,:root[data-theme="dark"] .fc-r button{color:#6fdc9b}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fc-r .iss i,:root:not([data-theme="light"]) .fc-sf h3 span{color:#ff9b94}:root:not([data-theme="light"]) .fc-r small,:root:not([data-theme="light"]) .fc-r button{color:#6fdc9b}}
+
+.fu,.fuc{font-size:.92rem}.fu{margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--sh-sunk,rgba(127,127,127,.06))}
+.fu-h{display:flex;justify-content:space-between;align-items:center;gap:8px}.fu-h h2{margin:0}.fu-h span{font-size:.8rem;font-weight:800;color:#b42318;white-space:nowrap}.fuc .fu-h h2{font-size:1.15rem}.fu-h span.ok,.fu-g summary span.ok{color:#167a42}.fu-p{margin:4px 0 6px;font-size:.8rem;color:var(--sh-muted)}
+.fu-r{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--sh-line);cursor:pointer}.fu-r input{width:18px;height:18px;margin:0;accent-color:#1f9d55;flex:0 0 auto}.fu-r b{font-weight:700}.fu-r .iss{color:#b42318;font-weight:700;font-size:.82rem;flex:1}.fu-r small{color:#167a42;font-weight:700;font-size:.75rem}
+.fu-r.done b,.fu-r.done .iss{text-decoration:line-through;opacity:.5}
+.fu-g{border-top:1px solid var(--sh-line)}.fu-g summary{display:flex;justify-content:space-between;padding:9px 0;cursor:pointer;list-style:none}.fu-g summary::-webkit-details-marker{display:none}.fu-g summary span{font-size:.82rem;font-weight:700;color:var(--sh-muted)}
+:root[data-theme="dark"] .fu-r .iss,:root[data-theme="dark"] .fu-h span{color:#ff9b94}:root[data-theme="dark"] .fu-r small,:root[data-theme="dark"] .fu-h span.ok,:root[data-theme="dark"] .fu-g summary span.ok{color:#6fdc9b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fu-r .iss,:root:not([data-theme="light"]) .fu-h span{color:#ff9b94}:root:not([data-theme="light"]) .fu-r small,:root:not([data-theme="light"]) .fu-h span.ok,:root:not([data-theme="light"]) .fu-g summary span.ok{color:#6fdc9b}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5625,7 +5633,23 @@ async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=t
     if(st&&st.targets)FC.tg={etaG:+st.targets.etaG||98,cpG:+st.targets.cpG||99};FC.at=Date.now()}catch(e){}
   if(!FC.fuOn&&FC.last){FC.fuOn=FC.last.date;try{db.collection('followup').where('date','==',FC.last.date).onSnapshot(sn=>{const m={};for(const d of sn.docs){const v=D(d);if(v)m[d.id]=v}FC.fu=m;adminFocus()},()=>{})}catch(e){}}
   FC.wkBusy=false;adminFocus()}
-function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
+/* follow ups: drivers who missed 2 hr ETA or scan compliance on the latest results day */
+function fuList(){if(!FC.last||!window.SCORE)return [];const G=window.__runGrp||{},N=window.__runNames||{},tg=FC.tg;const pctv=v=>{v=+v;return v>1.0001?v:v*100};const L=[];
+  for(const[l,r]of Object.entries(FC.last.rows||{})){const iss=[];
+    if(r.eta!=null&&r.eta!==''&&+r.eta>0&&pctv(r.eta)<tg.etaG-1e-9)iss.push('ETA '+(Math.round(pctv(r.eta)*10)/10)+'%');
+    if(r.cp!=null&&r.cp!==''&&+r.cp>0&&pctv(r.cp)<tg.cpG-1e-9)iss.push('Scan '+(Math.round(pctv(r.cp)*10)/10)+'%');
+    if(!iss.length)continue;const w=String(N[l]||l).split(' ');L.push({l,id:FC.last.date+'_'+l,nm:w.length>1?w[0]+' '+w[w.length-1][0]:w[0],iss,pc:String(G[String(l).toUpperCase()]||'other').toLowerCase()})}
+  return L.sort((a,b)=>a.nm.localeCompare(b.nm))}
+function fuRow(x){const f=FC.fu[x.id];return `<label class="fu-r ${f?'done':''}"><input type="checkbox" data-fu="${esc(x.id)}" data-l="${esc(x.l)}" data-d="${esc(FC.last.date)}" ${f?'checked':''} ${FC.busy[x.id]?'disabled':''}><b>${esc(x.nm)}</b><span class="iss">${esc(x.iss.join(' · '))}</span>${f?`<small>${esc(f.by||'')}</small>`:''}</label>`}
+function fuHTML(L,pc){if(!FC.last)return '';if(!L.length)return '';const left=L.filter(x=>!FC.fu[x.id]).length;
+  return `<div class="fu"><div class="fu-h"><b>Follow up ${esc(tlNice(FC.last.date))}</b><span class="${left?'':'ok'}">${left?left+' to talk to':'✓ All done'}</span></div>${L.map(fuRow).join('')}</div>`}
+function adminFollow(){const el=$('ah_fu');if(!el||role!=='mgr')return;fcLoad();if(myFocus()){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
+  const L=fuList();if(!L.length){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
+  const PCS=[...new Set(L.map(x=>x.pc))].sort();const left=L.filter(x=>!FC.fu[x.id]).length;
+  const html=`<section class="dh-card fuc"><div class="fu-h"><h2>Follow ups · ${esc(tlNice(FC.last.date))}</h2><span class="${left?'':'ok'}">${left?left+' to talk to':'✓ All done'}</span></div><p class="fu-p">Missed 2 hr ETA (${FC.tg.etaG}%) or scan (${FC.tg.cpG}%). Supervisors tick when they have spoken to the driver.</p>
+   ${PCS.map(pc=>{const g=L.filter(x=>x.pc===pc),d=g.filter(x=>FC.fu[x.id]).length;return `<details class="fu-g" ${d<g.length?'open':''}><summary><b>${esc(pc==='other'?'Other':pc.toUpperCase())}</b><span class="${d===g.length?'ok':''}">${d} of ${g.length} done</span></summary>${g.map(fuRow).join('')}</details>`}).join('')}</section>`;
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
   const pc=f.pc,P=MC.staff,T=mcIso(new Date());const G=window.__runGrp||{};
   const grpOfStaff=id=>tlGrp(id);const inPc=id=>grpOfStaff(id)===pc;
   const sn=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
@@ -5642,25 +5666,15 @@ function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.
   {const EXP=[['regoDue','Rego'],['licDue','Licence'],['tenDue','Tenure']];const ex=[];for(const[id,p]of Object.entries(P)){if(!inPc(id))continue;for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push(sn(p)+' '+l.toLowerCase()+(n<0?' expired':' in '+n+' days'))}}
     if(ex.length)rows.push({ic:'staff',t:ex.length+(ex.length===1?' paper expiring':' papers expiring'),s:ex.join(', '),go:'compliance',c:'warn'})}
   /* last week results */
-  let res='';if(FC.wk&&window.SCORE){const by={};for(const d of FC.wk.days)for(const[l,r]of Object.entries(d.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const s=SCORE.day(r).score;if(s==null)continue;const o=by[l]=by[l]||{s:0,n:0};o.s+=s;o.n++}
+  let res='';if(false&&FC.wk&&window.SCORE){const by={};for(const d of FC.wk.days)for(const[l,r]of Object.entries(d.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const s=SCORE.day(r).score;if(s==null)continue;const o=by[l]=by[l]||{s:0,n:0};o.s+=s;o.n++}
     const L=Object.entries(by).map(([l,o])=>({l,v:o.s/o.n}));if(L.length){const avg=L.reduce((a,x)=>a+x.v,0)/L.length;const N=window.__runNames||{};const low=L.filter(x=>x.v<96-1e-9).sort((a,b)=>a.v-b.v).map(x=>{const w=String(N[x.l]||x.l).split(' ');return (w.length>1?w[0]+' '+w[w.length-1][0]:w[0])+' '+SCORE.fmt(x.v)});
       res=`<button type="button" class="fc-res" data-nav="results"><span><small>Last week in ${pc}</small><b class="${avg>=96-1e-9?'ok':'bad'}">${SCORE.fmt(avg)}</b><em>average Contract Score</em></span><span class="low">${low.length?`<small>Under 96</small>${esc(low.join(', '))}`:'<small>Under 96</small>✓ Nobody'}</span></button>`}}
-  /* shortfalls from the latest results: only drivers who missed a target */
-  let sf='';if(FC.last&&window.SCORE){const N=window.__runNames||{},d=FC.last.date,tg=FC.tg;const pctv=v=>{v=+v;return v>1.0001?v:v*100};const L=[];
-    for(const[l,r]of Object.entries(FC.last.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const iss=[];
-      if(r.eta!=null&&r.eta!==''&&+r.eta>0&&pctv(r.eta)<tg.etaG-1e-9)iss.push('2 hr ETA '+(Math.round(pctv(r.eta)*10)/10)+'%');
-      if(r.cp!=null&&r.cp!==''&&+r.cp>0&&pctv(r.cp)<tg.cpG-1e-9)iss.push('Scan '+(Math.round(pctv(r.cp)*10)/10)+'%');
-      if((+r.enq||0)>0)iss.push((+r.enq)+' at fault enquir'+(+r.enq===1?'y':'ies'));if((+r.enqP||0)>0)iss.push((+r.enqP)+' partly at fault');
-      if(iss.length){const w=String(N[l]||l).split(' ');L.push({l,id:d+'_'+l,nm:w.length>1?w[0]+' '+w[w.length-1][0]:w[0],iss,s:SCORE.day(r).score})}}
-    L.sort((a,b)=>(a.s??100)-(b.s??100));const left=L.filter(x=>!FC.fu[x.id]).length;
-    sf=L.length?`<div class="fc-sf"><h3>Follow up from ${esc(tlNice(d))} <span class="${left?'':'ok'}">${left?left+' to do':'✓ All done'}</span></h3><p>Targets: 2 hr ETA ${tg.etaG}%, scan ${tg.cpG}%, no enquiries. Ask the driver what happened.</p>
-      ${L.map(x=>{const f=FC.fu[x.id];return `<div class="fc-r ${f?'done':''}"><span class="tx"><b>${esc(x.nm)}</b><span class="iss">${x.iss.map(i=>`<i>${esc(i)}</i>`).join('')}</span>${f?`<small>✓ Spoke to driver · ${esc(f.by||'')}${f.at?' · '+esc(new Date(f.at).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})):''}</small>`:''}</span><button type="button" data-fu="${esc(x.id)}" data-l="${esc(x.l)}" data-d="${esc(d)}" aria-pressed="${!!f}" ${FC.busy[x.id]?'disabled':''}>${f?'Undo':'✓ Done'}</button></div>`}).join('')}</div>`
-      :`<p class="mc-ok">✓ Nobody in ${pc} missed a target on ${esc(tlNice(d))}.</p>`}
-  const html=`<section class="dh-card fc"><h2>Your postcode · ${pc}</h2>${res}${sf}
+  const sf=fuHTML(fuList().filter(x=>x.pc===pc),pc);
+  const html=`<section class="dh-card fc"><h2>Your postcode · ${pc}</h2>${sf}
    ${rows.map(r=>`<button type="button" class="dh-do ${r.c}" ${r.go==='tl'?'data-fcgo="tl"':r.go?`data-nav="${r.go}"`:'data-fcgo="none"'}><span class="ic">${ICONS[r.ic]||''}</span><span class="tx"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span>${r.go?'<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>':''}</button>`).join('')}
    ${rows.length?'':`<p class="mc-ok">✓ ${pc} is all on track right now.</p>`}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
-document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-fu]');if(!b||role!=='mgr')return;const id=b.dataset.fu;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;FC.busy[id]=true;adminFocus();
+document.addEventListener('change',async e=>{const b=e.target.closest&&e.target.closest('input[data-fu]');if(!b||role!=='mgr')return;const id=b.dataset.fu;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;FC.busy[id]=true;adminFocus();
   try{if(FC.fu[id]){await db.doc('followup/'+id).delete();delete FC.fu[id]}else{const v={date:b.dataset.d,login:b.dataset.l,by:tlBy(),at:new Date().toISOString()};await db.doc('followup/'+id).set(v);FC.fu[id]=v}}catch(x){homeMsg={err:true,t:'Could not save that just now. Check your connection.'}}
   delete FC.busy[id];adminFocus()});
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-fcgo="tl"]');if(!g)return;const f=myFocus();if(f){TL.tab=f.pc;adminLoads()}const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
@@ -5690,6 +5704,7 @@ function renderHome(){
    <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
    <div id="ah_off"></div>
    <div id="ah_todo"></div>
+   <div id="ah_fu"></div>
    <div id="ah_tl"></div>
    <div id="ah_morn"></div>
    <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>After you change sort sheets, run sheets, results, the survey, leave, precards, lockers or contacts, send them so drivers see the latest.</p>
@@ -13294,7 +13309,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306200';
+const VERSION='202610306300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
