@@ -5548,6 +5548,9 @@ function mcIso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'
 function mcAdd(s,n){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return mcIso(d)}
 function mcNice(s){const d=new Date(s+'T12:00:00');return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}
 const MC_OFFICE=['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR','OFFICE'];
+/* floaters count as relief even if their role in Driver Details says something else */
+const FLOATERS=['adrian','benlim','mathues','matheus','michaelhorvath','nathaningram','renanborges','terryhampson'];
+window.__isRelief=p=>{if(!p)return false;const r=String(p.role||'').toUpperCase();if(/RELIEF/.test(r))return true;const f=String(p.first||'').toLowerCase().replace(/[^a-z]/g,''),full=(f+String(p.last||'').toLowerCase()).replace(/[^a-z]/g,'');return FLOATERS.includes(full)||(['adrian','mathues','matheus'].includes(f))};
 async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){MC.st=false;return}
   const D=d=>window.__D?window.__D(d):d.data(),T=mcIso(new Date());
   const live=(q,set)=>{try{q.onSnapshot(sn=>{const m={};for(const d of sn.docs){const v=D(d);if(v)m[d.id]=v}set(m);adminMorning()},()=>{})}catch(e){}};
@@ -5564,7 +5567,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   const T=mcIso(new Date()),sun=tlOff(new Date())&&!Object.values(MC.clock).some(c=>c&&c.start),P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
   const norm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
   let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(norm))}catch(e){}
-  const drv=Object.entries(P).filter(([,p])=>(p.runs||[]).filter(Boolean).length&&!MC_OFFICE.includes(String(p.role||'').toUpperCase())&&String(p.role||'').toUpperCase()!=='RELIEF');
+  const drv=Object.entries(P).filter(([,p])=>(p.runs||[]).filter(Boolean).length&&!MC_OFFICE.includes(String(p.role||'').toUpperCase())&&!window.__isRelief(p));
   const on=new Set(Object.values(MC.clock).filter(c=>c&&c.start).map(c=>c.staff));
   const off=drv.filter(([id,p])=>!on.has(id)&&offN.has(norm([p.first,p.last].join(''))));
   const offIds=new Set(off.map(x=>x[0]));const notYet=drv.filter(([id])=>!on.has(id)&&!offIds.has(id)).map(([,p])=>nm(p)).filter(Boolean).sort();
@@ -5671,7 +5674,7 @@ function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el|
   const rows=[];
   /* not clocked on */
   if(!tlOff(new Date())){const on=new Set(Object.values(MC.clock).filter(c=>c&&c.start).map(c=>c.staff));let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(x=>String(x).toLowerCase().replace(/[^a-z]/g,'')))}catch(e){}
-    const nx=Object.entries(P).filter(([id,p])=>inPc(id)&&(p.runs||[]).filter(Boolean).length&&String(p.role||'').toUpperCase()!=='RELIEF'&&!on.has(id)&&!offN.has([p.first,p.last].join('').toLowerCase().replace(/[^a-z]/g,''))).map(([,p])=>sn(p)).sort();
+    const nx=Object.entries(P).filter(([id,p])=>inPc(id)&&(p.runs||[]).filter(Boolean).length&&!window.__isRelief(p)&&!on.has(id)&&!offN.has([p.first,p.last].join('').toLowerCase().replace(/[^a-z]/g,''))).map(([,p])=>sn(p)).sort();
     if(nx.length)rows.push({ic:'timesheets',t:nx.length+' not clocked on yet',s:nx.join(', '),go:'',c:'warn'})}
   /* 2 loads */
   if(TL.ready&&TL.day===tlPrevDay()){const n=tlRows().filter(r=>r.grp===pc&&(r.st==='todo'||r.st==='sus')).length;if(n)rows.push({ic:'timesheets',t:n+' to check for 2 loads',s:'From '+tlNice(TL.day)+'. Tap to open the '+pc+' tab.',go:'tl',c:''})}
@@ -12862,7 +12865,7 @@ function cvSet(off,fn){const items=JSON.parse(JSON.stringify((CV.doc&&CV.doc.ite
 const cvOffIds=()=>new Set(cvOff().map(x=>x.id));
 function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork(TODAY());cvWatch()}cvAvg();
   if(!Object.keys(S.staff).length||!CV.doc){el.innerHTML='<div class="mt-wait">Loading…</div>';return}
-  const off=cvOff(),relief=drivers().filter(p=>String(p.role||'').toUpperCase()==='RELIEF'),offIds=new Set(off.map(o=>o.id));
+  const off=cvOff(),relief=drivers().filter(p=>window.__isRelief(p)),offIds=new Set(off.map(o=>o.id));
   const used=new Set();for(const it of CV.doc.items||[]){if(it.by)used.add(it.by);for(const h of it.help||[])used.add(h.id)}
   const all=drivers().filter(p=>!offIds.has(p.id));
   const rows=off.map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{help:[]};return{o,p,it}});
@@ -12876,7 +12879,7 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
      ${runInfo(p).length?`<div class="cv-info">${runInfo(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
      <div class="cv-chips">${relief.length?relief.map(r=>{const on=it.by===r.id||(it.help||[]).some(x=>x.id===r.id),busy=!on&&used.has(r.id);return `<button type="button" class="cv-c ${on?'on':''} ${busy?'busy':''}" data-cv="by" data-off="${esc(o.id)}" data-v="${esc(r.id)}" aria-pressed="${on}">${esc(shortName(r))}${busy?'<i>busy</i>':''}</button>`}).join(''):'<span class="cv-nr">No relief drivers. Set a driver\'s role to RELIEF on the Driver Details page.</span>'}</div>
      <div class="cv-help">${it.by&&!relief.some(r=>r.id===it.by)?`<span class="cv-hp by">${esc(it.byName)} <button type="button" data-cv="byclear" data-off="${esc(o.id)}" aria-label="Remove ${esc(it.byName)}">×</button></span>`:''}${(it.help||[]).filter(h=>!relief.some(r=>r.id===h.id)).map(h=>`<span class="cv-hp">${esc(h.name)} <button type="button" data-cv="unhelp" data-off="${esc(o.id)}" data-v="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">×</button></span>`).join('')}
-      <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&String(x.role||'').toUpperCase()!=='RELIEF').map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
+      <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&!window.__isRelief(x)).map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
    <div class="cv-add"><select data-cvsel="off" aria-label="Add a driver who is off"><option value="">+ Add someone who is off (sick or other)</option>${all.map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div>
    <div class="cv-acts"><button type="button" class="sh-btn primary" data-cv="share">Show the cover sheet</button></div>
    <p class="mt-note">Drivers you assign see it on their Home the day before and on the day, with a button to open the run sheet.</p>
@@ -13366,7 +13369,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306700';
+const VERSION='202610306800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
