@@ -5069,6 +5069,48 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-main #mod-timesheets .tstabs button[aria-pressed=true]{background:#7B4BDB;color:#fff}
 #mod-timesheets .tsor{margin:10px 2px 4px}
 #sh-main #mod-timesheets .tsx>.tstabs{order:-10!important}#sh-main #mod-timesheets .tsx>.head{order:-11!important}
+
+/* Leave week: a fill bar shows how close each day is to the limit; full days stand out */
+#sh-main#sh-main #mod-leave .lvr .mh{display:flex;align-items:center;gap:8px}#sh-main#sh-main #mod-leave .lvr .mh>b{font-size:.92rem;font-weight:800}
+#sh-main#sh-main #mod-leave .lvr .cap{display:inline-flex;gap:3px}
+#sh-main#sh-main #mod-leave .lvr .cap i{width:16px;height:7px;border-radius:4px;background:var(--sh-sunk,rgba(127,127,127,.2));border:1px solid var(--sh-line)}
+#sh-main#sh-main #mod-leave .lvr .cap i.on{background:var(--lc);border-color:var(--lc)}
+#sh-main#sh-main #mod-leave .lvr.full{background:color-mix(in srgb,var(--lc) 16%,var(--sh-surface))!important;border-color:var(--lc)!important}
+#sh-main#sh-main #mod-leave .lvr.one{background:color-mix(in srgb,var(--lc) 9%,var(--sh-surface))!important}
+#sh-main#sh-main #mod-leave .lvr.full .pill{background:var(--lc)!important;color:#fff!important;font-weight:900}
+/* Upcoming leave and Driver totals: cards on phones, no sideways scroll */
+@media (max-width:899.98px){
+#sh-main #mod-leave .tw{overflow:visible!important}
+#sh-main #mod-leave .tw table{display:block;width:100%!important;min-width:0!important;border:0}
+#sh-main #mod-leave .tw thead{display:none}
+#sh-main #mod-leave .tw tbody{display:flex;flex-direction:column;gap:8px}
+#sh-main #mod-leave .tw tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 10px;padding:10px 12px;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface)}
+#sh-main #mod-leave .tw td{display:flex;flex-direction:column;padding:0!important;border:0!important;min-width:0;white-space:normal!important;text-align:left!important}
+#sh-main #mod-leave .tw td:first-child{display:none}
+#sh-main #mod-leave .tw td:nth-child(2){grid-column:1 / -1;flex-direction:row;align-items:baseline;gap:8px}
+#sh-main #mod-leave .tw td:nth-child(2) b{font-size:1rem;text-transform:capitalize}
+#sh-main #mod-leave .tw td[colspan]{grid-column:1 / -1;display:block}
+#sh-main #mod-leave .tw table:not(.tot) td:nth-child(3)::before{content:'From'}
+#sh-main #mod-leave .tw table:not(.tot) td:nth-child(4)::before{content:'To'}
+#sh-main #mod-leave .tw table:not(.tot) td:nth-child(5)::before{content:'Days'}
+#sh-main #mod-leave .tw table:not(.tot) td:nth-child(6){grid-column:1 / -1}
+#sh-main #mod-leave .tw table:not(.tot) td:nth-child(6):empty{display:none}
+#sh-main #mod-leave .tw table.tot td:nth-child(3)::before{content:'Taken'}
+#sh-main #mod-leave .tw table.tot td:nth-child(4)::before{content:'Booked'}
+#sh-main #mod-leave .tw table.tot td:nth-child(5)::before{content:'Total'}
+#sh-main #mod-leave .tw table.tot td:nth-child(6){grid-column:1 / -1;flex-direction:row;gap:6px}
+#sh-main #mod-leave .tw table.tot td:nth-child(6)::before{content:'Next leave:'}
+#sh-main #mod-leave .tw td::before{font-size:.68rem;font-weight:800;color:var(--sh-muted);text-transform:uppercase;letter-spacing:.03em}
+#sh-main #mod-leave .tw tr.zero{opacity:.7}
+}
+/* Cover planner: tighter cards */
+#sh-main#sh-main #mod-cover .cv-r{padding:10px 12px!important;gap:6px!important}
+#sh-main#sh-main #mod-cover .cv-h{gap:6px}#sh-main#sh-main #mod-cover .cv-h b{font-size:1rem}
+#sh-main#sh-main #mod-cover .cv-info{display:flex;flex-wrap:wrap;gap:4px;margin:0}
+#sh-main#sh-main #mod-cover .cv-info span{font-size:.74rem!important;padding:2px 7px!important}
+#sh-main#sh-main #mod-cover .cv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0}
+#sh-main#sh-main #mod-cover .cv-chips .cv-c{min-height:32px!important;height:auto!important;width:auto!important;padding:4px 12px!important;border-radius:99px!important;font-size:.85rem!important;aspect-ratio:auto!important}
+#sh-main#sh-main #mod-cover .cv-help select{min-height:36px!important;padding:4px 10px!important;font-size:.88rem!important;width:auto;max-width:100%}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10027,7 +10069,7 @@ function weekHTML(){
      const ppl=showNames&&o?o.names.map((x,i)=>({x,id:(o.ids||[])[i]})):[];const off=isMgr()&&o?o.office.map((x,i)=>({x,id:(o.oids||[])[i]})):[];
      const chip=(p,cls)=>isMgr()&&p.id?`<button type="button" class="pp ${cls}" data-lv="edit" data-v="${esc(p.id)}">${esc(tc(shortName(p.x)))}</button>`:`<span class="pp ${cls}">${esc(tc(isMgr()?shortName(p.x):p.x.split(' ')[0]))}</span>`;
      return `<div class="lvr ${st.k}${k===today?' now':''}"><div class="d"><small>${DOW[(d.getDay()+6)%7]}</small><b>${d.getDate()}</b></div>
-       <div class="m"><b>${st.k==='bo'?esc(st.t):n?`${n} off`:'Nobody off'}</b>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
+       <div class="m"><span class="mh"><b>${st.k==='bo'?esc(st.t):n?`${n} off`:'Nobody off'}</b>${st.k!=='bo'?`<span class="cap" aria-hidden="true">${Array.from({length:config().limit||3},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`:''}</span>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
        <span class="pill">${esc(pillTxt(st,n))}</span></div>`}).join('')}</div>
    ${isMgr()?'<p class="sub">Tap a name to change or remove that leave. Office staff are shown in grey and don’t count toward the limit.</p>':''}`;
 }
@@ -13796,7 +13838,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310800';
+const VERSION='202610310900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
