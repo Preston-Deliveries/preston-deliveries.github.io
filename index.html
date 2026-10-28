@@ -4946,6 +4946,23 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 :root:root .sh-mtop .sh-mode svg{width:26px;height:26px;stroke-width:1.8}
 :root:root .sh-mtop .sh-mode.on{background:none;color:#F2782D}
 #sh-set .thseg:has(>button:nth-child(2):last-child){display:grid;grid-template-columns:1fr 1fr}
+
+/* Leave calendar week view: lighter, smaller rows; clear Week or Month choice */
+#sh-main#sh-main #mod-leave .lvseg{padding:3px;margin-bottom:10px;border:1px solid var(--sh-line)}
+#sh-main#sh-main #mod-leave .lvseg button{min-height:36px;padding:6px;font-size:.92rem}
+#sh-main#sh-main #mod-leave .lvseg button[aria-pressed=true]{background:#F2782D;color:#fff;box-shadow:none}
+#sh-main#sh-main #mod-leave .lvnav .nb{height:40px}
+#sh-main#sh-main #mod-leave .lvw{gap:6px}
+#sh-main#sh-main #mod-leave .lvr{padding:7px 10px;gap:10px;border-width:1px!important;border-left-width:5px!important;border-color:var(--sh-line)!important;border-left-color:var(--lc)!important;background:var(--sh-surface)!important}
+#sh-main#sh-main #mod-leave .lvr.now{box-shadow:0 0 0 2px var(--sh-ink) inset}
+#sh-main#sh-main #mod-leave .lvr .d{width:34px}
+#sh-main#sh-main #mod-leave .lvr .d small{font-size:.68rem}
+#sh-main#sh-main #mod-leave .lvr .d b{font-size:1.2rem}
+#sh-main#sh-main #mod-leave .lvr .m{gap:3px}
+#sh-main#sh-main #mod-leave .lvr .m>b{font-size:.9rem}
+#sh-main#sh-main #mod-leave .lvr .ppl{gap:4px}
+#sh-main#sh-main #mod-leave .lvr .pp{font-size:.8rem;padding:1px 8px;background:var(--sh-sunk,rgba(127,127,127,.12))}
+#sh-main#sh-main #mod-leave .lvr .pill{font-size:.72rem!important;padding:3px 9px!important;background:var(--lbg2,transparent)!important;color:var(--lc)!important;border:1px solid var(--lc)}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13599,7 +13616,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309400';
+const VERSION='202610309500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
