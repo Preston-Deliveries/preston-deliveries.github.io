@@ -5114,7 +5114,7 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 
 /* ===== tidy pass: one look everywhere ===== */
 /* 1. whatever is picked in a switch is always brand orange with white text */
-:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes:not(.pcs),.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes,.fit) > button[aria-pressed="true"]:not(.pcz):not([class*="pr-"]),
+:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes:not(.pcs),.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes,.fit,.chips) > button[aria-pressed="true"]:not(.pcz):not([class*="pr-"]),
 :root:root body #sh-main#sh-main#sh-main#sh-main [role=tablist] > [aria-selected="true"],
 :root:root #sh-set .thseg > button[aria-pressed="true"]{background:#F2782D!important;color:#fff!important;border-color:#F2782D!important;box-shadow:none!important}
 :root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes,.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes) > button[aria-pressed="true"] :is(small,i){color:#fff!important;opacity:.9}
@@ -5187,6 +5187,38 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
 :root:root body #sh-main #mod-reports .list>.rw:first-child{border-top:0}
 :root:root body #sh-main #mod-reports .list .ri{flex:1;border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;margin:0!important}
 :root:root body #sh-main #mod-reports .list .lp{flex:none;min-height:36px!important;padding:4px 12px!important}
+
+/* ===== desktop: same philosophy as the phone ===== */
+@media (min-width:900px){
+ /* bell and gear in the sidebar header; the old view and light/dark switches live in Settings now */
+ :root:root .sh-side .sh-brand{display:flex;align-items:center;gap:10px}
+ :root:root .sh-side .sh-brand .bt{flex:1;min-width:0}
+ :root:root .sh-side .sh-tb{display:flex!important;align-items:center;gap:2px;margin:0 -6px 0 0;order:0}
+ :root:root .sh-side .sh-tb :is(.sh-bell,.sh-mode){width:34px!important;height:34px!important}
+ :root:root .sh-side .sh-tb .sh-bell svg{width:21px!important;height:21px!important}
+ :root:root .sh-side .sh-tb .sh-mode svg{width:20px!important;height:20px!important}
+ :root:root .sh-side :is(.sh-vt,.sh-thm,.sh-role){display:none!important}
+ /* one comfortable reading width, centred, like a phone page with room to breathe */
+ :root:root #sh-main>.sh-ph>.in{max-width:900px;margin-left:auto;margin-right:auto}
+ :root:root #sh-main .sh-sec{max-width:900px;margin-left:auto!important;margin-right:auto!important}
+ :root:root #sh-main #sh-home{max-width:900px}
+ /* no long explanations under page titles */
+ :root:root #sh-main>.sh-ph p{display:none}
+ /* tabs and big buttons a sensible size */
+ :root:root #sh-main .sh-hubtabs button{min-height:36px!important;padding:6px 14px!important;font-size:.9rem!important}
+ :root:root #sh-main .sh-ph h1{font-size:1.6rem!important}
+ :root:root #sh-menu .am-g,:root:root #sh-menu .am-g.am-drv{max-width:640px;margin-left:auto;margin-right:auto}
+ #sh-set .pn{left:20px!important;right:auto!important;top:70px!important}
+}
+@media (min-width:900px){
+ :root:root .sh-side :is(.sh-bell,.sh-mode){all:unset;box-sizing:border-box;cursor:pointer;position:relative;display:grid;place-items:center;color:#E6EDF7;border-radius:50%}
+ :root:root .sh-side :is(.sh-bell,.sh-mode):hover{background:rgba(255,255,255,.08)}
+ :root:root .sh-side :is(.sh-bell,.sh-mode) svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+ :root:root .sh-side .sh-mode.on{color:#F2782D}
+ :root:root .sh-side .sh-bell .bdg{position:absolute;top:1px;right:0;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:99px;background:#E53935;color:#fff;font:800 .62rem/16px var(--sh-body);text-align:center;border:1.5px solid #0B1220}
+ :root:root .sh-side .sh-brand small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+ body #sh-main#sh-main>.sh-sec,body #sh-main#sh-main>.sh-ph>.in{max-width:900px!important;margin-left:auto!important;margin-right:auto!important;width:100%;box-sizing:border-box}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5817,9 +5849,9 @@ function renderViewbar(){
    const gear='<button type="button" class="sh-mode'+(previewChild?' on':'')+'" data-sh="settings" aria-label="Settings'+(previewChild?'. You are in driver view':'')+'" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>';
    const bell=role==='loading'?'':'<button type="button" class="sh-bell" '+(role==='mgr'?'data-sh="needs"':'data-sh="alerts"')+' aria-label="Notifications" title="Notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="bdg" hidden></span></button>';
    const want=role==='loading'?'':'<span class="sh-tb" data-k="'+role+(previewChild?'p':'')+'">'+bell+gear+'</span>';
-   document.querySelectorAll('.sh-mtop').forEach(t=>{const br=t.querySelector('.sh-brand');if(br){delete br.dataset.sh;br.removeAttribute('role');br.removeAttribute('tabindex');br.removeAttribute('aria-label')}
+   document.querySelectorAll('.sh-mtop,.sh-side').forEach(t=>{const br=t.querySelector('.sh-brand');if(br){delete br.dataset.sh;br.removeAttribute('role');br.removeAttribute('tabindex');br.removeAttribute('aria-label')}
      const sm=br&&br.querySelector('small');if(sm&&!sm.dataset.o)sm.dataset.o=sm.textContent;if(sm){const w=previewChild?'Driver view':sm.dataset.o;if(sm.textContent!==w)sm.textContent=w;if(previewChild)sm.setAttribute('data-notr','')}
-     t.querySelectorAll(':scope>.sh-mode').forEach(x=>x.remove());let m=t.querySelector('.sh-tb');const k=role+(previewChild?'p':'');if(!want){if(m)m.remove();return}if(!m||m.dataset.k!==k){if(m)m.remove();t.insertAdjacentHTML('beforeend',want);setBell(window.__bellN||0)}})}
+     t.querySelectorAll(':scope>.sh-mode').forEach(x=>x.remove());let m=t.querySelector('.sh-tb');const k=role+(previewChild?'p':'');if(!want){if(m)m.remove();return}if(!m||m.dataset.k!==k){if(m)m.remove();if(t.classList.contains('sh-side')&&br)br.insertAdjacentHTML('beforeend',want);else t.insertAdjacentHTML('beforeend',want);setBell(window.__bellN||0)}})}
   const vt=`<div class="seg" role="group" aria-label="View"><button type="button" data-sh="mv" aria-pressed="${previewChild?'false':'true'}">Admin view</button><button type="button" data-sh="uv" aria-pressed="${previewChild?'true':'false'}">User view</button></div>`;
   document.querySelectorAll('.sh-vt').forEach(el=>{if(canMgr||previewChild){el.hidden=false;el.className='sh-vt'+(previewChild?' user':'');el.innerHTML=vt}else{el.hidden=true;el.innerHTML=''}});
   const vb=$('sh-viewbar');if(!vb)return;
@@ -13942,7 +13974,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311900';
+const VERSION='202610312000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
