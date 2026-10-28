@@ -12671,14 +12671,17 @@ const page=()=>document.getElementById('ck_page');
 const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
 
 async function load(){
-  let w=window.__webMe;if(!w){try{if(window.parent!==window)w=window.parent.__webMe}catch(e){}}if(!w){loaded=true;return}me={...w};
-  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db){loaded=true;return}
+  let w=window.__webMe;if(!w){try{if(window.parent!==window)w=window.parent.__webMe}catch(e){}}if(!w){loaded=true;fresh=true;return}me={...w};
+  try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db){loaded=true;fresh=true;return}
+  if(!me.staff&&me.role==='admin'){const c=readCache();if(c&&c.staff){me.staff=c.staff;me.name=c.name||me.name}}
   if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const d=st.docs.find(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
-  if(!me.staff){noRec=true;loaded=true;return}
+  if(!me.staff){noRec=true;loaded=true;fresh=true;return}
   const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
   try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}
-    hist=[];if(T)hist.push(T);for(const b of bs)if(b.exists)hist.push(__D(b));const more=[5,6].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const ms=await Promise.all(more.map(d=>db.doc('clock/'+d+'_'+me.staff).get()));for(const m of ms)if(m.exists)hist.push(__D(m));}catch(e){msg={err:true,t:'Could not load your times. Check your signal.'}}
-  loaded=true;
+    hist=[];if(T)hist.push(T);for(const b of bs)if(b.exists)hist.push(__D(b));
+    loaded=true;fresh=true;watch();render();
+    const more=[5,6].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const ms=await Promise.all(more.map(d=>db.doc('clock/'+d+'_'+me.staff).get()));for(const m of ms)if(m.exists&&!hist.some(h=>h&&h.date===m.data().date))hist.push(__D(m));}catch(e){if(!loaded||!fresh)msg={err:true,t:'Could not load your times. Check your signal.'}}
+  loaded=true;fresh=true;
   watch();
 }
 let unsub=null;
@@ -12749,8 +12752,14 @@ function histHTML(){
   const tot=rows.reduce((n,r)=>{const w=toMin(r.finish)-toMin(r.start)-(+r.brk||0);return n+(r.finish&&w>0?w:0)},0);
   return `<section class="ck-hist"><h2>Your last 7 days</h2>${rows.length?`<div class="ck-tab">${rows.map(r=>{const w=r.finish?toMin(r.finish)-toMin(r.start)-(+r.brk||0):null;return `<div class="ck-r"><b>${esc(longDay(r.date))}</b><span>${esc(nice(r.start))} to ${r.finish?esc(nice(r.finish)):'<i>not finished</i>'}${r.finish?` · ${r.brk?r.brk+' min break':'no break'}`:''}${r.extra?` · ${r.extra} extra`:''}${r.twoLoads?' · 2 loads':''}${r.held?' · held parcels':''}</span><em>${w!=null&&w>0?hrs(w):''}</em></div>`}).join('')}<div class="ck-r tot"><b>Total</b><span></span><em>${hrs(tot)}</em></div></div>`:'<p class="ck-none">No shifts recorded yet.</p>'}</section>`;
 }
-function render(){const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
-async function mount(){render();if(!loaded&&!busy){busy=true;if(!loadP)loadP=load();await loadP;loadP=null;busy=false}render()}
+function render(){keepCache();const h=html();const b=box();if(b)b.innerHTML=h;const p=page();if(p)p.innerHTML=h+histHTML()}
+/* Show the last known shift straight away (saved on this phone), then check with the server in the background */
+let fresh=false;
+const CK_KEY=()=>{const w=window.__webMe;return w&&w.email?'ck1161:'+String(w.email).toLowerCase():null};
+function readCache(){try{const k=CK_KEY();if(!k)return null;const c=JSON.parse(localStorage.getItem(k)||'null');return c&&c.day===dayOf(new Date())?c:null}catch(e){return null}}
+function keepCache(){try{if(!fresh||!me||!me.staff||!today)return;const k=CK_KEY();if(k)localStorage.setItem(k,JSON.stringify({day:today,staff:me.staff,name:me.name||'',T,Y,yday,hist:hist.slice(0,8)}))}catch(e){}}
+function restore(){if(loaded)return;const c=readCache();const w=window.__webMe;if(!c||!w)return;me={...w,staff:w.staff||c.staff,name:w.name||c.name};today=c.day;T=c.T;Y=c.Y;yday=c.yday;hist=c.hist||[];loaded=true}
+async function mount(){restore();render();if(!fresh){if(!loadP)loadP=load();await loadP;loadP=null}render()}
 
 /* No signal: times are saved on the phone and sent when the signal comes back. Tapped times then count as typed, because Google's clock can only stamp them once they arrive. */
 let OFF=false;
@@ -12800,7 +12809,7 @@ document.addEventListener('click',async e=>{
     await save(async()=>{await put(db.doc('clock/'+yday+'_'+me.staff).update(f));Y={...Y,...f}},'Thanks, yesterday is saved.');return}
 });
 document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){loaded=false;mount()}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){fresh=false;mount()}});
 let loadP=null;
 async function whoami(){if(!loaded){if(!loadP)loadP=load();await loadP}return me&&me.staff?me:null}
 window.CLOCK={mount,whoami};
@@ -14099,7 +14108,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610313000';
+const VERSION='202610313100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
