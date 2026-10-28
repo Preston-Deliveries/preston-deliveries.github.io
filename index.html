@@ -4915,6 +4915,17 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 .dm-uv .chev{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 :root[data-theme="dark"] .dm-uv{background:rgba(255,212,59,.12);border-color:rgba(255,212,59,.4);color:#FFE58A}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dm-uv{background:rgba(255,212,59,.12);border-color:rgba(255,212,59,.4);color:#FFE58A}}
 @media (max-width:899.98px){html.appui:not(.drvui) .sh-links [data-nav="results"]{order:2}html.appui:not(.drvui) .sh-links [data-nav="summary"]{order:3}}
+
+/* small Driver view switch on the right of the title bar */
+.sh-mtop .sh-mode{all:unset;box-sizing:border-box;cursor:pointer;order:1;margin-left:auto;align-self:center;flex:none;display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:99px;font:800 .78rem var(--sh-body);white-space:nowrap;color:#E6EDF7;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06)}
+.sh-mtop .sh-mode.on{background:#FFD43B;color:#1A1300;border-color:#FFD43B}
+.sh-mtop .sh-mode i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#1A1300;color:#FFD43B;font-size:.7rem}
+.sh-mtop:has(.sh-mode) .sh-role{display:none!important}
+@media (max-width:899.98px){.sh-mtop{flex-wrap:nowrap!important;gap:8px!important}.sh-mtop .sh-brand{min-width:0;flex:1}
+ :root:root .sh-mtop:has(.sh-mode) .sh-brand b{font-size:1.45rem!important;overflow:hidden;text-overflow:ellipsis}
+ :root:root .sh-mtop:has(.sh-mode) .sh-brand small{font-size:.62rem!important;white-space:nowrap!important}
+ .sh-mtop .sh-mode{padding:5px 9px;font-size:.72rem;gap:5px}}
+@media (min-width:900px){.sh-mtop .sh-mode{display:none}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5492,7 +5503,9 @@ let pcQ=false,pcR=new Set(),nbAt=0;new MutationObserver(ms=>{for(const m of ms)f
 let dupQ=false;new MutationObserver(()=>{if(dupQ)return;dupQ=true;requestAnimationFrame(()=>{dupQ=false;markDup()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
   renderPageHead();
-  {let ub=$('sh-uvbar');if(previewChild){if(!ub){ub=document.createElement('div');ub.id='sh-uvbar';ub.setAttribute('data-notr','');ub.setAttribute('role','status');ub.innerHTML='<span class="t"><b>👁 Driver view</b><small>This is what drivers see</small></span><button type="button" data-sh="mv">Exit</button>';const ph=$('sh-ph');if(ph&&ph.parentNode)ph.parentNode.insertBefore(ub,ph)}}else if(ub)ub.remove()}
+  {const ub=$('sh-uvbar');if(ub)ub.remove();
+   const want=previewChild?'<button type="button" class="sh-mode on" data-sh="mv" data-notr aria-label="You are in driver view. Tap to go back to admin">👁 Driver view <i>✕</i></button>':(canMgr&&role==='mgr')?'<button type="button" class="sh-mode" data-sh="uv" aria-label="See what drivers see">👁 Driver view</button>':'';
+   document.querySelectorAll('.sh-mtop').forEach(t=>{let m=t.querySelector('.sh-mode');if(!want){if(m)m.remove();return}if(!m||m.outerHTML!==want){if(m)m.remove();t.insertAdjacentHTML('beforeend',want)}})}
   const vt=`<div class="seg" role="group" aria-label="View"><button type="button" data-sh="mv" aria-pressed="${previewChild?'false':'true'}">Admin view</button><button type="button" data-sh="uv" aria-pressed="${previewChild?'true':'false'}">User view</button></div>`;
   document.querySelectorAll('.sh-vt').forEach(el=>{if(canMgr||previewChild){el.hidden=false;el.className='sh-vt'+(previewChild?' user':'');el.innerHTML=vt}else{el.hidden=true;el.innerHTML=''}});
   const vb=$('sh-viewbar');if(!vb)return;
@@ -5709,7 +5722,7 @@ const setHTML=(drv)=>`<details class="dm-set"><summary><span class="ic" aria-hid
    <div class="dm-row"><h3>Text size</h3><div class="thseg" role="group" aria-label="Text size">${[['n','Aa','Normal'],['l','Aa','Large'],['xl','Aa','Extra large']].map(([k,l,t],i)=>`<button type="button" data-ts-set="${k}" aria-label="${t}" aria-pressed="${(window.__ts&&window.__ts())===k}" style="font-size:${[0.95,1.15,1.35][i]}rem">${l}</button>`).join('')}</div></div>
    <button type="button" class="dm-out" data-sh="signout">Sign out</button></details>`;
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=(canMgr&&!previewChild?`<button type="button" class="dm-uv" data-sh="uv"><span class="ic" aria-hidden="true">👁</span><span class="tx"><b>See the drivers' view</b><small>Check what drivers see on their phones</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`:'')+AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+setHTML(false);setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+setHTML(false);setTimeout(applyNavBadges,0);return}
   const SUB={results:'Everyone\'s results',survey:'Customer survey',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
   ${setHTML(true)}`}
@@ -13555,7 +13568,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610308900';
+const VERSION='202610309000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
