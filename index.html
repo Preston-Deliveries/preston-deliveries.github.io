@@ -4719,6 +4719,16 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #sh-menu .dm-grid>.dm-t.t-reports:first-child b{color:#b42318;font-size:1.2rem}
 :root[data-theme="dark"] #sh-menu .dm-grid>.dm-t.t-reports:first-child b{color:#ff9b94}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-menu .dm-grid>.dm-t.t-reports:first-child b{color:#ff9b94}}
+
+.cp-f{display:flex;gap:6px;margin:14px 0 8px}.cp-f button{all:unset;cursor:pointer;flex:1;text-align:center;padding:10px;border-radius:12px;font-weight:800;background:var(--sh-sunk,rgba(127,127,127,.1))}.cp-f button[aria-pressed=true]{background:var(--sh-accent,#1B3F6B);color:var(--sh-accent-ink,#fff)}.cp-f i{font-style:normal;opacity:.8;margin-left:4px}
+.cp-tb2{width:100%;border-collapse:collapse;font-size:.82rem}.cp-tb2 th,.cp-tb2 td{padding:6px 3px;text-align:left;border-bottom:1px solid var(--sh-line);white-space:nowrap}.cp-tb2 thead th{font-size:.66rem;text-transform:uppercase;letter-spacing:.03em;color:var(--sh-muted)}
+.cp-tb2 td b{font-weight:700}.cp-tb2 .cp-gr th{background:var(--sh-sunk,rgba(127,127,127,.07));font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}.cp-tb2 .cp-gr span{opacity:.7;margin-left:4px}
+.cp-d{display:inline-block;padding:2px 6px;border-radius:6px;font-weight:700}.cp-d.ok{background:rgba(31,157,85,.12);color:#167a42}.cp-d.warn{background:rgba(242,201,76,.28);color:#8a5a12}.cp-d.bad{background:rgba(214,69,65,.14);color:#b42318}.cp-d.none{color:var(--sh-muted)}
+:root[data-theme="dark"] .cp-d.ok{color:#6fdc9b}:root[data-theme="dark"] .cp-d.bad{color:#ff9b94}:root[data-theme="dark"] .cp-d.warn{color:#F2C94C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cp-d.ok{color:#6fdc9b}:root:not([data-theme="light"]) .cp-d.bad{color:#ff9b94}:root:not([data-theme="light"]) .cp-d.warn{color:#F2C94C}}
+
+.cp-t{gap:6px}.cp-t>div{padding:8px 10px}.cp-t b{font-size:1.05rem}.cp-t span{font-size:.7rem}.cp-top{margin:0 2px 8px}
+@media (max-width:700px){.cp-t{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -12829,10 +12839,11 @@ function boss(){const el=$('bs_root');if(!el)return;const T=TODAY(),curC=cycOf(T
     ${hist.map(h=>`<tr${h.cs===R.cs?' class="me"':''}><td>${esc(sh(h.cs))} to ${esc(sh(h.to))}${h.inv<h.drivers?` <small>${h.inv}/${h.drivers} in</small>`:''}</td><td class="r">${h.pc.toLocaleString('en-AU')}</td><td class="r">${money(h.ex)}</td><td class="r">${h.cpp==null?'–':'$'+h.cpp.toFixed(3)}</td><td class="r">${money(h.sv)}</td></tr>`).join('')}</tbody></table></div>
    <p class="mt-note">2 loads saving: each claim changed to 1 load saves 7 cents a parcel ($2.22 down to $2.15) for that day's parcels.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cpf]');if(!b||!$('cp_root')||!$('cp_root').contains(b))return;CP.all=b.dataset.cpf==='1';compliance()});
 document.addEventListener('change',e=>{const s=e.target.closest&&e.target.closest('[data-bs]');if(!s||!$('bs_root')||!$('bs_root').contains(s))return;BS.cs=s.value;boss()});
 
 /* ---------------- Compliance ---------------- */
-const CP={busy:false,data:null,at:0};
+const CP={busy:false,data:null,at:0,all:false};
 async function cpLoad(){CP.busy=true;const[vc,rep]=await Promise.all([coll('vchecks'),coll('reports')]);CP.data={vc,rep};CP.at=Date.now();CP.busy=false;compliance()}
 const ROLE_ORDER=['PRINCIPLE','PRINCIPAL','MANAGER','CONTRACT MANAGER','SUPERVISOR','4214','4215','4217','4218','XL','RELIEF'];
 function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now()-CP.at>60000){if(!CP.busy)cpLoad();if(!CP.data){el.innerHTML='<section class="card cp"><div class="mt-wait">Loading…</div></section>';return}}
@@ -12850,9 +12861,14 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const keys=Object.keys(groups).sort((a,b)=>((ROLE_ORDER.indexOf(a)+1)||50)-((ROLE_ORDER.indexOf(b)+1)||50)||a.localeCompare(b));
   const label=k=>k==='PRINCIPLE'?'Principal':/^\d{4}$/.test(k)?k:k==='XL'?'XL':tc(k);
   const tile=(k,l,word)=>{const b=cnt(k,'bad'),w=cnt(k,'warn'),n=cnt(k,'none');return `<div class="${b?'bad':w?'warn':n===rows.length?'':'ok'}"><small>${l}</small><b>${b} ${word}</b><span>${w} ${k==='f2w'?'pending':k==='vc'?'need fixes':'expiring'} · ${n} not entered</span></div>`};
-  el.innerHTML=`<section class="card cp"><div class="rv-head"><div><small>Compliance</small><b>Licences, rego, tenure, Fit2Work and van checks</b><span>Expiring means in the next 30 days.</span></div></div>
+  el.innerHTML=`<section class="card cp"><p class="mt-note cp-top">Expiring means in the next 30 days. F2W is Fit2Work.</p>
    <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ten','Tenure','expired')}${tile('f2w','Fit2Work','failed')}${tile('vc','Van checks','overdue')}</div>
-   ${keys.map(k=>`<h3 class="rv-h3 cp-g">${esc(label(k))} <span>${groups[k].length}</span></h3><div class="cp-list">${groups[k].sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<div class="cp-r"><b>${esc(nameOf(r.p))}</b><div class="cp-c">${COLS.map(([c,l])=>`<span class="cp-s ${r[c].c}"><small>${l}</small>${esc(r[c].t)}</span>`).join('')}</div></div>`).join('')}</div>`).join('')}
+   ${(()=>{const need=r=>COLS.some(([c])=>r[c].c==='bad'||r[c].c==='warn');const nN=rows.filter(need).length;
+     const short=(c,x)=>x.c==='none'?'–':x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
+     const list=CP.all?rows:rows.filter(need);
+     return `<div class="segs cp-f" role="group" data-noprint><button type="button" data-cpf="0" aria-pressed="${!CP.all}">Needs attention <i>${nN}</i></button><button type="button" data-cpf="1" aria-pressed="${CP.all}">Everyone <i>${rows.length}</i></button></div>
+     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Tenure','F2W','Van'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
+     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr"><th colspan="6">${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr><td><b>${esc(shortName(r.p))}</b></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:'<p class="mt-note">✓ Nobody needs attention right now.</p>'}`})()}
    <p class="mt-note">Add licence, rego and tenure dates and the Fit2Work status in each driver's record on the Driver Details page. Depot induction can be added later.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
 window.MGRT={paint};
@@ -13215,7 +13231,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610305700';
+const VERSION='202610305800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
