@@ -4725,6 +4725,13 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 
 .cp-t{gap:6px}.cp-t>div{padding:8px 10px}.cp-t b{font-size:1.05rem}.cp-t span{font-size:.7rem}.cp-top{margin:0 2px 8px}
 @media (max-width:700px){.cp-t{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.fc{border:2px solid var(--pds-orange,#F2782D)!important}.fc h2{color:var(--pds-orange,#F2782D)}
+.fc .fc-res{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:12px;width:100%;padding:12px 14px;border-radius:14px;background:var(--sh-sunk,rgba(127,127,127,.07));margin-top:6px;align-items:center}
+.fc .fc-res small{display:block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--sh-muted)}.fc .fc-res b{font-size:1.8rem;font-weight:800}.fc .fc-res b.ok{color:#167a42}.fc .fc-res b.bad{color:#b42318}.fc .fc-res em{display:block;font-style:normal;font-size:.75rem;color:var(--sh-muted)}
+.fc .fc-res .low{font-weight:700;font-size:.92rem}.fc .dh-do.bad b{color:#b42318}
+:root[data-theme="dark"] .fc .fc-res b.ok{color:#6fdc9b}:root[data-theme="dark"] .fc .fc-res b.bad,:root[data-theme="dark"] .fc .dh-do.bad b{color:#ff9b94}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fc .fc-res b.ok{color:#6fdc9b}:root:not([data-theme="light"]) .fc .fc-res b.bad,:root:not([data-theme="light"]) .fc .dh-do.bad b{color:#ff9b94}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5523,7 +5530,7 @@ async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__
   const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,25);MC.prev=[s,e];
   if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
 }
-function adminMorning(){const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
+function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
   const T=mcIso(new Date()),sun=tlOff(new Date())&&!Object.values(MC.clock).some(c=>c&&c.start),P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
   const norm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
   let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(norm))}catch(e){}
@@ -5570,14 +5577,14 @@ function tlRows(){const ids=new Set([...Object.keys(TL.clock).filter(id=>TL.cloc
     const st=!k?'todo':k.chk==='ok'?(now?'ok':'drop'):(now?'sus':'no');
     return{id,sid,name:name.toLowerCase().replace(/\b\w/g,x=>x.toUpperCase()),run:(p.runs||[]).filter(Boolean).join(', '),grp:tlGrp(sid,c),st,k}}).sort((a,b)=>({sus:0,todo:1,ok:2,no:3,drop:4}[a.st]-{sus:0,todo:1,ok:2,no:3,drop:4}[b.st])||a.name.localeCompare(b.name))}
 function tlCount(){if(TL.day!==tlPrevDay()||!TL.ready)return null;return tlRows().filter(r=>r.st==='todo'||r.st==='sus').length}
-function adminLoads(){const el=$('ah_tl');if(!el||role!=='mgr')return;if(!TL.day){TL.day=tlPrevDay();tlWatch()}
+function adminLoads(){const el=$('ah_tl');if(!el||role!=='mgr')return;if(!TL.day){TL.day=tlPrevDay();tlWatch()}if(!TL.fset){const f=myFocus();if(f){TL.tab=f.pc;TL.fset=true}else if(Object.keys(MC.staff).length)TL.fset=true}
   const R=tlRows(),ORD=['4214','4215','4217','4218','xl','relief','sup','office','other'],LAB={xl:'XL',relief:'Relief',sup:'Supervisors',office:'Office',other:'Other'},G=[['all','All']].concat([...new Set(R.map(r=>r.grp))].sort((a,b)=>((ORD.indexOf(a)+1)||50)-((ORD.indexOf(b)+1)||50)||a.localeCompare(b)).map(k=>[k,LAB[k]||k.toUpperCase()]));
-  if(!G.some(([k])=>k===TL.tab))TL.tab='all';const show=R.filter(r=>TL.tab==='all'||r.grp===TL.tab);
+  const tabNow=G.some(([k])=>k===TL.tab)?TL.tab:'all';const show=R.filter(r=>tabNow==='all'||r.grp===tabNow);
   const left=R.filter(r=>r.st==='todo').length,sus=R.filter(r=>r.st==='sus').length;
   const pill={todo:'',ok:'<span class="tl-p ok">✓ 2 loads confirmed</span>',no:'<span class="tl-p no">Changed to 1 load</span>',sus:'<span class="tl-p sus">⚠ Driver changed it back to 2 loads</span>',drop:'<span class="tl-p no">Driver changed it to 1 load</span>'};
   const html=`<section class="dh-card tl"><div class="tl-h"><h2>2 loads check</h2><div class="tl-day"><button type="button" data-tl="prev" aria-label="Day before">‹</button><b>${esc(tlNice(TL.day))}</b><button type="button" data-tl="next" aria-label="Day after" ${TL.day>=tlPrevDay()?'disabled':''}>›</button></div></div>
    <p class="tl-s">${!TL.ready?'Loading…':R.length?(left?`<b>${left}</b> to check`:'✓ All checked')+(sus?` · <b class="r">${sus} changed back</b>`:''):'Nobody said they did 2 loads this day.'}</p>
-   ${R.length?`<div class="tl-tabs" role="group">${G.map(([k,l])=>{const n=k==='all'?left:R.filter(r=>r.grp===k&&r.st==='todo').length;return `<button type="button" data-tl="tab" data-v="${k}" aria-pressed="${TL.tab===k}">${l}${n?`<i>${n}</i>`:''}</button>`}).join('')}</div>
+   ${R.length?`<div class="tl-tabs" role="group">${G.map(([k,l])=>{const n=k==='all'?left:R.filter(r=>r.grp===k&&r.st==='todo').length;return `<button type="button" data-tl="tab" data-v="${k}" aria-pressed="${tabNow===k}">${l}${n?`<i>${n}</i>`:''}</button>`}).join('')}</div>
    <div class="tl-list">${show.map(r=>`<div class="tl-r st-${r.st}"><div class="tl-n"><b>${esc(r.name)}</b><small>${esc(r.run||'')}${r.k&&r.k.by?(r.run?' · ':'')+'Checked by '+esc(r.k.by):''}</small>${pill[r.st]}</div>
      ${r.st==='todo'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✓ Yes</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✗ No</button></div>`
       :r.st==='sus'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}">✓ Allow</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}">✗ 1 load</button></div>`
@@ -5598,6 +5605,47 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
     if(a==='undo'){const k=TL.chk[id];await db.doc('tlcheck/'+id).delete();if(k&&k.chk==='no'&&TL.clock[id]&&TL.clock[id].twoLoads===false)await db.doc('clock/'+id).update({twoLoads:true})}}
   catch(x){console.warn('2 loads',x);homeMsg={err:true,t:'Could not save the 2 loads check. Check your connection.'}}
   delete TL.busy[id];adminLoads()});
+/* Your postcode: supervisors see everything, but get one card with what to action in the postcode they look after */
+const FOCUS_DEFAULT={JOSH:'4214',JOSHUA:'4214',STEVE:'4215',STEVEN:'4215',STEPHEN:'4215'};
+function myFocus(){const me=window.__webMe||{};const em=String(me.email||'').toLowerCase();if(!em)return null;const e=Object.entries(MC.staff).find(([,s])=>String(s.email||'').toLowerCase()===em);if(!e)return null;const[id,s]=e;
+  const pc=String(s.focusPc||'').trim()||FOCUS_DEFAULT[String(s.first||'').toUpperCase()]||'';return /^\d{4}$/.test(pc)?{id,pc}:null}
+const FC={wk:null,wkBusy:false,cv:null,cvDay:null,at:0};
+async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){FC.wkBusy=false;return}
+  const D=d=>window.__D?window.__D(d):d.data();const t=new Date();const mon=new Date(t);mon.setDate(t.getDate()-((t.getDay()+6)%7)-7);const ds=[0,1,2,3,4,5].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return mcIso(d)});
+  const nd=(()=>{const d=new Date();do{d.setDate(d.getDate()+1)}while(tlOff(d));return mcIso(d)})();
+  try{const[days,cv]=await Promise.all([Promise.all(ds.map(x=>db.doc('days/'+x).get().then(s=>s.exists?D(s):null).catch(()=>null))),db.doc('cover/'+nd).get().then(s=>s.exists?D(s):null).catch(()=>null)]);FC.wk={from:ds[0],days:days.filter(Boolean)};FC.cv=cv;FC.cvDay=nd;FC.at=Date.now()}catch(e){}
+  FC.wkBusy=false;adminFocus()}
+function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
+  const pc=f.pc,P=MC.staff,T=mcIso(new Date());const G=window.__runGrp||{};
+  const grpOfStaff=id=>tlGrp(id);const inPc=id=>grpOfStaff(id)===pc;
+  const sn=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
+  const rows=[];
+  /* not clocked on */
+  if(!tlOff(new Date())){const on=new Set(Object.values(MC.clock).filter(c=>c&&c.start).map(c=>c.staff));let offN=new Set();try{const o=window.LEAVE&&LEAVE.dayMap&&(LEAVE.dayMap()||{})[T];if(o)offN=new Set((o.names||[]).map(x=>String(x).toLowerCase().replace(/[^a-z]/g,'')))}catch(e){}
+    const nx=Object.entries(P).filter(([id,p])=>inPc(id)&&(p.runs||[]).filter(Boolean).length&&String(p.role||'').toUpperCase()!=='RELIEF'&&!on.has(id)&&!offN.has([p.first,p.last].join('').toLowerCase().replace(/[^a-z]/g,''))).map(([,p])=>sn(p)).sort();
+    if(nx.length)rows.push({ic:'timesheets',t:nx.length+' not clocked on yet',s:nx.join(', '),go:'',c:'warn'})}
+  /* 2 loads */
+  if(TL.ready&&TL.day===tlPrevDay()){const n=tlRows().filter(r=>r.grp===pc&&(r.st==='todo'||r.st==='sus')).length;if(n)rows.push({ic:'timesheets',t:n+' to check for 2 loads',s:'From '+tlNice(TL.day)+'. Tap to open the '+pc+' tab.',go:'tl',c:''})}
+  /* enquiries waiting */
+  {const n=Object.values(MC.enq).filter(e=>e&&e.kind!=='ncr'&&!e.fault&&String(G[String(e.login||'').toUpperCase().replace(/\s+/g,'')]||'').toLowerCase()===pc).length;if(n)rows.push({ic:'enquiries',t:n+(n===1?' enquiry needs':' enquiries need')+' a fault decision',s:'At fault, partly or not at fault',go:'enquiries',c:''})}
+  /* cover for the next work day */
+  if(FC.cvDay){let o={};try{o=(window.LEAVE&&LEAVE.dayMap&&LEAVE.dayMap()||{})[FC.cvDay]||{}}catch(e){}const offN=new Set((o.names||[]).map(x=>String(x).toLowerCase().replace(/[^a-z]/g,'')));
+    const offIds=Object.entries(P).filter(([id,p])=>inPc(id)&&offN.has([p.first,p.last].join('').toLowerCase().replace(/[^a-z]/g,''))).map(([id])=>id);
+    for(const it of (FC.cv&&FC.cv.items)||[])if(inPc(it.off)&&!offIds.includes(it.off))offIds.push(it.off);
+    const covered=new Set(((FC.cv&&FC.cv.items)||[]).filter(it=>it.by).map(it=>it.off));const need=offIds.filter(id=>!covered.has(id));
+    if(need.length)rows.push({ic:'leave',t:need.length+(need.length===1?' run needs':' runs need')+' cover for '+tlNice(FC.cvDay),s:need.map(id=>{const p=P[id]||{};return (p.runs||[]).filter(Boolean).join(', ')+' '+sn(p)}).join(', '),go:'cover',c:'bad'})}
+  /* papers */
+  {const EXP=[['regoDue','Rego'],['licDue','Licence'],['tenDue','Tenure']];const ex=[];for(const[id,p]of Object.entries(P)){if(!inPc(id))continue;for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push(sn(p)+' '+l.toLowerCase()+(n<0?' expired':' in '+n+' days'))}}
+    if(ex.length)rows.push({ic:'staff',t:ex.length+(ex.length===1?' paper expiring':' papers expiring'),s:ex.join(', '),go:'compliance',c:'warn'})}
+  /* last week results */
+  let res='';if(FC.wk&&window.SCORE){const by={};for(const d of FC.wk.days)for(const[l,r]of Object.entries(d.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const s=SCORE.day(r).score;if(s==null)continue;const o=by[l]=by[l]||{s:0,n:0};o.s+=s;o.n++}
+    const L=Object.entries(by).map(([l,o])=>({l,v:o.s/o.n}));if(L.length){const avg=L.reduce((a,x)=>a+x.v,0)/L.length;const N=window.__runNames||{};const low=L.filter(x=>x.v<96-1e-9).sort((a,b)=>a.v-b.v).map(x=>{const w=String(N[x.l]||x.l).split(' ');return (w.length>1?w[0]+' '+w[w.length-1][0]:w[0])+' '+SCORE.fmt(x.v)});
+      res=`<button type="button" class="fc-res" data-nav="results"><span><small>Last week in ${pc}</small><b class="${avg>=96-1e-9?'ok':'bad'}">${SCORE.fmt(avg)}</b><em>average Contract Score</em></span><span class="low">${low.length?`<small>Under 96</small>${esc(low.join(', '))}`:'<small>Under 96</small>✓ Nobody'}</span></button>`}}
+  const html=`<section class="dh-card fc"><h2>Your postcode · ${pc}</h2>${res}
+   ${rows.map(r=>`<button type="button" class="dh-do ${r.c}" ${r.go==='tl'?'data-fcgo="tl"':r.go?`data-nav="${r.go}"`:'data-fcgo="none"'}><span class="ic">${ICONS[r.ic]||''}</span><span class="tx"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span>${r.go?'<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>':''}</button>`).join('')}
+   ${rows.length?'':`<p class="mc-ok">✓ ${pc} is all on track right now.</p>`}</section>`;
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-fcgo="tl"]');if(!g)return;const f=myFocus();if(f){TL.tab=f.pc;adminLoads()}const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enquiries,'NCR','NCRs','still open','[data-eq="tab"][data-v="ncr"]']].filter(x=>x[1]>0);
@@ -5620,6 +5668,7 @@ function renderHome(){
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
    <div id="ah_dotw"></div>
+   <div id="ah_focus"></div>
    <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
    <div id="ah_off"></div>
    <div id="ah_todo"></div>
@@ -5629,7 +5678,7 @@ function renderHome(){
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section>
   </div>`;
-  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminMorning();adminLoads();adminTodo();adminOff();(async()=>{const fill=async()=>{if(!window.ME||!ME.dotw){setTimeout(fill,300);return}const x=await ME.dotw();const el=$('ah_dotw');if(el&&el.__h!==x){el.__h=x;el.innerHTML=x}};fill()})();return;
+  if(window.CLOCK)window.CLOCK.mount();bkInfo();adminMorning();adminLoads();adminFocus();adminTodo();adminOff();(async()=>{const fill=async()=>{if(!window.ME||!ME.dotw){setTimeout(fill,300);return}const x=await ME.dotw();const el=$('ah_dotw');if(el&&el.__h!==x){el.__h=x;el.innerHTML=x}};fill()})();return;
   const u=SNAP.updated||{};
   const row=(nm,when,btn)=>`<div class="sh-row"><span class="nm">${nm}</span><span class="when">${when?'Drivers see the version from '+esc(when):'Not shared with drivers yet'}</span>${btn}</div>`;
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
@@ -7878,7 +7927,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
-const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['login','Login'],['pw','Password'],
+const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
   ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['insDue','Insurance expiry'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
@@ -7985,7 +8034,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','insDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay','focusPc'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','insDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -13227,7 +13276,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306000';
+const VERSION='202610306100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
