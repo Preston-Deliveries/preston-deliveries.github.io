@@ -5039,6 +5039,13 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-set#sh-set .al-i b{color:var(--sh-ink)}
 :root[data-theme="dark"] #sh-set#sh-set :is(.al-i,.nti){background:color-mix(in srgb,var(--kc) 28%,var(--sh-surface))!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-set#sh-set :is(.al-i,.nti){background:color-mix(in srgb,var(--kc) 28%,var(--sh-surface))!important}}
+
+/* back arrow on every page opened from the Menu */
+.sh-ph .ttl{display:flex;align-items:center;gap:6px}
+.sh-ph .sh-back{all:unset;box-sizing:border-box;cursor:pointer;flex:none;width:36px;height:36px;margin-left:-8px;border-radius:50%;display:grid;place-items:center;color:var(--sh-ink);-webkit-tap-highlight-color:transparent}
+.sh-ph .sh-back:active{background:var(--sh-sunk,rgba(127,127,127,.15))}
+.sh-ph .sh-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@media (min-width:900px){.sh-ph .sh-back{display:none}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5595,12 +5602,15 @@ const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
   if(cur==='home'||(cur==='me'&&role!=='mgr')){ph.hidden=true;ph.innerHTML='';return}
+  const hb0=hubOf(cur),T0=tabSecs(),isTab=T0.includes(cur)||(hb0&&hb0.s.some(x=>T0.includes(x[0])));
+  const BK=isTab?'':'<button type="button" class="sh-back" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>';
+  const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1></div>`;
   {const hb=hubOf(cur);if(hb){const vv=new Set(visible());const tabs=hb.s.filter(x=>vv.has(x[0]));if(tabs.length>1){const d0=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';ph.hidden=false;ph.className='sh-ph dph hub';
-    ph.innerHTML=`<div class="in"><h1>${esc(hb.t)}</h1><nav class="sh-hubtabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav>${d0?`<p>${esc(d0)}</p>`:''}</div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
+    ph.innerHTML=`<div class="in">${H1(hb.t)}<nav class="sh-hubtabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav>${d0?`<p>${esc(d0)}</p>`:''}</div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
   {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['updates','menu'].includes(cur);ph.className+=' dph';
-    ph.innerHTML=`<div class="in"><h1>${esc(role==='mgr'&&cur==='updates'?'Updates':nm(cur)||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;markDup();return}
+    ph.innerHTML=`<div class="in">${H1(role==='mgr'&&cur==='updates'?'Updates':nm(cur)||'')}${d?`<p>${esc(d)}</p>`:''}</div>`;markDup();return}
   ph.innerHTML=`<div class="in"><span class="eb">${esc(g&&g.k!=='start'?g.name:'Overview')}</span><h1>${esc(NAMES[cur]||'')}</h1>${d?`<p>${esc(d)}</p>`:''}</div>`;
   markDup();
 }
@@ -6229,7 +6239,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-sh="signout"]')){const w=document.querySelector('.web-out');if(w)w.click();return}
   const aod=e.target.closest('[data-aod]');if(aod){aoSel=aoSel===aod.dataset.aod?null:aod.dataset.aod;adminOff();return}
   const qa=e.target.closest('[data-qa]');if(qa){go(qa.dataset.qa,qa.dataset.act?{act:qa.dataset.act}:{});return}
-  const bk=e.target.closest('[data-sh="back"]');if(bk){const p=hist.pop()||(DRV_MENU.includes(cur)?'menu':'home');go(p,{back:true});return}
+  const bk=e.target.closest('[data-sh="back"]');if(bk){let p=hist.pop();const hc=hubOf(cur);while(p&&(p===cur||(hc&&hubOf(p)===hc)))p=hist.pop();go(p||'menu',{back:true});return}
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
   const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='backup')backup(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
 });
@@ -13729,7 +13739,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310100';
+const VERSION='202610310200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
