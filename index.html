@@ -5132,6 +5132,22 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:var(--sh-surface)!important;color:var(--sh-ink)!important;border:1px solid var(--sh-line)!important;box-shadow:none!important}
 #sh-main #mod-enquiries .head>h1{display:none}
 #sh-main #mod-invoices .iw-per.one{grid-template-columns:1fr!important}
+
+/* admin Menu: one neat panel per group, full width rows, everything lines up */
+:root:root #sh-menu .am-g{margin:0 0 14px}
+:root:root #sh-menu .am-g h2{margin:0 4px 6px;font:800 .74rem var(--sh-body);letter-spacing:.07em;text-transform:uppercase;color:var(--gc)}
+:root:root #sh-menu .am-list{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:16px;overflow:hidden}
+:root:root body #sh-menu .dm-t.am-row{all:unset;box-sizing:border-box;display:flex!important;flex-direction:row!important;align-items:center;gap:12px;width:100%;min-height:60px!important;padding:10px 14px!important;border:0!important;border-top:1px solid var(--sh-line)!important;border-radius:0!important;background:none!important;cursor:pointer;color:var(--sh-ink);position:relative}
+:root:root body #sh-menu .am-row:first-child{border-top:0!important}
+:root:root body #sh-menu .am-row:active{background:var(--sh-sunk,rgba(127,127,127,.08))!important}
+:root:root body #sh-menu .am-row .ic{flex:none;width:38px!important;height:38px!important;margin:0!important;border-radius:11px!important;display:grid;place-items:center;background:var(--tbg)!important;color:var(--tc)!important}
+:root:root body #sh-menu .am-row .ic svg{width:21px!important;height:21px!important}
+:root:root body #sh-menu .am-row .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+:root:root body #sh-menu .am-row b{font-size:1rem!important;font-weight:800;line-height:1.2}
+:root:root body #sh-menu .am-row small{font-size:.8rem!important;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block!important;-webkit-line-clamp:unset!important}
+:root:root body #sh-menu .am-row .chev{flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;color:var(--sh-muted)}
+:root:root body #sh-menu .am-row .bdg{position:static!important;margin:0!important;flex:none}
+@media (min-width:900px){:root:root #sh-menu .am-g{max-width:640px}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5973,11 +5989,10 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['Performance','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs']]],
- ['Runs and deliveries','road',[['runs','Run sheets and street sort'],['precards','Precards and parcel lockers']]],
- ['Drivers','team',[['staff','Details, compliance, van checks, contacts'],['leave','Leave calendar and cover planner'],['feedback','Messages, incidents and uniform orders']]],
- ['Talk to drivers','news',[['updates','Updates and team briefs'],['guide','How we do things']]],
- ['Pay and contract','office',[['timesheets','Invoices, timesheets and my times'],['summary','Summary and monthly report']]]];
+const AMENU=[['Performance','day',[['results','Results, survey and reviews'],['summary','Summary and monthly report']]],
+ ['Address management','road',[['runs','Run sheets and street sort'],['precards','Precards and parcel lockers']]],
+ ['Team','team',[['leave','Leave calendar and cover planner'],['enquiries','Customer enquiries and NCRs'],['guide','How we do things'],['updates','Updates and team briefs']]],
+ ['Admin','office',[['timesheets','Invoices, timesheets and my times'],['staff','Details, compliance, van checks, contacts'],['feedback','Messages, incidents and uniform orders']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
 const setRows=(drv)=>`${drv?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
@@ -6006,7 +6021,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings()});
 document.addEventListener('click',e=>{if(e.target.closest('#sh-set [data-nav]'))setTimeout(closeSettings,0)});
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="am-list">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t am-row t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><span class="tx"><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
   const SUB={results:'Everyone\'s results',survey:'Customer survey',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
   `}
@@ -13888,7 +13903,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311400';
+const VERSION='202610311500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
