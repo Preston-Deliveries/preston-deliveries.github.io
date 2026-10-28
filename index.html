@@ -5046,6 +5046,7 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 .sh-ph .sh-back:active{background:var(--sh-sunk,rgba(127,127,127,.15))}
 .sh-ph .sh-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @media (min-width:900px){.sh-ph .sh-back{display:none}}
+@media (max-width:899.98px){html.appui[data-ts="l"]{font-size:20px!important}html.appui[data-ts="xl"]{font-size:22px!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5465,6 +5466,24 @@ window.__libs=window.__libs||{};
 window.loadLib=function(src,ready){if(ready())return Promise.resolve();if(!window.__libs[src])window.__libs[src]=new Promise((ok,no)=>{const e=document.createElement("script");e.src=src;e.onload=()=>ok();e.onerror=()=>{delete window.__libs[src];e.remove();no(new Error("load"))};document.head.appendChild(e)});return window.__libs[src]};
 window.loadXLSX=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",()=>typeof XLSX!=="undefined").catch(()=>{});
 window.loadH2C=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",()=>!!window.html2canvas).catch(()=>{});
+/* Typing in a box that redraws its page: keep the very same box on screen instead of making a new one,
+   so the phone keyboard stays on numbers (or whatever it was on) and does not flick back to letters. */
+(()=>{if(window.__keepTyping)return;window.__keepTyping=1;const D=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');if(!D||!D.set)return;
+  const okType=a=>a&&a.id&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&!/^(checkbox|radio|file|date|time|button|submit|range|color)$/i.test(a.type)));
+  function sync(a,b,keepVal){for(const at of [...a.attributes]){if(keepVal&&at.name==='value')continue;if(!b.hasAttribute(at.name))a.removeAttribute(at.name)}for(const at of [...b.attributes]){if(keepVal&&at.name==='value')continue;if(a.getAttribute(at.name)!==at.value)a.setAttribute(at.name,at.value)}}
+  function morph(root,frag,A0,B0){const CA=[],CB=[];for(let x=A0;x&&x!==root;x=x.parentNode)CA.push(x);for(let y=B0;y&&y!==frag;y=y.parentNode)CB.push(y);
+    if(CA.length!==CB.length)return false;for(let i=1;i<CA.length;i++)if(CA[i].tagName!==CB[i].tagName)return false;
+    let pa=root,pb=frag;for(let i=CA.length-1;i>=0;i--){const a=CA[i],b=CB[i];
+      for(const c of [...pa.childNodes])if(c!==a)pa.removeChild(c);
+      const before=[],after=[];let seen=false;for(const c of [...pb.childNodes]){if(c===b){seen=true;continue}(seen?after:before).push(c)}
+      for(const c of before)pa.insertBefore(c,a);let ref=a.nextSibling;for(const c of after)pa.insertBefore(c,ref);
+      if(i>0)sync(a,b,false);else sync(a,b,true);pa=a;pb=b}
+    return true}
+  Object.defineProperty(Element.prototype,'innerHTML',{configurable:true,enumerable:D.enumerable,get(){return D.get.call(this)},set(v){
+    try{const a=document.activeElement;if(okType(a)&&this!==a&&this.isConnected&&this.contains(a)&&this.tagName!=='TEMPLATE'){
+      const t=document.createElement('template');D.set.call(t,v);const b=t.content.querySelector('#'+CSS.escape(a.id));
+      if(b&&b.tagName===a.tagName&&morph(this,t.content,a,b))return}}catch(e){}
+    D.set.call(this,v)}})})();
 window.__D=s=>{const v=s.data();return v==null?v:JSON.parse(JSON.stringify(v))};
 window.__UV=false;
 window.__DLSHIM={save:async({filename,data})=>{let P=null;try{P=window.parent!==window&&window.parent.__uvSave?window.parent:null}catch(e){}
@@ -13739,7 +13758,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310200';
+const VERSION='202610310300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
