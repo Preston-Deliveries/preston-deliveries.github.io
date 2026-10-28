@@ -5289,6 +5289,44 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
 #sh-main a.wa-share svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round}
 #sh-main .nt .foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap}#sh-main .nt .foot a.wa-share.sm{width:auto;min-height:40px;margin:0;padding:0 14px;font-size:.88rem}
 #sh-main a.wa-share.bw{margin:6px 0 0;min-height:42px}
+
+/* ===== admin Home: neat, minimal, structured ===== */
+html:not(.drvui) #sh-home .dh-cards{gap:12px!important}
+html:not(.drvui) #sh-home .dh-cards>*:empty{display:none}
+html:not(.drvui) #sh-home .dh-card{padding:12px 14px!important;border-radius:16px!important}
+html:not(.drvui) #sh-home .dh-card h2,html:not(.drvui) #sh-home .tl-h h2{font:800 .74rem var(--sh-body)!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:var(--sh-muted)!important;margin:0 0 8px!important}
+html:not(.drvui) #sh-home .dh-card :is(.hd,.tl-h,.ao-h,.mc-h){display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+html:not(.drvui) #sh-home .dh-card :is(.hd,.tl-h,.ao-h) h2{margin:0!important}
+/* quick add: compact two row grid of small buttons */
+html:not(.drvui) #sh-home .ah-qa .qa-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:0!important}
+html:not(.drvui) #sh-home .ah-qa .qa{flex-direction:row!important;justify-content:flex-start!important;gap:8px!important;min-height:44px!important;padding:6px 8px!important;border-radius:12px!important;text-align:left!important;border-top-width:1px!important}
+html:not(.drvui) #sh-home .ah-qa .qa .ic{width:28px!important;height:28px!important;border-radius:8px!important;flex:none}
+html:not(.drvui) #sh-home .ah-qa .qa .ic svg{width:16px!important;height:16px!important}
+html:not(.drvui) #sh-home .ah-qa .qa b{font-size:.78rem!important;line-height:1.15}
+/* 2 loads: one summary line, open when you need it */
+html:not(.drvui) #sh-home .tl .tl-s{display:flex;align-items:center;gap:8px;margin:0!important}
+html:not(.drvui) #sh-home .tl .tl-tog{all:unset;cursor:pointer;margin-left:auto;font-weight:800;font-size:.85rem;color:#C2570C;padding:6px 10px;border-radius:99px;background:rgba(242,120,45,.12)}
+html:not(.drvui) #sh-home .tl .tl-tabs{margin-top:10px}
+/* drivers' app: one tidy line */
+html:not(.drvui) #sh-home .ah-link p{font-size:.84rem;margin:0 0 8px;color:var(--sh-muted)}
+html:not(.drvui) #sh-home .ah-link .sh-btn.primary{min-height:44px!important}
+/* who's off and morning check: tighter */
+html:not(.drvui) #sh-home .ah-off .ao-days,html:not(.drvui) #sh-home .ah-off [class*=wk]{gap:6px}
+html:not(.drvui) #sh-home .mc .mc-box,html:not(.drvui) #sh-home .mc>div:first-of-type{padding:10px 12px}
+
+body #sh-home#sh-home .dh-card h2,body #sh-home#sh-home .dh-card .tl-h h2{font:800 .74rem var(--sh-body)!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:var(--sh-muted)!important;margin:0 0 8px!important}
+body #sh-home#sh-home .dh-card :is(.hd,.tl-h,.ao-h) h2{margin:0!important}
+body #sh-home#sh-home .tl .tl-day button,body #sh-home#sh-home .tl .tl-tog{min-height:0!important;height:30px!important;line-height:30px!important;padding:0 10px!important}
+body #sh-home#sh-home .tl .tl-day b{font-size:.9rem}
+body #sh-home#sh-home .tl .tl-s{font-size:.9rem}
+body #sh-home#sh-home .ah-qa .qa{min-height:40px!important}
+body #sh-home#sh-home .ah-off .ao-cv{all:unset;cursor:pointer;display:block;margin:8px auto 0;font-weight:800;font-size:.86rem;color:#C2570C;min-height:0!important}
+body #sh-home#sh-home .ah-off .ao-h{min-height:0!important;padding:0!important;margin:0 0 6px!important}
+body #sh-home#sh-home .ah-off .ao-h>b{font:800 .74rem var(--sh-body)!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:var(--sh-muted)!important}
+body #sh-home#sh-home .ah-off .ao-h>span{font-size:.82rem!important}
+body #sh-home#sh-home .tl .tl-h{flex-wrap:nowrap!important}
+body #sh-home#sh-home .tl .tl-day{margin-left:auto}
+body #sh-home#sh-home .tl .tl-h h2{white-space:nowrap}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6259,14 +6297,15 @@ function tlRows(){const ids=new Set([...Object.keys(TL.clock).filter(id=>TL.cloc
     const st=!k?'todo':k.chk==='ok'?(now?'ok':'drop'):(now?'sus':'no');
     return{id,sid,name:name.toLowerCase().replace(/\b\w/g,x=>x.toUpperCase()),run:(p.runs||[]).filter(Boolean).join(', '),grp:tlGrp(sid,c),st,k}}).sort((a,b)=>({sus:0,todo:1,ok:2,no:3,drop:4}[a.st]-{sus:0,todo:1,ok:2,no:3,drop:4}[b.st])||a.name.localeCompare(b.name))}
 function tlCount(){if(TL.day!==tlPrevDay()||!TL.ready)return null;return tlRows().filter(r=>r.st==='todo'||r.st==='sus').length}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tl="toggle"]');if(!b)return;TL.open=!TL.open;try{adminLoads()}catch(x){}});
 function adminLoads(){const el=$('ah_tl');if(!el||role!=='mgr')return;if(!TL.day){TL.day=tlPrevDay();tlWatch()}if(!TL.fset){const f=myFocus();if(f){TL.tab=f.pc;TL.fset=true}else if(Object.keys(MC.staff).length)TL.fset=true}
   const R=tlRows(),ORD=['4214','4215','4217','4218','xl','relief','sup','office','other'],LAB={xl:'XL',relief:'Relief',sup:'Supervisors',office:'Office',other:'Other'},G=[['all','All']].concat([...new Set(R.map(r=>r.grp))].sort((a,b)=>((ORD.indexOf(a)+1)||50)-((ORD.indexOf(b)+1)||50)||a.localeCompare(b)).map(k=>[k,LAB[k]||k.toUpperCase()]));
   const tabNow=G.some(([k])=>k===TL.tab)?TL.tab:'all';const show=R.filter(r=>tabNow==='all'||r.grp===tabNow);
   const left=R.filter(r=>r.st==='todo').length,sus=R.filter(r=>r.st==='sus').length;
   const pill={todo:'',ok:'<span class="tl-p ok">✓ 2 loads confirmed</span>',no:'<span class="tl-p no">Changed to 1 load</span>',sus:'<span class="tl-p sus">⚠ Driver changed it back to 2 loads</span>',drop:'<span class="tl-p no">Driver changed it to 1 load</span>'};
   const html=`<section class="dh-card tl"><div class="tl-h"><h2>2 loads check</h2><div class="tl-day"><button type="button" data-tl="prev" aria-label="Day before">‹</button><b>${esc(tlNice(TL.day))}</b><button type="button" data-tl="next" aria-label="Day after" ${TL.day>=tlPrevDay()?'disabled':''}>›</button></div></div>
-   <p class="tl-s">${!TL.ready?'Loading…':R.length?(left?`<b>${left}</b> to check`:'✓ All checked')+(sus?` · <b class="r">${sus} changed back</b>`:''):'Nobody said they did 2 loads this day.'}</p>
-   ${R.length?`<div class="tl-tabs" role="group">${G.map(([k,l])=>{const n=k==='all'?left:R.filter(r=>r.grp===k&&r.st==='todo').length;return `<button type="button" data-tl="tab" data-v="${k}" aria-pressed="${tabNow===k}">${l}${n?`<i>${n}</i>`:''}</button>`}).join('')}</div>
+   <p class="tl-s">${!TL.ready?'Loading…':R.length?(left?`<b>${left}</b> to check`:'✓ All checked')+(sus?` · <b class="r">${sus} changed back</b>`:''):'Nobody said they did 2 loads this day.'}${R.length?`<button type="button" class="tl-tog" data-tl="toggle">${TL.open?'Hide':'Show'}</button>`:''}</p>
+   ${R.length&&TL.open?`<div class="tl-tabs" role="group">${G.map(([k,l])=>{const n=k==='all'?left:R.filter(r=>r.grp===k&&r.st==='todo').length;return `<button type="button" data-tl="tab" data-v="${k}" aria-pressed="${tabNow===k}">${l}${n?`<i>${n}</i>`:''}</button>`}).join('')}</div>
    <div class="tl-list">${show.map(r=>`<div class="tl-r st-${r.st}"><div class="tl-n"><b>${esc(r.name)}</b><small>${esc(r.run||'')}${r.k&&r.k.by?(r.run?' · ':'')+'Checked by '+esc(r.k.by):''}</small>${pill[r.st]}</div>
      ${r.st==='todo'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✓ Yes</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}" ${TL.busy[r.id]?'disabled':''}>✗ No</button></div>`
       :r.st==='sus'?`<div class="tl-b"><button type="button" class="yes" data-tl="ok" data-v="${esc(r.id)}">✓ Allow</button><button type="button" class="no" data-tl="no" data-v="${esc(r.id)}">✗ 1 load</button></div>`
@@ -6443,7 +6482,7 @@ function renderHome(){
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
-  const QA=[['updates','[data-nt="new"]','Post an update'],['briefs','[data-tb="new"]','New team brief'],['results','[data-rtab="import"]','Load results'],['leave','[data-lv="add"]','Add leave'],['enquiries','[data-eq="new"]','Add enquiry'],['vchecks','[data-vc="new"]','Van check']];
+  const QA=[['updates','[data-nt="new"]','Post update'],['briefs','[data-tb="new"]','New brief'],['results','[data-rtab="import"]','Load results'],['leave','[data-lv="add"]','Add leave'],['enquiries','[data-eq="new"]','Add enquiry'],['vchecks','[data-vc="new"]','Van check']];
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
@@ -6456,7 +6495,7 @@ function renderHome(){
    <div id="ah_fu"></div>
    <div id="ah_tl"></div>
    <div id="ah_morn"></div>
-   <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>After you change sort sheets, run sheets, results, the survey, leave, precards, lockers or contacts, send them so drivers see the latest.</p>
+   <section class="dh-card ah-link"><h2>Drivers’ app</h2><p>Send drivers your latest changes.</p>
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section>
   </div>`;
@@ -14049,7 +14088,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610312800';
+const VERSION='202610312900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
