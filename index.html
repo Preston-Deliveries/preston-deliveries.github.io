@@ -4757,6 +4757,13 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #sh-main#sh-main#sh-main .ps-pop{position:absolute;z-index:60;left:0;right:0;top:54px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.25);padding:6px;display:flex;flex-direction:column;gap:2px}
 #sh-main#sh-main#sh-main .ps-pop button{all:unset;cursor:pointer;padding:12px;border-radius:10px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--sh-ink)}#sh-main#sh-main#sh-main .ps-pop button.on{background:var(--pds-orange,#F2782D);color:#fff}#sh-main#sh-main#sh-main .ps-pop button.dim{opacity:.55}#sh-main#sh-main#sh-main .ps-pop button small{font-weight:600;font-size:.75rem;white-space:nowrap}
 #sh-main#sh-main#sh-main .ps-pop button[data-pp=earlier],#sh-main#sh-main#sh-main .ps-pop button[data-pp=later]{color:var(--sh-muted);justify-content:center}
+
+@media (min-width:900px) and (prefers-reduced-motion:no-preference){
+ .sh-enter{animation:shEnter .18s ease-out both}
+ @keyframes shEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+ .sh-side [data-nav]{transition:background-color .15s ease,color .15s ease}
+ html{scrollbar-gutter:stable}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5460,7 +5467,7 @@ function applyNavBadges(){try{newsBadge()}catch(e){}const on=role==='mgr';{const
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
   const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)]];
   for(const[c,k,f]of W){try{db.collection(c).onSnapshot(sn=>{let n=0;for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&f(v))n++}window.__navN[k]=n;applyNavBadges()},()=>{})}catch(e){}}}
-function renderNav(){document.documentElement.classList.toggle('drvui',role!=='mgr');document.documentElement.classList.add('appui');renderWa();renderViewbar();$('sh-links').innerHTML=navHTML();if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
+function renderNav(){document.documentElement.classList.toggle('drvui',role!=='mgr');document.documentElement.classList.add('appui');renderWa();renderViewbar();{const L=$('sh-links'),x=navHTML(),k=x.replace(/\s*aria-current="page"/g,'').replace(/\s+/g,' ').replace(/ >/g,'>');if(L.__k!==k){L.__k=k;L.innerHTML=x}else{const t=document.createElement('div');t.innerHTML=x;const A=[...t.querySelectorAll('button')],B=[...L.querySelectorAll('button')];if(A.length===B.length)A.forEach((a,i)=>{const c=a.getAttribute('aria-current');if(c)B[i].setAttribute('aria-current',c);else B[i].removeAttribute('aria-current')});else{L.innerHTML=x}}}if(role==='mgr')startNavWatch();setTimeout(applyNavBadges,0);
   const r=role==='mgr'?'<b>Manager</b> · full tools':previewUser?'<b>User view</b> <button type="button" class="sh-uv on" data-sh="mv">Back to manager</button>':role==='drv'?(window.__webVersion?'<b>Driver</b>':'<b>User view</b>'):'';
   document.querySelectorAll('.sh-role').forEach(e=>e.innerHTML=r)}
 function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classList.remove('show')}
@@ -5475,6 +5482,7 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
   cur=sec;
   const want=MOD[sec];
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
+  if(matchMedia('(min-width:900px)').matches&&!opts.back0){const se=document.getElementById(want),ph=document.getElementById('sh-ph');[se,ph].forEach(x=>{if(!x)return;x.classList.remove('sh-enter');void x.offsetWidth;x.classList.add('sh-enter')})}
   if((sec==='sort'||sec==='runs')&&window.RUNS) RUNS.setView(sec==='sort'?'lookup':'runs');
   if(sec==='home') renderHome();
   if(sec==='menu') renderMenu();
@@ -13369,7 +13377,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306800';
+const VERSION='202610307000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
