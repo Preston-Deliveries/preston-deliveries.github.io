@@ -12792,7 +12792,7 @@ function boss(){const el=$('bs_root');if(!el)return;const T=TODAY(),curC=cycOf(T
     <div><small>Enquiries</small><b>${R.enq+R.enqP}</b><span>${R.k==null?'':(Math.round(R.k*100)/100)+' per 1,000 parcels'}</span></div><div><small>2 hr ETA</small><b>${pct(R.eta)}</b></div><div><small>Scan compliance</small><b>${pct(R.cp)}</b></div>
     <div><small>Driver invoices (ex GST)</small><b>${money(R.ex)}</b><span>${R.inv} of ${R.drivers} invoices in</span></div><div class="hl"><small>Cost per parcel</small><b>${R.cpp==null?'–':'$'+R.cpp.toFixed(3)}</b><span>${partial?'Not final until all invoices are in':'Invoices ex GST ÷ parcels'}</span></div>
     <div class="ok"><small>Saved by 2 loads checks</small><b>${money(R.sv)}</b><span>${R.svN} wrong claim${R.svN===1?'':'s'} caught</span></div></div>
-   ${W.length?`<div class="rv-trend"><small>2 hr ETA and Contract Score by week</small><div class="bars two">${W.map(m=>{const w=R.wk[m],e=w.en?w.e/w.en:null,s=w.s/w.n;return `<span class="${s>=96-1e-9?'ok':'bad'}" style="--h:${Math.max(6,Math.min(100,(s-70)/30*100))}%"><em>${SC.fmt(s)}</em><i></i><small>${esc(sh(m))}<br>ETA ${e==null?'–':Math.round(e*1000)/10+'%'}</small></span>`}).join('')}</div></div>`:''}
+   ${W.length?`<div class="rv-trend"><small>Contract Score by week</small><div class="bars two">${W.map(m=>{const w=R.wk[m],e=w.en?w.e/w.en:null,s=w.s/w.n;return `<span class="${s>=96-1e-9?'ok':'bad'}" style="--h:${Math.max(6,Math.min(100,(s-70)/30*100))}%"><em>${SC.fmt(s)}</em><i></i><small>${esc(sh(m))}</small></span>`}).join('')}</div></div>`:''}
    <h3 class="rv-h3">Cost check</h3>
    <div class="tw"><table class="tb bs-tb"><thead><tr><th>Pay cycle</th><th class="r">Parcels</th><th class="r">Invoices ex GST</th><th class="r">Per parcel</th><th class="r">2 loads saved</th></tr></thead><tbody>
     ${hist.map(h=>`<tr${h.cs===R.cs?' class="me"':''}><td>${esc(sh(h.cs))} to ${esc(sh(h.to))}${h.inv<h.drivers?` <small>${h.inv}/${h.drivers} in</small>`:''}</td><td class="r">${h.pc.toLocaleString('en-AU')}</td><td class="r">${money(h.ex)}</td><td class="r">${h.cpp==null?'–':'$'+h.cpp.toFixed(3)}</td><td class="r">${money(h.sv)}</td></tr>`).join('')}</tbody></table></div>
@@ -13185,7 +13185,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610305000';
+const VERSION='202610305100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
