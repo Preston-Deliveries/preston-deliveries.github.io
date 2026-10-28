@@ -4705,6 +4705,11 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .cp-tb td small{display:block;color:var(--sh-muted)}.cp-s{display:inline-block;padding:3px 8px;border-radius:8px;font-size:.82rem;font-weight:700}.cp-s.ok{background:rgba(31,157,85,.12);color:#167a42}.cp-s.warn{background:rgba(242,201,76,.25);color:#8a5a12}.cp-s.bad{background:rgba(214,69,65,.14);color:#b42318}.cp-s.none{color:var(--sh-muted)}
 :root[data-theme="dark"] .rv-tiles .ok b,:root[data-theme="dark"] .rv-e.ok b,:root[data-theme="dark"] .cp-s.ok{color:#6fdc9b}:root[data-theme="dark"] .rv-tiles .bad b,:root[data-theme="dark"] .rv-e.bad b,:root[data-theme="dark"] .cp-s.bad,:root[data-theme="dark"] .cv-sum b{color:#ff9b94}:root[data-theme="dark"] .rv-tiles .warn b,:root[data-theme="dark"] .rv-e.warn b,:root[data-theme="dark"] .cp-s.warn{color:#F2C94C}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .rv-tiles .ok b,:root:not([data-theme="light"]) .rv-e.ok b,:root:not([data-theme="light"]) .cp-s.ok{color:#6fdc9b}:root:not([data-theme="light"]) .rv-tiles .bad b,:root:not([data-theme="light"]) .rv-e.bad b,:root:not([data-theme="light"]) .cp-s.bad,:root:not([data-theme="light"]) .cv-sum b{color:#ff9b94}:root:not([data-theme="light"]) .rv-tiles .warn b,:root:not([data-theme="light"]) .rv-e.warn b,:root:not([data-theme="light"]) .cp-s.warn{color:#F2C94C}}
+
+.cp-t{grid-template-columns:repeat(5,minmax(0,1fr))}@media (max-width:700px){.cp-t{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cp-g{display:flex;align-items:center;gap:8px}.cp-g span{font-size:.8rem;font-weight:800;background:var(--sh-sunk,rgba(127,127,127,.12));border-radius:99px;padding:1px 9px}
+.cp-r{padding:10px 0;border-top:1px solid var(--sh-line)}.cp-r>b{display:block;margin-bottom:6px}.cp-c{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}@media (max-width:700px){.cp-c{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cp-c .cp-s{display:flex;flex-direction:column;padding:6px 8px;border-radius:10px;background:var(--sh-sunk,rgba(127,127,127,.07))}.cp-c .cp-s small{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;opacity:.8}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -7846,7 +7851,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['insDue','Insurance expiry'],['licDue','Licence expiry'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['insDue','Insurance expiry'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -7936,11 +7941,12 @@ function render(){
   </div>`;
 }
 function detailHTML(){
-  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',insDue:'',licDue:'',ecName:'',ecPhone:'',notes:''}:people[openId];
+  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',insDue:'',licDue:'',tenDue:'',fit2work:'',ecName:'',ecPhone:'',notes:''}:people[openId];
   if(!p){openId=null;return render()}
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
+    :k==='fit2work'?`<label class="f" for="dm_f_fit2work">${l}<select id="dm_f_fit2work">${['','Passed','Pending','Failed','Not done'].map(r=>`<option value="${r}" ${String(p.fit2work||'')===r?'selected':''}>${r||'Not entered'}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
     :k==='pw'?`<label class="f" for="dm_f_pw">${l}<span class="pwrow"><input type="password" id="dm_f_pw" value="${esc(val(k))}" autocomplete="new-password"><button type="button" class="sh-btn" data-dm="pwshow">Show</button></span></label>`
     :`<label class="f" for="dm_f_${k}">${l}<input type="${k==='email'?'email':/Due$/.test(k)?'date':k==='mobile'||k==='ecPhone'?'tel':'text'}" id="dm_f_${k}" value="${esc(val(k))}" ${ph?`placeholder="${esc(ph)}"`:''} autocomplete="off"></label>`;
@@ -7951,7 +7957,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates',['regoDue','insDue','licDue'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','insDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -12803,27 +12809,26 @@ document.addEventListener('change',e=>{const s=e.target.closest&&e.target.closes
 /* ---------------- Compliance ---------------- */
 const CP={busy:false,data:null,at:0};
 async function cpLoad(){CP.busy=true;const[vc,rep]=await Promise.all([coll('vchecks'),coll('reports')]);CP.data={vc,rep};CP.at=Date.now();CP.busy=false;compliance()}
-const CHECKS=[['licDue','Licence','date'],['regoDue','Rego','date']];
-const SOON=[['tenDue','Tenure expiry','date'],['fit2work','Fit2Work','status'],['induction','Depot induction','status']];
+const ROLE_ORDER=['PRINCIPLE','PRINCIPAL','MANAGER','CONTRACT MANAGER','SUPERVISOR','4214','4215','4217','4218','XL','RELIEF'];
 function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now()-CP.at>60000){if(!CP.busy)cpLoad();if(!CP.data){el.innerHTML='<section class="card cp"><div class="mt-wait">Loading…</div></section>';return}}
   const T=TODAY(),L=drivers();const dd=s=>Math.round((fromIso(s)-fromIso(T))/864e5);
-  const st=(s)=>{if(!s)return{c:'none',t:'Not entered'};const n=dd(s);return n<0?{c:'bad',t:'Expired '+sh(s)}:n<=30?{c:'warn',t:sh(s)+' ('+n+' day'+(n===1?'':'s')+')'}:{c:'ok',t:sh(s)}};
+  const st=(s)=>{if(!s)return{c:'none',t:'Not entered'};const n=dd(s);return n<0?{c:'bad',t:'Expired '+sh(s)}:n<=30?{c:'warn',t:sh(s)+' ('+n+' day'+(n===1?'':'s')+')'}:{c:'ok',t:sh(s)+' '+fromIso(s).getFullYear()}};
+  const f2w=v=>!v?{c:'none',t:'Not entered'}:v==='Passed'?{c:'ok',t:'Passed'}:v==='Pending'?{c:'warn',t:'Pending'}:{c:'bad',t:v};
   const vcBy={};for(const v of Object.values(CP.data.vc)){if(!v||!v.date)continue;const p=L.find(x=>x.id===v.driverId)||L.find(x=>norm([x.first,x.last].join(''))===norm(v.driver));if(!p)continue;if(!vcBy[p.id]||v.date>vcBy[p.id].date)vcBy[p.id]=v}
   const vst=p=>{const v=vcBy[p.id];if(!v)return{c:'bad',t:'Never checked'};const n=30-Math.round((fromIso(T)-fromIso(v.date))/864e5);if(v.outcome==='fail')return{c:'bad',t:'Failed '+sh(v.date)};return n<0?{c:'bad',t:-n+' days overdue'}:{c:v.outcome==='minor'?'warn':'ok',t:(v.outcome==='minor'?'Fixes needed, ':'')+'due '+sh(add(v.date,30))}};
-  const open=Object.entries(CP.data.rep).filter(([,r])=>r&&(r.status||'new')!=='closed'&&r.status!=='done').map(([id,r])=>({id,...r})).sort((a,b)=>dOf(b.at).localeCompare(dOf(a.at)));
-  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),vc:vst(p)}));
-  const bad=k=>rows.filter(r=>r[k].c==='bad').length,warn=k=>rows.filter(r=>r[k].c==='warn').length,none=k=>rows.filter(r=>r[k].c==='none').length;
-  rows.sort((a,b)=>{const sc=r=>['lic','rego','vc'].reduce((x,k)=>x+(r[k].c==='bad'?100:r[k].c==='warn'?10:r[k].c==='none'?1:0),0);return sc(b)-sc(a)||nameOf(a.p).localeCompare(nameOf(b.p))});
-  el.innerHTML=`<section class="card cp"><div class="rv-head"><div><small>Compliance</small><b>Licences, rego, van checks and incidents</b><span>Expiring means in the next 30 days.</span></div></div>
-   <div class="rv-tiles bs-t"><div class="${bad('lic')?'bad':warn('lic')?'warn':'ok'}"><small>Licences</small><b>${bad('lic')} expired</b><span>${warn('lic')} expiring · ${none('lic')} not entered</span></div>
-    <div class="${bad('rego')?'bad':warn('rego')?'warn':'ok'}"><small>Rego</small><b>${bad('rego')} expired</b><span>${warn('rego')} expiring · ${none('rego')} not entered</span></div>
-    <div class="${bad('vc')?'bad':warn('vc')?'warn':'ok'}"><small>Van checks</small><b>${bad('vc')} overdue</b><span>${warn('vc')} need fixes</span></div>
-    <div class="${open.length?'bad':'ok'}"><small>Open incident reports</small><b>${open.length}</b><span>Not closed yet</span></div></div>
-   <div class="tw"><table class="tb cp-tb"><thead><tr><th>Driver</th><th>Licence</th><th>Rego</th><th>Van check</th></tr></thead><tbody>
-    ${rows.map(r=>`<tr><td><b>${esc(nameOf(r.p))}</b>${runsOf(r.p)?`<small>${esc(runsOf(r.p))}</small>`:''}</td>${['lic','rego','vc'].map(k=>`<td><span class="cp-s ${r[k].c}">${esc(r[k].t)}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>
-   <h3 class="rv-h3">Open incident reports</h3>
-   ${open.length?`<div class="rv-tl">${open.slice(0,20).map(r=>`<button type="button" class="rv-e ${r.serious?'bad':'warn'}" data-nav="reports"><span class="ic">🩹</span><span class="tx"><b>${esc(({vehicle:'Vehicle accident',incident:'Incident',hazard:'Hazard'}[r.kind]||'Report')+': '+tc(r.name||''))}</b><small>${esc((r.f&&r.f.type)||'')}${r.status==='new'?' · New':''}</small></span><span class="d">${esc(r.f&&r.f.date?shd(r.f.date):'')}</span></button>`).join('')}</div>`:'<p class="mt-note">✓ No open incident reports.</p>'}
-   <p class="mt-note">Coming later: tenure expiry date, Fit2Work status and depot induction. Add licence and rego dates on the Driver Details page.</p>
+  const COLS=[['lic','Licence'],['rego','Rego'],['ten','Tenure'],['f2w','Fit2Work'],['vc','Van check']];
+  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),ten:st(p.tenDue),f2w:f2w(p.fit2work),vc:vst(p)}));
+  const cnt=(k,c)=>rows.filter(r=>r[k].c===c).length;
+  const score=r=>COLS.reduce((x,[k])=>x+(r[k].c==='bad'?100:r[k].c==='warn'?10:r[k].c==='none'?1:0),0);
+  const roleOf=p=>String(p.role||'Other').toUpperCase();
+  const groups={};for(const r of rows)(groups[roleOf(r.p)]=groups[roleOf(r.p)]||[]).push(r);
+  const keys=Object.keys(groups).sort((a,b)=>((ROLE_ORDER.indexOf(a)+1)||50)-((ROLE_ORDER.indexOf(b)+1)||50)||a.localeCompare(b));
+  const label=k=>k==='PRINCIPLE'?'Principal':/^\d{4}$/.test(k)?k:k==='XL'?'XL':tc(k);
+  const tile=(k,l,word)=>{const b=cnt(k,'bad'),w=cnt(k,'warn'),n=cnt(k,'none');return `<div class="${b?'bad':w?'warn':n===rows.length?'':'ok'}"><small>${l}</small><b>${b} ${word}</b><span>${w} ${k==='f2w'?'pending':k==='vc'?'need fixes':'expiring'} · ${n} not entered</span></div>`};
+  el.innerHTML=`<section class="card cp"><div class="rv-head"><div><small>Compliance</small><b>Licences, rego, tenure, Fit2Work and van checks</b><span>Expiring means in the next 30 days.</span></div></div>
+   <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ten','Tenure','expired')}${tile('f2w','Fit2Work','failed')}${tile('vc','Van checks','overdue')}</div>
+   ${keys.map(k=>`<h3 class="rv-h3 cp-g">${esc(label(k))} <span>${groups[k].length}</span></h3><div class="cp-list">${groups[k].sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<div class="cp-r"><b>${esc(nameOf(r.p))}</b><div class="cp-c">${COLS.map(([c,l])=>`<span class="cp-s ${r[c].c}"><small>${l}</small>${esc(r[c].t)}</span>`).join('')}</div></div>`).join('')}</div>`).join('')}
+   <p class="mt-note">Add licence, rego and tenure dates and the Fit2Work status in each driver's record on the Driver Details page. Depot induction can be added later.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
 window.MGRT={paint};
 })();
@@ -13185,7 +13190,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610305100';
+const VERSION='202610305200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
