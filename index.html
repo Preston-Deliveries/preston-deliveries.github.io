@@ -5047,6 +5047,13 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 .sh-ph .sh-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 @media (min-width:900px){.sh-ph .sh-back{display:none}}
 @media (max-width:899.98px){html.appui[data-ts="l"]{font-size:20px!important}html.appui[data-ts="xl"]{font-size:22px!important}}
+
+/* title bar: hides when you scroll down, comes back as soon as you scroll up (like YouTube and Facebook) */
+@media (max-width:899.98px){
+ html.appui .sh-mtop{position:sticky!important;top:0;z-index:60;transition:transform .22s ease;will-change:transform}
+ html.appui .sh-mtop.tb-hide{transform:translateY(-105%)}
+ html.appui .sh-mtop.tb-float{box-shadow:0 4px 14px rgba(0,0,0,.25)}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5485,6 +5492,15 @@ window.loadH2C=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2c
       if(b&&b.tagName===a.tagName&&morph(this,t.content,a,b))return}}catch(e){}
     D.set.call(this,v)}})})();
 window.__D=s=>{const v=s.data();return v==null?v:JSON.parse(JSON.stringify(v))};
+(()=>{if(window.__tbScroll)return;window.__tbScroll=1;let last=0,acc=0,tick=false;
+  const run=()=>{tick=false;const t=document.querySelector('.sh-mtop');if(!t)return;const y=Math.max(0,window.scrollY||document.documentElement.scrollTop||0);const d=y-last;last=y;
+    if(document.querySelector('#sh-set'))return;
+    if(y<=t.offsetHeight){t.classList.remove('tb-hide','tb-float');acc=0;return}
+    acc=(d>0)===(acc>0)?acc+d:d;
+    if(acc>12)t.classList.add('tb-hide');else if(acc<-8){t.classList.remove('tb-hide');t.classList.add('tb-float')}};
+  window.addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(run)}},{passive:true});
+  window.addEventListener('sh:go',()=>{const t=document.querySelector('.sh-mtop');if(t)t.classList.remove('tb-hide','tb-float');last=0;acc=0})})();
+
 window.__UV=false;
 window.__DLSHIM={save:async({filename,data})=>{let P=null;try{P=window.parent!==window&&window.parent.__uvSave?window.parent:null}catch(e){}
   if(P){let d=data;if(d&&typeof d!=='string'){if(typeof d.arrayBuffer==='function')d=await d.arrayBuffer();else if(d.buffer)d=d.buffer.slice(0)}return await P.__uvSave(filename,d)}
@@ -13758,7 +13774,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310300';
+const VERSION='202610310400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
