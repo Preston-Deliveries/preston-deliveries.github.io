@@ -5731,6 +5731,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
 const FOCUS_DEFAULT={JOSH:'4214',JOSHUA:'4214',STEVE:'4215',STEVEN:'4215',STEPHEN:'4215'};
 function myFocus(){const me=window.__webMe||{};const em=String(me.email||'').toLowerCase();if(!em)return null;const e=Object.entries(MC.staff).find(([,s])=>String(s.email||'').toLowerCase()===em);if(!e)return null;const[id,s]=e;
   const pc=String(s.focusPc||'').trim()||FOCUS_DEFAULT[String(s.first||'').toUpperCase()]||'';return /^\d{4}$/.test(pc)?{id,pc}:null}
+const FU_ETA=90,FU_CP=98;/* follow up a driver below these */
 const FC={wk:null,wkBusy:false,at:0,last:null,tg:{etaG:98,cpG:99},fu:{},fuOn:false,busy:{}};
 async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){FC.wkBusy=false;return}
   const D=d=>window.__D?window.__D(d):d.data();const t=new Date();const mon=new Date(t);mon.setDate(t.getDate()-((t.getDay()+6)%7)-7);const ds=[0,1,2,3,4,5].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return mcIso(d)});
@@ -5743,8 +5744,8 @@ async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=t
 /* follow ups: drivers who missed 2 hr ETA or scan compliance on the latest results day */
 function fuList(){if(!FC.last||!window.SCORE)return [];const G=window.__runGrp||{},N=window.__runNames||{},tg=FC.tg;const pctv=v=>{v=+v;return v>1.0001?v:v*100};const L=[];
   for(const[l,r]of Object.entries(FC.last.rows||{})){const iss=[];
-    if(r.eta!=null&&r.eta!==''&&+r.eta>0&&pctv(r.eta)<tg.etaG-1e-9)iss.push('ETA '+(Math.round(pctv(r.eta)*10)/10)+'%');
-    if(r.cp!=null&&r.cp!==''&&+r.cp>0&&pctv(r.cp)<tg.cpG-1e-9)iss.push('Scan '+(Math.round(pctv(r.cp)*10)/10)+'%');
+    if(r.eta!=null&&r.eta!==''&&+r.eta>0&&pctv(r.eta)<FU_ETA-1e-9)iss.push('ETA '+(Math.round(pctv(r.eta)*10)/10)+'%');
+    if(r.cp!=null&&r.cp!==''&&+r.cp>0&&pctv(r.cp)<FU_CP-1e-9)iss.push('Scan '+(Math.round(pctv(r.cp)*10)/10)+'%');
     if(!iss.length)continue;const w=String(N[l]||l).split(' ');L.push({l,id:FC.last.date+'_'+l,nm:w.length>1?w[0]+' '+w[w.length-1][0]:w[0],iss,pc:String(G[String(l).toUpperCase()]||'other').toLowerCase()})}
   return L.sort((a,b)=>a.nm.localeCompare(b.nm))}
 function fuRow(x){const f=FC.fu[x.id];return `<label class="fu-r ${f?'done':''}"><input type="checkbox" data-fu="${esc(x.id)}" data-l="${esc(x.l)}" data-d="${esc(FC.last.date)}" ${f?'checked':''} ${FC.busy[x.id]?'disabled':''}><b>${esc(x.nm)}</b><span class="iss">${esc(x.iss.join(' · '))}</span>${f?`<small>${esc(f.by||'')}</small>`:''}</label>`}
@@ -5753,7 +5754,7 @@ function fuHTML(L,pc){if(!FC.last)return '';if(!L.length)return '';const left=L.
 function adminFollow(){const el=$('ah_fu');if(!el||role!=='mgr')return;fcLoad();if(myFocus()){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
   const L=fuList();if(!L.length){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
   const PCS=[...new Set(L.map(x=>x.pc))].sort();const left=L.filter(x=>!FC.fu[x.id]).length;
-  const html=`<section class="dh-card fuc"><div class="fu-h"><h2>Follow ups · ${esc(tlNice(FC.last.date))}</h2><span class="${left?'':'ok'}">${left?left+' to talk to':'✓ All done'}</span></div><p class="fu-p">Missed 2 hr ETA (${FC.tg.etaG}%) or scan (${FC.tg.cpG}%). Supervisors tick when they have spoken to the driver.</p>
+  const html=`<section class="dh-card fuc"><div class="fu-h"><h2>Follow ups · ${esc(tlNice(FC.last.date))}</h2><span class="${left?'':'ok'}">${left?left+' to talk to':'✓ All done'}</span></div><p class="fu-p">2 hr ETA under ${FU_ETA}% or scan compliance under ${FU_CP}%. Supervisors tick when they have spoken to the driver.</p>
    ${PCS.map(pc=>{const g=L.filter(x=>x.pc===pc),d=g.filter(x=>FC.fu[x.id]).length;return `<details class="fu-g" ${d<g.length?'open':''}><summary><b>${esc(pc==='other'?'Other':pc.toUpperCase())}</b><span class="${d===g.length?'ok':''}">${d} of ${g.length} done</span></summary>${g.map(fuRow).join('')}</details>`}).join('')}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
@@ -13445,7 +13446,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610308100';
+const VERSION='202610308200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
