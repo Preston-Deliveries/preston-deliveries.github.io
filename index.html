@@ -5517,7 +5517,7 @@ const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','summary','vchecks','timesheets','precards','lockers','sort','cover','review','boss','compliance'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
-const DRV_MENU=['runs','reports','briefs','guide','feedback','invoices','directory','uniform'];
+const DRV_MENU=['runs','reports','guide','feedback','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
  {t:'Results',s:[['results','Results'],['survey','Survey'],['me','One driver'],['review','Review']]},
@@ -5526,16 +5526,16 @@ const HUBS={mgr:[
  {t:'Drivers',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Vans'],['directory','Contacts']]},
  {t:'Leave and cover',s:[['leave','Leave'],['cover','Cover planner']]},
  {t:'From drivers',s:[['feedback','Messages'],['reports','Incidents'],['uniform','Uniform']]},
- {t:'Updates for drivers',s:[['updates','Updates'],['briefs','Briefs'],['guide','Guide']]},
+ {t:'Updates for drivers',s:[['updates','Updates'],['briefs','Team briefs']]},
  {t:'Summary',s:[['summary','Summary'],['boss','Monthly report']]}],
- drv:[{t:'Briefs and guide',s:[['briefs','Team brief'],['guide','Driver guide']]},{t:'Reports and feedback',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
+ drv:[{t:'Updates',s:[['updates','Updates'],['briefs','Team brief']]},{t:'Reports and feedback',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
 const hubT=s=>{const h=hubOf(s);return h&&h.s[0][0]===s?h.t:''};
-const DRV_TILES=['briefs','reports','runs','invoices','directory','uniform'];
+const DRV_TILES=['guide','reports','runs','invoices','directory','uniform'];
 const DNAMES={home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'Survey results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver Guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Compliance'};
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Compliance'};
 const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance'};
 const ICONS={
  cover:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 8h5M18.5 5.5v5"/></svg>',
@@ -5587,7 +5587,7 @@ function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
 function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();document.body.classList.remove('sh-more-on')}
 function navHTML(){const v=new Set(visible());const T=tabSecs();
   if(role!=='mgr'){const L=T.concat(DRV_TILES.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',updates:'Updates',menu:'Menu'};
-    return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}</div>`}
+    return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))||(s==='updates'&&cur==='briefs')?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}</div>`}
   let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','results','summary','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
   const S0=new Set((GG.find(x=>x.k==='start')||{secs:[]}).secs);
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&(g.k==='start'||!S0.has(x)));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''} ${s===cur||(hubT(s)&&hubOf(cur)===hubOf(s))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group"></div>`}
@@ -5845,7 +5845,7 @@ function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||'
 /* the driver Menu: everything else, as big tiles */
 const AMENU=[['Every day','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs'],['runs','Run sheets, whose street, precards, lockers'],['timesheets','Timesheets, invoices and my times']]],
  ['Team','team',[['staff','Details, compliance, van checks, contacts'],['leave','Leave calendar and cover planner'],['feedback','Messages, incidents and uniform orders']]],
- ['Office','office',[['updates','Updates, team briefs and the driver guide'],['summary','Summary and monthly report']]]];
+ ['Office','office',[['updates','Updates and team briefs'],['guide','How we do things'],['summary','Summary and monthly report']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
 const setRows=(drv)=>`${drv?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
@@ -13729,7 +13729,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310000';
+const VERSION='202610310100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
