@@ -4989,6 +4989,22 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-set .alb .al-i .tx{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}#sh-set .alb .al-i b{font-size:.95rem}#sh-set .alb .al-i .tx>span{font-size:.84rem;color:var(--sh-ink);opacity:.85}#sh-set .alb .al-i small{font-size:.74rem;color:var(--sh-muted)}
 #sh-set .alb .al-i .dot{position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:#E53935}
 #sh-set .alb .me-empty{text-align:center;padding:10px;color:var(--sh-muted)}#sh-set .alb .me-empty svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* results check table: on phones each driver is a card, like Driver results, with boxes to edit */
+@media (max-width:899.98px){
+#sh-main #r_tbl.rc{display:block;border:0!important;background:none!important;width:100%}
+#sh-main #r_tbl.rc thead{display:none}
+#sh-main #r_tbl.rc tbody{display:flex;flex-direction:column;gap:8px}
+#sh-main #r_tbl.rc tbody tr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:10px;border:1px solid var(--sh-line);border-radius:16px;background:var(--sh-surface)}
+#sh-main #r_tbl.rc td{width:auto!important;display:flex;flex-direction:column;align-items:stretch;gap:3px;padding:0!important;border:0!important;background:none!important;min-width:0;position:relative}
+#sh-main #r_tbl.rc td.rc-n{grid-column:1 / -1!important;width:auto!important;max-width:none!important;white-space:nowrap;flex-direction:row;align-items:baseline;gap:8px;padding:0 2px 2px!important}
+#sh-main #r_tbl.rc td.rc-n b{font-size:1.02rem;font-weight:800}#sh-main #r_tbl.rc td.rc-n small{font-size:.75rem;color:var(--sh-muted);font-weight:700}
+#sh-main #r_tbl.rc td[data-l]::before{content:attr(data-l);font-size:.66rem;letter-spacing:-.01em;font-weight:800;color:var(--sh-muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sh-main #r_tbl.rc td input{width:100%!important;min-width:0;box-sizing:border-box;text-align:center;font-size:.95rem!important;padding:7px 2px!important;min-height:38px;border-radius:10px}
+#sh-main #r_tbl.rc td .dot{position:absolute;top:-3px;right:-2px;width:7px;height:7px;margin:0}
+#sh-main #r_tbl.rc td.empty{grid-column:1/-1;display:block;text-align:center;padding:14px!important}
+#sh-main #r_tbl.rc tbody tr:has(td.empty){display:block}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -7043,14 +7059,16 @@ function renderTable(){
   const tb=$("tbl").tBodies[0];tb.textContent="";
   const d=week.days[selDay];
   if(!d||!Object.keys(d.rows).length){const tr=tb.insertRow();const td=tr.insertCell();td.colSpan=6;td.className="empty";td.textContent="No files added for "+name+" yet. Drop them in step 1.";return}
-  for(const login of Object.keys(d.rows).sort()){
+  $("tbl").classList.add("rc");
+  const NM=window.__runNames||{},nmOf=l=>{const n=NM[String(l).toUpperCase()];return n?String(n).replace(/\b\w/g,c=>c.toUpperCase()).replace(/\B\w+/g,w=>w.toLowerCase()):""};
+  for(const login of Object.keys(d.rows).sort((a,b)=>(nmOf(a)||a).localeCompare(nmOf(b)||b))){
     const r=d.rows[login];const tr=tb.insertRow();
-    const c0=tr.insertCell();c0.textContent=login;
-    const fields=[["pc",false],["ftd",true],["eta",true],["cp",true],["enq",false]];
+    const c0=tr.insertCell();c0.className="rc-n";const nb=document.createElement("b");nb.textContent=nmOf(login)||login;c0.append(nb);if(nmOf(login)){const sm=document.createElement("small");sm.textContent=login;c0.append(sm)}
+    const fields=[["pc",false],["ftd",true],["eta",true],["cp",true],["enq",false]];const LAB={pc:"Parcels",ftd:"FTD",eta:"2 hr ETA",cp:"Scan",enq:"Enquiries"};
     for(const[f,isPct]of fields){
       const val=r[f]==null?"":isPct?pct(r[f]):String(r[f]);
       const inp=mk("text",val,f==="enq"?"enq":"",f+" for "+login);inp.inputMode="decimal";if(f==="enq"){inp.readOnly=true;inp.title="At fault enquiries, from the Enquiries page"}
-      const cell=tr.insertCell();
+      const cell=tr.insertCell();cell.dataset.l=LAB[f];
       if(f!=="pc"&&f!=="ftd"){const dot=document.createElement("span");dot.className="dot";cell.append(dot);paintDot(dot,f,f==="enq"?epk((+r.enq||0)+(+r.enqP||0),r.pc):r[f])}
       cell.append(inp);
       inp.onchange=()=>{let v=num(inp.value);if(v!=null&&isPct)v=v>1?v/100:v;r[f]=v;saveDay(selDay);if(f!=="pc"&&f!=="ftd")paintDot(cell.querySelector(".dot"),f,f==="enq"?epk((+r.enq||0)+(+r.enqP||0),r.pc):v);drawBoard()};
@@ -13676,7 +13694,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309600';
+const VERSION='202610309700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
