@@ -5005,6 +5005,33 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-main #r_tbl.rc td.empty{grid-column:1/-1;display:block;text-align:center;padding:14px!important}
 #sh-main #r_tbl.rc tbody tr:has(td.empty){display:block}
 }
+
+/* title bar icons sized and spaced like YouTube */
+:root:root .sh-mtop .sh-tb{gap:10px;margin-right:-4px}
+:root:root .sh-mtop .sh-bell,:root:root .sh-mtop .sh-mode{width:42px;height:42px}
+:root:root .sh-mtop .sh-bell svg{width:26px;height:26px;stroke-width:1.9}
+:root:root .sh-mtop .sh-mode svg{width:25px;height:25px;stroke-width:1.9}
+:root:root .sh-mtop .sh-bell .bdg{top:2px;right:1px}
+/* notifications: a light colour for each kind, matching the app */
+#sh-set :is(.al-i,.nti){--kc:#5A6576;--kb:rgba(90,101,118,.10);background:var(--kb)!important}
+#sh-set :is(.al-i,.nti) .ic{background:var(--sh-surface)!important;color:var(--kc)!important}
+#sh-set :is(.al-i,.nti).k-news,#sh-set .nti.k-updates{--kc:#2F6FED;--kb:rgba(47,111,237,.10)}
+#sh-set .al-i.k-brief{--kc:#B7791F;--kb:rgba(242,178,74,.16)}
+#sh-set .al-i.k-results{--kc:#7C4DDB;--kb:rgba(124,77,219,.10)}
+#sh-set .al-i.k-survey{--kc:#0B7A6E;--kb:rgba(11,122,110,.10)}
+#sh-set .al-i.k-precard{--kc:#C2570C;--kb:rgba(232,113,10,.12)}
+#sh-set .al-i.k-run{--kc:#2F6FED;--kb:rgba(47,111,237,.10)}
+#sh-set .al-i.k-money{--kc:#1E8A4C;--kb:rgba(30,138,76,.11)}
+#sh-set .al-i.k-clock{--kc:#C62828;--kb:rgba(198,40,40,.10)}
+#sh-set .nti.k-reports{--kc:#C62828;--kb:rgba(198,40,40,.10)}
+#sh-set .nti.k-feedback{--kc:#7C4DDB;--kb:rgba(124,77,219,.10)}
+#sh-set .nti.k-leave{--kc:#1E8A4C;--kb:rgba(30,138,76,.11)}
+#sh-set .nti.k-uniform{--kc:#4B5B75;--kb:rgba(75,91,117,.12)}
+#sh-set .nti.k-enquiries{--kc:#C2570C;--kb:rgba(232,113,10,.12)}
+#sh-set .al-i:not(.new){opacity:.72}
+#sh-set .al-i{border-left:4px solid var(--kc)}#sh-set .nti{border-left:4px solid var(--kc)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-set :is(.al-i,.nti){--kb2:1}:root:not([data-theme="light"]) #sh-set :is(.al-i,.nti) .ic{filter:brightness(1.35)}}
+:root[data-theme="dark"] #sh-set :is(.al-i,.nti) .ic{filter:brightness(1.35)}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5821,7 +5848,7 @@ function openNeeds(){closeSettings();const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer'],['feedback',N.feedback,'new driver message','new driver messages','to read'],['reports',N.reports,'new report','new reports','to look at'],['uniform',N.uniform,'uniform order','uniform orders','to fill'],['enquiries',N.enquiries,'enquiry','enquiries','needing a decision']].filter(x=>x[1]>0);
   const w=document.createElement('div');w.id='sh-set';w.className='ntf';w.setAttribute('role','dialog');w.setAttribute('aria-label','Notifications');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Notifications</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div>
-   ${T.length?`<div class="ntl">${T.map(([sec,n,one,many,tail])=>`<button type="button" class="nti" data-nav="${sec}"><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`:'<p class="nt0">✓ All caught up. Nothing waiting for you.</p>'}</div>`;
+   ${T.length?`<div class="ntl">${T.map(([sec,n,one,many,tail])=>`<button type="button" class="nti k-${sec}" data-nav="${sec}"><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`:'<p class="nt0">✓ All caught up. Nothing waiting for you.</p>'}</div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
 async function openAlerts(){closeSettings();
   const w=document.createElement('div');w.id='sh-set';w.className='ntf al';w.setAttribute('role','dialog');w.setAttribute('aria-label','Notifications');
@@ -9430,7 +9457,7 @@ function alertsHTML(L){
   const seen=seenAtOpen||new Set();
   if(!L.length)return `<div class="me-empty">${ICON.bell}<b>You’re all caught up</b><p>When something changes for you, like a new precard on your run, your results or a brief to sign, it shows here.</p></div>`;
   return `<div class="al-top"><span>${L.filter(n=>!seen.has(n.id)).length?L.filter(n=>!seen.has(n.id)).length+' new':'No new notifications'}</span></div>
-  <div class="al-list">${L.map(n=>`<button type="button" class="al-i g-${n.g}${seen.has(n.id)?'':' new'}" data-al="${esc(n.id)}" data-nav="${esc(n.nav||'home')}"><span class="ic">${ICON[n.ic]}</span><span class="tx"><b>${esc(n.title)}</b><span>${esc(n.body)}</span><small><span>${esc(ago(n.at))}</span>${n.act?' · <em>Action needed</em>':''}</small></span>${seen.has(n.id)?'':'<i class="dot" aria-label="New"></i>'}</button>`).join('')}</div>
+  <div class="al-list">${L.map(n=>`<button type="button" class="al-i g-${n.g} k-${n.ic}${seen.has(n.id)?'':' new'}" data-al="${esc(n.id)}" data-nav="${esc(n.nav||'home')}"><span class="ic">${ICON[n.ic]}</span><span class="tx"><b>${esc(n.title)}</b><span>${esc(n.body)}</span><small><span>${esc(ago(n.at))}</span>${n.act?' · <em>Action needed</em>':''}</small></span>${seen.has(n.id)?'':'<i class="dot" aria-label="New"></i>'}</button>`).join('')}</div>
   <p class="me-note">Only you can see your notifications.</p>`;
 }
 let LAST=[];
@@ -13694,7 +13721,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309700';
+const VERSION='202610309800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
