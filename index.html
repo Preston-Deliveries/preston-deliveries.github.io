@@ -5217,7 +5217,7 @@ const HUBS={mgr:[
  drv:[{t:'Briefs and guide',s:[['briefs','Team brief'],['guide','Driver guide']]},{t:'Reports and feedback',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
 const hubT=s=>{const h=hubOf(s);return h&&h.s[0][0]===s?h.t:''};
-const DRV_TILES=['runs','invoices','uniform','directory','briefs','reports'];
+const DRV_TILES=['briefs','reports','runs','invoices','directory','uniform'];
 const DNAMES={home:'Home',me:'Profile',alerts:'Updates',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'Survey results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
@@ -13366,7 +13366,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306600';
+const VERSION='202610306700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
