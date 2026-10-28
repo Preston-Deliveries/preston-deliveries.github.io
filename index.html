@@ -5130,6 +5130,7 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 :root:root #sh-main #mod-uniform .fit button{font-size:.74rem!important;padding:6px 2px!important}
 /* 6. download and print buttons are quiet outlined buttons in admin; the main action on a page stays filled */
 html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:var(--sh-surface)!important;color:var(--sh-ink)!important;border:1px solid var(--sh-line)!important;box-shadow:none!important}
+#sh-main #mod-enquiries .head>h1{display:none}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5642,14 +5643,15 @@ const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','guide','feedback','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
- {t:'Results',s:[['results','Results'],['survey','Survey'],['me','One driver'],['review','Review']]},
- {t:'Runs and addresses',s:[['runs','Run sheets'],['sort','Streets'],['precards','Precards'],['lockers','Lockers']]},
- {t:'Hours and pay',s:[['timesheets','Timesheets'],['invoices','Invoices'],['clock','My times']]},
- {t:'Drivers',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Vans'],['directory','Contacts']]},
- {t:'Leave and cover',s:[['leave','Leave'],['cover','Cover planner']]},
- {t:'From drivers',s:[['feedback','Messages'],['reports','Incidents'],['uniform','Uniform']]},
- {t:'Updates for drivers',s:[['updates','Updates'],['briefs','Team briefs']]},
- {t:'Summary',s:[['summary','Summary'],['boss','Monthly report']]}],
+ {t:'Driver Results',s:[['results','Results'],['survey','Survey'],['me','One driver'],['review','Review']]},
+ {t:'Run/sort sheets',s:[['runs','Run sheets'],['sort','Streets']]},
+ {t:'Precards and Lockers',s:[['precards','Precards'],['lockers','Lockers']]},
+ {t:'Invoices and Timesheets',s:[['timesheets','Timesheets'],['invoices','Invoices'],['clock','My times']]},
+ {t:'Driver Management',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Vans'],['directory','Contacts']]},
+ {t:'Leave Calendar',s:[['leave','Leave'],['cover','Cover planner']]},
+ {t:'Reports and Orders',s:[['feedback','Messages'],['reports','Incidents'],['uniform','Uniform']]},
+ {t:'Updates',s:[['updates','Updates'],['briefs','Team briefs']]},
+ {t:'Contract Summary',s:[['summary','Summary'],['boss','Monthly report']]}],
  drv:[{t:'Updates',s:[['updates','Updates'],['briefs','Team brief']]},{t:'Reports and feedback',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
 const hubT=s=>{const h=hubOf(s);return h&&h.s[0][0]===s?h.t:''};
@@ -5657,7 +5659,7 @@ const DRV_TILES=['guide','reports','runs','invoices','directory','uniform'];
 const DNAMES={home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'My pay',leave:'Leave calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Driver guide',runs:'Run sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'Survey results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform Orders',enquiries:'Enquiries',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Compliance'};
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'Survey Ranking',guide:'Driver guide',staff:'Driver Data',precards:'Precard List',lockers:'Parcel Lockers',briefs:'Team Brief',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform Orders',enquiries:'Enquiries and NCRs',summary:'Summary',vchecks:'Vehicle Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Compliance'};
 const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance'};
 const ICONS={
  cover:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 8h5M18.5 5.5v5"/></svg>',
@@ -5969,7 +5971,7 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['Every day','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs'],['runs','Run sheets, whose street, precards, lockers'],['timesheets','Timesheets, invoices and my times']]],
+const AMENU=[['Every day','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs'],['runs','Run sheets and street sort'],['precards','Precards and parcel lockers'],['timesheets','Invoices, timesheets and my times']]],
  ['Team','team',[['staff','Details, compliance, van checks, contacts'],['leave','Leave calendar and cover planner'],['feedback','Messages, incidents and uniform orders']]],
  ['Office','office',[['updates','Updates and team briefs'],['guide','How we do things'],['summary','Summary and monthly report']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
@@ -6059,7 +6061,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   if(enqN)rows.push(['enquiries',enqN+(enqN===1?' enquiry needs':' enquiries need')+' a fault decision','At fault, partly or not at fault','']);
   if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from===MC.prev[0]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
     if(miss.length)rows.push(['invoices',miss.length+(miss.length===1?' invoice':' invoices')+' not in yet','For '+mcNice(MC.prev[0])+' to '+mcNice(MC.prev[1])+': '+miss.join(', '),''])}
-  const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];const ex=[];
+  const EXP=[['regoDue','Rego'],['licDue','Licence']];const ex=[];
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
   ex.sort((a,b)=>a.n-b.n);
   /* scanners to collect: leave of 1 week or more starting in the next 7 days */
@@ -8491,7 +8493,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['insDue','Insurance expiry'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -8539,7 +8541,7 @@ function optCells(p){
 const RDAYS=30,todayIso=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dueIn=p=>{if(!p.regoDue)return null;const a=new Date(p.regoDue+'T00:00:00'),b=new Date(todayIso()+'T00:00:00');return Math.round((a-b)/864e5)};
 const niceDue=s=>{if(!s)return '';const[y,m,d]=s.split('-').map(Number);return d+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]+' '+y};
-const EXP=[['regoDue','Rego'],['insDue','Insurance'],['licDue','Licence']];
+const EXP=[['regoDue','Rego'],['licDue','Licence']];
 const daysTo=s=>{if(!s)return null;const a=new Date(s+'T00:00:00'),b=new Date(todayIso()+'T00:00:00');return Math.round((a-b)/864e5)};
 const expTxt=(n,s)=>n<0?'Expired '+niceDue(s):n===0?'Expires today':'Expires '+niceDue(s)+' ('+n+' day'+(n===1?'':'s')+')';
 const dueTxt=p=>{const n=dueIn(p);if(n==null)return '';return n<0?`Rego overdue since ${niceDue(p.regoDue)}`:n===0?'Rego due today':n<=RDAYS?`Rego due ${niceDue(p.regoDue)} (${n} day${n===1?'':'s'})`:`Rego due ${niceDue(p.regoDue)}`};
@@ -8597,7 +8599,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay','focusPc'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','insDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay','focusPc'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -13875,7 +13877,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311100';
+const VERSION='202610311200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
