@@ -5131,6 +5131,7 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 /* 6. download and print buttons are quiet outlined buttons in admin; the main action on a page stays filled */
 html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:var(--sh-surface)!important;color:var(--sh-ink)!important;border:1px solid var(--sh-line)!important;box-shadow:none!important}
 #sh-main #mod-enquiries .head>h1{display:none}
+#sh-main #mod-invoices .iw-per.one{grid-template-columns:1fr!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5501,6 +5502,7 @@ const RULES=[
  [/^(\$[\d,.]+) for each day worked$/,m=>m[1]+' por dia trabalhado',m=>m[1]+' ਹਰ ਕੰਮ ਵਾਲੇ ਦਿਨ ਲਈ'],
  [/^(\$[\d,.]+) a day$/,m=>m[1]+' por dia',m=>m[1]+' ਪ੍ਰਤੀ ਦਿਨ'],
  [/^Day rate, (\$[\d,.]+)$/,m=>'Valor por dia, '+m[1],m=>'ਦਿਹਾੜੀ ਰੇਟ, '+m[1]],
+ [/^(.+) to (.+) · paid (4 weekly|fortnightly|weekly)$/,m=>D(m[1])+' a '+D(m[2])+' · pago '+({'4 weekly':'a cada 4 semanas',fortnightly:'a cada 2 semanas',weekly:'toda semana'})[m[3]],m=>D(m[1])+' ਤੋਂ '+D(m[2])+' · '+({'4 weekly':'ਹਰ 4 ਹਫ਼ਤੇ',fortnightly:'ਹਰ 2 ਹਫ਼ਤੇ',weekly:'ਹਰ ਹਫ਼ਤੇ'})[m[3]]+' ਭੁਗਤਾਨ'],
  [/^Important: (.+)$/,m=>'Importante: '+m[1],m=>'ਜ਼ਰੂਰੀ: '+m[1]],
  [/^No\. (\d+)$/,m=>'Nº '+m[1],m=>'ਨੰ. '+m[1]],
  [/^Updated (.+)$/,m=>'Atualizado em '+D(m[1]),m=>D(m[1])+' ਨੂੰ ਅੱਪਡੇਟ'],
@@ -6059,7 +6061,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   const rows=[];
   const enqN=Object.values(MC.enq).filter(e=>e&&e.kind!=='ncr'&&!e.fault).length;
   if(enqN)rows.push(['enquiries',enqN+(enqN===1?' enquiry needs':' enquiries need')+' a fault decision','At fault, partly or not at fault','']);
-  if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from===MC.prev[0]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
+  if(MC.prev&&MC.worked&&T>MC.prev[1]){const got=new Set(Object.values(MC.inv).filter(v=>v&&v.from>=MC.prev[0]&&v.from<=MC.prev[1]).map(v=>v.sid));const miss=[...MC.worked].filter(id=>!got.has(id)&&P[id]&&!MC_OFFICE.includes(String(P[id].role||'').toUpperCase())).map(id=>nm(P[id])).filter(Boolean).sort();
     if(miss.length)rows.push(['invoices',miss.length+(miss.length===1?' invoice':' invoices')+' not in yet','For '+mcNice(MC.prev[0])+' to '+mcNice(MC.prev[1])+': '+miss.join(', '),''])}
   const EXP=[['regoDue','Rego'],['licDue','Licence']];const ex=[];
   for(const p of Object.values(P))for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push({n,t:nm(p)+': '+l+(n<0?' expired '+mcNice(p[k]):n===0?' expires today':' expires '+mcNice(p[k])+' ('+n+' day'+(n===1?'':'s')+')')})}
@@ -8493,7 +8495,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['payFreq','Paid every'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -8588,6 +8590,7 @@ function detailHTML(){
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
+    :k==='payFreq'?`<label class="f" for="dm_f_payFreq">${l}<select id="dm_f_payFreq">${[['','4 weeks'],['fortnight','2 weeks'],['week','Week']].map(([r,t])=>`<option value="${r}" ${String(p.payFreq||'')===r?'selected':''}>${t}</option>`).join('')}</select></label>`
     :k==='fit2work'?`<label class="f" for="dm_f_fit2work">${l}<select id="dm_f_fit2work">${['','Passed','Pending','Failed','Not done'].map(r=>`<option value="${r}" ${String(p.fit2work||'')===r?'selected':''}>${r||'Not entered'}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
     :k==='pw'?`<label class="f" for="dm_f_pw">${l}<span class="pwrow"><input type="password" id="dm_f_pw" value="${esc(val(k))}" autocomplete="new-password"><button type="button" class="sh-btn" data-dm="pwshow">Show</button></span></label>`
@@ -8599,7 +8602,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Trolley bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay','focusPc'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay','focusPc'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Pay',['payFreq'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -12724,6 +12727,10 @@ const num=v=>v===''||v==null||isNaN(+v)?0:+v;
 /* pay periods are 4 weeks long, counted from Monday 5 Oct 2026 */
 const ANCHOR='2026-10-05';
 function period(k){const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);const n=Math.floor(d/28)+k;const s=add(ANCHOR,n*28);return[s,add(s,25)]}
+/* how often a driver is paid: every 4 weeks (most), every 2 weeks or every week. Set on the Driver Management page. */
+const freqOf=id=>{const f=String(((staff[id||sid]||{}).payFreq)||'').toLowerCase();return f.startsWith('week')?7:f.startsWith('fort')?14:28};
+const FREQL={7:'weekly',14:'fortnightly',28:'4 weekly'};
+function periodF(k,id){const L=freqOf(id),d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5),n=Math.floor(d/L)+k,s=add(ANCHOR,n*L);return[s,add(s,L-3)]}
 const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,rd:300,abn:'',address:'',phone:'',email:'',acct:'',bsb:'',acctNo:''};
 
 let tlc={};let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
@@ -12749,6 +12756,8 @@ async function init(r){
   const p={first:me.name||wm.name||'',login:String(wm.login||'').toUpperCase(),runs:[wm.run||''],email:wm.email||''};
   if(!p.login){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.login=String(d.login||'').toUpperCase();p.runs=d.runs||[];p.mobile=d.mobile||'';p.first=d.first;p.last=d.last}}catch(e){}}
   staff[sid]=p;
+  if(p.payFreq===undefined){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.payFreq=d.payFreq||''}}catch(e){}}
+  [from,to]=periodF(0);
   try{const s2=await db.doc('invcfg/'+sid).get();if(s2.exists)cfgs[sid]=__D(s2)}catch(e){}
   try{const s2=await db.doc('invme/'+sid).get();if(s2.exists)mes[sid]=__D(s2)}catch(e){}
   try{db.collection('invlog').where('sid','==',sid).onSnapshot(s2=>{const m={};for(const d of s2.docs)m[d.id]=__D(d);logs=m;paint()},()=>{})}catch(e){}
@@ -12838,7 +12847,7 @@ const dKey=()=>'im_draft_'+sid+'_'+from;
 function saveDraft(){if(!sid||!from||loadingDraft||draftFor!==dKey())return;lsSet(dKey(),{ov,ticks,extras,invNo,to})}
 let loadingDraft=false,draftFor='';
 function loadDraft(){ov={};ticks={};extras=[];draftFor=sid&&from?dKey():'';const d=sid&&from?lsGet(dKey()):null;if(d&&d.to===to){ov=d.ov||{};ticks=d.ticks||{};extras=d.extras||[];if(d.invNo)invNo=d.invNo}}
-function defPeriod(){const p0=period(0);return(fromIso(TODAY)-fromIso(p0[0]))/864e5<7?period(-1):p0}
+function defPeriod(){return periodF(0)}
 const fmtT=t=>{const m=mins(t);if(m==null)return '';const h=Math.floor(m/60),mm=m%60;return(h%12||12)+':'+pad(mm)+(h<12?' am':' pm')};
 const fmtH=x=>x==null||x===''?'':Math.floor(x)+'h '+String(Math.round((x%1)*60)).padStart(2,'0')+'m';
 
@@ -12873,11 +12882,11 @@ function html(){
     <button type="button" class="sh-btn primary iw-next" data-im="rateok" ${num(ans.rh)>0?'':'disabled'}>Next</button>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
   /* the days */
-  const R=rows(),T=totals(R),last=lastLog(),off=offDays();const[cs,ce]=period(0),[ls,le]=period(-1);
+  const R=rows(),T=totals(R),last=lastLog(),off=offDays();const[cs,ce]=periodF(0);
   const PAYL={p:'By parcel',h:'By the hour',b:'Parcel and hourly',d:'By the day'};
   h+=`<div class="iw-ans"><span>GST: <b>${ans.gst?'Registered':'Not registered'}</b></span><span>Paid: <b>${PAYL[ans.pay]||'By parcel'}</b></span>${ans.pay==='d'?`<span>Rate: <b>${money(ans.rd===''?cfg.rd:ans.rd)} a day</b></span>`:ans.pay!=='p'?`<span>Rate: <b>${money(ans.rh)} an hour</b></span>`:''}<button type="button" class="sh-btn sm" data-im="chg">Change answers</button></div>
-   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per">${[[-1,'Last pay period',ls,le],[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))}</small>${logs[logId(sid,a)]?'<i class="iw-tag">✓ Sent</i>':''}</button>`).join('')}</div>
-    <details class="iw-other" ${(from===cs&&to===ce)||(from===ls&&to===le)?'':'open'}><summary>Other dates</summary><div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label></div></details>
+   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per one">${[[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))} · paid ${FREQL[freqOf()]}</small>${logs[logId(sid,a)]?'<i class="iw-tag">✓ Sent</i>':''}</button>`).join('')}</div>
+    <details class="iw-other" ${from===cs&&to===ce?'':'open'}><summary>Other dates</summary><div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label></div></details>
     ${me&&logs[logId(sid,from)]&&(logs[logId(sid,from)].status||'submitted')!=='submitted'?`<p class="iw-left">The office has already ${logs[logId(sid,from)].status==='paid'?'paid':'checked'} your invoice for these dates. Call the office if something needs changing.</p>`:''}
     ${from&&to&&(fromIso(to)-fromIso(from))/864e5>27?'<p class="warn">An invoice holds 4 weeks. Pick 4 weeks or less.</p>':''}</div>`;
   const nT=R.filter(r=>ticks[r.d]).length;
@@ -12939,7 +12948,7 @@ document.addEventListener('click',e=>{const t=document.getElementById('im_toast'
 function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
   box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
-function pick(id){sid=id;pickedFor=id;msg=null;cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
+function pick(id){sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
 function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
@@ -13209,7 +13218,7 @@ function checkInv(x){
   return out}
 function listHTML(){
   const P2=periods();if(!lper||!P2.includes(lper)){const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from===f));lper=withLogs[0]||period(-1)[0]}
-  const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x}));const byS={};for(const x of L)byS[x.sid]=x;
+  const L=Object.entries(logs).filter(([,x])=>x.from>=lper&&x.from<=add(lper,25)).map(([id,x])=>({id,...x})).sort((a,b)=>String(a.from).localeCompare(String(b.from)));const byS={};for(const x of L)byS[x.sid]=x;
   const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name,run:x.run||''});
   const all=D.map(d=>({...d,inv:byS[d.id]||null}));
   const show=all.filter(r=>lf==='all'||(lf==='todo'?!r.inv:lf==='sub'?r.inv&&r.inv.status==='submitted':r.inv&&r.inv.status===lf));
@@ -13262,7 +13271,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='rateok'){if(ans.pay==='d'){if(ans.rd==='')ans.rd=num(cfg.rd);if(num(ans.rd)>0){step='days';saveAns();paint();iwTop()}return}if(num(ans.rh)>0){step='days';saveAns();paint();iwTop()}return}
   if(a==='back'){step=step==='rate'?'pay':'gst';paint();return}
   if(a==='chg'){asked=true;step='gst';paint();iwTop();return}
-  if(a==='per'){const[x,y]=period(+v);setPeriod(x,y);return}
+  if(a==='per'){const[x,y]=periodF(+v);setPeriod(x,y);return}
   if(a==='dset'){const d=el.dataset.d,k=el.dataset.k;ov[d]={...(ov[d]||{}),[k]:k==='ld'?+v:v};paint();return}
   if(a==='rm'){ov[v]={...(ov[v]||{}),off:true};delete ticks[v];paint();return}
   if(a==='back1'){if(ov[v]){delete ov[v].off;if(!Object.keys(ov[v]).length)delete ov[v]}paint();return}
@@ -13877,7 +13886,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311200';
+const VERSION='202610311300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
