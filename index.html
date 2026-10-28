@@ -5169,7 +5169,7 @@ const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','briefs','guide','feedback','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
- {t:'Results',s:[['results','Daily results'],['enquiries','Enquiries'],['survey','Survey'],['me','One driver'],['review','Review']]},
+ {t:'Results',s:[['results','Daily results'],['survey','Survey'],['me','One driver'],['review','Review']]},
  {t:'Runs and addresses',s:[['runs','Run sheets'],['sort','Whose street'],['precards','Precards'],['lockers','Lockers']]},
  {t:'Hours and pay',s:[['timesheets','Timesheets'],['invoices','Invoices'],['clock','My times']]},
  {t:'Drivers',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Van checks'],['directory','Contacts']]},
@@ -5476,7 +5476,7 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['Every day','day',[['results','Results, enquiries, survey and reviews'],['runs','Run sheets, whose street, precards, lockers'],['timesheets','Timesheets, invoices and my times']]],
+const AMENU=[['Every day','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs'],['runs','Run sheets, whose street, precards, lockers'],['timesheets','Timesheets, invoices and my times']]],
  ['Team','team',[['staff','Details, compliance, van checks, contacts'],['leave','Leave calendar and cover planner'],['feedback','Messages, incidents and uniform orders']]],
  ['Office','office',[['updates','Updates, team briefs and the driver guide'],['summary','Summary and monthly report']]]];
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
@@ -13227,7 +13227,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610305900';
+const VERSION='202610306000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
