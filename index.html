@@ -4916,14 +4916,19 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 :root[data-theme="dark"] .dm-uv{background:rgba(255,212,59,.12);border-color:rgba(255,212,59,.4);color:#FFE58A}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dm-uv{background:rgba(255,212,59,.12);border-color:rgba(255,212,59,.4);color:#FFE58A}}
 @media (max-width:899.98px){html.appui:not(.drvui) .sh-links [data-nav="results"]{order:2}html.appui:not(.drvui) .sh-links [data-nav="summary"]{order:3}}
 
-/* tap the title to switch views; in driver view the title bar turns orange */
-.sh-mtop .sh-brand[data-sh]{cursor:pointer;-webkit-tap-highlight-color:transparent}
-.sh-mtop .sh-brand[data-sh]:active{opacity:.75}
-:root.uvp.uvp .sh-mtop.sh-mtop{background:#F2782D!important;border-bottom-color:#B84E0E!important}
-:root.uvp.uvp .sh-mtop .sh-brand small{color:#1A0E05!important;font-weight:900!important}
-:root.uvp.uvp .sh-mtop .sh-brand b{color:#fff!important}
-:root.uvp.uvp .sh-mtop .sh-logo{box-shadow:0 0 0 2px rgba(255,255,255,.7)}
-.uvp .sh-mtop .sh-role{display:none!important}
+/* small eye icon on the right of the title bar: drivers' view. Filled orange while you are in it. */
+.sh-mtop .sh-mode{all:unset;box-sizing:border-box;cursor:pointer;order:1;margin-left:auto;align-self:center;flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:rgba(230,237,247,.75);border:1px solid rgba(255,255,255,.22)}
+.sh-mtop .sh-mode svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sh-mtop .sh-mode.on{background:#F2782D;border-color:#F2782D;color:#fff}
+.sh-mtop:has(.sh-mode) .sh-role{display:none!important}
+@media (max-width:899.98px){.sh-mtop{flex-wrap:nowrap!important;gap:8px!important}.sh-mtop .sh-brand{min-width:0;flex:1}}
+@media (min-width:900px){.sh-mtop .sh-mode{display:none}}
+
+/* page tabs never slide: they share the width, and wrap if they ever must */
+@media (max-width:899.98px){
+:root:root .sh-hubtabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:6px!important;margin:0!important}
+:root:root .sh-hubtabs button,html.appui #sh-main#sh-main .sh-hubtabs button{flex:1 1 auto!important;min-width:0;min-height:34px!important;height:auto!important;text-align:center;padding:5px 8px!important;font-size:.86rem!important;line-height:1.2!important;white-space:nowrap}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5393,13 +5398,13 @@ const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','briefs','guide','feedback','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
- {t:'Results',s:[['results','Daily results'],['survey','Survey'],['me','One driver'],['review','Review']]},
- {t:'Runs and addresses',s:[['runs','Run sheets'],['sort','Whose street'],['precards','Precards'],['lockers','Lockers']]},
+ {t:'Results',s:[['results','Results'],['survey','Survey'],['me','One driver'],['review','Review']]},
+ {t:'Runs and addresses',s:[['runs','Run sheets'],['sort','Streets'],['precards','Precards'],['lockers','Lockers']]},
  {t:'Hours and pay',s:[['timesheets','Timesheets'],['invoices','Invoices'],['clock','My times']]},
- {t:'Drivers',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Van checks'],['directory','Contacts']]},
+ {t:'Drivers',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Vans'],['directory','Contacts']]},
  {t:'Leave and cover',s:[['leave','Leave'],['cover','Cover planner']]},
- {t:'From drivers',s:[['feedback','Messages'],['reports','Incidents'],['uniform','Uniform orders']]},
- {t:'Updates for drivers',s:[['updates','Updates'],['briefs','Team briefs'],['guide','Driver guide']]},
+ {t:'From drivers',s:[['feedback','Messages'],['reports','Incidents'],['uniform','Uniform']]},
+ {t:'Updates for drivers',s:[['updates','Updates'],['briefs','Briefs'],['guide','Guide']]},
  {t:'Summary',s:[['summary','Summary'],['boss','Monthly report']]}],
  drv:[{t:'Briefs and guide',s:[['briefs','Team brief'],['guide','Driver guide']]},{t:'Reports and feedback',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
@@ -5503,10 +5508,10 @@ function renderViewbar(){
   renderPageHead();
   {const ub=$('sh-uvbar');if(ub)ub.remove();
    const can=previewChild||(canMgr&&role==='mgr');document.documentElement.classList.toggle('uvp',!!previewChild);
-   document.querySelectorAll('.sh-mtop').forEach(t=>{const m=t.querySelector('.sh-mode');if(m)m.remove();const br=t.querySelector('.sh-brand');if(!br)return;const sm=br.querySelector('small');
-     if(sm&&!sm.dataset.o)sm.dataset.o=sm.textContent;
-     if(can){br.dataset.sh=previewChild?'mv':'uv';br.setAttribute('role','button');br.tabIndex=0;br.setAttribute('aria-label',previewChild?'Driver view. Tap to go back to admin':'Tap to see the drivers\' view')}else{delete br.dataset.sh;br.removeAttribute('role');br.removeAttribute('tabindex');br.removeAttribute('aria-label')}
-     if(sm){const want=previewChild?'Driver view · tap to exit':sm.dataset.o;if(sm.textContent!==want)sm.textContent=want;if(previewChild)sm.setAttribute('data-notr','');}})}
+   const want=!can?'':previewChild?'<button type="button" class="sh-mode on" data-sh="mv" aria-label="You are in driver view. Tap to go back to admin" title="Back to admin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>':'<button type="button" class="sh-mode" data-sh="uv" aria-label="See the drivers\' view" title="Drivers\' view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>';
+   document.querySelectorAll('.sh-mtop').forEach(t=>{const br=t.querySelector('.sh-brand');if(br){delete br.dataset.sh;br.removeAttribute('role');br.removeAttribute('tabindex');br.removeAttribute('aria-label')}
+     const sm=br&&br.querySelector('small');if(sm&&!sm.dataset.o)sm.dataset.o=sm.textContent;if(sm){const w=previewChild?'Driver view':sm.dataset.o;if(sm.textContent!==w)sm.textContent=w;if(previewChild)sm.setAttribute('data-notr','')}
+     let m=t.querySelector('.sh-mode');if(!want){if(m)m.remove();return}if(!m||m.outerHTML!==want){if(m)m.remove();t.insertAdjacentHTML('beforeend',want)}})}
   const vt=`<div class="seg" role="group" aria-label="View"><button type="button" data-sh="mv" aria-pressed="${previewChild?'false':'true'}">Admin view</button><button type="button" data-sh="uv" aria-pressed="${previewChild?'true':'false'}">User view</button></div>`;
   document.querySelectorAll('.sh-vt').forEach(el=>{if(canMgr||previewChild){el.hidden=false;el.className='sh-vt'+(previewChild?' user':'');el.innerHTML=vt}else{el.hidden=true;el.innerHTML=''}});
   const vb=$('sh-viewbar');if(!vb)return;
@@ -13569,7 +13574,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309100';
+const VERSION='202610309300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
