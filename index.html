@@ -4762,7 +4762,7 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 #sh-main#sh-main#sh-main .ps-pop button[data-pp=earlier],#sh-main#sh-main#sh-main .ps-pop button[data-pp=later]{color:var(--sh-muted);justify-content:center}
 
 @media (min-width:900px) and (prefers-reduced-motion:no-preference){
- .sh-enter{animation:shEnter .18s ease-out both}
+ .sh-enter{animation:none}
  @keyframes shEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
  .sh-side [data-nav]{transition:background-color .15s ease,color .15s ease}
  html{scrollbar-gutter:stable}
@@ -5241,6 +5241,49 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
  /* brand: Preston Delivery / Service on two lines, never cut off */
  :root:root .sh-side .sh-brand small{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.2;max-width:11.5em}
 }
+
+/* desktop: big title banner the same width as the page, identical on every page */
+@media (min-width:900px){
+ body #sh-main#sh-main>.sh-ph{background:none!important;border:0!important;padding:20px 24px 0!important}
+ body #sh-main#sh-main>.sh-ph>.in{max-width:852px!important;min-height:96px!important;height:96px;padding:0 24px!important;border-radius:18px;background:var(--sh-nav,#13213A);color:#fff;border:1px solid rgba(255,255,255,.06);box-shadow:none;position:relative;overflow:hidden}
+ body #sh-main#sh-main>.sh-ph>.in::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:#F2782D}
+ body #sh-main#sh-main>.sh-ph h1{font-size:2rem!important;color:#fff!important;font-weight:800!important;letter-spacing:-.01em}
+ body #sh-main#sh-main>.sh-ph .sh-back{color:#fff}
+ body #sh-main#sh-main>.sh-ph .sh-hubtabs button:not([aria-current]){background:rgba(255,255,255,.1)!important;color:#E6EDF7!important}
+ body #sh-main#sh-main>.sh-ph[hidden]{display:none!important}
+ body #sh-main#sh-main>.sh-sec{max-width:900px!important}
+ body #sh-main#sh-main>.sh-sec :is(.wrap,.lvx,.tsx,.ntx,.dm,.eqx,.pcx,.lkx,.ivx,.dmenu):first-child{padding-top:20px!important}
+ /* precards and lockers tables fit the page: no sideways scroll */
+ #sh-main #mod-precards :is(.tw,.tbl,.scroll),#sh-main #mod-lockers :is(.tw,.tbl,.scroll){overflow-x:visible!important}
+ #sh-main #mod-precards table,#sh-main #mod-lockers table{width:100%!important;min-width:0!important;table-layout:auto}
+ #sh-main #mod-precards :is(td,th),#sh-main #mod-lockers :is(td,th){white-space:normal!important;word-break:normal;overflow-wrap:anywhere;padding-left:8px!important;padding-right:8px!important}
+}
+@media (min-width:900px){
+ /* one column, one width: banner and every page line up exactly */
+ body #sh-main#sh-main>.sh-ph{padding:20px 24px 0!important}
+ body #sh-main#sh-main>.sh-ph>.in{max-width:1000px!important;width:100%!important;box-sizing:border-box!important;margin:0 auto!important}
+ body #sh-main#sh-main>.sh-sec{max-width:1048px!important;padding:0 24px!important;box-sizing:border-box!important;margin:0 auto!important}
+ body #sh-main#sh-main>.sh-sec>*{max-width:none!important;width:auto!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important;box-sizing:border-box}
+ body #sh-main#sh-main>.sh-sec>*>:is(.wrap,.lvx,.tsx,.ntx,.dm,.eqx,.pcx,.lkx,.ivx,.dmenu,.mex,.dr){max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
+ body #sh-main#sh-main>.sh-sec :is(.wrap,.lvx,.tsx,.ntx,.dm,.eqx,.pcx,.lkx,.ivx,.dmenu):first-child{padding-left:0!important;padding-right:0!important}
+ :root:root #sh-menu .am-g,:root:root #sh-menu .am-g.am-drv{max-width:none!important;margin-left:0!important;margin-right:0!important}
+ #sh-main #mod-precards :is(.dno,.pcz,[class*=dr],b),#sh-main #mod-lockers :is(.dno,.pcz){white-space:nowrap}
+ #sh-main #mod-precards th,#sh-main #mod-lockers th{white-space:nowrap!important}
+}
+@media (min-width:900px){
+ html body #sh-main#sh-main#sh-main>.sh-ph{max-width:1048px!important;margin:0 auto!important;padding:20px 24px 0!important;box-sizing:border-box!important}
+ html body #sh-main#sh-main#sh-main>.sh-ph>.in{max-width:1000px!important;width:auto!important;margin:0 auto!important;box-sizing:border-box!important}
+}
+@media (min-width:900px){
+ html body #sh-main#sh-main#sh-main>.sh-sec>*>*{padding-left:0!important;padding-right:0!important;margin-left:0!important;margin-right:0!important;max-width:none!important}
+ html body #sh-main#sh-main#sh-main>.sh-sec>*>:is(.card,section,.panel){padding-left:revert-layer;padding-right:revert-layer}
+}
+@media (min-width:900px){
+ html body #sh-main#sh-main#sh-main>.sh-sec{padding-top:18px!important}
+ html body #sh-main#sh-main#sh-main>.sh-sec>*,html body #sh-main#sh-main#sh-main>.sh-sec>*>*:first-child{padding-top:0!important;margin-top:0!important}
+ html body #sh-main#sh-main#sh-main>.sh-sec :is(.wrap,.lvx,.tsx,.ntx,.dm,.eqx,.pcx,.lkx,.ivx,.dmenu):first-child{padding-top:0!important}
+}
+#sh-main #mod-timesheets .tsx>.head:not(:has(.dlb:not(.dlw))){display:none!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5823,7 +5866,7 @@ function closeMore(){const w=document.getElementById('sh-more');if(w)w.remove();
 function navHTML(){const v=new Set(visible());const T=tabSecs();
   if(role!=='mgr'){const L=T.concat(DRV_TILES.filter(x=>v.has(x)));const SH={home:'Home',me:'My results',updates:'Updates',menu:'Menu'};
     return `<div class="sh-grp g-start dnav" role="group">${L.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${s===cur||(s==='menu'&&DRV_MENU.includes(cur))||(s==='updates'&&cur==='briefs')?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||nm(s))}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc(SH[s]||nm(s))}</span></button>`).join('')}</div>`}
-  let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','results','summary','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
+  let GG=GROUPS;try{GG=[{k:'start',name:'Start',secs:['home','menu']}].concat(AMENU.map(([t,k,L])=>({k:{day:'perf',news:'news',team:'team',road:'road',office:'admin',me:'start'}[k],name:t,secs:L.map(z=>z[0])})))}catch(e){GG=GROUPS}
   const S0=new Set((GG.find(x=>x.k==='start')||{secs:[]}).secs);
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&(g.k==='start'||!S0.has(x)));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''} ${s===cur||(hubT(s)&&hubOf(cur)===hubOf(s))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group"></div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
@@ -6063,7 +6106,8 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
 function vtSec(){return document.getElementById(MOD[cur]||'')}
 function vtEnter(){document.querySelectorAll('.sh-sec[data-vt]').forEach(x=>{delete x.dataset.vt});document.querySelectorAll('.sh-sec>.vtab,.sh-sec>.unord').forEach(x=>x.remove())}
 /* on computers, the switch lines up with the page's own content column */
-function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab'),extra=[...sec.querySelectorAll(':scope>.unord')],phIn=document.querySelector('#sh-ph:not([hidden]) .in');
+function vtAlign(){const sec=vtSec();if(!sec)return;const w=sec.querySelector(':scope>.vtab'),extra=[...sec.querySelectorAll(':scope>.unord')],phIn=null;/* the banner width is set in CSS now, so it never shifts after a page opens */
+  {const pi=document.querySelector('#sh-ph .in');if(pi&&pi.style.maxWidth){pi.style.removeProperty('margin-left');pi.style.removeProperty('width');pi.style.removeProperty('max-width');pi.style.removeProperty('box-sizing')}}
   const all=[w,...extra].filter(Boolean);const reset=()=>{all.forEach(x=>{x.style.marginLeft='';x.style.width=''});if(phIn){phIn.style.marginLeft='';phIn.style.width='';phIn.style.maxWidth=''}};
   if(!matchMedia('(min-width:900px)').matches){reset();return}
   const S=sec.getBoundingClientRect();let L=1e9,Rr=-1e9;
@@ -13996,7 +14040,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610312200';
+const VERSION='202610312400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
