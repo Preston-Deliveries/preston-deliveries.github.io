@@ -4677,6 +4677,7 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .cv-sum{text-align:center;margin:8px 0 12px;color:var(--sh-muted)}.cv-sum b{color:#b42318}
 .cv-r{padding:14px;border-radius:16px;border:2px solid rgba(214,69,65,.35);margin-top:10px;background:rgba(214,69,65,.04)}.cv-r.done{border-color:rgba(31,157,85,.45);background:rgba(31,157,85,.05)}
 .cv-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cv-h .run{font-weight:800;background:var(--sh-accent,#1B3F6B);color:var(--sh-accent-ink,#fff);border-radius:8px;padding:3px 8px;font-size:.85rem}.cv-h b{font-size:1.05rem}.cv-h .tag{font-size:.75rem;font-weight:700;color:var(--sh-muted)}
+.cv-info{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.cv-info span{font-size:.82rem;font-weight:700;padding:3px 9px;border-radius:8px;background:var(--sh-sunk,rgba(127,127,127,.1))}
 .cv-x{all:unset;cursor:pointer;margin-left:auto;font-size:1.3rem;padding:0 8px;color:var(--sh-muted)}
 .cv-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.cv-c{all:unset;cursor:pointer;padding:10px 14px;border-radius:99px;font-weight:800;background:var(--sh-sunk,rgba(127,127,127,.1));display:flex;gap:6px;align-items:center}
 .cv-c.on{background:#1f9d55;color:#fff}.cv-c.busy{opacity:.5}.cv-c i{font-style:normal;font-size:.7rem;font-weight:700}.cv-nr{color:var(--sh-muted);font-size:.9rem}
@@ -12663,7 +12664,13 @@ function paint(){if(cur==='cover')cover();else if(cur==='review')review();else i
 window.addEventListener('sh:go',e=>{cur=e.detail;if(['cover','review','boss','compliance'].includes(cur)){watchStaff();paint()}});
 
 /* ---------------- Cover planner ---------------- */
-const CV={day:null,doc:null,unsub:null,share:false,msg:''};
+const CV={day:null,doc:null,unsub:null,share:false,msg:'',avg:null,avgBusy:false};
+function pcOf(p){const G=window.__runGrp||{};for(const k of [p.login,...(p.runs||[])].map(dkey)){const g=G[k];if(g&&/^\d{4}$/.test(String(g)))return String(g)}const r=String(p.role||'');return /^\d{4}$/.test(r)?r:''}
+async function cvAvg(){if(CV.avg||CV.avgBusy)return;CV.avgBusy=true;const T=TODAY();const dy=await days(add(T,-28),add(T,-1));const sum={},n={};
+  for(const v of Object.values(dy))for(const[l,r]of Object.entries(v.rows||{})){const k=dkey(l),c=+r.pc||0;if(!c)continue;sum[k]=(sum[k]||0)+c;n[k]=(n[k]||0)+1}
+  CV.avg={};for(const k in sum)CV.avg[k]=Math.round(sum[k]/n[k]);CV.avgBusy=false;cover()}
+function avgOf(p){if(!CV.avg)return null;for(const k of [p.login,...(p.runs||[])].map(dkey))if(CV.avg[k])return CV.avg[k];return null}
+function runInfo(p){const a=avgOf(p),pc=pcOf(p);return [pc?'Postcode '+pc:'',p.bay?'Bay '+p.bay:'',a?'About '+a+' parcels a day':''].filter(Boolean)}
 function nextWork(s){let d=fromIso(s);do{d.setDate(d.getDate()+1)}while(isOff(d));return iso(d)}
 function prevWork(s){let d=fromIso(s);do{d.setDate(d.getDate()-1)}while(isOff(d));return iso(d)}
 async function cvWatch(){const d=await getDb();if(!d)return;if(CV.unsub){try{CV.unsub()}catch(e){}}const day=CV.day;CV.doc=null;
@@ -12680,19 +12687,20 @@ function cvSet(off,fn){const items=JSON.parse(JSON.stringify((CV.doc&&CV.doc.ite
   if(!it){const p=S.staff[off]||{};it={off,offName:shortName(p),run:runsOf(p),login:loginOf(p),by:'',byName:'',help:[]};items.push(it)}fn(it,items);
   return cvSave(items.filter(x=>x.by||(x.help&&x.help.length)||x.manual||cvOffIds().has(x.off)))}
 const cvOffIds=()=>new Set(cvOff().map(x=>x.id));
-function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork(TODAY());cvWatch()}
+function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork(TODAY());cvWatch()}cvAvg();
   if(!Object.keys(S.staff).length||!CV.doc){el.innerHTML='<div class="mt-wait">Loading…</div>';return}
   const off=cvOff(),relief=drivers().filter(p=>String(p.role||'').toUpperCase()==='RELIEF'),offIds=new Set(off.map(o=>o.id));
   const used=new Set();for(const it of CV.doc.items||[]){if(it.by)used.add(it.by);for(const h of it.help||[])used.add(h.id)}
   const all=drivers().filter(p=>!offIds.has(p.id));
   const rows=off.map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{help:[]};return{o,p,it}});
   if(CV.share){el.innerHTML=`<div class="cv-share" id="cv_card"><div class="cv-sh-h"><small>Preston Delivery Service · Contract 1161</small><b>Cover for ${esc(longd(CV.day))}</b></div>
-    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r"><span class="run">${esc(runsOf(p)||'Run')}</span><span class="who"><s>${esc(shortName(p))}</s> off</span><span class="arr">→</span><span class="by ${it.by?'':'none'}">${it.by?esc(it.byName):'No cover yet'}${(it.help||[]).length?`<small>Helping: ${esc(it.help.map(h=>h.name).join(', '))}</small>`:''}</span></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
+    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r"><span class="run">${esc(runsOf(p)||'Run')}</span><span class="who"><s>${esc(shortName(p))}</s> off${runInfo(p).length?' · '+esc(runInfo(p).join(' · ')):''}</span><span class="arr">→</span><span class="by ${it.by?'':'none'}">${it.by?esc(it.byName):'No cover yet'}${(it.help||[]).length?`<small>Helping: ${esc(it.help.map(h=>h.name).join(', '))}</small>`:''}</span></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
     </div><div class="cv-acts" data-noprint><button type="button" class="sh-btn" data-cv="share">‹ Back to planner</button><button type="button" class="sh-btn" data-cv="copy">Copy as text</button></div>${CV.msg?`<p class="mt-msg">${esc(CV.msg)}</p>`:''}`;return}
   const left=rows.filter(r=>!r.it.by).length;
   el.innerHTML=`<section class="card cv"><div class="cv-top"><button type="button" class="cv-nav" data-cv="prev" aria-label="Day before">‹</button><div><small>Cover for</small><b>${esc(longd(CV.day))}</b></div><button type="button" class="cv-nav" data-cv="next" aria-label="Day after">›</button></div>
    <p class="cv-sum">${rows.length?(left?`<b>${left}</b> of ${rows.length} run${rows.length===1?'':'s'} still need cover`:`✓ All ${rows.length} run${rows.length===1?'':'s'} covered`):'Nobody is off this day.'}</p>
    ${rows.map(({o,p,it})=>`<div class="cv-r ${it.by?'done':''}"><div class="cv-h"><span class="run">${esc(runsOf(p)||'No run')}</span><b>${esc(nameOf(p))}</b><span class="tag">${o.from==='leave'?'On leave':'Off'}</span>${o.from==='added'?`<button type="button" class="cv-x" data-cv="unoff" data-v="${esc(o.id)}" aria-label="Remove">×</button>`:''}</div>
+     ${runInfo(p).length?`<div class="cv-info">${runInfo(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
      <div class="cv-chips">${relief.length?relief.map(r=>{const on=it.by===r.id,busy=!on&&used.has(r.id);return `<button type="button" class="cv-c ${on?'on':''} ${busy?'busy':''}" data-cv="by" data-off="${esc(o.id)}" data-v="${esc(r.id)}" aria-pressed="${on}">${esc(shortName(r))}${busy?'<i>busy</i>':''}</button>`}).join(''):'<span class="cv-nr">No relief drivers. Set a driver\'s role to RELIEF on the Driver Details page.</span>'}</div>
      <div class="cv-help">${it.by&&!relief.some(r=>r.id===it.by)?`<span class="cv-hp by">${esc(it.byName)} <button type="button" data-cv="byclear" data-off="${esc(o.id)}" aria-label="Remove ${esc(it.byName)}">×</button></span>`:''}${(it.help||[]).map(h=>`<span class="cv-hp">${esc(h.name)} <button type="button" data-cv="unhelp" data-off="${esc(o.id)}" data-v="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">×</button></span>`).join('')}
       <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&String(x.role||'').toUpperCase()!=='RELIEF').map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
@@ -12703,7 +12711,7 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-cv]');if(!b||!$('cv_root')||!$('cv_root').contains(b))return;const a=b.dataset.cv,off=b.dataset.off,v=b.dataset.v;CV.msg='';
   if(a==='prev'||a==='next'){CV.day=a==='prev'?prevWork(CV.day):nextWork(CV.day);CV.doc=null;cover();cvWatch();return}
   if(a==='share'){CV.share=!CV.share;cover();window.scrollTo(0,0);return}
-  if(a==='copy'){const t=['Cover for '+longd(CV.day)].concat(cvOff().map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{};return (runsOf(p)||'Run')+' ('+shortName(p)+' off): '+(it.by?it.byName:'no cover yet')+((it.help||[]).length?', helping: '+it.help.map(h=>h.name).join(', '):'')})).join('\n');
+  if(a==='copy'){const t=['Cover for '+longd(CV.day)].concat(cvOff().map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{};return (runsOf(p)||'Run')+(runInfo(p).length?' ['+runInfo(p).join(', ')+']':'')+' ('+shortName(p)+' off): '+(it.by?it.byName:'no cover yet')+((it.help||[]).length?', helping: '+it.help.map(h=>h.name).join(', '):'')})).join('\n');
     try{await navigator.clipboard.writeText(t);CV.msg='Copied. Paste it into WhatsApp.'}catch(x){CV.msg='Could not copy on this phone.'}cover();return}
   if(a==='by'){const r=S.staff[v]||{};await cvSet(off,it=>{if(it.by===v){it.by='';it.byName=''}else{it.by=v;it.byName=shortName(r)}});return}
   if(a==='byclear'){await cvSet(off,it=>{it.by='';it.byName=''});return}
@@ -13177,7 +13185,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610304900';
+const VERSION='202610305000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
