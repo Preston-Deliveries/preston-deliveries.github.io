@@ -4681,7 +4681,7 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .cv-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.cv-c{all:unset;cursor:pointer;padding:10px 14px;border-radius:99px;font-weight:800;background:var(--sh-sunk,rgba(127,127,127,.1));display:flex;gap:6px;align-items:center}
 .cv-c.on{background:#1f9d55;color:#fff}.cv-c.busy{opacity:.5}.cv-c i{font-style:normal;font-size:.7rem;font-weight:700}.cv-nr{color:var(--sh-muted);font-size:.9rem}
 .cv-other{margin:8px 0 0}.cv-l{all:unset;cursor:pointer;text-decoration:underline;color:var(--sh-muted);margin-left:6px}
-.cv-help{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}.cv-hp{display:inline-flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;border-radius:99px;background:rgba(27,63,107,.12);font-weight:700}.cv-hp button{all:unset;cursor:pointer;padding:0 6px;font-size:1.1rem}
+.cv-help{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}.cv-hp{display:inline-flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;border-radius:99px;background:rgba(27,63,107,.12);font-weight:700}.cv-hp button{all:unset;cursor:pointer;padding:0 6px;font-size:1.1rem}.cv-hp.by{background:#1f9d55;color:#fff}
 .cv-help select,.cv-add select,.rv-pick select{font:inherit;font-size:16px;padding:10px;border-radius:10px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);max-width:100%}
 .cv-add{margin-top:14px}.cv-add select{width:100%}.cv-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.cv-acts .sh-btn{flex:1}
 .cv-share{background:#fff;color:#111A27;border-radius:16px;overflow:hidden;border:1px solid #D6DCE4}.cv-sh-h{background:#0F1A2A;color:#fff;padding:18px;border-bottom:4px solid #F2782D}.cv-sh-h small{display:block;color:#F2782D;font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:.68rem}.cv-sh-h b{font-size:1.45rem}
@@ -12694,10 +12694,8 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
    <p class="cv-sum">${rows.length?(left?`<b>${left}</b> of ${rows.length} run${rows.length===1?'':'s'} still need cover`:`✓ All ${rows.length} run${rows.length===1?'':'s'} covered`):'Nobody is off this day.'}</p>
    ${rows.map(({o,p,it})=>`<div class="cv-r ${it.by?'done':''}"><div class="cv-h"><span class="run">${esc(runsOf(p)||'No run')}</span><b>${esc(nameOf(p))}</b><span class="tag">${o.from==='leave'?'On leave':'Off'}</span>${o.from==='added'?`<button type="button" class="cv-x" data-cv="unoff" data-v="${esc(o.id)}" aria-label="Remove">×</button>`:''}</div>
      <div class="cv-chips">${relief.length?relief.map(r=>{const on=it.by===r.id,busy=!on&&used.has(r.id);return `<button type="button" class="cv-c ${on?'on':''} ${busy?'busy':''}" data-cv="by" data-off="${esc(o.id)}" data-v="${esc(r.id)}" aria-pressed="${on}">${esc(shortName(r))}${busy?'<i>busy</i>':''}</button>`}).join(''):'<span class="cv-nr">No relief drivers. Set a driver\'s role to RELIEF on the Driver Details page.</span>'}</div>
-     ${it.by&&!relief.some(r=>r.id===it.by)?`<p class="cv-other">Covered by <b>${esc(it.byName)}</b> <button type="button" class="cv-l" data-cv="byclear" data-off="${esc(o.id)}">Clear</button></p>`:''}
-     <div class="cv-help">${(it.help||[]).map(h=>`<span class="cv-hp">${esc(h.name)} <button type="button" data-cv="unhelp" data-off="${esc(o.id)}" data-v="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">×</button></span>`).join('')}
-      <select data-cvsel="help" data-off="${esc(o.id)}" aria-label="Add a driver to help"><option value="">+ Someone helping</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)).map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select>
-      <select data-cvsel="by" data-off="${esc(o.id)}" aria-label="Cover with any driver"><option value="">Cover with someone else</option>${all.filter(x=>x.id!==it.by).map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}</option>`).join('')}</select></div></div>`).join('')}
+     <div class="cv-help">${it.by&&!relief.some(r=>r.id===it.by)?`<span class="cv-hp by">${esc(it.byName)} <button type="button" data-cv="byclear" data-off="${esc(o.id)}" aria-label="Remove ${esc(it.byName)}">×</button></span>`:''}${(it.help||[]).map(h=>`<span class="cv-hp">${esc(h.name)} <button type="button" data-cv="unhelp" data-off="${esc(o.id)}" data-v="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">×</button></span>`).join('')}
+      <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&String(x.role||'').toUpperCase()!=='RELIEF').map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
    <div class="cv-add"><select data-cvsel="off" aria-label="Add a driver who is off"><option value="">+ Add someone who is off (sick or other)</option>${all.map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div>
    <div class="cv-acts"><button type="button" class="sh-btn primary" data-cv="share">Show the cover sheet</button></div>
    <p class="mt-note">Drivers you assign see it on their Home the day before and on the day, with a button to open the run sheet.</p>
@@ -12713,8 +12711,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(a==='unoff'){const items=((CV.doc&&CV.doc.items)||[]).filter(x=>x.off!==v);await cvSave(items);return}
 });
 document.addEventListener('change',async e=>{const s=e.target.closest&&e.target.closest('[data-cvsel]');if(!s||!$('cv_root')||!$('cv_root').contains(s)||!s.value)return;const k=s.dataset.cvsel,off=s.dataset.off,v=s.value,p=S.staff[v]||{};
-  if(k==='help')await cvSet(off,it=>{it.help=(it.help||[]).concat({id:v,name:shortName(p)})});
-  if(k==='by')await cvSet(off,it=>{it.by=v;it.byName=shortName(p)});
+  if(k==='add')await cvSet(off,it=>{if(!it.by){it.by=v;it.byName=shortName(p)}else it.help=(it.help||[]).concat({id:v,name:shortName(p)})});
   if(k==='off')await cvSet(v,(it)=>{it.manual=true});
 });
 
@@ -13180,7 +13177,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610304800';
+const VERSION='202610304900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
