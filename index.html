@@ -4732,6 +4732,13 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .fc .fc-res .low{font-weight:700;font-size:.92rem}.fc .dh-do.bad b{color:#b42318}
 :root[data-theme="dark"] .fc .fc-res b.ok{color:#6fdc9b}:root[data-theme="dark"] .fc .fc-res b.bad,:root[data-theme="dark"] .fc .dh-do.bad b{color:#ff9b94}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fc .fc-res b.ok{color:#6fdc9b}:root:not([data-theme="light"]) .fc .fc-res b.bad,:root:not([data-theme="light"]) .fc .dh-do.bad b{color:#ff9b94}}
+
+.fc-sf{margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(214,69,65,.06);border:1px solid rgba(214,69,65,.25)}.fc-sf h3{margin:0;font-size:1rem;display:flex;justify-content:space-between;gap:8px;align-items:center}.fc-sf h3 span{font-size:.8rem;color:#b42318}.fc-sf h3 span.ok{color:#167a42!important}.fc-sf p{margin:4px 0 6px;font-size:.82rem;color:var(--sh-muted)}
+.fc-r{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:1px solid rgba(214,69,65,.2)}.fc-r .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.fc-r .iss{display:flex;flex-wrap:wrap;gap:4px}.fc-r .iss i{font-style:normal;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:8px;background:rgba(214,69,65,.14);color:#b42318}
+.fc-r small{color:#167a42;font-weight:700}.fc-r button{all:unset;cursor:pointer;padding:10px 14px;border-radius:12px;font-weight:800;background:rgba(31,157,85,.16);color:#167a42;white-space:nowrap}.fc-r button[aria-pressed=true]{background:var(--sh-sunk,rgba(127,127,127,.1));color:var(--sh-muted);font-weight:700}
+.fc-r.done b{text-decoration:line-through;opacity:.6}.fc-r.done .iss{opacity:.5}
+:root[data-theme="dark"] .fc-r .iss i,:root[data-theme="dark"] .fc-sf h3 span{color:#ff9b94}:root[data-theme="dark"] .fc-r small,:root[data-theme="dark"] .fc-r button{color:#6fdc9b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fc-r .iss i,:root:not([data-theme="light"]) .fc-sf h3 span{color:#ff9b94}:root:not([data-theme="light"]) .fc-r small,:root:not([data-theme="light"]) .fc-r button{color:#6fdc9b}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5609,11 +5616,14 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
 const FOCUS_DEFAULT={JOSH:'4214',JOSHUA:'4214',STEVE:'4215',STEVEN:'4215',STEPHEN:'4215'};
 function myFocus(){const me=window.__webMe||{};const em=String(me.email||'').toLowerCase();if(!em)return null;const e=Object.entries(MC.staff).find(([,s])=>String(s.email||'').toLowerCase()===em);if(!e)return null;const[id,s]=e;
   const pc=String(s.focusPc||'').trim()||FOCUS_DEFAULT[String(s.first||'').toUpperCase()]||'';return /^\d{4}$/.test(pc)?{id,pc}:null}
-const FC={wk:null,wkBusy:false,cv:null,cvDay:null,at:0};
+const FC={wk:null,wkBusy:false,at:0,last:null,tg:{etaG:98,cpG:99},fu:{},fuOn:false,busy:{}};
 async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){FC.wkBusy=false;return}
   const D=d=>window.__D?window.__D(d):d.data();const t=new Date();const mon=new Date(t);mon.setDate(t.getDate()-((t.getDay()+6)%7)-7);const ds=[0,1,2,3,4,5].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return mcIso(d)});
-  const nd=(()=>{const d=new Date();do{d.setDate(d.getDate()+1)}while(tlOff(d));return mcIso(d)})();
-  try{const[days,cv]=await Promise.all([Promise.all(ds.map(x=>db.doc('days/'+x).get().then(s=>s.exists?D(s):null).catch(()=>null))),db.doc('cover/'+nd).get().then(s=>s.exists?D(s):null).catch(()=>null)]);FC.wk={from:ds[0],days:days.filter(Boolean)};FC.cv=cv;FC.cvDay=nd;FC.at=Date.now()}catch(e){}
+  const back=[0,1,2,3,4,5,6,7].map(i=>{const d=new Date();d.setDate(d.getDate()-i);return mcIso(d)});
+  try{const[days,rec,st]=await Promise.all([Promise.all(ds.map(x=>db.doc('days/'+x).get().then(s=>s.exists?D(s):null).catch(()=>null))),Promise.all(back.map(x=>db.doc('days/'+x).get().then(s=>s.exists?Object.assign({date:x},D(s)):null).catch(()=>null))),db.doc('settings/main').get().then(s=>s.exists?D(s):null).catch(()=>null)]);
+    FC.wk={from:ds[0],days:days.filter(Boolean)};FC.last=rec.filter(d=>d&&d.rows&&Object.keys(d.rows).length).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+    if(st&&st.targets)FC.tg={etaG:+st.targets.etaG||98,cpG:+st.targets.cpG||99};FC.at=Date.now()}catch(e){}
+  if(!FC.fuOn&&FC.last){FC.fuOn=FC.last.date;try{db.collection('followup').where('date','==',FC.last.date).onSnapshot(sn=>{const m={};for(const d of sn.docs){const v=D(d);if(v)m[d.id]=v}FC.fu=m;adminFocus()},()=>{})}catch(e){}}
   FC.wkBusy=false;adminFocus()}
 function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
   const pc=f.pc,P=MC.staff,T=mcIso(new Date());const G=window.__runGrp||{};
@@ -5628,12 +5638,6 @@ function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.
   if(TL.ready&&TL.day===tlPrevDay()){const n=tlRows().filter(r=>r.grp===pc&&(r.st==='todo'||r.st==='sus')).length;if(n)rows.push({ic:'timesheets',t:n+' to check for 2 loads',s:'From '+tlNice(TL.day)+'. Tap to open the '+pc+' tab.',go:'tl',c:''})}
   /* enquiries waiting */
   {const n=Object.values(MC.enq).filter(e=>e&&e.kind!=='ncr'&&!e.fault&&String(G[String(e.login||'').toUpperCase().replace(/\s+/g,'')]||'').toLowerCase()===pc).length;if(n)rows.push({ic:'enquiries',t:n+(n===1?' enquiry needs':' enquiries need')+' a fault decision',s:'At fault, partly or not at fault',go:'enquiries',c:''})}
-  /* cover for the next work day */
-  if(FC.cvDay){let o={};try{o=(window.LEAVE&&LEAVE.dayMap&&LEAVE.dayMap()||{})[FC.cvDay]||{}}catch(e){}const offN=new Set((o.names||[]).map(x=>String(x).toLowerCase().replace(/[^a-z]/g,'')));
-    const offIds=Object.entries(P).filter(([id,p])=>inPc(id)&&offN.has([p.first,p.last].join('').toLowerCase().replace(/[^a-z]/g,''))).map(([id])=>id);
-    for(const it of (FC.cv&&FC.cv.items)||[])if(inPc(it.off)&&!offIds.includes(it.off))offIds.push(it.off);
-    const covered=new Set(((FC.cv&&FC.cv.items)||[]).filter(it=>it.by).map(it=>it.off));const need=offIds.filter(id=>!covered.has(id));
-    if(need.length)rows.push({ic:'leave',t:need.length+(need.length===1?' run needs':' runs need')+' cover for '+tlNice(FC.cvDay),s:need.map(id=>{const p=P[id]||{};return (p.runs||[]).filter(Boolean).join(', ')+' '+sn(p)}).join(', '),go:'cover',c:'bad'})}
   /* papers */
   {const EXP=[['regoDue','Rego'],['licDue','Licence'],['tenDue','Tenure']];const ex=[];for(const[id,p]of Object.entries(P)){if(!inPc(id))continue;for(const[k,l]of EXP){if(!p[k])continue;const n=Math.round((new Date(p[k]+'T12:00:00')-new Date(T+'T12:00:00'))/864e5);if(n<=30)ex.push(sn(p)+' '+l.toLowerCase()+(n<0?' expired':' in '+n+' days'))}}
     if(ex.length)rows.push({ic:'staff',t:ex.length+(ex.length===1?' paper expiring':' papers expiring'),s:ex.join(', '),go:'compliance',c:'warn'})}
@@ -5641,10 +5645,24 @@ function adminFocus(){const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.
   let res='';if(FC.wk&&window.SCORE){const by={};for(const d of FC.wk.days)for(const[l,r]of Object.entries(d.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const s=SCORE.day(r).score;if(s==null)continue;const o=by[l]=by[l]||{s:0,n:0};o.s+=s;o.n++}
     const L=Object.entries(by).map(([l,o])=>({l,v:o.s/o.n}));if(L.length){const avg=L.reduce((a,x)=>a+x.v,0)/L.length;const N=window.__runNames||{};const low=L.filter(x=>x.v<96-1e-9).sort((a,b)=>a.v-b.v).map(x=>{const w=String(N[x.l]||x.l).split(' ');return (w.length>1?w[0]+' '+w[w.length-1][0]:w[0])+' '+SCORE.fmt(x.v)});
       res=`<button type="button" class="fc-res" data-nav="results"><span><small>Last week in ${pc}</small><b class="${avg>=96-1e-9?'ok':'bad'}">${SCORE.fmt(avg)}</b><em>average Contract Score</em></span><span class="low">${low.length?`<small>Under 96</small>${esc(low.join(', '))}`:'<small>Under 96</small>✓ Nobody'}</span></button>`}}
-  const html=`<section class="dh-card fc"><h2>Your postcode · ${pc}</h2>${res}
+  /* shortfalls from the latest results: only drivers who missed a target */
+  let sf='';if(FC.last&&window.SCORE){const N=window.__runNames||{},d=FC.last.date,tg=FC.tg;const pctv=v=>{v=+v;return v>1.0001?v:v*100};const L=[];
+    for(const[l,r]of Object.entries(FC.last.rows||{})){const g=String(G[String(l).toUpperCase()]||'').toLowerCase();if(g!==pc)continue;const iss=[];
+      if(r.eta!=null&&r.eta!==''&&+r.eta>0&&pctv(r.eta)<tg.etaG-1e-9)iss.push('2 hr ETA '+(Math.round(pctv(r.eta)*10)/10)+'%');
+      if(r.cp!=null&&r.cp!==''&&+r.cp>0&&pctv(r.cp)<tg.cpG-1e-9)iss.push('Scan '+(Math.round(pctv(r.cp)*10)/10)+'%');
+      if((+r.enq||0)>0)iss.push((+r.enq)+' at fault enquir'+(+r.enq===1?'y':'ies'));if((+r.enqP||0)>0)iss.push((+r.enqP)+' partly at fault');
+      if(iss.length){const w=String(N[l]||l).split(' ');L.push({l,id:d+'_'+l,nm:w.length>1?w[0]+' '+w[w.length-1][0]:w[0],iss,s:SCORE.day(r).score})}}
+    L.sort((a,b)=>(a.s??100)-(b.s??100));const left=L.filter(x=>!FC.fu[x.id]).length;
+    sf=L.length?`<div class="fc-sf"><h3>Follow up from ${esc(tlNice(d))} <span class="${left?'':'ok'}">${left?left+' to do':'✓ All done'}</span></h3><p>Targets: 2 hr ETA ${tg.etaG}%, scan ${tg.cpG}%, no enquiries. Ask the driver what happened.</p>
+      ${L.map(x=>{const f=FC.fu[x.id];return `<div class="fc-r ${f?'done':''}"><span class="tx"><b>${esc(x.nm)}</b><span class="iss">${x.iss.map(i=>`<i>${esc(i)}</i>`).join('')}</span>${f?`<small>✓ Spoke to driver · ${esc(f.by||'')}${f.at?' · '+esc(new Date(f.at).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})):''}</small>`:''}</span><button type="button" data-fu="${esc(x.id)}" data-l="${esc(x.l)}" data-d="${esc(d)}" aria-pressed="${!!f}" ${FC.busy[x.id]?'disabled':''}>${f?'Undo':'✓ Done'}</button></div>`}).join('')}</div>`
+      :`<p class="mc-ok">✓ Nobody in ${pc} missed a target on ${esc(tlNice(d))}.</p>`}
+  const html=`<section class="dh-card fc"><h2>Your postcode · ${pc}</h2>${res}${sf}
    ${rows.map(r=>`<button type="button" class="dh-do ${r.c}" ${r.go==='tl'?'data-fcgo="tl"':r.go?`data-nav="${r.go}"`:'data-fcgo="none"'}><span class="ic">${ICONS[r.ic]||''}</span><span class="tx"><b>${esc(r.t)}</b><small>${esc(r.s)}</small></span>${r.go?'<svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>':''}</button>`).join('')}
    ${rows.length?'':`<p class="mc-ok">✓ ${pc} is all on track right now.</p>`}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-fu]');if(!b||role!=='mgr')return;const id=b.dataset.fu;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;FC.busy[id]=true;adminFocus();
+  try{if(FC.fu[id]){await db.doc('followup/'+id).delete();delete FC.fu[id]}else{const v={date:b.dataset.d,login:b.dataset.l,by:tlBy(),at:new Date().toISOString()};await db.doc('followup/'+id).set(v);FC.fu[id]=v}}catch(x){homeMsg={err:true,t:'Could not save that just now. Check your connection.'}}
+  delete FC.busy[id];adminFocus()});
 document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-fcgo="tl"]');if(!g)return;const f=myFocus();if(f){TL.tab=f.pc;adminLoads()}const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
@@ -13276,7 +13294,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610306100';
+const VERSION='202610306200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13366,7 +13384,7 @@ window.__history=function(from,cols){
   return Promise.all(jobs)};
 window.__historyFrom=c=>WIN[c]?hist(c).from:'';
 /* ---------- backup: all the setup data, plus records added since the last backup ---------- */
-const BK_ALL=['staff','tlcheck','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
+const BK_ALL=['staff','tlcheck','followup','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
 const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks','reportimg'];
 window.__backup=async function(onStep){
   let last='';try{const m=await fs.doc('meta/backup').get();if(m.exists)last=m.data().upTo||''}catch(e){}
