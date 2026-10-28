@@ -4864,6 +4864,47 @@ html.drvui .ntx .bar{display:flex;gap:8px;align-items:stretch;flex-wrap:nowrap}h
 html.appui body{min-height:100vh;min-height:100dvh}
 html.drvui #sh-home .dh-week .go{display:none}
 html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;color:var(--act);font-size:1.1rem}
+
+/* ===== compact layout on phones, whole app ===== */
+@media (max-width:899px){
+:root:root .sh-mtop{padding-top:10px!important;padding-bottom:10px!important}
+:root:root .sh-mtop .sh-brand{gap:12px!important}
+:root:root .sh-mtop .sh-brand .sh-logo{width:50px!important;height:50px!important;border-radius:13px!important}
+:root:root .sh-mtop .sh-brand small{font-size:.72rem!important}
+:root:root .sh-mtop .sh-brand b{font-size:1.7rem!important;line-height:1.05}
+:root:root .sh-ph .in{padding:8px 14px 6px}
+:root:root html.appui .sh-ph h1,html.appui .sh-ph.dph h1,:root:root .sh-ph h1{font-size:1.4rem!important;line-height:1.15;margin:0!important}
+:root:root .sh-hubtabs{gap:6px}
+:root:root .sh-hubtabs button{min-height:36px!important;padding:5px 13px!important;font-size:.9rem!important}
+:root:root #sh-main .sh-sec .wrap{padding-top:12px;padding-left:12px;padding-right:12px}
+:root:root #sh-main .sh-btn.primary{min-height:44px!important;padding-top:8px;padding-bottom:8px}
+:root:root #sh-main .dh-cards{gap:10px}
+:root:root #sh-main .dh-card{padding:14px;border-radius:16px}
+:root:root #sh-main .dh-card h2{font-size:1.1rem}
+:root:root .ah-qa .qa-grid{gap:8px;margin-top:8px}
+:root:root .ah-qa .qa{min-height:0;padding:8px 4px;gap:3px}
+:root:root .ah-qa .qa .ic{width:34px;height:34px;border-radius:10px}:root:root .ah-qa .qa .ic svg{width:20px;height:20px}
+:root:root .ah-qa .qa b{font-size:.82rem}
+:root:root #sh-main .tl-b button{min-height:40px!important;padding-top:6px;padding-bottom:6px}
+:root:root #sh-main .sh-sec .card{padding:12px}
+:root:root #sh-main .seg button{min-height:40px}
+/* big numbers a little smaller, tiles tighter */
+:root:root #sh-main .dr-rank{padding:14px}:root:root #sh-main .dr-rank .rk b{font-size:2.5rem}
+:root:root #sh-main .sc-box .sc-tot b{font-size:2.1rem}
+:root:root #sh-main .dr-tiles{gap:8px}:root:root #sh-main .dr-tiles .dt{padding:10px 12px}:root:root #sh-main .dr-tiles .dt b{font-size:1.6rem}
+:root:root #sh-main .pb-g b{font-size:1.4rem}
+:root:root #sh-main .pkx{padding:8px}:root:root #sh-main .pkx .ps-a{height:40px;font-size:1.6rem}
+:root:root #sh-main .ckc{padding:10px}:root:root #sh-main .ckc .nn{font-size:1.6rem}
+:root:root #sh-main .tiles .tile{padding:8px 10px}:root:root #sh-main .tiles .tile b,:root:root #sh-main #mod-summary .tile b{font-size:1.5rem}
+:root:root #sh-main #mod-summary .tile{min-height:0}
+:root:root #sh-main .lvw b{font-size:1.4rem}:root:root #sh-main #mod-leave .lvnav .nb{height:44px}
+:root:root #sh-main .dh-do{padding:9px 10px;margin-top:8px;min-height:0;gap:10px}
+:root:root #sh-main .dh-do .ic{width:36px;height:36px}:root:root #sh-main .dh-do .ic svg{width:20px;height:20px}
+:root:root #sh-main .dh-do b{font-size:1rem}:root:root #sh-main .dh-do small{font-size:.82rem}
+:root:root #sh-main .sh-hero.dh-hero{padding:10px 12px}
+:root:root #sh-main .tl-r{padding-top:6px;padding-bottom:6px}
+:root:root #sh-main h2{line-height:1.2}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13503,7 +13544,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610308500';
+const VERSION='202610308700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
