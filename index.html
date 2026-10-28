@@ -6670,7 +6670,7 @@ function parseFile(name,rows){
     for(const r of rows.slice(hr.i+1)){
       if(!r||!isOurs(r[ci]))continue;
       const login=String(r[c("userid")]||"").trim().toUpperCase(); if(!login)continue;
-      out[login]={pc:num(r[c("volume#")]),ftd:num(r[c("ftd%")])};
+      out[login]={pc:num(r[c("volume#")]),ftd:num(r[c("ftd%")])||null};
       const d=parseDateCell(r[c("maxworkdate")]); if(d&&(!date||d>date))date=d;
     }
     return{type:"summary",label:"Driver Summary",rows:out,date};
@@ -6788,7 +6788,7 @@ function weekRows(weeks){
   const by={};
   for(const w of(weeks||[week]))for(const[k]of DAYS){const d=w&&w.days&&w.days[k];if(!d)continue;for(const l in d.rows){(by[l]=by[l]||[]).push(Object.assign({},d.rows[l],{enq:fe(d,l),enqP:feP(d,l)}))}}
   return Object.entries(by).map(([login,rs])=>{const days=rs.length,nc=sum(rs.map(r=>r.nc==null||r.nc===""?0:+r.nc)),enq=sum(rs.map(r=>r.enq==null?0:r.enq)),enqP=sum(rs.map(r=>+r.enqP||0))||0,SC=window.SCORE.period(rs);
-    return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>r.ftd)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq+(enqP||0),sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,enqP,sc:SC,points:sum(rs.map(dayPts)),max:days*100}});
+    return{login,days,pc:sum(rs.map(r=>r.pc)),ftd:avg(rs.map(r=>+r.ftd||null)),eta:avg(rs.map(r=>r.eta)),cp:avg(rs.map(r=>r.cp==null||r.cp===""?null:+r.cp)),nc,enq,enqK:epk(enq+(enqP||0),sum(rs.map(r=>r.pc))),ncAvg:nc==null?null:nc/days,enqAvg:enq/days,enqP,sc:SC,points:sum(rs.map(dayPts)),max:days*100}});
 }
 function dayRows(key,w){const d=(w||week).days[key];if(!d)return[];return Object.entries(d.rows).map(([login,r0])=>{const r=Object.assign({},r0,{enq:fe(d,login),enqP:feP(d,login)});return r}).map((r,i)=>[Object.keys(d.rows)[i],r]).map(([login,r])=>({login,...r,nc:r.nc==null||r.nc===""?0:+r.nc,enq:r.enq==null?0:r.enq,enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc),days:1,ncAvg:r.nc==null||r.nc===""?0:+r.nc,enqAvg:r.enq==null?0:r.enq,enqP:+r.enqP||0,sc:window.SCORE.period([r]),points:dayPts(r),max:100}))}
 /* ranking: the average score a day worked, out of 100. A place needs 3 days worked in a week,
@@ -6928,7 +6928,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   for(let fs=72;fs>40&&g.measureText(title).width>W-96;fs-=2)g.font="800 "+fs+"px "+FD;
   g.fillText(fit(g,title,W-96),48,150);
   // team line
-  const tf=avg(rows.map(r=>r.ftd)), te=avg(rows.map(r=>r.eta)), tp=sum(rows.map(r=>r.pc));
+  const tf=avg(rows.map(r=>+r.ftd||null)), te=avg(rows.map(r=>r.eta)), tp=sum(rows.map(r=>r.pc));
   g.font="700 28px "+FB;g.fillStyle="#c9d6ea";
   g.fillText("Team: "+(tp!=null?tp.toLocaleString("en-AU")+" parcels":"")+(tf!=null?"   ·   FTD "+pct(tf)+"%":"")+(te!=null?"   ·   ETA "+pct(te)+"%":""),48,198);
   // legend
@@ -6953,7 +6953,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
     g.textAlign="left";g.fillStyle=C.ink;g.font="700 28px "+FB;
     g.fillText(fit(g,r.label,340-nx),nx,ry+54);
     g.textAlign="center";g.fillStyle=C.ink;g.font="700 32px "+FD;g.fillText(r.pc!=null?Math.round(r.pc).toLocaleString("en-AU"):"n/a",cx[0],ry+54);
-    g.fillStyle=C.muted;g.font="700 30px "+FD;g.fillText(r.ftd!=null?(r.ftd>=.9995?"100":pct(r.ftd))+"%":"n/a",cx[1],ry+54);
+    g.fillStyle=C.muted;g.font="700 30px "+FD;g.fillText(+r.ftd?(r.ftd>=.9995?"100":pct(r.ftd))+"%":"n/a",cx[1],ry+54);
     [["eta",r.eta,true,r.eta],["cp",r.cp,true,r.cp],["enq",r.enqK!=null?r.enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc),"k",r.enqK!=null?r.enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc)]].forEach(([k,v,isP,rv],j)=>{
       const s=rate(k,rv);const px=cx[j+2]-58, pw=116, ph=54, py=ry+(RH-ph)/2;
       g.fillStyle=C[s];rr(px,py,pw,ph,12);g.fill();
@@ -6993,8 +6993,8 @@ function savePng(){drawBoard();const m=fromIso(weekId);const cs=cycleInfo(weekId
   $("board").toBlob(b=>offer(nm+".png",b,"Result saved."),"image/png")}
 function sheetFrom(title,rows){
   const aoa=[[title],["LOGIN","P/C","ENQUIRY","SCAN COMPLIANCE","2HR ETA","FTD"]];
-  rows.sort((a,b)=>a.login.localeCompare(b.login)).forEach(r=>aoa.push([r.login,r.pc,r.enq,r.cp,r.eta,r.ftd]));
-  aoa.push(["TOTAL",sum(rows.map(r=>r.pc)),sum(rows.map(r=>r.enq)),avg(rows.map(r=>r.cp)),avg(rows.map(r=>r.eta)),avg(rows.map(r=>r.ftd))]);
+  rows.sort((a,b)=>a.login.localeCompare(b.login)).forEach(r=>aoa.push([r.login,r.pc,r.enq,r.cp,r.eta,+r.ftd||null]));
+  aoa.push(["TOTAL",sum(rows.map(r=>r.pc)),sum(rows.map(r=>r.enq)),avg(rows.map(r=>r.cp)),avg(rows.map(r=>r.eta)),avg(rows.map(r=>+r.ftd||null))]);
   const ws=XLSX.utils.aoa_to_sheet(aoa);
   for(let R=2;R<aoa.length;R++)for(const C of[4,5]){const a=XLSX.utils.encode_cell({r:R,c:C});if(ws[a])ws[a].z="0.0%"}
   ws["!cols"]=[{wch:14},{wch:8},{wch:9},{wch:9},{wch:9},{wch:9}];
@@ -7075,7 +7075,7 @@ function dlt(cur,prev,kind){if(cur==null||prev==null)return "";let d,t,g;
   if(Math.abs(d)<0.05)return "";
   return `<span class="rdl ${g==null?"n":g?"g":"b"}">${d>0?"▲":"▼"} ${t}</span>`}
 function snapRows(kind){const L=(SNAP&&SNAP.mine&&SNAP.mine[kind])||[];
-  return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,cp:x.cp,nc:x.nc,enq:x.enq,enqK:epk(x.enq,x.pc),ftd:x.ftd,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
+  return addRanks(tblRows(L.map(x=>({login:x.l,rank:x.k,points:x.p,max:x.m,days:x.d,pc:x.pc,eta:x.eta,cp:x.cp,nc:x.nc,enq:x.enq,enqK:epk(x.enq,x.pc),ftd:+x.ftd||null,ncAvg:x.d?(x.nc==null?null:x.nc/x.d):x.nc,enqAvg:x.d?(x.enq||0)/x.d:x.enq}))))}
 const SORTS={name:[r=>(r.name||r.login).toLowerCase(),1],eta:[r=>r.eta??-1,-1],nc:[r=>r.cp??-1,-1],enq:[r=>r.enqK??epk((+r.enq||0)+(+r.enqP||0),r.pc),1],pc:[r=>r.pc??-1,-1],ftd:[r=>r.ftd??-1,-1],days:[r=>r.days||0,-1],sv:[r=>r.sv??-999,-1]};
 function filtRows(rows){
   const q=RT.q.trim().toLowerCase();
@@ -7114,7 +7114,7 @@ function rtBody(box){
   const so=box.querySelector("[data-rt=sort]");if(so)so.value=RT.sort;
 }
 function rtHTML(rows,multi){
-  const tp=sum(rows.map(r=>r.pc)),tf=avg(rows.map(r=>r.ftd)),te=avg(rows.map(r=>r.eta));
+  const tp=sum(rows.map(r=>r.pc)),tf=avg(rows.map(r=>+r.ftd||null)),te=avg(rows.map(r=>r.eta));
   const gs=GRPO.filter(g=>rows.some(r=>r.grp===g));
   const n=f=>rows.filter(f).length;
   const chip=(a,v,l,c,cls)=>`<button type="button" ${a}="${v}" class="${cls||""}"><span>${l}</span>${c!=null?`<small>${c}</small>`:""}</button>`;
@@ -7333,7 +7333,7 @@ function boardsNow(){
   view=keep;drawBoard();
   return out;
 }
-function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,cp:r.cp,nc:r.nc,enq:r.enq,ftd:r.ftd,r:{eta:c(rate('eta',r.eta)),nc:c(rate('cp',r.cp)),enq:c(rate('enq',r.enqK!=null?r.enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc)))}});try{return{week:ranked(scoreSort(weekRows(),NEED.week)).map(f),day:ranked(scoreSort(dayRows(selDay),NEED.day)).map(f),cycle:ranked(scoreSort(weekRows(cycleList()),NEED.cycle)).map(f)}}catch(e){return null}}
+function mineNow(){const c=x=>({good:'g',warn:'w',bad:'b'}[x]||'');const f=r=>({l:r.login,k:r.rank,p:r.points,m:r.max,d:r.days,pc:r.pc==null?null:Math.round(r.pc),eta:r.eta,cp:r.cp,nc:r.nc,enq:r.enq,ftd:+r.ftd||null,r:{eta:c(rate('eta',r.eta)),nc:c(rate('cp',r.cp)),enq:c(rate('enq',r.enqK!=null?r.enqK:epk((+r.enq||0)+(+r.enqP||0),r.pc)))}});try{return{week:ranked(scoreSort(weekRows(),NEED.week)).map(f),day:ranked(scoreSort(dayRows(selDay),NEED.day)).map(f),cycle:ranked(scoreSort(weekRows(cycleList()),NEED.cycle)).map(f)}}catch(e){return null}}
 window.RESULTS={share:async()=>{
   if(!week||!Object.keys(week.days||{}).length)throw new Error("nothing to share");
   const now=new Date();
@@ -9220,7 +9220,7 @@ function statsFor(dates){
   const pc=sum(rs.map(r=>r.pc)),eta=avg(rs.map(r=>r.eta)),nc=sum(rs.map(r=>+r.nc||0)),cp=avg(rs.map(r=>r.cp)),enq=sum(rs.map(r=>r.enq==null?0:r.enq))||0;
   const sc=window.SCORE.period(rs),points=sc.score*n,enqP=sum(rs.map(r=>+r.enqP||0))||0;
   const enqK=epk(enq+enqP,pc);
-  return{days:n,pc,eta,nc,cp,enq,enqP,enqK,sc,ftd:avg(rs.map(r=>r.ftd)),points,max:n*100,r:{eta:rate('eta',eta),nc:rate('cp',cp),enq:rate('enq',enqK)}};
+  return{days:n,pc,eta,nc,cp,enq,enqP,enqK,sc,ftd:avg(rs.map(r=>+r.ftd||null)),points,max:n*100,r:{eta:rate('eta',eta),nc:rate('cp',cp),enq:rate('enq',enqK)}};
 }
 /* last 6 weeks as small bars, plus streaks. Plain boxes, no pictures, no extra data */
 function trendHTML(own){
@@ -11131,7 +11131,7 @@ function dayPoints(r){return(r.eta==null||r.eta===''?1:PTS[grade('eta',r.eta)])+
 /* ---------- aggregate ---------- */
 function blank(){return{sc:0,le:0,lt:0,ls:0,enqP:0,wdates:new Set(),days:0,pc:0,ftdW:0,ftdN:0,etaW:0,etaN:0,cpW:0,cpN:0,nc:0,enq:0,pts:0,max:0,list:[],scores:[],fault:0,enqRecs:[],leave:0,wd:0,mins:0,xp:0,tl:0,hp:0,shifts:[]}}
 function addRow(a,date,r){a.days++;a.wdates.add(date);const pc=+r.pc||0;a.pc+=pc;
-  if(r.ftd!=null&&r.ftd!==''){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
+  if(+r.ftd>0){a.ftdW+=r.ftd*(pc||1);a.ftdN+=(pc||1)}
   if(r.eta!=null&&r.eta!==''){a.etaW+=r.eta*(pc||1);a.etaN+=(pc||1)}
   if(r.cp!=null&&r.cp!==''){a.cpW+=r.cp*(pc||1);a.cpN+=(pc||1)}
   a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);a.enqP+=+(r.enqP||0);const SD=window.SCORE.day(r);a.sc+=SD.score;a.le+=SD.enq;a.lt+=SD.eta;a.ls+=SD.scan;const p=SD.score;a.pts+=p;a.max+=100;a.list.push({date,...r,p})}
@@ -11406,7 +11406,7 @@ async function pdf(btn){
   const drvHead=['#','DRIVER','NO.','GROUP','DAYS','PARCELS','FTD','2HR ETA','SCAN %','ENQ /1K','SURVEY'];
   if(scope.t==='drv'){const p=C.P[scope.v],a=C.per[scope.v]||blank();tops=kpi(a);
     blocks.push({title:'DRIVER',head:['DRIVER NUMBER','LOGIN','POSTCODE','MOBILE','VAN'],body:[[p.nos.join(', '),p.login,p.pc,p.mobile,p.van]]});
-    blocks.push({title:'DAY BY DAY',head:['DAY','PARCELS','FTD','2HR ETA','SCAN %','AT FAULT ENQ'],body:a.list.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),fmtN(r.pc),fmtPct(r.ftd),fmtPct(r.eta),(r.cp==null||r.cp===''?'–':fmtPct(+r.cp)),String(+(r.enq||0))])});
+    blocks.push({title:'DAY BY DAY',head:['DAY','PARCELS','FTD','2HR ETA','SCAN %','AT FAULT ENQ'],body:a.list.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),fmtN(r.pc),fmtPct(+r.ftd||null),fmtPct(r.eta),(r.cp==null||r.cp===''?'–':fmtPct(+r.cp)),String(+(r.enq||0))])});
     if(a.shifts.length)blocks.push({title:'SHIFTS AND HOURS',head:['DAY','START','FINISH','BREAK','HOURS','EXTRA','2 LOADS','HELD'],body:a.shifts.slice().sort((x,y)=>x.date.localeCompare(y.date)).map(r=>[longD(r.date),r.start?nice(r.start):'Missing',r.finish?nice(r.finish):'Missing',r.brk?r.brk+' min':'',fmtH(r.hrs),r.xp==null?'':String(r.xp),r.tl==null?'':r.tl?'Yes':'No',r.hp==null?'':r.hp?'Yes'+(r.hc?' ('+r.hc+')':''):'No'])});
     const cm=a.scores.filter(x=>x.c).sort((x,y)=>x.s-y.s);if(cm.length)blocks.push({title:'CUSTOMER COMMENTS',head:['SCORE','COMMENT'],body:cm.map(x=>[String(x.s),x.c])});
     if(a.enqRecs.length)blocks.push({title:'ENQUIRIES',head:['DATE','CASE','ADDRESS','OUTCOME'],body:a.enqRecs.map(e=>[longD(e.date),e.caseNo||'',e.address||'',e.fault==='yes'?'At fault':e.fault==='partly'?'Partly at fault':e.fault==='no'?'Not at fault':''])});
@@ -13445,7 +13445,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610307901';
+const VERSION='202610308000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
