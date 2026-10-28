@@ -5226,6 +5226,21 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
  :root:root .sh-side .sh-links button{min-height:36px!important;padding-top:6px!important;padding-bottom:6px!important}
  :root:root #sh-menu .am-g{margin-bottom:26px!important}
 }
+
+/* desktop page banner: one height everywhere, title and tabs on one line, lined up with the content */
+@media (min-width:900px){
+ body #sh-main#sh-main>.sh-ph{min-height:0!important;padding:0!important;border-bottom:1px solid var(--sh-line)}
+ body #sh-main#sh-main>.sh-ph>.in{display:flex!important;align-items:center;gap:16px;flex-wrap:wrap;min-height:64px;padding:12px 24px!important;box-sizing:border-box}
+ body #sh-main#sh-main>.sh-ph .ttl{flex:none;margin:0!important;justify-content:flex-start!important}
+ body #sh-main#sh-main>.sh-ph>.in{max-width:900px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important;justify-content:flex-start!important;flex-wrap:nowrap!important;flex-direction:row!important;align-items:center!important;padding-left:24px!important;padding-right:24px!important}
+ body #sh-main#sh-main>.sh-ph h1{font-size:1.5rem!important;line-height:1.2!important;margin:0!important}
+ body #sh-main#sh-main>.sh-ph .sh-hubtabs{margin:0 0 0 auto!important;flex-wrap:nowrap!important;gap:6px!important}
+ body #sh-main#sh-main>.sh-ph .sh-hubtabs button{min-height:0!important;height:34px!important;padding:0 14px!important;font-size:.88rem!important;line-height:34px!important;flex:none!important}
+ body #sh-main#sh-main>.sh-sec>:first-child:not(.sh-ph){margin-top:0}
+ body #sh-main#sh-main>.sh-sec :is(.wrap,.lvx,.tsx,.ntx,.dm,.eqx,.pcx,.lkx,.ivx,.dmenu):first-child{padding-top:16px!important;padding-left:24px!important;padding-right:24px!important}
+ /* brand: Preston Delivery / Service on two lines, never cut off */
+ :root:root .sh-side .sh-brand small{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;line-height:1.2;max-width:11.5em}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13981,7 +13996,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610312100';
+const VERSION='202610312200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
