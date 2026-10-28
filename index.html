@@ -5631,7 +5631,7 @@ function newsBadge(){
     if(sm){let x=sm.querySelector('.bdg');if(!N){if(x)x.remove()}else{if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t}}
     let x=b.querySelector('.bdg.nb');if(!N){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=N>9?'9+':String(N);if(x.textContent!==t)x.textContent=t});
   let dis=[];try{dis=JSON.parse(localStorage.getItem(ntInUV()?'nt_pop_off_uv':'nt_pop_off')||'[]')}catch(e){}
-  let p=document.getElementById('nt-pop');const n=U[0];const show=N&&!dis.includes(ntKey(n));
+  let p=document.getElementById('nt-pop');const n=U[0];const show=N&&role==='drv'&&!ntInUV()&&!dis.includes(ntKey(n));/* only real drivers get the pop up, never admin or the drivers' view preview */
   if(!show){if(p)p.hidden=true;return}
   if(!p){p=document.createElement('div');p.id='nt-pop';p.setAttribute('role','status');document.body.appendChild(p);
     p.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.np==='x'){let d=[];try{d=JSON.parse(localStorage.getItem(ntInUV()?'nt_pop_off_uv':'nt_pop_off')||'[]')}catch(x){}d.push(p.dataset.k);try{localStorage.setItem(ntInUV()?'nt_pop_off_uv':'nt_pop_off',JSON.stringify(d.slice(-100)))}catch(x){}p.hidden=true;return}p.hidden=true;window.__uvTapped=true;go('updates')})}
@@ -13555,7 +13555,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610308800';
+const VERSION='202610308900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
