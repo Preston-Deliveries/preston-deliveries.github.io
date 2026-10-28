@@ -4811,7 +4811,10 @@ html.ivp-open,html.ivp-open body{overflow:hidden}
 .wx-wrap{margin-bottom:0!important}.wx{padding:10px 14px!important}
 .wx-now{display:flex;align-items:center;gap:8px;white-space:nowrap}.wx-ic{font-size:1.5rem;line-height:1}.wx-t{font-size:1.25rem;font-weight:800}.wx-x{color:var(--sh-muted);font-weight:700;font-size:.85rem;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .wx-l{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--sh-muted)}.wx-c{display:flex;flex-direction:column;line-height:1.15}.wx-d{text-align:right;align-items:flex-end}.wx-d{margin-left:auto;flex-shrink:0;font-weight:800;font-size:.95rem}
-.wx-tip{margin:6px 0 0;font-weight:700;font-size:.82rem}
+.wx-tip{margin:8px 0 0;padding:6px 10px;border-radius:10px;font-weight:700;font-size:.82rem;line-height:1.35}
+.wx-tip.r-1{background:rgba(31,95,168,.10)}.wx-tip.r-2{background:rgba(31,95,168,.20)}.wx-tip.r-3{background:rgba(214,69,65,.16)}.wx-tip.t-st{background:rgba(214,69,65,.20)}.wx-tip.t-h2{background:rgba(242,120,45,.16)}.wx-tip.t-h3{background:rgba(214,69,65,.18)}
+.wx em{font-style:normal}.wx .t-h1{color:#C98A00}.wx .t-h2{color:#E0661A}.wx .t-h3{color:#D64541}.wx .t-c{color:#1F5FA8}.wx-tip.t-h2,.wx-tip.t-h3{color:inherit}
+:root[data-theme="dark"] .wx .t-c{color:#8FB8EA}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wx .t-c{color:#8FB8EA}}
 :root[data-theme="dark"] .wx-hrs em.wet{color:#8FB8EA}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wx-hrs em.wet{color:#8FB8EA}}
 </style>
 <div class="sh-app">
@@ -5089,6 +5092,15 @@ const RULES=[
  [/^Last week · (.+)$/,m=>'Semana passada · '+D(m[1]),m=>'ਪਿਛਲਾ ਹਫ਼ਤਾ · '+D(m[1])],
  [/^Week of (.+?) · (.+)$/,m=>'Semana de '+D(m[1])+' · '+D(m[2]),m=>D(m[1])+' ਦਾ ਹਫ਼ਤਾ · '+D(m[2])],
  [/^(Today|Yesterday|Mon|Tue|Wed|Thu|Fri|Sat|Sun) · (.+)$/,m=>D(m[1])+' · '+D(m[2]),m=>D(m[1])+' · '+D(m[2])],
+ [/^☔ (Light|Steady|Heavy) rain from (\S+)$/,m=>'☔ Chuva '+({Light:'fraca',Steady:'moderada',Heavy:'forte'})[m[1]]+' a partir das '+m[2],m=>'☔ '+m[2]+' ਤੋਂ '+({Light:'ਹਲਕਾ',Steady:'ਲਗਾਤਾਰ',Heavy:'ਭਾਰੀ'})[m[1]]+' ਮੀਂਹ'],
+ [/^☔ (Raining|Steady rain|Heavy rain) now$/,m=>'☔ '+({Raining:'Chovendo',"Steady rain":'Chuva moderada',"Heavy rain":'Chuva forte'})[m[1]]+' agora',m=>'☔ '+({Raining:'ਹੁਣ ਮੀਂਹ ਪੈ ਰਿਹਾ ਹੈ',"Steady rain":'ਹੁਣ ਲਗਾਤਾਰ ਮੀਂਹ',"Heavy rain":'ਹੁਣ ਭਾਰੀ ਮੀਂਹ'})[m[1]]],
+ [/^(Heavy|Heavier) around (\S+)$/,m=>(m[1]==='Heavy'?'Forte':'Mais forte')+' por volta das '+m[2],m=>m[2]+' ਦੇ ਕਰੀਬ '+(m[1]==='Heavy'?'ਭਾਰੀ':'ਹੋਰ ਤੇਜ਼')],
+ [/^Clearing by (\S+)$/,m=>'Parando até as '+m[1],m=>m[1]+' ਤੱਕ ਰੁਕ ਜਾਵੇਗਾ'],
+ [/^Bag your parcels\.$/,m=>'Coloque os pacotes em sacos.',m=>'ਪਾਰਸਲ ਲਿਫ਼ਾਫ਼ੇ ਵਿੱਚ ਪਾਓ।'],
+ [/^Drink water\.$/,m=>'Beba água.',m=>'ਪਾਣੀ ਪੀਓ।'],
+ [/^Lightning: wait in the van\.$/,m=>'Raios: espere na van.',m=>'ਬਿਜਲੀ ਹੋਵੇ ਤਾਂ ਵੈਨ ਵਿੱਚ ਉਡੀਕੋ।'],
+ [/^⛈️ Storms around (\S+)$/,m=>'⛈️ Tempestades por volta das '+m[1],m=>'⛈️ '+m[1]+' ਦੇ ਕਰੀਬ ਤੂਫ਼ਾਨ'],
+ [/^🥵 Hottest (\d+)° around (\S+)$/,m=>'🥵 Mais quente: '+m[1]+'° por volta das '+m[2],m=>'🥵 '+m[2]+' ਦੇ ਕਰੀਬ ਸਭ ਤੋਂ ਗਰਮ '+m[1]+'°'],
  [/^⛈️ Storms around (.+)\. Lightning: wait in the van\.$/,m=>'⛈️ Tempestades por volta das '+m[1]+'. Raios: espere na van.',m=>'⛈️ '+m[1]+' ਦੇ ਕਰੀਬ ਤੂਫ਼ਾਨ। ਬਿਜਲੀ ਹੋਵੇ ਤਾਂ ਵੈਨ ਵਿੱਚ ਉਡੀਕੋ।'],
  [/^☔ Rain from (.+)\. Bag your parcels\.$/,m=>'☔ Chuva a partir das '+m[1]+'. Coloque os pacotes em sacos.',m=>'☔ '+m[1]+' ਤੋਂ ਮੀਂਹ। ਪਾਰਸਲ ਲਿਫ਼ਾਫ਼ੇ ਵਿੱਚ ਪਾਓ।'],
  [/^🥵 Hot day\. Drink water\.$/,m=>'🥵 Dia quente. Beba água.',m=>'🥵 ਗਰਮ ਦਿਨ। ਪਾਣੀ ਪੀਓ।'],
@@ -5824,23 +5836,34 @@ window.__docCached=async function(db,path,day){const old=day&&day<(d=>d.getFullY
   return v};
 
 /* Today's weather on Home, from Open-Meteo (free, no account). Kept for 30 minutes so it does not reload on every visit. */
-window.WX=(()=>{const URL='https://api.open-meteo.com/v1/forecast?latitude=-27.99&longitude=153.40&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,wind_speed_10m_max,weather_code&timezone=Australia%2FBrisbane&forecast_days=2';
+window.WX=(()=>{const URL='https://api.open-meteo.com/v1/forecast?latitude=-27.99&longitude=153.40&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,wind_speed_10m_max,weather_code&timezone=Australia%2FBrisbane&forecast_days=2';
  let mem=null,busy=null;
  const IC=c=>c===0?'☀️':c<=2?'⛅':c===3?'☁️':c<=48?'🌫️':c<=57?'🌦️':c<=67?'🌧️':c<=77?'🌨️':c<=82?'🌦️':'⛈️';
  const TX=c=>c===0?'Sunny':c<=2?'Partly cloudy':c===3?'Cloudy':c<=48?'Foggy':c<=57?'Drizzle':c<=67?'Rain':c<=77?'Cold':c<=82?'Showers':'Storms';
- async function get(){if(mem&&Date.now()-mem.at<30*60e3)return mem.d;try{const s=JSON.parse(localStorage.getItem('wx1161')||'null');if(s&&Date.now()-s.at<30*60e3){mem=s;return s.d}}catch(e){}
-   if(busy)return busy;busy=fetch(URL).then(r=>r.ok?r.json():null).then(d=>{busy=null;if(d&&d.current){mem={at:Date.now(),d};try{localStorage.setItem('wx1161',JSON.stringify(mem))}catch(e){}}return d}).catch(()=>{busy=null;return mem?mem.d:null});return busy}
+ async function get(){if(mem&&Date.now()-mem.at<30*60e3)return mem.d;try{const s=JSON.parse(localStorage.getItem('wx1162')||'null');if(s&&Date.now()-s.at<30*60e3){mem=s;return s.d}}catch(e){}
+   if(busy)return busy;busy=fetch(URL).then(r=>r.ok?r.json():null).then(d=>{busy=null;if(d&&d.current){mem={at:Date.now(),d};try{localStorage.setItem('wx1162',JSON.stringify(mem))}catch(e){}}return d}).catch(()=>{busy=null;return mem?mem.d:null});return busy}
  function hm(t){const x=+t.slice(11,13);return x===12?'12pm':x>12?(x-12)+'pm':x+'am'}
- function tip(d,hrs){const D=d.daily,rain=hrs.filter(x=>x.p>=50),storm=hrs.find(x=>x.c>=95);
-   if(storm)return'⛈️ Storms around '+hm(storm.t)+'. Lightning: wait in the van.';
-   if(rain.length)return'☔ Rain from '+hm(rain[0].t)+'. Bag your parcels.';
-   if(D.temperature_2m_max[0]>=32)return'🥵 Hot day. Drink water.';
-   return''}
+ const tc=v=>v>=35?'t-h3':v>=30?'t-h2':v>=27?'t-h1':v<=15?'t-c':'';
+ const lv=x=>x.mm>=4?3:x.mm>=1?2:1;
+ function tips(d,hrs,now){const out=[],D=d.daily;const wet=x=>x.p>=50||x.mm>=0.3;
+   const storm=hrs.find(x=>x.c>=95);
+   if(storm)out.push(['t-st',['⛈️ Storms around '+hm(storm.t),'Lightning: wait in the van.']]);
+   const W=hrs.filter(wet);
+   if(W.length){const first=W[0],peak=W.reduce((m,x)=>x.mm>m.mm?x:m,W[0]),l0=lv(first),lp=lv(peak),last=W[W.length-1];
+     const nowH=+first.t.slice(11,13)<=now;const P=[];
+     P.push(nowH?(l0===3?'Heavy rain now':l0===2?'Steady rain now':'Raining now'):['','Light rain from','Steady rain from','Heavy rain from'][l0]+' '+hm(first.t));
+     if(lp>l0)P.push((lp===3?'Heavy':'Heavier')+' around '+hm(peak.t));
+     const lh=+last.t.slice(11,13);if(lh<17)P.push('Clearing by '+hm('2000-01-01T'+String(lh+1).padStart(2,'0')));
+     P.push('Bag your parcels.');
+     out.push([lp===3?'r-3':lp===2?'r-2':'r-1',P.map((x,i)=>i?x:'☔ '+x)])}
+   const mx=hrs.reduce((m,x)=>x.v>m.v?x:m,{v:-99});
+   if(D.temperature_2m_max[0]>=30&&mx.t)out.push([tc(Math.max(mx.v,D.temperature_2m_max[0])),['🥵 Hottest '+Math.round(Math.max(mx.v,D.temperature_2m_max[0]))+'° around '+hm(mx.t),'Drink water.']]);
+   return out}
  async function render(el){if(!el)return;const d=await get();if(!d||!d.current||!document.body.contains(el)){el.innerHTML='';return}
    const D=d.daily,H=d.hourly,today=D.time[0],now=new Date().getHours();
-   const hrs=H.time.map((t,i)=>({t,c:H.weather_code[i],p:H.precipitation_probability[i]})).filter(x=>x.t.startsWith(today)&&+x.t.slice(11,13)>=Math.max(6,now)&&+x.t.slice(11,13)<=17);
-   const tp=tip(d,hrs);
-   el.innerHTML=`<section class="dh-card wx"><div class="wx-now"><span class="wx-ic">${IC(d.current.weather_code)}</span><span class="wx-c"><span class="wx-l">Now</span><span><b class="wx-t">${Math.round(d.current.temperature_2m)}°</b> <span class="wx-x">${TX(d.current.weather_code)}</span></span></span><span class="wx-c wx-d"><span class="wx-l">Today</span><span>${Math.round(D.temperature_2m_max[0])}°/${Math.round(D.temperature_2m_min[0])}° · 💧${D.precipitation_probability_max[0]}%</span></span></div>${tp?`<p class="wx-tip">${tp}</p>`:''}</section>`}
+   const hrs=H.time.map((t,i)=>({t,c:H.weather_code[i],p:H.precipitation_probability[i],mm:(H.precipitation||[])[i]||0,v:H.temperature_2m[i]})).filter(x=>x.t.startsWith(today)&&+x.t.slice(11,13)>=Math.max(6,now)&&+x.t.slice(11,13)<=17);
+   const T=tips(d,hrs,now),cur=Math.round(d.current.temperature_2m),hi=Math.round(D.temperature_2m_max[0]);
+   el.innerHTML=`<section class="dh-card wx"><div class="wx-now"><span class="wx-ic">${IC(d.current.weather_code)}</span><span class="wx-c"><span class="wx-l">Now</span><span><b class="wx-t ${tc(cur)}">${cur}°</b> <span class="wx-x">${TX(d.current.weather_code)}</span></span></span><span class="wx-c wx-d"><span class="wx-l">Today</span><span><em class="${tc(hi)}">${hi}°</em>/${Math.round(D.temperature_2m_min[0])}° · 💧${D.precipitation_probability_max[0]}%</span></span></div>${T.map(([k,P])=>`<p class="wx-tip ${k}">${P.map(x=>`<span>${x}</span>`).join(' · ')}</p>`).join('')}</section>`}
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
@@ -13420,7 +13443,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610307800';
+const VERSION='202610307900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
