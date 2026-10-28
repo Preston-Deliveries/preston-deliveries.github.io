@@ -5114,7 +5114,7 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 
 /* ===== tidy pass: one look everywhere ===== */
 /* 1. whatever is picked in a switch is always brand orange with white text */
-:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes:not(.pcs),.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes) > button[aria-pressed="true"]:not(.pcz):not([class*="pr-"]),
+:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes:not(.pcs),.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes,.fit) > button[aria-pressed="true"]:not(.pcz):not([class*="pr-"]),
 :root:root body #sh-main#sh-main#sh-main#sh-main [role=tablist] > [aria-selected="true"],
 :root:root #sh-set .thseg > button[aria-pressed="true"]{background:#F2782D!important;color:#fff!important;border-color:#F2782D!important;box-shadow:none!important}
 :root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes,.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes) > button[aria-pressed="true"] :is(small,i){color:#fff!important;opacity:.9}
@@ -5163,6 +5163,30 @@ html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:v
 :root[data-theme="dark"] body #sh-menu .am-g.am-drv .am-row .ic{filter:brightness(1.5)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body #sh-menu .am-g.am-drv .am-row .ic{filter:brightness(1.5)}}
 :root:root body #sh-menu .am-g.am-drv{margin:10px 12px 14px}
+
+/* ===== same look for information on every page ===== */
+/* stat tiles: one shape, one border, one label style */
+:root:root body #sh-main .sh-sec :is(.tile,.rv-tiles>div,.dr-tiles .dt,.tiles4>div,.ps-grid>div,.pb-t,.ckc,.sc-cats>span,.st4 .s){border-radius:14px!important;border:1px solid var(--sh-line)!important;box-shadow:none!important}
+:root:root body #sh-main .sh-sec :is(.tiles,.rv-tiles,.dr-tiles,.tiles4,.ps-grid,.pb-g,.ckg){gap:8px!important}
+:root:root body #sh-main .sh-sec .tile>span:first-child,:root:root body #sh-main .sh-sec .tiles4>div>small:first-child,:root:root body #sh-main .sh-sec .rv-tiles>div>small:first-child{font-size:.68rem!important;font-weight:800!important;letter-spacing:.04em;text-transform:uppercase;color:var(--sh-muted)!important}
+/* lists of things: one rounded panel with thin lines between rows, like the Menu */
+:root:root body #sh-main #mod-enquiries .eres{gap:0!important;border:1px solid var(--sh-line);border-radius:16px;overflow:hidden;background:var(--sh-surface)}
+:root:root body #sh-main #mod-enquiries .eres>.card{border:0!important;border-top:1px solid var(--sh-line)!important;border-radius:0!important;margin:0!important;box-shadow:none!important}
+:root:root body #sh-main #mod-enquiries .eres>.card:first-child{border-top:0!important}
+:root:root body #sh-main #mod-reports .kinds{gap:0!important;border:1px solid var(--sh-line);border-radius:16px;overflow:hidden;background:var(--sh-surface)}
+:root:root body #sh-main #mod-reports .kinds>.kind{border:0!important;border-top:1px solid var(--sh-line)!important;border-radius:0!important;margin:0!important;box-shadow:none!important;min-height:0!important;padding:14px 16px!important}
+:root:root body #sh-main #mod-reports .kinds>.kind:first-child{border-top:0!important}
+/* headings inside pages: one size and weight */
+:root:root body #sh-main .sh-sec :is(.card,section)>h2{font-size:1.08rem!important;font-weight:800!important;letter-spacing:0!important}
+:root:root body #sh-main .sh-sec :is(.card,section)>h3{font-size:.98rem!important;font-weight:800!important}
+/* cards: same corners and border everywhere */
+:root:root body #sh-main .sh-sec :is(.card,.panel,.dh-card,.me-box){border-radius:16px!important;box-shadow:none!important}
+/* reports list: one panel, PDF button inside the row */
+:root:root body #sh-main #mod-reports .list{display:flex;flex-direction:column;gap:0!important;border:1px solid var(--sh-line);border-radius:16px;overflow:hidden;background:var(--sh-surface)}
+:root:root body #sh-main #mod-reports .list>.rw{display:flex;align-items:center;gap:8px;padding:0 10px 0 0;border-top:1px solid var(--sh-line);margin:0!important}
+:root:root body #sh-main #mod-reports .list>.rw:first-child{border-top:0}
+:root:root body #sh-main #mod-reports .list .ri{flex:1;border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;margin:0!important}
+:root:root body #sh-main #mod-reports .list .lp{flex:none;min-height:36px!important;padding:4px 12px!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5752,7 +5776,7 @@ const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
   if(cur==='home'||(cur==='me'&&role!=='mgr')){ph.hidden=true;ph.innerHTML='';return}
-  const hb0=hubOf(cur),T0=tabSecs(),isTab=T0.includes(cur)||(hb0&&hb0.s.some(x=>T0.includes(x[0])));
+  const hb0=hubOf(cur),T0=role==='mgr'?['home','menu']:tabSecs(),isTab=T0.includes(cur)||(hb0&&hb0.s.some(x=>T0.includes(x[0])));
   const BK=isTab?'':'<button type="button" class="sh-back" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>';
   const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1></div>`;
   {const hb=hubOf(cur);if(hb){const vv=new Set(visible());const tabs=hb.s.filter(x=>vv.has(x[0]));if(tabs.length>1){const d0=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';ph.hidden=false;ph.className='sh-ph dph hub';
@@ -13918,7 +13942,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610311700';
+const VERSION='202610311800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
