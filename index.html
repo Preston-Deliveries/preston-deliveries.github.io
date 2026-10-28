@@ -4929,6 +4929,23 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 :root:root .sh-hubtabs{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;gap:6px!important;margin:0!important}
 :root:root .sh-hubtabs button,html.appui #sh-main#sh-main .sh-hubtabs button{flex:1 1 auto!important;min-width:0;min-height:34px!important;height:auto!important;text-align:center;padding:5px 8px!important;font-size:.86rem!important;line-height:1.2!important;white-space:nowrap}
 }
+
+/* settings panel from the gear on the title bar */
+#sh-set{position:fixed;inset:0;z-index:200}
+#sh-set .bg{position:absolute;inset:0;background:rgba(5,10,20,.45);opacity:0;transition:opacity .18s}
+#sh-set .pn{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--sh-surface,#fff);color:var(--sh-ink);border-radius:20px 20px 0 0;padding:6px 0 calc(14px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .22s ease}
+#sh-set.on .bg{opacity:1}#sh-set.on .pn{transform:none}
+#sh-set .hd{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 6px}#sh-set .hd b{font-size:1.15rem;font-weight:800}
+#sh-set .x{all:unset;cursor:pointer;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--sh-sunk,rgba(127,127,127,.12));font-weight:800}
+#sh-set .dm-row{padding:6px 16px 10px}#sh-set h3{margin:0 0 8px;font:800 .8rem var(--sh-body);color:var(--sh-muted);text-transform:uppercase;letter-spacing:.04em}
+#sh-set .dm-out{margin:10px 16px 0;width:calc(100% - 32px)}
+@media (min-width:900px){#sh-set .pn{left:auto;right:24px;bottom:auto;top:24px;width:380px;border-radius:18px;transform:translateY(-8px);opacity:0;transition:opacity .15s,transform .15s}#sh-set.on .pn{opacity:1;transform:none}}
+.sh-mtop .sh-mode svg{width:19px;height:19px}
+/* YouTube style: a plain gear, no circle */
+:root:root .sh-mtop .sh-mode{width:40px;height:40px;border:0;background:none;color:#E6EDF7;margin-right:-6px}
+:root:root .sh-mtop .sh-mode svg{width:26px;height:26px;stroke-width:1.8}
+:root:root .sh-mtop .sh-mode.on{background:none;color:#F2782D}
+#sh-set .thseg:has(>button:nth-child(2):last-child){display:grid;grid-template-columns:1fr 1fr}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5508,7 +5525,7 @@ function renderViewbar(){
   renderPageHead();
   {const ub=$('sh-uvbar');if(ub)ub.remove();
    const can=previewChild||(canMgr&&role==='mgr');document.documentElement.classList.toggle('uvp',!!previewChild);
-   const want=!can?'':previewChild?'<button type="button" class="sh-mode on" data-sh="mv" aria-label="You are in driver view. Tap to go back to admin" title="Back to admin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>':'<button type="button" class="sh-mode" data-sh="uv" aria-label="See the drivers\' view" title="Drivers\' view"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>';
+   const want=role==='loading'?'':'<button type="button" class="sh-mode'+(previewChild?' on':'')+'" data-sh="settings" aria-label="Settings'+(previewChild?'. You are in driver view':'')+'" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>';
    document.querySelectorAll('.sh-mtop').forEach(t=>{const br=t.querySelector('.sh-brand');if(br){delete br.dataset.sh;br.removeAttribute('role');br.removeAttribute('tabindex');br.removeAttribute('aria-label')}
      const sm=br&&br.querySelector('small');if(sm&&!sm.dataset.o)sm.dataset.o=sm.textContent;if(sm){const w=previewChild?'Driver view':sm.dataset.o;if(sm.textContent!==w)sm.textContent=w;if(previewChild)sm.setAttribute('data-notr','')}
      let m=t.querySelector('.sh-mode');if(!want){if(m)m.remove();return}if(!m||m.outerHTML!==want){if(m)m.remove();t.insertAdjacentHTML('beforeend',want)}})}
@@ -5722,16 +5739,24 @@ function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||'
 const AMENU=[['Every day','day',[['results','Results, survey and reviews'],['enquiries','Customer enquiries and NCRs'],['runs','Run sheets, whose street, precards, lockers'],['timesheets','Timesheets, invoices and my times']]],
  ['Team','team',[['staff','Details, compliance, van checks, contacts'],['leave','Leave calendar and cover planner'],['feedback','Messages, incidents and uniform orders']]],
  ['Office','office',[['updates','Updates, team briefs and the driver guide'],['summary','Summary and monthly report']]]];
-const setHTML=(drv)=>`<details class="dm-set"><summary><span class="ic" aria-hidden="true">⚙</span><span class="tx"><b>Settings</b><small data-notr>${drv?'Language · Idioma · ਭਾਸ਼ਾ · ':''}☀ ☾ · Aa</small></span><i aria-hidden="true">▾</i></summary>
-   ${drv?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
+/* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
+const setRows=(drv)=>`${drv?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
-   <div class="dm-row"><h3>Text size</h3><div class="thseg" role="group" aria-label="Text size">${[['n','Aa','Normal'],['l','Aa','Large'],['xl','Aa','Extra large']].map(([k,l,t],i)=>`<button type="button" data-ts-set="${k}" aria-label="${t}" aria-pressed="${(window.__ts&&window.__ts())===k}" style="font-size:${[0.95,1.15,1.35][i]}rem">${l}</button>`).join('')}</div></div>
-   <button type="button" class="dm-out" data-sh="signout">Sign out</button></details>`;
+   <div class="dm-row"><h3>Text size</h3><div class="thseg" role="group" aria-label="Text size">${[['n','Aa','Normal'],['l','Aa','Large'],['xl','Aa','Extra large']].map(([k,l,t],i)=>`<button type="button" data-ts-set="${k}" aria-label="${t}" aria-pressed="${(window.__ts&&window.__ts())===k}" style="font-size:${[0.95,1.15,1.35][i]}rem">${l}</button>`).join('')}</div></div>`;
+function openSettings(){closeSettings();const drv=role!=='mgr',can=previewChild||(canMgr&&role==='mgr');
+  const w=document.createElement('div');w.id='sh-set';w.setAttribute('role','dialog');w.setAttribute('aria-label','Settings');
+  w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Settings</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div>
+   ${can?`<div class="dm-row" data-notr><h3>View</h3><div class="thseg" role="group" aria-label="View"><button type="button" ${previewChild?'data-sh="mv"':'data-sh="setclose"'} aria-pressed="${!previewChild}">Admin</button><button type="button" ${previewChild?'data-sh="setclose"':'data-sh="uv"'} aria-pressed="${!!previewChild}">👁 Driver view</button></div></div>`:''}
+   ${setRows(drv)}<button type="button" class="dm-out" data-sh="signout">Sign out</button></div>`;
+  document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
+function closeSettings(){const w=document.getElementById('sh-set');if(w)w.remove()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!b)return;const k=b.dataset.sh;if(k==='settings'){openSettings();return}if(k==='setclose'||((k==='uv'||k==='mv'||k==='signout')&&b.closest('#sh-set')))setTimeout(closeSettings,0)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings()});
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
-  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('')+setHTML(false);setTimeout(applyNavBadges,0);return}
+  if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}"><h2>${esc(t)}</h2><div class="dm-grid">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></button>`).join('')}</div></section>`).join('');setTimeout(applyNavBadges,0);return}
   const SUB={results:'Everyone\'s results',survey:'Customer survey',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'Ask for days off',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<div class="dm-grid">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></button>`).join('')}</div>
-  ${setHTML(true)}`}
+  `}
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home')adminOff()};
 let aoSel=null;
@@ -13574,7 +13599,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309300';
+const VERSION='202610309400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
