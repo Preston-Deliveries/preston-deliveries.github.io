@@ -5054,6 +5054,15 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
  html.appui .sh-mtop.tb-hide{transform:translateY(-105%)}
  html.appui .sh-mtop.tb-float{box-shadow:0 4px 14px rgba(0,0,0,.25)}
 }
+
+/* Survey: Results or Load new results, like Daily results */
+#mod-survey .rtabs{display:grid;grid-template-columns:1fr 1fr;margin:4px 0 14px}
+#mod-survey .rtabs button{min-height:44px;font-size:1rem;font-weight:800}#sh-main #mod-survey .rtabs{border:1px solid var(--sh-line);border-radius:12px;overflow:hidden;background:var(--sh-surface)}#sh-main #mod-survey .rtabs button[aria-pressed=false]{background:var(--sh-surface)!important;color:var(--sh-ink)!important}#sh-main #mod-survey .rtabs button[aria-pressed=true]{background:#7B4BDB!important;color:#fff!important}
+#mod-survey #v_tool[data-tab="view"] :is(#v_drop,#v_sharePanel,#v_remove,#v_status,header .sub){display:none!important}
+#mod-survey #v_tool[data-tab="import"] :is(.tabs.pvseg,#v_viewC){display:none!important}
+#mod-survey #v_tool[data-tab="import"] #v_viewW{display:block!important}
+/* Enquiries and NCRs: no import or paste buttons */
+#mod-enquiries :is(.rimp,.rimpc,.nimp){display:none!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -5176,7 +5185,8 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
   <div id="v_dvTbl"></div>
   <div class="dvbar" id="v_dvOwner" hidden=""><button type="button" id="v_dvBack">Back to the ranking tool</button><span class="hint">Only you see this button.</span></div>
 </div>
-<div class="wrap" id="v_tool">
+<div class="wrap" id="v_tool" data-tab="view">
+  <div class="seg rtabs" id="v_rtabs" role="group" aria-label="Results or load"><button type="button" data-vtab="view" aria-pressed="true">Results</button><button type="button" data-vtab="import" aria-pressed="false">Load new results</button></div>
   <header>
     <h1>Survey Ranking</h1>
     <p class="sub">Pick the month and week, then upload that week's Call Reason Drill sheet. Drivers see it straight away.</p>
@@ -5847,6 +5857,7 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
   if(!opts.back&&sec!==cur){hist.push(cur);if(hist.length>20)hist.shift()}
   if(tabSecs().includes(sec))hist=[];
   cur=sec;
+  if(!previewChild){try{const u=location.pathname+location.search+(sec==='home'?'':'#'+encodeURIComponent(sec));if(location.pathname+location.search+location.hash!==u)history.replaceState(null,'',u)}catch(e){}}
   const want=MOD[sec];
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
   if(matchMedia('(min-width:900px)').matches&&!opts.back0){const se=document.getElementById(want),ph=document.getElementById('sh-ph');[se,ph].forEach(x=>{if(!x)return;x.classList.remove('sh-enter');void x.offsetWidth;x.classList.add('sh-enter')})}
@@ -6282,6 +6293,7 @@ document.addEventListener('click',e=>{
 window.needHist=function(from,cols){from=(!from||from<'1000')?'':from;try{let W=window.__history?window:null;if(!W){try{if(window.parent!==window&&window.parent.__history)W=window.parent}catch(e){}}if(!W)return Promise.resolve();
   if(cols&&cols.every(c=>{const f=W.__historyFrom(c);return f===''||(from&&from>=f)}))return Promise.resolve();return W.__history(from,cols)}catch(e){return Promise.resolve()}};
 window.histFrom=function(c){try{let W=window.__historyFrom?window:null;if(!W){try{if(window.parent!==window&&window.parent.__historyFrom)W=window.parent}catch(e){}}return W?W.__historyFrom(c):''}catch(e){return ''}};
+document.addEventListener('click',e=>{const b=e.target.closest('#v_rtabs [data-vtab]');if(!b)return;const t=b.dataset.vtab,T=document.getElementById('v_tool');if(!T)return;T.dataset.tab=t;document.querySelectorAll('#v_rtabs [data-vtab]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.vtab===t)));if(t==='import'){const w=document.getElementById('v_tabW');if(w&&w.getAttribute('aria-selected')!=='true')w.click()}window.scrollTo(0,0)});
 window.APP={SNAP,go,stat,publish,get isEditor(){return role==='mgr'},get section(){return cur},get role(){return role}};
 // first section
 const h=decodeURIComponent((location.hash||'').slice(1));
@@ -13774,7 +13786,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310500';
+const VERSION='202610310600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
