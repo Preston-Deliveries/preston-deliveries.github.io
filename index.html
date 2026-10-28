@@ -5111,6 +5111,25 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-main#sh-main #mod-cover .cv-chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 0}
 #sh-main#sh-main #mod-cover .cv-chips .cv-c{min-height:32px!important;height:auto!important;width:auto!important;padding:4px 12px!important;border-radius:99px!important;font-size:.85rem!important;aspect-ratio:auto!important}
 #sh-main#sh-main #mod-cover .cv-help select{min-height:36px!important;padding:4px 10px!important;font-size:.88rem!important;width:auto;max-width:100%}
+
+/* ===== tidy pass: one look everywhere ===== */
+/* 1. whatever is picked in a switch is always brand orange with white text */
+:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes:not(.pcs),.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes) > button[aria-pressed="true"]:not(.pcz):not([class*="pr-"]),
+:root:root body #sh-main#sh-main#sh-main#sh-main [role=tablist] > [aria-selected="true"],
+:root:root #sh-set .thseg > button[aria-pressed="true"]{background:#F2782D!important;color:#fff!important;border-color:#F2782D!important;box-shadow:none!important}
+:root:root body #sh-main#sh-main#sh-main#sh-main :is(.tabs,.pseg2,.thseg,.seg,.segs,.modes,.lvseg,.iw-seg,.pvseg,.seg2,.tstabs,.rtabs,.tl-tabs,.scopes) > button[aria-pressed="true"] :is(small,i){color:#fff!important;opacity:.9}
+/* 2. title banner never wraps */
+:root:root .sh-mtop .sh-brand small{white-space:nowrap!important;overflow:hidden;text-overflow:ellipsis;display:block}
+@media (max-width:400px){:root:root .sh-mtop .sh-brand b{font-size:1.5rem!important}:root:root .sh-mtop .sh-brand small{font-size:.62rem!important}}
+/* 3. plain dark headings inside pages (colour is for status, not titles) */
+:root:root #sh-main :is(#mod-invoices,#mod-summary,#mod-boss) :is(h1,h2){color:var(--sh-ink)!important}
+/* 4. no repeated page titles */
+:root:root #sh-main #mod-staff .dm-head h1{display:none}
+/* 5. small fixes */
+:root:root #sh-main .ntx .bar button{font-size:.84rem;padding:6px 8px}
+:root:root #sh-main #mod-uniform .fit button{font-size:.74rem!important;padding:6px 2px!important}
+/* 6. download and print buttons are quiet outlined buttons in admin; the main action on a page stays filled */
+html:not(.drvui) body #sh-main#sh-main#sh-main .sh-sec .dlb:not(.x){background:var(--sh-surface)!important;color:var(--sh-ink)!important;border:1px solid var(--sh-line)!important;box-shadow:none!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13838,7 +13857,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610310900';
+const VERSION='202610311000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
