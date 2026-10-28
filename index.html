@@ -5028,12 +5028,17 @@ html.drvui #sh-home .dh-week .hd small::after{content:" ›";font-weight:800;col
 #sh-set .nti.k-leave{--kc:#1E8A4C;--kb:rgba(30,138,76,.11)}
 #sh-set .nti.k-uniform{--kc:#4B5B75;--kb:rgba(75,91,117,.12)}
 #sh-set .nti.k-enquiries{--kc:#C2570C;--kb:rgba(232,113,10,.12)}
-#sh-set .al-i:not(.new){opacity:.72}
-#sh-set .al-i{border-left:4px solid var(--kc)}#sh-set .nti{border-left:4px solid var(--kc)}
+
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-set :is(.al-i,.nti){--kb2:1}:root:not([data-theme="light"]) #sh-set :is(.al-i,.nti) .ic{filter:brightness(1.35)}}
 :root[data-theme="dark"] #sh-set :is(.al-i,.nti) .ic{filter:brightness(1.35)}
 #sh-set .hda{display:flex;align-items:center;gap:8px}#sh-set .clr{all:unset;cursor:pointer;font-weight:800;font-size:.88rem;color:#C2570C;padding:8px 12px;border-radius:99px;background:rgba(242,120,45,.12)}#sh-set .clr[hidden]{display:none}
 #sh-set .alb .al-i small span{font-size:inherit!important;color:inherit!important;opacity:1!important}
+/* stronger notification colours: a solid stripe, a clear tint, a coloured icon */
+#sh-set#sh-set :is(.al-i,.nti){border-left:5px solid var(--kc)!important;background:color-mix(in srgb,var(--kc) 16%,var(--sh-surface))!important}
+#sh-set#sh-set :is(.al-i,.nti) .ic{background:var(--kc)!important;color:#fff!important;filter:none!important}
+#sh-set#sh-set .al-i b{color:var(--sh-ink)}
+:root[data-theme="dark"] #sh-set#sh-set :is(.al-i,.nti){background:color-mix(in srgb,var(--kc) 28%,var(--sh-surface))!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-set#sh-set :is(.al-i,.nti){background:color-mix(in srgb,var(--kc) 28%,var(--sh-surface))!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13724,7 +13729,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610309900';
+const VERSION='202610310000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
