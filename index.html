@@ -5374,6 +5374,16 @@ html body #mod-runs .pl-add2{padding:10px}
 html body #mod-runs .pl-chips button .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 html body #mod-runs .pl-chips button{padding:8px 12px;font-size:.95rem}html body #mod-runs .pl-chips button .nm{white-space:normal}
 html body #sh-ph.sh-ph,html body #sh-ph{box-shadow:none!important}
+/* invoices: flagged rows stay table rows on a computer */
+@media (min-width:900px){html body #mod-invoices table.sublist tr.chk{display:table-row!important}html body #mod-invoices table.sublist tr.chk>td{display:table-cell!important;width:auto!important}}
+/* an opened invoice: the days to check are yellow and say why */
+#mod-invoices .iw-flagbox{display:flex;flex-direction:column;gap:4px;margin:10px 0;padding:12px 14px;border-radius:12px;background:#FFF6CC;border:1px solid #E0B000;color:#5A4300;font-size:.92rem}
+#mod-invoices .iw-flagbox b{font-size:1rem}
+#mod-invoices .iw-day.flag{background:#FFF6CC!important;border:2px solid #E0B000!important}
+#mod-invoices .iw-day.flag .iw-why{margin:4px 0 8px;padding:8px 10px;border-radius:8px;background:rgba(224,176,0,.18);color:#5A4300;font-weight:700;font-size:.88rem;line-height:1.35}
+:root[data-theme="dark"] #mod-invoices .iw-flagbox,:root[data-theme="dark"] #mod-invoices .iw-day.flag{background:#3A3210!important;color:#FFE9A8;border-color:#7A6514!important}
+:root[data-theme="dark"] #mod-invoices .iw-day.flag .iw-why{color:#FFE9A8;background:rgba(255,233,168,.1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #mod-invoices .iw-flagbox,:root:not([data-theme="light"]) #mod-invoices .iw-day.flag{background:#3A3210!important;color:#FFE9A8;border-color:#7A6514!important}:root:not([data-theme="light"]) #mod-invoices .iw-day.flag .iw-why{color:#FFE9A8;background:rgba(255,233,168,.1)}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13223,6 +13233,7 @@ function html(){
     ${me&&logs[logId(sid,from)]&&(logs[logId(sid,from)].status||'submitted')!=='submitted'?`<p class="iw-left">The office has already ${logs[logId(sid,from)].status==='paid'?'paid':'checked'} your invoice for these dates. Call the office if something needs changing.</p>`:''}
     ${from&&to&&(fromIso(to)-fromIso(from))/864e5>27?'<p class="warn">An invoice holds 4 weeks. Pick 4 weeks or less.</p>':''}</div>`;
   const nT=R.filter(r=>ticks[r.d]).length;
+  if(openFlags&&(openFlags.top.length||Object.keys(openFlags.days).length)){const nd=Object.keys(openFlags.days).length;h+=`<div class="iw-flagbox"><b>⚠ ${nd?`Check the yellow ${nd===1?'day':'days'} below`:'Check this invoice'}</b>${nd?`<span>${nd} day${nd===1?' does':'s do'} not match the records. Each one says what is different.</span>`:''}${openFlags.top.map(t=>`<span>${esc(t.charAt(0).toUpperCase()+t.slice(1))}.</span>`).join('')}</div>`}
   h+=`<div class="iw-sec"><h3>Check each day</h3><p class="sub">${me?'We filled in what we know. Fix anything that is wrong, then tick':'Fix anything that is wrong, then tick'} <b>This day is right</b> on every day.</p>
    <p class="iw-prog ${R.length&&nT===R.length?'ok':''}"><b>${nT} of ${R.length}</b> days ticked</p>`;
   if(!R.length)h+=`<div class="empty">${me?'No work found for you in these dates. Add a day below if you worked.':'No work found for '+esc(you)+' in these dates.'}</div>`;
@@ -13231,7 +13242,8 @@ function html(){
     if(r.wk!==wk){wk=r.wk;h+=`<p class="iw-wk">Week ${wk+1}</p>`}
     const inp=(k,lab,extra,step2)=>`<label class="iw-f"><span>${lab}</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="${k==='pc'||k==='xp'?'numeric':'decimal'}" min="0" step="${step2||'1'}" data-imd="${d}" data-k="${k}" value="${esc(v[k])}" aria-label="${esc(lab)} ${esc(short(d))}">${extra?`<small>${extra}</small>`:''}</label>`;
     const seg=(k,opts)=>`<div class="iw-seg" role="group">${opts.map(([val,l,s])=>`<button type="button" data-im="dset" data-d="${d}" data-k="${k}" data-v="${val}" aria-pressed="${String(v[k])===String(val)}">${l}${s?`<small>${s}</small>`:''}</button>`).join('')}</div>`;
-    h+=`<div class="iw-day ${tk?'ok':''}" id="iwd-${d}"><div class="iw-dh"><b>${esc(DAYN[r.di])} ${fromIso(d).getDate()} ${MON[fromIso(d).getMonth()]}</b><span class="iw-dt">${money(dayTotal(v))}</span></div>
+    const fl=openFlags&&openFlags.days[d];
+    h+=`<div class="iw-day ${tk?'ok':''} ${fl?'flag':''}" id="iwd-${d}"><div class="iw-dh"><b>${esc(DAYN[r.di])} ${fromIso(d).getDate()} ${MON[fromIso(d).getMonth()]}</b><span class="iw-dt">${money(dayTotal(v))}</span></div>${fl?`<p class="iw-why">${fl.map(t=>'⚠ '+esc(t)).join('<br>')}</p>`:''}
      ${ans.pay==='b'?seg('t',[['p','Parcels'],['h','Hourly']]):''}`;
     if(DY){h+=`<p class="iw-src">${a&&a.st&&a.fi?'Timesheet: '+esc(fmtT(a.st))+' to '+esc(fmtT(a.fi))+(a.br?', '+a.br+' min break':''):a&&a.worked?'Clocked on this day.':'Added by hand.'}</p>
        <div class="iw-g">${inp('rd','Day rate, $',num(v.rd)!==num(ans.rd===''?cfg.rd:ans.rd)?'Different from '+your+' usual '+money(ans.rd===''?cfg.rd:ans.rd):'','0.01')}</div>`}
@@ -13281,7 +13293,7 @@ document.addEventListener('click',e=>{const t=document.getElementById('im_toast'
 function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
   box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
-function pick(id){sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
+function pick(id){openFlags=null;sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
 function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
@@ -13449,7 +13461,7 @@ async function submit(){
   if(blocked())return;const prev=logs[logId(sid,from)];
   busy=true;msg={t:'Sending…'};paint();
   try{await writeLog(inv);
-    msg={t:role==='drv'?(prev?'Sent again. The office has your new invoice.':'Sent. The office will check it in the app. Thank you.'):(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
+    openFlags=null;msg={t:role==='drv'?(prev?'Sent again. The office has your new invoice.':'Sent. The office will check it in the app. Thank you.'):(prev?'Invoice updated':'Invoice submitted')+' for '+inv.name+'. Find it under Submitted invoices.',done:true}}
   catch(e){console.warn(e);msg={err:true,t:'Could not send it in the app'+(e&&e.code?' ('+e.code+')':'')+'. Try again, or tap Email it to '+OFFICE_NAME+'.'}}
   busy=false;paint()}
 /* email: makes the PDF and opens the share sheet (pick Mail), with the office email copied to paste in. Also saves it in the app. */
@@ -13566,7 +13578,7 @@ function listHTML(){
    <div class="tiles4"><div><span>Submitted</span><b>${L.length} of ${all.length}</b></div><div><span>Checked</span><b>${cnt('checked')+cnt('paid')}</b></div><div><span>Paid</span><b>${cnt('paid')}</b></div><div><span>Period total</span><b>${money(sum.t)}</b><small>${sum.g?'incl. '+money(sum.g)+' GST':''}</small></div></div>
    <div class="segs" role="group">${[['all','Everyone'],['todo','Not submitted'],['submitted','Submitted'],['checked','Checked'],['paid','Paid']].map(([k,l])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l}${k==='all'?'':` <i>${k==='todo'?cnt('todo'):cnt(k)}</i>`}</button>`).join('')}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${nChk?`<p class="chknote">${nChk} invoice${nChk===1?'':'s'} highlighted in yellow ${nChk===1?'needs':'need'} a check: ${nChk===1?'it doesn’t':'they don’t'} match the set rates or the day records. Open it to see the figures.</p>`:''}
+   ${nChk?`<p class="chknote">${nChk} invoice${nChk===1?'':'s'} highlighted in yellow ${nChk===1?'needs':'need'} a check: ${nChk===1?'it doesn’t':'they don’t'} match the set rates or the day records. Tap Open: the days to check are yellow and say what is different.</p>`:''}
    <div class="tw"><table class="tb sublist"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
    ${show.map(r=>{const v=r.inv;const ck=v?chk[r.id]||[]:[];return `<tr class="${v?(ck.length?'chk':''):'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
      <td>${v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
@@ -13588,13 +13600,27 @@ async function exportSum(){if(typeof XLSX==='undefined')await window.loadXLSX();
   for(const x of L){const T=x.T||{};aoa.push([x.name,x.run||'',x.no,x.date,x.from,x.to,T.l1||0,T.l2||0,T.xp||0,T.hr||0,x.worked||0,T.sub||0,T.gst||0,T.total||x.total||0,STAT[x.status]||'Submitted'])}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[22,10,10,11,11,11,10,10,10,9,10,11,9,11,10].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Invoices');
   const out=XLSX.write(wb,{bookType:'xlsx',type:'array'});save(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Invoice summary ${lper} to ${add(lper,25)}.xlsx`).then(()=>{msg={t:'Summary saved.'};paint()}).catch(()=>{})}
-function openLog(id){const x=logs[id];if(!x)return;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;cfg=mergeCfg(sid);
+
+/* What to check on an opened invoice: each day that doesn't match the records, and anything about rates or GST */
+let openFlags=null;
+function flagsFor(x){const F={days:{},top:[]};if(!x||!x.rows)return F;
+  try{for(const t of checkInv(x))if(!/different from the records|morning check said|after the check/.test(t))F.top.push(t)}catch(e){}
+  const keep=sid;sid=x.sid;
+  try{for(const r of x.rows){const a=dayData(r.d),L=[];
+    if(a){if(r.t==='h'){if(a.hrs!=null&&Math.abs(num(r.hr)-a.hrs)>0.01)L.push('Invoice says '+num(r.hr)+' hours, the timesheet says '+a.hrs+' hours')}
+      else if(r.t!=='d'){if(a.pc!=null&&num(r.pc)!==a.pc)L.push('Invoice says '+num(r.pc)+' parcels, Driver Results say '+a.pc);
+        if(a.xp!=null&&num(r.xp)!==num(a.xp))L.push('Invoice says '+num(r.xp)+' extra parcels, the timesheet says '+num(a.xp));
+        if(a.tlSet&&(r.ld===2)!==!!a.tl)L.push('Invoice says '+(r.ld===2?'2 loads':'1 load')+', the driver said '+(a.tl?'2 loads':'1 load')+' at finish')}}
+    if(r.t!=='h'&&r.ld===2){const k=tlc[r.d+'_'+x.sid],c=clock[r.d+'_'+x.sid]||{};if(k&&k.chk!=='ok')L.push(c.twoLoads===true&&c.updatedAt&&String(c.updatedAt)>String(k.at||'')?'Driver changed to 2 loads after the morning check':'Invoice says 2 loads, the morning check said 1 load')}
+    if(L.length)F.days[r.d]=L}}catch(e){}finally{sid=keep}
+  return F}
+function openLog(id){const x=logs[id];if(!x)return;openFlags=role==='mgr'?flagsFor(x):null;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;cfg=mergeCfg(sid);
   for(const k of MEK)if(x.cfg&&x.cfg[k]!==undefined)cfg[k]=x.cfg[k];
   const xc=x.cfg||{};ans={gst:!!xc.gst,pay:xc.pay||(xc.hourly?'h':'p'),rh:+xc.rh>0?+xc.rh:'',rd:+xc.rd>0?+xc.rd:''};syncCfg();asked=true;step='days';addOpen=false;
   ov={};ticks={};for(const r of x.rows||[]){if(x.v===2)ov[r.d]={add:true,t:r.t,pc:r.t!=='p'?'':r.pc,ld:r.ld||1,xp:r.t!=='p'?'':(r.xp||''),hr:r.t==='h'?r.hr:'',rh:r.t==='h'?r.rh:(ans.rh||''),rd:r.t==='d'?r.rd:''};
     else{const H=num(r.hr)>0;ov[r.d]={add:true,t:H?'h':'p',pc:H?'':(num(r.l1)||num(r.l2)),ld:num(r.l2)?2:1,xp:r.xp||'',hr:H?r.hr:'',rh:H?num(xc.rh):''}}ticks[r.d]=true}
   extras=(x.extras||[]).map(e=>({...e}));showCfg=false;msg={t:'Opened the sent invoice. Change anything, then send it again to replace it.'};need();setView('make')}
-function setView(v){view=v;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?(role==='drv'?'mine':'sub'):'make');else paint()}
+function setView(v){view=v;if(v==='list')openFlags=null;if(window.IV_SETTAB)window.IV_SETTAB(v==='list'?(role==='drv'?'mine':'sub'):'make');else paint()}
 
 /* ---------- events ---------- */
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
@@ -14235,7 +14261,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610315100';
+const VERSION='202610315200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
