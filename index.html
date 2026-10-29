@@ -5421,6 +5421,12 @@ html body #sh-ph.sh-ph,html body #sh-ph{box-shadow:none!important}
 :root[data-theme=dark] #mod-invoices .iw-wkd .wk-k .k b{color:#FF9A52}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-invoices .iw-wkd .wk-k .k b{color:#FF9A52}}
 html body #sh-main .cv-share .cv-sh-r.nm1 .who .nm{color:#E8701F!important}html body #sh-main .cv-share .cv-sh-r.nm1 .who small{color:#56655F!important}html body #sh-main .cv-share .by.nc{color:#56655F!important}
+html body #sh-main .cv-share .cv-sh-r.nm2{display:block;padding:12px 18px;border-top:1px solid #E3E8E6}
+html body #sh-main .cv-share .nm2 .l1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+html body #sh-main .cv-share .nm2 .nm{color:#E8701F;font-size:1.15rem;font-weight:800;line-height:1.2}
+html body #sh-main .cv-share .nm2 .rn{font-size:.78rem;font-weight:800;color:#fff;background:#16324F;border-radius:6px;padding:1px 7px}
+html body #sh-main .cv-share .nm2 .l2{margin-top:3px;font-size:1.05rem;font-weight:800}
+html body #sh-main .cv-share .nm2 .l2.ok{color:#1E8A4C}html body #sh-main .cv-share .nm2 .l2.nc{color:#56655F}html body #sh-main .cv-share .nm2 .l2.none{color:#B42318}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13834,7 +13840,7 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
   const all=drivers().filter(p=>!offIds.has(p.id));
   const rows=off.map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{help:[]};return{o,p,it}});
   if(CV.share){el.innerHTML=`<div class="cv-share" id="cv_card"><div class="cv-sh-h"><small>Preston Delivery Service · Contract 1161</small><b>Cover for ${esc(longd(CV.day))}</b></div>
-    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r nm1"><span class="who"><b class="nm">${esc(nameOf(p))}</b><small>off · ${esc(runsOf(p)||'No run')}${runInfo(p).length?' · '+esc(runInfo(p).join(' · ')):''}</small></span><span class="arr">→</span><span class="by ${it.by?'':it.none?'nc':'none'}">${it.by?esc([it.byName].concat((it.help||[]).map(h=>h.name)).join(' + ')):it.none?'No cover needed':'No cover yet'}</span></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
+    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r nm2"><div class="l1"><b class="nm">${esc(nameOf(p))}</b>${runsOf(p)?`<span class="rn">${esc(runsOf(p))}</span>`:''}</div><div class="l2 ${it.by?'ok':it.none?'nc':'none'}">${it.by?'→ '+esc([it.byName].concat((it.help||[]).map(h=>h.name)).join(' + ')):it.none?'No cover needed':'No cover yet'}</div></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
     </div><div class="cv-acts" data-noprint><button type="button" class="sh-btn" data-cv="share">‹ Back to planner</button><button type="button" class="sh-btn primary" data-cv="img">${(navigator.canShare&&matchMedia('(pointer:coarse)').matches)?'Share picture to WhatsApp':'Copy picture for WhatsApp'}</button></div>${CV.msg?`<p class="mt-msg">${esc(CV.msg)}</p>`:''}`;return}
   const left=rows.filter(r=>!r.it.by&&!r.it.none).length;
   el.innerHTML=`<section class="card cv"><div class="cv-top"><button type="button" class="cv-nav" data-cv="prev" aria-label="Day before">‹</button><div><small>Cover for</small><b>${esc(longd(CV.day))}</b></div><button type="button" class="cv-nav" data-cv="next" aria-label="Day after">›</button></div>
@@ -14348,7 +14354,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610317100';
+const VERSION='202610317200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
