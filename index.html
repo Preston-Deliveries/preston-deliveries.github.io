@@ -5818,7 +5818,7 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .fuc .fu-nd{margin:0}.fuc .fu-nd>summary b.ok{background:rgba(31,157,85,.14);color:#167A42}
 .fuc .fu-in{padding:0 12px 12px}.fuc .fu-in .fu-p{margin:0 0 8px}
 
-#sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full{background-image:linear-gradient(to left,rgba(200,87,79,.24),rgba(200,87,79,.07) 30%,transparent 45%)!important;border-right:4px solid #C8574F!important}
+
 #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill{background:#C8574F!important;border-color:#C8574F!important;color:#fff!important}
 
 #sh-home .dh-week .st4{grid-template-columns:repeat(3,minmax(0,1fr))!important}
@@ -11033,7 +11033,7 @@ function weekHTML(){
      const ppl=showNames&&o?o.names.map((x,i)=>({x,id:(o.ids||[])[i]})):[];const off=isMgr()&&o?o.office.map((x,i)=>({x,id:(o.oids||[])[i]})):[];
      const chip=(p,cls)=>isMgr()&&p.id?`<button type="button" class="pp ${cls}" data-lv="edit" data-v="${esc(p.id)}">${esc(tc(shortName(p.x)))}</button>`:`<span class="pp ${cls}">${esc(tc(isMgr()?shortName(p.x):p.x.split(' ')[0]))}</span>`;
      return `<div class="lvr ${st.k}${k===today?' now':''}"><div class="d"><small>${DOW[(d.getDay()+6)%7]}</small><b>${d.getDate()}</b></div>
-       <div class="m"><span class="mh"><b>${st.k==='bo'?esc(st.t):n?`${n} off`:'Nobody off'}</b>${st.k!=='bo'?`<span class="cap" aria-hidden="true">${Array.from({length:config().limit||3},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`:''}</span>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
+       <div class="m"><span class="mh"><b>${st.k==='bo'?esc(st.t):n?`${n} driver${n===1?'':'s'} off`:'Nobody off'}</b>${st.k!=='bo'?`<span class="cap" aria-hidden="true">${Array.from({length:config().limit||3},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`:''}</span>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
        <span class="pill">${esc(pillTxt(st,n))}</span></div>`}).join('')}</div>
    ${isMgr()?'<p class="sub">Tap a name to change or remove that leave. Office staff are shown in grey and don’t count toward the limit.</p>':''}`;
 }
@@ -14962,7 +14962,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322500';
+const VERSION='202610322600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
