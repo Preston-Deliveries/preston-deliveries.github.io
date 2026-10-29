@@ -6247,6 +6247,7 @@ const RULES=[
  [/^(.+) to (.+) · no break$/,m=>m[1]+' a '+m[2]+' · sem intervalo',m=>m[1]+' ਤੋਂ '+m[2]+' · ਕੋਈ ਬ੍ਰੇਕ ਨਹੀਂ'],
  [/^(.+) · Bay (.+)$/,m=>m[1]+' · Baia '+m[2],m=>m[1]+' · ਬੇਅ '+m[2]],
  [/^(\d+) off$/,m=>m[1]+' de folga',m=>m[1]+' ਛੁੱਟੀ ਤੇ'],
+ [/^(\d+) drivers? off$/,m=>m[1]+(m[1]==='1'?' motorista de folga':' motoristas de folga'),m=>m[1]+' ਡਰਾਈਵਰ ਛੁੱਟੀ ਤੇ'],
  [/^(\d+) (new reports?|uniform orders?|leave requests?|new driver messages?|enquiry|enquiries)$/,m=>m[1]+' '+({'new report':'novo relatório','new reports':'novos relatórios','uniform order':'pedido de uniforme','uniform orders':'pedidos de uniforme','leave request':'pedido de folga','leave requests':'pedidos de folga','new driver message':'nova mensagem de motorista','new driver messages':'novas mensagens de motoristas','enquiry':'reclamação','enquiries':'reclamações'})[m[2]],m=>m[1]+' '+({'new report':'ਨਵੀਂ ਰਿਪੋਰਟ','new reports':'ਨਵੀਆਂ ਰਿਪੋਰਟਾਂ','uniform order':'ਵਰਦੀ ਆਰਡਰ','uniform orders':'ਵਰਦੀ ਆਰਡਰ','leave request':'ਛੁੱਟੀ ਬੇਨਤੀ','leave requests':'ਛੁੱਟੀ ਬੇਨਤੀਆਂ','new driver message':'ਨਵਾਂ ਡਰਾਈਵਰ ਸੁਨੇਹਾ','new driver messages':'ਨਵੇਂ ਡਰਾਈਵਰ ਸੁਨੇਹੇ','enquiry':'ਸ਼ਿਕਾਇਤ','enquiries':'ਸ਼ਿਕਾਇਤਾਂ'})[m[2]]],
  [/^clocked on · (\d+) on leave$/,m=>'bateram entrada · '+m[1]+' de folga',m=>'ਹਾਜ਼ਰ · '+m[1]+' ਛੁੱਟੀ ਤੇ'],
  [/^clocked on$/,m=>'bateram entrada',m=>'ਹਾਜ਼ਰ'],
@@ -14962,7 +14963,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322600';
+const VERSION='202610322700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
