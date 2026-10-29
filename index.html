@@ -13814,7 +13814,7 @@ async function cvAvg(){if(CV.avg||CV.avgBusy)return;CV.avgBusy=true;const T=TODA
   for(const v of Object.values(dy))for(const[l,r]of Object.entries(v.rows||{})){const k=dkey(l),c=+r.pc||0;if(!c)continue;sum[k]=(sum[k]||0)+c;n[k]=(n[k]||0)+1}
   CV.avg={};for(const k in sum)CV.avg[k]=Math.round(sum[k]/n[k]);CV.avgBusy=false;cover()}
 function avgOf(p){if(!CV.avg)return null;for(const k of [p.login,...(p.runs||[])].map(dkey))if(CV.avg[k])return CV.avg[k];return null}
-function runInfo(p){const a=avgOf(p),pc=pcOf(p);return [pc?'Postcode '+pc:'',p.bay?'Bay '+p.bay:'',a?'About '+a+' parcels a day':''].filter(Boolean)}
+function runInfo(p){const a=avgOf(p),pc=pcOf(p);return [pc?String(pc):'',p.bay?'Bay '+p.bay:'',a?'About '+a+' parcels a day':''].filter(Boolean)}
 function nextWork(s){let d=fromIso(s);do{d.setDate(d.getDate()+1)}while(isOff(d));return iso(d)}
 function prevWork(s){let d=fromIso(s);do{d.setDate(d.getDate()-1)}while(isOff(d));return iso(d)}
 async function cvWatch(){const d=await getDb();if(!d)return;if(CV.unsub){try{CV.unsub()}catch(e){}}const day=CV.day;CV.doc=null;
@@ -14354,7 +14354,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610317200';
+const VERSION='202610317300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
