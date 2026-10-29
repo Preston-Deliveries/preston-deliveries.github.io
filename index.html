@@ -5747,6 +5747,8 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .pfx .pr-fb .pr-row .pr-tx b{font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--sh-muted)}.pfx .pr-fb .pr-row .pr-tx small{font-size:.98rem;color:var(--sh-ink)}
 .pfx .pr-fb .pr-row:has(svg circle+path[d^="M8"]) .pr-ic{background:var(--pf-gs);color:var(--pf-g)}.pfx .pr-fb .pr-row:has(svg path[d^="M12 7.5"]) .pr-ic{background:var(--pf-bs);color:var(--pf-b)}
 @media (min-width:760px){.pfx .pr-v{font-size:1.6rem}}
+
+.pfx{width:100%;align-self:stretch;box-sizing:border-box}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10398,7 +10400,7 @@ const CYC0='2026-10-05';
 function periods(){
   const all=Object.keys((data&&data.days)||{}).filter(k=>Object.keys(data.days[k].rows||{}).length).sort();
   const mine=all.filter(k=>myRow(data.days[k].rows));
-  const D=ANC||all[all.length-1]||dayOf(new Date());const dd=ANC?([...mine].reverse().find(x=>x<=addD(ANC,6))||ANC):(mine[mine.length-1]||D);
+  const D=ANC||mine[mine.length-1]||all[all.length-1]||dayOf(new Date());const dd=ANC?([...mine].reverse().find(x=>x<=addD(ANC,6))||ANC):(mine[mine.length-1]||D);
   const dow=(fromIso(D).getDay()+6)%7,mon=addD(D,-dow);
   const k=Math.floor(Math.round((fromIso(D)-fromIso(CYC0))/864e5)/28),cs=addD(CYC0,k*28);
   const sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]};
@@ -14835,7 +14837,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320700';
+const VERSION='202610320800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
