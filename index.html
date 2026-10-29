@@ -5442,6 +5442,8 @@ html body #mod-invoices table.sublist td.acts2>.sh-btn{min-width:118px;justify-c
 html body #mod-invoices table.sublist td.acts2{display:table-cell!important}
 html body #mod-invoices table.sublist td:nth-child(2){white-space:nowrap}
 html body #mod-invoices table.sublist td:nth-child(2) small{display:block}}
+#mod-runs .pl-addst{all:unset;cursor:pointer;display:block;box-sizing:border-box;width:100%;text-align:center;margin:4px 0 10px;padding:10px;border-radius:12px;border:1.5px dashed var(--line);font-weight:800}
+#mod-runs .pl-newst.top .btn.primary{background:var(--accent,#F2782D);color:var(--accent-ink,#fff);border-color:transparent}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6961,7 +6963,7 @@ function plOrder(r){
   const elsewhere=r.streets.filter(x=>x.section&&x.section!==sec.id&&r.sections.some(y=>y.id===x.section));const shown=un;
   return `<section class="pl-card"><div class="pl-chips">${r.sections.map((x,i)=>`<button type="button" data-act="into" data-v="${x.id}" aria-pressed="${x.id===S.into}"><i>${i+1}</i><span class="nm">${esc(x.name)}</span><small>${inSec(r,x.id).length}</small></button>`).join('')}</div>
    <div class="pl-add2"><h3>Add the next street to <b>${si+1} · ${esc(sec.name)}</b></h3>
-    <div class="pl-newst top"><input type="text" id="newStreet" placeholder="New street name" aria-label="New street name"><button type="button" class="btn" data-act="addStreet">+ Add street</button></div>
+    ${S.newOpen?`<div class="pl-newst top"><input type="text" id="newStreet" placeholder="Street name, e.g. SMITH ST" aria-label="New street name" enterkeyhint="done"><button type="button" class="btn primary" data-act="addStreet">Add</button><button type="button" class="btn" data-act="newClose">Cancel</button></div>`:`<button type="button" class="pl-addst" data-act="newOpen">+ Add street</button>`}
     ${un.length||elsewhere.length?`<input type="search" id="traySearch" class="pl-search" placeholder="Type a street name" aria-label="Find a street" value="${esc(S.traySearch||'')}" autocomplete="off" enterkeyhint="search">
     <div class="pl-tray all">${shown.map(s=>`<button type="button" class="pl-t tray-row" data-name="${esc(s.name)}" data-act="place" data-st="${s.id}" data-sec="${sec.id}"><span>${esc(s.name)}${s.split?` <small>${esc(s.split)}</small>`:''}</span><i>+ Add</i></button>`).join('')}${elsewhere.length?`<p class="hint pl-else">Already in another section</p>${elsewhere.map(s=>{const k=plSecIdx(r,s.section);return `<button type="button" class="pl-t tray-row in" data-name="${esc(s.name)}" data-act="place" data-st="${s.id}" data-sec="${sec.id}"><span>${esc(s.name)} <small>In ${k+1} · ${esc(r.sections[k].name)}</small></span><i>Move here</i></button>`}).join('')}`:''}<p class="hint tray-none" id="trayNone" hidden>No street to place matches that.</p>
      </div>
@@ -7151,7 +7153,9 @@ async function act(a,el){
     case 'addStop':s.stops=s.stops||[];s.stops.push({id:'p'+uid(),type:'gate',num:'',detail:''});markDirty(S.cur);render();setTimeout(()=>{const l=s.stops[s.stops.length-1];document.getElementById('no-'+l.id)?.focus()},0);return;
     case 'delStop':s.stops=s.stops.filter(p=>p.id!==d.stop);break;
     case 'delStreet':{const k='st:'+s.id;if(S.confirm!==k){S.confirm=k;render();setTimeout(()=>{if(S.confirm===k){S.confirm=null;render()}},3500);return}r.streets.splice(r.streets.indexOf(s),1);S.open.delete(s.id);resetConfirm();toast(`${s.name} deleted`);break}
-    case 'addStreet':{const inp=document.getElementById('newStreet'),v=(inp.value||'').trim().toUpperCase();if(!v)return;r.streets.push({id:'t'+uid(),name:v,section:(S.step||'order')==='order'&&S.into?S.into:null,evens:'',odds:'',hv:false,split:'',note:'',stops:[]});toast(v+' added');break}
+    case 'newOpen':S.newOpen=true;render();setTimeout(()=>document.getElementById('newStreet')?.focus(),0);return;
+    case 'newClose':S.newOpen=false;render();return;
+    case 'addStreet':{const inp=document.getElementById('newStreet'),v=(inp.value||'').trim().toUpperCase();if(!v)return;r.streets.push({id:'t'+uid(),name:v,section:(S.step||'order')==='order'&&S.into?S.into:null,evens:'',odds:'',hv:false,split:'',note:'',stops:[]});S.newOpen=false;toast(v+' added');break}
     case 'addSection':{const k=r.sections.length+1;r.sections.push({id:'s'+uid(),name:'Section '+k,scanner:String(k),note:''});break}
     case 'secUp':case 'secDown':{const i=r.sections.findIndex(x=>x.id===d.sec),j=a==='secUp'?i-1:i+1;if(j<0||j>=r.sections.length)return;[r.sections[i],r.sections[j]]=[r.sections[j],r.sections[i]];break}
     case 'delSection':{const k='sec:'+d.sec;if(S.confirm!==k){S.confirm=k;render();setTimeout(()=>{if(S.confirm===k){S.confirm=null;render()}},3500);return}
@@ -14369,7 +14373,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610317600';
+const VERSION='202610317700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
