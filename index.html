@@ -10784,16 +10784,6 @@ async function homeCards(){
   box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do" ${z.login?`data-me="run" data-login="${esc(z.login)}"`:`data-nav="${z.nav}"`}><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
      :`<section class="dh-card dh-done"><b>✓ All done</b><span>Nothing to do right now.</span></section>`}
    ${dotwHTML(dotw())}
-   <button type="button" class="dh-card dh-week" data-nav="me">
-     <span class="hd"><b>My week so far</b><small>${esc(P.sh(wd[0]))} to ${esc(P.sh(addD(wd[0],5)))}</small></span>
-     ${x?`<span class="rs"><span class="rk">${rk?(rk.rank!=null?`<b class="${rkc(rk)}">${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`):''}</span>${rk&&rk.rank==null?`<span class="nrt">${esc(nrTxt(rk))}</span>`:''}${rk?scoreHTML(x,rk,true):''}</span>${moveTxt(rk,prk,'last week')}
-     <span class="st4">${T.map(z=>`<span class="s ${z[2]==null?'none':z[2]?'ok':'bad'}${z[4]?' gold':''}"><small>${z[0]}</small><b>${z[1]==null?'–':esc(z[1])}</b><i>${z[2]==null?'':z[2]?'✓':'✗'}</i></span>`).join('')}</span>
-     <span class="msg ${have&&hit===have?'ok':''}">${have&&hit===have?'★ Great week. You hit every target.':''}</span>
-     ${(b=>{if(!b||!b.bw||b.bw.m!==wd[0])return '';const n=wd.filter(d=>data.days[d]&&myRow(data.days[d].rows)).length;return n>=3?'<span class="pbnew">🏅 New personal best week!</span>':''})(bests())}
-     ${(n=>n>=2?`<span class="flame"><i aria-hidden="true">🔥</i><b>${n} days in a row</b> at 96 or more</span>`:'')(flame())}
-     ${wins.length?`<span class="win">★ ${esc(wins[0])}</span>`:''}`:`<span class="nores">No results for this week yet. They show here after the office loads them.</span>`}
-     <span class="go">See my profile<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
-   </button>
 `;
 }
 function pfWeeks(n){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();if(!all.length)return null;
@@ -14963,7 +14953,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322700';
+const VERSION='202610322800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
