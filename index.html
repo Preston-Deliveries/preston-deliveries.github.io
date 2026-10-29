@@ -5444,6 +5444,9 @@ html body #mod-invoices table.sublist td:nth-child(2){white-space:nowrap}
 html body #mod-invoices table.sublist td:nth-child(2) small{display:block}}
 #mod-runs .pl-addst{all:unset;cursor:pointer;display:block;box-sizing:border-box;width:100%;text-align:center;margin:4px 0 10px;padding:10px;border-radius:12px;border:1.5px dashed var(--line);font-weight:800}
 #mod-runs .pl-newst.top .btn.primary{background:var(--accent,#F2782D);color:var(--accent-ink,#fff);border-color:transparent}
+#mod-invoices .extamt{display:inline-flex;align-items:center;gap:4px;justify-content:flex-end}
+#mod-invoices .extamt span{font-weight:700;color:var(--sh-muted)}
+#mod-invoices .extamt input{width:96px;text-align:right;padding:6px 8px;border-radius:8px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:700 .95rem var(--sh-body)}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13687,7 +13690,7 @@ function listHTML(){
    <div class="tw"><table class="tb sublist"><thead><tr><th>Driver</th><th>Invoice</th><th class="r">Total</th><th>Status</th><th></th></tr></thead><tbody>
    ${show.map(r=>{const v=r.inv;const ck=v?chk[r.id]||[]:[];return `<tr class="${v?(ck.length?'chk':''):'none'}"><td><b>${esc(r.name)}</b>${r.run?` <small>${esc(r.run)}</small>`:''}</td>
      <td>${v&&v.ext?`<b class="oa">Outside the app</b><small>${esc(nice(String(v.at||'').slice(0,10)).replace(/ \d{4}$/,''))}</small>`:v?`No. ${esc(v.no)}<small>${esc(nice(String(v.submittedAt||v.at||'').slice(0,10)))}</small>`:'<span class="sub">Not submitted</span>'}</td>
-     <td class="r">${v&&!v.ext?money(v.T?v.T.total:v.total):''}</td>
+     <td class="r">${v&&v.ext?`<label class="extamt"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" data-imext="${esc(v.id)}" value="${v.total?esc(Number(v.total).toFixed(2)):''}" placeholder="Amount" aria-label="How much ${esc(r.name)} earned"></label>`:v?money(v.T?v.T.total:v.total):''}</td>
      <td>${v?`<span class="st st-${v.status||'submitted'}">${v.ext&&v.status==='paid'?'Done':STAT[v.status]||'Submitted'}</span>${ck.length?`<small class="why">Check: ${esc(ck.join('; '))}</small>`:''}${tlLine(v)}`:''}</td>
      <td class="acts2">${v&&v.ext?`${v.status==='submitted'?`<button type="button" class="sh-btn sm ext" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm ext" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Done</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo done</button>`}<button type="button" class="sh-btn sm ghost" data-im="lextrm" data-v="${esc(v.id)}">Untick</button>`:v&&!(v.rows&&v.T)?`<span class="sub old">Made before invoices were saved in full.</span><button type="button" class="sh-btn sm primary" data-im="lmake" data-v="${esc(r.id)}">Make again</button>`:v?`<button type="button" class="sh-btn sm" data-im="lpdf" data-v="${esc(v.id)}">PDF</button><button type="button" class="sh-btn sm" data-im="lxls" data-v="${esc(v.id)}">Excel</button><button type="button" class="sh-btn sm" data-im="lopen" data-v="${esc(v.id)}">Open</button>
        ${v.status==='submitted'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Mark checked</button>`:v.status==='checked'?`<button type="button" class="sh-btn sm" data-im="lst" data-v="${esc(v.id)}" data-s="paid">Mark paid</button>`:`<button type="button" class="sh-btn sm ghost" data-im="lst" data-v="${esc(v.id)}" data-s="checked">Undo paid</button>`}`
@@ -13774,7 +13777,8 @@ document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_no'){paint();return}
   if(t.id==='im_addd'){const d=t.value;if(d&&d>=from&&d<=to){if(fromIso(d).getDay()===0){msg={err:true,t:'Sundays are not work days.'};paint();return}const o={...(ov[d]||{})};delete o.off;o.add=true;ov[d]=o;addOpen=false;paint();const n=document.getElementById('iwd-'+d);if(n)n.scrollIntoView({block:'center'})}else if(d){msg={err:true,t:'Pick a day between '+nice(from)+' and '+nice(to)+'.'};paint()}return}
   if(t.dataset.imx&&t.dataset.k==='why'){paint();return}
-  if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}});
+  if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}
+  if(t.dataset.imext){const id=t.dataset.imext,x=logs[id];if(!x)return;const raw=String(t.value).replace(/[^\d.]/g,''),amt=raw===''?0:Math.round(parseFloat(raw)*100)/100;if(isNaN(amt))return;logs[id]={...x,total:amt};paint();(async()=>{try{await db.doc('invlog/'+id).update({total:amt})}catch(e){msg={err:true,t:'Could not save the amount just now.'};paint()}})();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.inputMode==='decimal'){const c=t.value.replace(/[^\d.]/g,'').replace(/(\..*)\./g,'$1');if(c!==t.value)t.value=c}
   if(t.id==='im_no'){invNo=t.value;saveDraft();return}
@@ -14373,7 +14377,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610317800';
+const VERSION='202610317900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
