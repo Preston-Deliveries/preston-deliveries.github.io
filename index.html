@@ -5766,6 +5766,27 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.one .cap i.on{background:rgba(201,138,26,.6)!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill{color:#E58A83!important}:root:not([data-theme=light]) #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.open .pill{color:#6CCB93!important}:root:not([data-theme=light]) #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.one .pill{color:#E2B35A!important}}
 :root[data-theme=dark] #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill{color:#E58A83!important}:root[data-theme=dark] #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.open .pill{color:#6CCB93!important}:root[data-theme=dark] #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.one .pill{color:#E2B35A!important}
+
+/* compliance: more colour, names highlighted when they need attention */
+.cp-att{margin:10px 0 6px;padding:10px 12px;border-radius:12px;font-size:.92rem;background:rgba(214,69,65,.1);color:#B42318;border:1px solid rgba(214,69,65,.3)}.cp-att b{font-size:1.05rem}
+.cp-att.ok{background:rgba(31,157,85,.1);color:#167A42;border-color:rgba(31,157,85,.3)}
+.cp-tb2 tr.cp-n td:first-child{box-shadow:inset 4px 0 0 #D64541;padding-left:10px}.cp-tb2 tr.cp-n.warn td:first-child{box-shadow:inset 4px 0 0 #E0A21B}
+.cp-tb2 tr.cp-n td:first-child b{color:#B42318}.cp-tb2 tr.cp-n.warn td:first-child b{color:#8A5A12}
+.cp-tb2 tr.cp-n td{background:rgba(214,69,65,.06)}.cp-tb2 tr.cp-n.warn td{background:rgba(242,201,76,.1)}
+.cp-tb2 tr.cp-n td small{display:block;font-size:.72rem;font-weight:700;color:#B42318;white-space:normal;margin-top:1px}.cp-tb2 tr.cp-n.warn td small{color:#8A5A12}
+.cp-tb2 .cp-gr th{--gc:#5A6576;color:var(--gc)!important;background:color-mix(in srgb,var(--gc) 10%,transparent)!important;border-bottom:2px solid color-mix(in srgb,var(--gc) 45%,transparent)}
+.cp-tb2 .cp-gr th i{display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--gc);margin-right:7px;vertical-align:1px}
+.cp-tb2 .cp-gr.g4214 th{--gc:#1D5FD1}.cp-tb2 .cp-gr.g4215 th{--gc:#B07A00}.cp-tb2 .cp-gr.g4217 th{--gc:#14804A}.cp-tb2 .cp-gr.g4218 th{--gc:#C62828}.cp-tb2 .cp-gr.gsup th{--gc:#6D3FC7}.cp-tb2 .cp-gr.gman th{--gc:#C2410C}.cp-tb2 .cp-gr.gxl th{--gc:#0E7490}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .cp-tb2 .cp-gr.g4214 th{--gc:#7FA8F5}:root:not([data-theme=light]) .cp-tb2 .cp-gr.g4215 th{--gc:#F2C04D}:root:not([data-theme=light]) .cp-tb2 .cp-gr.g4217 th{--gc:#5CCB8E}:root:not([data-theme=light]) .cp-tb2 .cp-gr.g4218 th{--gc:#FF8A82}:root:not([data-theme=light]) .cp-tb2 .cp-gr.gsup th{--gc:#B596F2}:root:not([data-theme=light]) .cp-tb2 .cp-gr.gman th{--gc:#FF9A62}:root:not([data-theme=light]) .cp-tb2 .cp-gr.gxl th{--gc:#5FD0E6}:root:not([data-theme=light]) .cp-tb2 .cp-gr.goth th{--gc:#98A3B3}
+ :root:not([data-theme=light]) .cp-att{color:#FF9B94}:root:not([data-theme=light]) .cp-att.ok{color:#6FDC9B}:root:not([data-theme=light]) .cp-tb2 tr.cp-n td:first-child b,:root:not([data-theme=light]) .cp-tb2 tr.cp-n td small{color:#FF9B94}:root:not([data-theme=light]) .cp-tb2 tr.cp-n.warn td:first-child b,:root:not([data-theme=light]) .cp-tb2 tr.cp-n.warn td small{color:#F2C94C}}
+:root[data-theme=dark] .cp-tb2 .cp-gr.g4214 th{--gc:#7FA8F5}:root[data-theme=dark] .cp-tb2 .cp-gr.g4215 th{--gc:#F2C04D}:root[data-theme=dark] .cp-tb2 .cp-gr.g4217 th{--gc:#5CCB8E}:root[data-theme=dark] .cp-tb2 .cp-gr.g4218 th{--gc:#FF8A82}:root[data-theme=dark] .cp-tb2 .cp-gr.gsup th{--gc:#B596F2}:root[data-theme=dark] .cp-tb2 .cp-gr.gman th{--gc:#FF9A62}:root[data-theme=dark] .cp-tb2 .cp-gr.gxl th{--gc:#5FD0E6}:root[data-theme=dark] .cp-tb2 .cp-gr.goth th{--gc:#98A3B3}
+:root[data-theme=dark] .cp-att{color:#FF9B94}:root[data-theme=dark] .cp-att.ok{color:#6FDC9B}:root[data-theme=dark] .cp-tb2 tr.cp-n td:first-child b,:root[data-theme=dark] .cp-tb2 tr.cp-n td small{color:#FF9B94}:root[data-theme=dark] .cp-tb2 tr.cp-n.warn td:first-child b,:root[data-theme=dark] .cp-tb2 tr.cp-n.warn td small{color:#F2C94C}
+/* summary tiles: coloured top edge */
+#sh-main .cp-t>div{border-top:4px solid #8EA3BC!important}#sh-main .cp-t>div.ok{border-top-color:#1F9D55!important}#sh-main .cp-t>div.warn{border-top-color:#E0A21B!important}#sh-main .cp-t>div.bad{border-top-color:#D64541!important}
+#sh-main .cp-t>div.bad b{color:#C62828}#sh-main .cp-t>div.warn b{color:#B07A00}#sh-main .cp-t>div.ok b{color:#167A42}
+.cp-tb2 td .cp-d.none{color:var(--sh-muted);opacity:.7}
+
+.cp-tb2 td:first-child{width:36%;white-space:normal}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -14488,10 +14509,12 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
    <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ten','Tenure','expired')}${tile('f2w','Fit2Work','failed')}</div>
    ${(()=>{const need=r=>COLS.some(([c])=>r[c].c==='bad'||r[c].c==='warn');const nN=rows.filter(need).length;
      const short=(c,x)=>x.c==='none'?'–':x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
-     const list=CP.all?rows:rows.filter(need);
-     return `<div class="segs cp-f" role="group" data-noprint><button type="button" data-cpf="0" aria-pressed="${!CP.all}">Needs attention <i>${nN}</i></button><button type="button" data-cpf="1" aria-pressed="${CP.all}">Everyone <i>${rows.length}</i></button></div>
-     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Tenure','F2W','Van'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
-     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr"><th colspan="${COLS.length+1}">${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr><td><b>${esc(shortName(r.p))}</b></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:'<p class="mt-note">✓ Nobody needs attention right now.</p>'}`})()}
+     const list=rows,lev=r=>COLS.some(([c])=>r[c].c==='bad')?'bad':COLS.some(([c])=>r[c].c==='warn')?'warn':'';
+     const why=r=>{const b=COLS.filter(([c])=>r[c].c==='bad').map(([,l])=>l),w=COLS.filter(([c])=>r[c].c==='warn').map(([,l])=>l);return b.length?b.join(', ')+' expired':w.length?w.join(', ')+' due soon':''};
+     const gc=k=>/^\d{4}$/.test(k)?'g'+k:k==='SUPERVISOR'?'gsup':/PRINCIP|MANAGER/.test(k)?'gman':/XL|RELIEF/.test(k)?'gxl':'goth';
+     return `${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
+     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Tenure','F2W'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
+     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><i></i>${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="${lev(r)?'cp-n '+lev(r):''}"><td><b>${esc(shortName(r.p))}</b>${lev(r)?`<small>${esc(why(r))}</small>`:''}</td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
    <p class="mt-note">Add licence, rego and tenure dates and the Fit2Work status in each driver's record on the Driver Management page. Depot induction can be added later.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
 window.MGRT={paint};
@@ -14854,7 +14877,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320900';
+const VERSION='202610321000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
