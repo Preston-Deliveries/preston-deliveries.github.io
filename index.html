@@ -14762,12 +14762,7 @@ function detailHTML(r){
    ${(r.photos||[]).length?`<div class="phs big">${r.photos.map((pid,i)=>imgs[pid]?`<a href="${imgs[pid]}" target="_blank" rel="noopener" class="ph"><img src="${imgs[pid]}" alt="Photo ${i+1}"></a>`:`<div class="ph load">Loading photo…</div>`).join('')}</div>`:''}
    <div class="acts">${p.mobile?`<a class="sh-btn" href="tel:${esc(p.mobile)}">Call ${esc(p.name.split(' ')[0])}</a>`:''}</div>
   </section>
-  <section class="card mgr"><h3>Follow up (managers only)</h3>
-   <span class="lb">Status</span>${chips('m_status',[['new','New'],['inv','Investigating'],['closed','Closed']],E.status)}
-   <label class="f"><span>Notes</span><textarea id="rp_m_notes" rows="3" placeholder="Calls made, what was found, who was told">${esc(E.notes)}</textarea></label>
-   <label class="f"><span>What we changed so it does not happen again</span><textarea id="rp_m_fix" rows="2">${esc(E.fixAct)}</textarea></label>
-   ${r.kind!=='hazard'?`<span class="lb">Reported to WorkSafe QLD?</span>${chips('m_ws',[['no','Not needed'],['yes','Yes, notified']],E.ws)}${E.ws==='yes'?`<label class="f"><span>WorkSafe reference</span><input id="rp_m_wsref" value="${esc(E.wsRef)}"></label>`:''}`:''}
-   <div class="acts"><button type="button" class="sh-btn primary" data-rp="msave">Save follow up</button><button type="button" class="sh-btn" data-rp="pdf">PDF for management</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-rp="del">${arm?'Tap again to delete':'Delete report'}</button></div>
+  <section class="card mgr rp-acts"><div class="acts">${r.status==='closed'?`<button type="button" class="sh-btn" data-rp="mst" data-v="new">Reopen</button>`:`<button type="button" class="sh-btn primary" data-rp="mst" data-v="closed">✓ Mark as done</button>`}<button type="button" class="sh-btn" data-rp="pdf">PDF</button><span class="sp"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-rp="del">${arm?'Tap again to delete':'Delete report'}</button></div>
   </section>`;
 }
 async function loadImgs(r){for(const pid of (r.photos||[])){if(imgs[pid])continue;try{const s=await db.doc('reportimg/'+pid).get();imgs[pid]=s.exists?__D(s).img:'';}catch(e){imgs[pid]=''}if(open===r.id)render()}}
@@ -14870,6 +14865,7 @@ document.addEventListener('click',async e=>{
   if(a==='pdf'&&open){const r={id:open,...items[open]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el,true);return}
   if(a==='lpdf'){e.stopPropagation();const r={id:v,...items[v]};await loadImgs(r);makePdf(r,(r.photos||[]).map(p=>imgs[p]),el,true);return}
   if(a==='xls'){exportXls();return}
+  if(a==='mst'&&open){const up={status:el.dataset.v};if(up.status==='closed')up.closedAt=new Date().toISOString();try{await db.doc('reports/'+open).update(up);items[open]={...items[open],...up};msg={t:up.status==='closed'?'Marked as done.':'Reopened.'};pushStat();edit=null;render()}catch(x){msg={err:true,t:'Could not save just now.'};render()}return}
   if(a==='msave'&&open&&edit){edit.notes=($('m_notes')||{}).value||'';edit.fixAct=($('m_fix')||{}).value||'';if($('m_wsref'))edit.wsRef=$('m_wsref').value;
     const up={status:edit.status||'inv',notes:edit.notes,fixAct:edit.fixAct,ws:edit.ws||'',wsRef:edit.ws==='yes'?edit.wsRef||'':''};if(up.status==='closed')up.closedAt=new Date().toISOString();
     try{await db.doc('reports/'+open).update(up);items[open]={...items[open],...up};msg={t:up.status==='closed'?'Saved and closed. Tap PDF for management to send it on.':'Follow up saved.'};pushStat();edit=null;render()}catch(x){msg={err:true,t:'Could not save just now.'};render()}return}
@@ -14909,7 +14905,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321200';
+const VERSION='202610321300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
