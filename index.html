@@ -8877,7 +8877,7 @@ function detailHTML(){
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
-    :k==='appAccess'?`<label class="f" for="dm_f_appAccess">${l}<select id="dm_f_appAccess">${[['','Driver'],['admin','Admin (sees everything)']].map(([r,t])=>`<option value="${r}" ${String(p.appAccess||'')===r?'selected':''}>${t}</option>`).join('')}</select><small class="hint">Signs in with the email above${(()=>{const n=accNow[openId];return n===undefined?'':' · Right now: '+(n===null?'not set up yet':n.role==='admin'?'Admin':'Driver')})()}</small></label>`
+    :k==='appAccess'?`<label class="f" for="dm_f_appAccess">${l}<select id="dm_f_appAccess">${[['','Driver'],['admin','Admin (sees everything)']].map(([r,t])=>`<option value="${r}" ${String(p.appAccess||'')===r?'selected':''}>${t}</option>`).join('')}</select><small class="hint">Signs in with the email above${(()=>{const me=people[openId]||{},e=String(me.email||'').trim().toLowerCase();if(!e)return '';const o=Object.values(people).filter(x=>x.id!==openId&&String(x.email||'').trim().toLowerCase()===e);return o.length?' · Same email also on '+o.map(x=>[x.first,x.last].filter(Boolean).join(' ')).join(', '):''})()}${(()=>{const n=accNow[openId];return n===undefined?'':' · Right now: '+(n===null?'not set up yet':n.role==='admin'?'Admin':'Driver')})()}</small></label>`
     :k==='payFreq'?`<label class="f" for="dm_f_payFreq">${l}<select id="dm_f_payFreq">${[['','4 weeks'],['fortnight','2 weeks'],['week','Week']].map(([r,t])=>`<option value="${r}" ${String(p.payFreq||'')===r?'selected':''}>${t}</option>`).join('')}</select></label>`
     :k==='fit2work'?`<label class="f" for="dm_f_fit2work">${l}<select id="dm_f_fit2work">${['','Passed','Pending','Failed','Not done'].map(r=>`<option value="${r}" ${String(p.fit2work||'')===r?'selected':''}>${r||'Not entered'}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
@@ -14188,7 +14188,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610313800';
+const VERSION='202610313900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14385,7 +14385,7 @@ let syncT=null;
 async function syncAccess(){
   try{
     const st=await fs.collection('staff').get();const want={};
-    st.docs.forEach(d=>{const p=DEC(d.data())||{};const e=String(p.email||'').trim().toLowerCase();if(okMail(e))want[e]={role:p.appAccess==='admin'?'admin':'driver',name:[p.first,p.last].filter(Boolean).join(' '),staff:d.id,login:String(p.login||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')}});
+    st.docs.forEach(d=>{const p=DEC(d.data())||{};const e=String(p.email||'').trim().toLowerCase();if(okMail(e)){const w={role:p.appAccess==='admin'?'admin':'driver',name:[p.first,p.last].filter(Boolean).join(' '),staff:d.id,login:String(p.login||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')};const o=want[e];/* the same email on two people: Admin on either one wins */if(!o||(w.role==='admin'&&o.role!=='admin'))want[e]=w}});
     const ac=await fs.collection('access').get();const have={};ac.docs.forEach(d=>have[d.id]=d.data());
     let b=fs.batch(),n=0;
     const flush=async()=>{if(n){await b.commit();b=fs.batch();n=0}};
