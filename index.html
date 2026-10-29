@@ -6645,11 +6645,10 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['','office',[['results','Results, survey and summary'],['leave','Who is off and cover planner'],['guide','How we do things'],
- ['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],
- ['enquiries','Customer enquiries and NCRs'],['updates','Driver news and weekly brief'],['invoices','Invoices and clock in hours'],
- ['staff','Details, compliance and van checks'],
- ['uniform','Uniform orders'],['reports','Incidents and driver messages']]]];
+const AMENU=[['Performance','day',[['results','Results, survey and summary'],['enquiries','Customer enquiries and NCRs']]],
+ ['On the road','road',[['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],['guide','How we do things']]],
+ ['Team','team',[['leave','Who is off and cover planner'],['updates','Driver news and weekly brief'],['reports','Incidents and driver messages'],['uniform','Uniform orders']]],
+ ['Office','office',[['invoices','Invoices and clock in hours'],['staff','Details, compliance and van checks']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
 const setRows=(drv)=>`${true?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
@@ -14800,7 +14799,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320200';
+const VERSION='202610320300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
