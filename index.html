@@ -5362,6 +5362,16 @@ html body #mod-runs .pl-mv{flex-direction:row;gap:4px}
 html body #mod-runs .pl-mv button{width:34px;height:34px}
 html body #mod-runs .pl-row .pl-rm{width:34px;height:34px;margin-right:0}
 html body #mod-runs .pl-list{gap:4px}
+/* run planner: sections all on screen, no sliding; compact street list */
+html body #mod-runs .pl-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px;overflow:visible;padding-bottom:4px}
+html body #mod-runs .pl-chips button{flex:none;min-width:0;padding:7px 8px;border-radius:10px;gap:5px;font-size:.85rem;justify-content:flex-start;box-sizing:border-box}
+html body #mod-runs .pl-chips button>i{flex:none;padding:0 6px;font-size:.8rem}
+html body #mod-runs .pl-chips button{overflow:hidden;text-overflow:ellipsis}
+html body #mod-runs .pl-chips button small{margin-left:auto;flex:none}
+html body #mod-runs .pl-tray{gap:4px}
+html body #mod-runs .pl-tray .pl-t.tray-row{flex-direction:row;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.92rem}
+html body #mod-runs .pl-add2{padding:10px}
+html body #mod-runs .pl-chips button .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6876,7 +6886,7 @@ function plOrder(r){
   const si=plSecIdx(r,S.into),sec=r.sections[si],list=inSec(r,sec.id),un=unplacedOf(r),q=(S.traySearch||'').trim().toUpperCase();
   let n=0;for(const y of r.sections.slice(0,si))n+=inSec(r,y.id).length;
   const elsewhere=r.streets.filter(x=>x.section&&x.section!==sec.id&&r.sections.some(y=>y.id===x.section));const shown=un;
-  return `<section class="pl-card"><div class="pl-chips">${r.sections.map((x,i)=>`<button type="button" data-act="into" data-v="${x.id}" aria-pressed="${x.id===S.into}"><i>${i+1}</i>${esc(x.name)}<small>${inSec(r,x.id).length}</small></button>`).join('')}</div>
+  return `<section class="pl-card"><div class="pl-chips">${r.sections.map((x,i)=>`<button type="button" data-act="into" data-v="${x.id}" aria-pressed="${x.id===S.into}"><i>${i+1}</i><span class="nm">${esc(x.name)}</span><small>${inSec(r,x.id).length}</small></button>`).join('')}</div>
    <div class="pl-add2"><h3>Add the next street to <b>${si+1} · ${esc(sec.name)}</b></h3>
     <div class="pl-newst top"><input type="text" id="newStreet" placeholder="New street name" aria-label="New street name"><button type="button" class="btn" data-act="addStreet">+ Add street</button></div>
     ${un.length||elsewhere.length?`<input type="search" id="traySearch" class="pl-search" placeholder="Type a street name" aria-label="Find a street" value="${esc(S.traySearch||'')}" autocomplete="off" enterkeyhint="search">
@@ -14222,7 +14232,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610314600';
+const VERSION='202610314700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
