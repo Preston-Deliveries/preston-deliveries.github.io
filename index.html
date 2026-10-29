@@ -5839,6 +5839,14 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .ah-off .ao-nd.off>summary{color:#C2570C}.ah-off .ao-nd.in .ao-ns{color:#1E8A4C}
 .ah-off .ao-nd .ao-ch{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ah-off .ao-nd.off>summary{color:#FFA463}:root:not([data-theme=light]) .ah-off .ao-nd.in .ao-ns{color:#5CCB8E}}:root[data-theme=dark] .ah-off .ao-nd.off>summary{color:#FFA463}:root[data-theme=dark] .ah-off .ao-nd.in .ao-ns{color:#5CCB8E}
+
+/* quick add: four big buttons */
+html body #sh-home#sh-home .ah-qa .qa-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;margin-top:10px!important}
+@media (min-width:760px){html body #sh-home#sh-home .ah-qa .qa-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+html body #sh-home#sh-home .ah-qa .qa{flex-direction:row!important;justify-content:flex-start!important;gap:12px!important;padding:14px!important;min-height:72px!important;border-radius:16px!important}
+html body #sh-home#sh-home .ah-qa .qa .ic{width:46px!important;height:46px!important;border-radius:13px!important;flex:0 0 auto}
+html body #sh-home#sh-home .ah-qa .qa .ic svg{width:26px!important;height:26px!important}
+html body #sh-home#sh-home .ah-qa .qa b{font-size:1.15rem!important;text-align:left}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -7067,7 +7075,7 @@ function renderHome(){
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
-  const QA=[['updates','[data-nt="new"]','Post update'],['briefs','[data-tb="new"]','New brief'],['results','[data-rtab="import"]','Load results'],['leave','[data-lv="add"]','Add leave'],['enquiries','[data-eq="new"]','Add enquiry'],['vchecks','[data-vc="new"]','Van check']];
+  const QA=[['updates','[data-nt="new"]','Update'],['leave','[data-lv="add"]','Leave'],['enquiries','[data-eq="new"]','Enquiry'],['vchecks','[data-vc="new"]','Van check']];
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
@@ -14929,7 +14937,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322100';
+const VERSION='202610322200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
