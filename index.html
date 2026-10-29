@@ -5823,7 +5823,8 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 
 #sh-home .dh-week .st4{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 
-.pfx .pr-q .pr-tx small{font-size:.98rem;color:var(--sh-ink);font-style:italic;line-height:1.4}
+.pfx .pr-q .pr-tx small{font-size:.98rem;color:var(--sh-ink);font-style:normal;line-height:1.4}
+.pfx .pr-sc{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.25rem;font-weight:800;background:var(--sh-sunk);color:var(--sh-muted)}.pfx .pr-sc.g{background:var(--pf-gs);color:var(--pf-g)}.pfx .pr-sc.w{background:var(--pf-os);color:var(--pf-o)}.pfx .pr-sc.b{background:var(--pf-bs);color:var(--pf-b)}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10341,7 +10342,7 @@ function mySurvey(which,opt){
     const all=Object.fromEntries(L.map(x=>[dkey(x.id),x.pts]));
     if(!row)return{found:false,of:L.length,sub:'',all};
     const sc=row.r.map(x=>x.s);
-    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),low:row.r.filter(x=>x.s<7),good:row.r.filter(x=>x.s>=9&&x.c),of:L.length,all};
+    return{found:true,sub:'',n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:row.avg,rank:row.rank,pts:row.pts,scores:sc,said:row.r.filter(x=>x.c).map(x=>x.c),saidS:row.r.filter(x=>x.c).map(x=>({s:x.s,c:x.c})),low:row.r.filter(x=>x.s<7),good:row.r.filter(x=>x.s>=9&&x.c),of:L.length,all};
   }const b=s&&s[which||'weekly'];if(!b||!b.html)return null;
   let doc;try{doc=new DOMParser().parseFromString(b.html,'text/html')}catch(e){return null}
   const rows=[...doc.querySelectorAll('tr')].filter(t=>t.querySelector('.id'));
@@ -10351,8 +10352,8 @@ function mySurvey(which,opt){
   if(!row)return{found:false,of:rows.length,sub};
   const sc=[...row.querySelectorAll('.bx .b')].map(b=>+b.textContent);
   const scores=[...row.querySelectorAll('.bx .b')].map(b=>+b.textContent);
-  const said=[...row.querySelectorAll('.cm .c .tx')].map(x=>x.textContent);
-  return{found:true,sub,n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:sc.length?sc.reduce((a,x)=>a+x,0)/sc.length:null,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
+  const said=[...row.querySelectorAll('.cm .c .tx')].map(x=>x.textContent);const saidS=[...row.querySelectorAll('.cm .c')].map(p=>({s:p.querySelector('.b')?+p.querySelector('.b').textContent:null,c:String((p.querySelector('.tx')||{}).textContent||'').replace(/^[“"]|[”"]$/g,'')}));
+  return{saidS,found:true,sub,n:sc.length,hi:sc.filter(x=>x>=9).length,mid:sc.filter(x=>x>=7&&x<9).length,lo:sc.filter(x=>x<7).length,avg:sc.length?sc.reduce((a,x)=>a+x,0)/sc.length:null,rank:+(row.querySelector('.rk')||{}).textContent||0,pts:+(row.querySelector('.pt')||{}).textContent||0,scores,said,of:rows.length,sub};
 }
 function myPrecards(){const K=myKeys();return(S().precards||[]).filter(p=>K.has(dkey(p.driver))).sort((a,b)=>String(b.date).localeCompare(String(a.date)))}
 function clockedFor(dates){const by={};(data&&data.clock||[]).forEach(c=>by[c.date]=c);let m=0,n=0;
@@ -10768,7 +10769,7 @@ function driverHTML(){
   return `<div class="dr pfx">${window.PERFUI.page({who:tc(me.name||''),sub:run?`Run ${esc(run.login||run.id)}${run.postcode?` · <em>${esc(run.postcode)}</em>`:''}`:'',
     per:when+' · '+per.label.replace(/^Week \d of the pay cycle · /,'').replace(/^Pay cycle /,''),ctl:pkHTML(P),
     cur,prev:cur&&prev?prev:null,prevLab:lab,rank:rk?(rk.rank!=null?{rank:rk.rank,of:rk.of}:{why:'Not ranked: needs '+rk.need+' day'+(rk.need===1?'':'s')+' worked'}):null,
-    bests:B,trend:pfWeeks(4),said:sv&&sv.found?(sv.said||[]):[],own,t:targets(),none:'No results '+(PER==='day'?'for this day':PER==='week'?'for this week':'for this month')+' yet.'})}</div>`;
+    bests:B,trend:pfWeeks(4),said:sv&&sv.found?(sv.saidS||(sv.said||[]).map(c=>({s:null,c}))):[],own,t:targets(),none:'No results '+(PER==='day'?'for this day':PER==='week'?'for this week':'for this month')+' yet.'})}</div>`;
 }
 /* My pay: what this pay period looks like so far */
 async function paySummary(){
@@ -10860,7 +10861,7 @@ window.PERFUI=(()=>{
         row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
         row('sv','Survey',c.sv==null?'No surveys yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs),
         row('ftd','First time delivery',c.ftd==null?'No result · Target 92%':sub(SAY[st('ftd',c.ftd,t)],'Target 92%',dlt(c.ftd,p.ftd,'eta',L)),P1(c.ftd),st('ftd',c.ftd,t))]);
-      out+=sec('fb','What customers said',(m.said||[]).filter(Boolean).slice(0,6).map(x=>`<div class="pr-row pr-q"><span class="pr-ic">${ic('q')}</span><div class="pr-tx"><small>“${E(x)}”</small></div></div>`));
+      out+=sec('fb','What customers said',(m.said||[]).filter(x=>x&&(x.c||typeof x==='string')).slice(0,6).map(x=>{const o=typeof x==='string'?{s:null,c:x}:x,sc=o.s!=null&&!isNaN(o.s)&&o.s!==''?+o.s:null;return `<div class="pr-row pr-q"><span class="pr-sc ${sc==null?'':sc>=9?'g':sc>=7?'w':'b'}">${sc==null?'–':sc}</span><div class="pr-tx"><small>${E(String(o.c).replace(/^[“"]|[”"]$/g,''))}</small></div></div>`}));
     }
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
@@ -12713,7 +12714,7 @@ function render0(){
   box.innerHTML=`<div class="smx pfx"><div class="pf-top"><button type="button" class="sh-btn sm" data-sm="pdf">Download PDF</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${window.PERFUI.page({who,sub:drv?sub:esc(sub),per:perL,ctl,cur:pfCur(a,drv),prev:pa?pfCur(pa,drv):null,prevLab:PC&&PC.R?PC.R.lab:'',prevPart:PC&&PC.R&&PC.R.part,rank:drv?pfRank(C,scope.v):null,
-     said:a.scores.filter(x=>x.c).sort((x,y)=>x.s-y.s).map(x=>x.c),trend:pfTrend(keys),own:drv?false:undefined,trackTitle:'How '+(scope.t==='all'?'the contract is':scope.t==='pc'?scope.v+' is':'they are')+' tracking',t:targets(),none:'No results for this period yet.'})}
+     said:a.scores.filter(x=>x.c).sort((x,y)=>x.s-y.s).map(x=>({s:x.s,c:x.c})),trend:pfTrend(keys),own:drv?false:undefined,trackTitle:'How '+(scope.t==='all'?'the contract is':scope.t==='pc'?scope.v+' is':'they are')+' tracking',t:targets(),none:'No results for this period yet.'})}
   </div>`;
 }
 window.SUMMARY={openLogin:l=>{const k=dkey(l);scope={t:'drv',v:k};if(window.APP)APP.go('summary');render();window.scrollTo(0,0)}};
@@ -14913,7 +14914,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321600';
+const VERSION='202610321800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
