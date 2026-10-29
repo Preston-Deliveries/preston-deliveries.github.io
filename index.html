@@ -5338,6 +5338,7 @@ html body #mod-runs .sh-t .r::before{display:block}}
 #sh-ptr span{transition:transform .2s}#sh-ptr.go span{transform:rotate(180deg)}#sh-ptr.spin span{animation:ptrs .8s linear infinite}@keyframes ptrs{to{transform:rotate(360deg)}}
 html:is(.lang-pt,.lang-pa) .qa b{overflow-wrap:anywhere}
 #mod-staff label.f small.hint{display:block;font-weight:500;color:var(--sh-muted);font-size:.78rem;margin-top:4px;text-transform:none;letter-spacing:0}
+#sh-set p.who{margin:10px 2px 0;font-size:.78rem;color:var(--sh-muted);text-align:center;word-break:break-all}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6271,7 +6272,7 @@ function openSettings(){closeSettings();const drv=role!=='mgr',can=previewChild|
   const w=document.createElement('div');w.id='sh-set';w.setAttribute('role','dialog');w.setAttribute('aria-label','Settings');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Settings</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div>
    ${can?`<div class="dm-row" data-notr><h3>View</h3><div class="thseg" role="group" aria-label="View"><button type="button" ${previewChild?'data-sh="mv"':'data-sh="setclose"'} aria-pressed="${!previewChild}">Admin</button><button type="button" ${previewChild?'data-sh="setclose"':'data-sh="uv"'} aria-pressed="${!!previewChild}">👁 Driver view</button></div></div>`:''}
-   ${setRows(drv)}<button type="button" class="dm-out" data-sh="signout">Sign out</button></div>`;
+   ${setRows(drv)}<button type="button" class="dm-out" data-sh="signout">Sign out</button>${(()=>{let w=null;try{w=(window.__whoAmI||window.parent.__whoAmI)()}catch(e){}return w&&w.email?`<p class="who" data-notr>Signed in as ${esc(w.email)} · ${w.role==='admin'?'Admin':'Driver'}</p>`:''})()}</div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
 function closeSettings(){const w=document.getElementById('sh-set');if(w)w.remove()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!b)return;const k=b.dataset.sh;if(k==='settings'){openSettings();return}if(k==='needs'){openNeeds();return}if(k==='alerts'){openAlerts();return}if(k==='alclear'){try{window.ME&&ME.clearAlerts&&ME.clearAlerts()}catch(x){}const w=document.getElementById('sh-set');const bx=w&&w.querySelector('.alb');if(bx)bx.innerHTML='<p class="nt0">✓ All cleared. New notifications will show here.</p>';b.hidden=true;return}if(k==='setclose'||((k==='uv'||k==='mv'||k==='signout')&&b.closest('#sh-set')))setTimeout(closeSettings,0)});
@@ -14187,7 +14188,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610313700';
+const VERSION='202610313800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14521,7 +14522,13 @@ async function boot(){
   loading();
   const snap=await loadShared();
   startApp(snap);
+  recheckRole();
 }
+/* the role above may come from this computer's saved copy; check it with the server and reopen if it changed */
+async function recheckRole(){if(OWNERS.includes(EMAIL))return;try{const s=await fs.doc('access/'+EMAIL).get({source:'server'});const r=s.exists?(s.data().role==='admin'?'admin':'driver'):null;
+  if(r&&r!==ROLE){let n=0;try{n=+sessionStorage.getItem('rr1161')||0}catch(e){}if(n<2){try{sessionStorage.setItem('rr1161',String(n+1))}catch(e){}location.reload()}}
+  else{try{sessionStorage.removeItem('rr1161')}catch(e){}}}catch(e){}}
+window.__whoAmI=()=>({email:EMAIL,role:ROLE});
 
 /* user view preview inside the app: the parent page gives it data */
 window.__webVersion=VERSION;
