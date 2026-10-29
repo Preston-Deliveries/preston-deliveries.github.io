@@ -5893,6 +5893,79 @@ html body #sh-home#sh-home .ah-qa .qa b{font-size:1.15rem!important;text-align:l
 @media (max-width:400px){:root:root:root .sh-mtop .sh-brand b{font-size:1.62rem!important}:root:root:root .sh-mtop .sh-brand small{font-size:.66rem!important;letter-spacing:.06em!important}:root:root:root .sh-mtop .sh-brand .sh-logo{width:56px!important;height:56px!important}:root:root:root .sh-mtop .sh-brand{gap:11px!important}}
 
 @media (max-width:370px){:root:root:root .sh-mtop .sh-brand b{font-size:1.4rem!important}:root:root:root .sh-mtop .sh-brand .sh-logo{width:50px!important;height:50px!important}:root:root:root .sh-mtop .sh-brand small{font-size:.6rem!important}}
+
+/* ===== One look everywhere, like the Menu: compact headers, one line tabs, calm buttons ===== */
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .in{padding:8px 16px 10px!important;gap:8px!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .ttl{min-height:0!important;gap:8px!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph h1{font-size:1.4rem!important;line-height:1.2!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .sh-back{width:36px!important;height:36px!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .sh-hubtabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:6px!important;padding:0!important;margin:0!important;scrollbar-width:none;grid-template-columns:none!important;width:auto!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .sh-hubtabs::-webkit-scrollbar{display:none}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .sh-hubtabs>button{flex:0 0 auto!important;min-height:34px!important;height:34px!important;padding:0 14px!important;font-size:.9rem!important;border-radius:99px!important;width:auto!important}
+:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph .in>p{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs){display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;gap:4px!important;padding:3px!important;border-radius:12px!important;scrollbar-width:none;grid-template-columns:none!important;min-height:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs)::-webkit-scrollbar{display:none}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs)>button{flex:1 0 auto!important;min-height:38px!important;height:auto!important;padding:6px 12px!important;font-size:.92rem!important;white-space:nowrap!important;border-radius:9px!important;width:auto!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-btn{min-height:42px;border-radius:12px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-btn.sm{min-height:34px}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .card{border-radius:16px!important;box-shadow:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx{gap:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{margin:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pstep,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pchips{min-height:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pstep .pnav,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pchips .pnav{min-height:40px!important;height:40px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main>.sh-sec h2{font-size:1.15rem!important;line-height:1.25!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .rv-tiles>div{padding:9px 11px!important}:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .rv-tiles>div b{font-size:1.2rem!important}
+@media (prefers-color-scheme:dark){:root:root:root:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-btn.primary{background:#2F6FDB!important;border-color:#2F6FDB!important;color:#fff!important}}
+:root:root:root[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-btn.primary{background:#2F6FDB!important;border-color:#2F6FDB!important;color:#fff!important}
+
+/* ===== Less chrome before the content ===== */
+/* page's own big heading repeats the page title above it */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .head>h1{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .head{min-height:0!important;margin:0!important;padding:0!important;gap:8px!important}
+/* action buttons: main one full width, the others side by side and smaller */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act{display:flex!important;flex-wrap:wrap!important;gap:8px!important;width:100%!important;flex-direction:row!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act>.sh-btn{flex:1 1 0!important;width:auto!important;min-width:0!important;min-height:40px!important;height:auto!important;padding:8px 10px!important;font-size:.92rem!important;margin:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act>.sh-btn.primary{flex:1 1 100%!important;min-height:46px!important;font-size:1rem!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rh.has-dl .dlw,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rb-dl .dlw{width:auto!important;flex:0 0 auto!important;min-height:36px!important;padding:6px 12px!important;font-size:.88rem!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rh.has-dl{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+/* number boxes: one compact row */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tiles,.nstat){display:grid!important;grid-template-columns:repeat(auto-fit,minmax(88px,1fr))!important;gap:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tiles,.nstat)>div{padding:8px 10px!important;min-height:0!important;border-radius:12px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tiles,.nstat)>div>span,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tiles,.nstat)>div small{font-size:.7rem!important;line-height:1.2!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tiles,.nstat)>div b{font-size:1.3rem!important;line-height:1.1!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rv-tiles{gap:6px!important}
+/* period picker: tighter */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx{padding:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{padding:3px!important;min-height:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2>button{min-height:36px!important;padding:5px 8px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep{min-height:0!important;gap:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep>*{min-height:40px!important}
+/* search and filters: compact */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch{display:grid!important;grid-template-columns:1fr 1fr!important;gap:6px 8px!important;padding:10px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch label.f{font-size:.72rem!important;gap:2px!important;margin:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch :is(input,select){min-height:40px!important;height:40px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch .tog{grid-column:1/-1;min-height:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .bar{display:flex!important;flex-wrap:wrap!important;gap:6px 8px!important;align-items:center}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .bar>input{flex:1 1 180px!important;min-height:42px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .bar>label.mini{flex:1 1 140px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .bar :is(input,select){min-height:42px!important;height:42px!important}
+/* duplicates and notes */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .brand:has(.pcs.sel-done) .pc-sel{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .brand .status{font-size:.75rem!important;margin:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-lock{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-bar .chips{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:none;gap:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-bar .chips>button{flex:0 0 auto!important;min-height:36px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-head{min-height:0!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .cp .cp-top{display:none!important}
+
+@media (min-width:900px){
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs){width:fit-content!important;max-width:100%!important;align-self:flex-start!important}
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs)>button{flex:0 0 auto!important;padding:7px 18px!important}
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pkx{width:fit-content!important;max-width:100%!important}
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act{width:auto!important;justify-content:flex-start!important}
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act>.sh-btn,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .act>.sh-btn.primary{flex:0 0 auto!important;padding:9px 22px!important}
+ :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .lvx>.sh-btn.primary,:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .ntx .sh-btn.primary{width:auto!important;align-self:flex-start!important;padding:9px 22px!important}
+}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6479,7 +6552,7 @@ const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','director
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
  {t:'Driver Results',s:[['results','Results'],['survey','Survey'],['summary','Summary']]},
- {t:'Run Sheets and Sort Sheets',s:[['runs','Run sheets'],['sort','Sort sheets']]},
+ {t:'Run and Sort Sheets',s:[['runs','Run sheets'],['sort','Sort sheets']]},
  {t:'Leave Calendar',s:[['leave','Leave'],['cover','Cover planner']]},
  {t:'Precards and Lockers',s:[['precards','Precards'],['lockers','Parcel lockers']]},
  {t:'Enquiries and NCRs',s:[['enquiries','Enquiries'],['ncr','NCRs']]},
@@ -14974,7 +15047,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610323000';
+const VERSION='202610323200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
