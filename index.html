@@ -5630,6 +5630,43 @@ html body #mod-invoices table.sublist td:nth-child(2) small{display:block}}
 
 html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-width:max-content!important;margin-left:auto!important;display:inline-flex!important}
 @media (max-width:420px){.pfx .pf-parts{gap:6px}.pfx .pf-parts span{padding:7px 8px}.pfx .pf-parts small{font-size:.66rem}}
+
+/* scoreboard look */
+.pfx .pf-hero{display:flex;flex-direction:column;align-items:stretch;gap:14px}
+.pfx .pf-ht{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.pfx .pf-board{display:grid;grid-template-columns:1fr;gap:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.14)}
+@media (min-width:720px){.pfx .pf-board{grid-template-columns:3fr 2fr;align-items:center}}
+.pfx .pf-bsc{display:flex;align-items:center;gap:16px;min-width:0}
+.pfx .pf-ring{position:relative;flex:0 0 auto;width:132px;height:132px}.pfx .pf-ring svg{width:100%;height:100%}
+.pfx .pf-ring circle{fill:none;stroke-width:11}.pfx .pf-ring .bg{stroke:rgba(255,255,255,.13)}.pfx .pf-ring .fg{stroke:#8FA3BC;stroke-linecap:round}
+.pfx .pf-ring.s-good .fg{stroke:#3DD07F}.pfx .pf-ring.s-bad .fg{stroke:#FF6B61}.pfx .pf-ring.s-gold .fg{stroke:#F2C04D}
+.pfx .pf-rv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.pfx .pf-rv b{font-size:1.8rem;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1}.pfx .pf-rv small{font-size:.52rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:#C9D6E8;margin-top:5px;max-width:70px;line-height:1.15}
+.pfx .pf-bst{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.pfx .pf-pill{font-size:.85rem;font-weight:800;padding:3px 11px;border-radius:99px;background:rgba(255,255,255,.12);color:#fff}
+.pfx .pf-pill.s-good{background:#1E8E4E}.pfx .pf-pill.s-bad{background:#C8382E}.pfx .pf-pill.s-gold{background:#F2B705;color:#2A1E00}
+.pfx .pf-lost{font-size:.85rem;color:#C9D6E8;line-height:1.35}.pfx .pf-lost b{color:#fff}
+.pfx .pf-hero .pf-d{padding:0;margin:0;color:#C9D6E8}.pfx .pf-hero .pf-d small{color:#9FB2C9}.pfx .pf-hero .pf-d.up{color:#5FE39A}.pfx .pf-hero .pf-d.dn{color:#FF8A82}.pfx .pf-hero .pf-d.neu{color:#fff}
+.pfx .pf-bpc{display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+.pfx .pf-bpc>small{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#FFB27A}.pfx .pf-bpc b{font-size:2.3rem;font-weight:800;line-height:1.05;color:#fff;font-variant-numeric:tabular-nums}.pfx .pf-bpc span{font-size:.88rem;color:#C9D6E8}
+.pfx .pf-lines{padding:4px 16px}
+.pfx .pf-ln{display:grid;grid-template-columns:34px minmax(0,1fr) auto;column-gap:12px;row-gap:6px;align-items:center;padding:14px 0;border-top:1px solid var(--sh-line)}.pfx .pf-ln:first-child{border-top:0}
+.pfx .pf-ln .pf-i{width:34px;height:34px;border-radius:10px}
+.pfx .pf-ln.s-good .pf-i{background:var(--pf-gs);color:var(--pf-g)}.pfx .pf-ln.s-bad .pf-i{background:var(--pf-bs);color:var(--pf-b)}.pfx .pf-ln.s-gold .pf-i{background:var(--pf-os);color:var(--pf-o)}
+.pfx .pf-lt{display:flex;flex-direction:column;gap:1px;min-width:0}.pfx .pf-lt b{font-size:1.05rem;font-weight:800;color:var(--sh-ink)}.pfx .pf-lt small{font-size:.8rem;color:var(--sh-muted)}
+.pfx .pf-lv{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right}.pfx .pf-lv b{font-size:1.75rem;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--sh-ink)}.pfx .pf-lv small{font-size:.75rem;font-weight:800}
+.pfx .pf-ln.s-good .pf-lv b,.pfx .pf-ln.s-good .pf-lv small{color:var(--pf-g)}.pfx .pf-ln.s-bad .pf-lv b,.pfx .pf-ln.s-bad .pf-lv small{color:var(--pf-b)}.pfx .pf-ln.s-gold .pf-lv b,.pfx .pf-ln.s-gold .pf-lv small{color:var(--pf-o)}
+.pfx .pf-meter{grid-column:2/4;position:relative;height:10px;border-radius:99px;background:var(--sh-sunk);border:1px solid var(--sh-line)}
+.pfx .pf-meter i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--sh-muted)}
+.pfx .s-good .pf-meter i{background:var(--pf-g)}.pfx .s-bad .pf-meter i{background:var(--pf-b)}.pfx .s-gold .pf-meter i{background:var(--pf-o)}
+.pfx .pf-meter em{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--sh-ink)}
+.pfx .pf-li{grid-column:2/4;display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:.85rem;color:var(--sh-ink)}.pfx .pf-li .pf-d{margin:0;padding:0}
+.pfx .pf-bl{display:grid;grid-template-columns:1fr;gap:0}@media (min-width:720px){.pfx .pf-bl{grid-template-columns:1fr 1fr;column-gap:24px}}
+.pfx .pf-bi{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--sh-line)}
+@media (min-width:720px){.pfx .pf-bi:nth-child(2){border-top:0}}.pfx .pf-bi:first-child{border-top:0}
+.pfx .pf-md{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.2rem;background:var(--pf-os)}
+.pfx .pf-bi small{display:block;font-size:.95rem;font-weight:800;color:var(--sh-ink)}.pfx .pf-bi span{font-size:.8rem;color:var(--sh-muted)}.pfx .pf-bi>b{font-size:1.5rem;font-weight:800;color:var(--sh-ink);font-variant-numeric:tabular-nums}
+@media (max-width:420px){.pfx .pf-ring{width:116px;height:116px}.pfx .pf-rv b{font-size:1.55rem}.pfx .pf-lv b{font-size:1.5rem}.pfx .pf-bpc b{font-size:2rem}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6214,7 +6251,7 @@ const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
- {t:'Driver Results',s:[['results','Results'],['summary','Summary'],['survey','Survey']]},
+ {t:'Driver Results',s:[['results','Results'],['survey','Survey'],['summary','Summary']]},
  {t:'Run Sheets and Sort Sheets',s:[['runs','Run sheets'],['sort','Sort sheets']]},
  {t:'Leave Calendar',s:[['leave','Leave'],['cover','Cover planner']]},
  {t:'Precards and Lockers',s:[['precards','Precards'],['lockers','Parcel lockers']]},
@@ -6547,7 +6584,7 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['','office',[['results','Results, summary and survey'],['leave','Who is off and cover planner'],['guide','How we do things'],
+const AMENU=[['','office',[['results','Results, survey and summary'],['leave','Who is off and cover planner'],['guide','How we do things'],
  ['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],
  ['enquiries','Customer enquiries and NCRs'],['updates','Driver news and weekly brief'],['invoices','Invoices and clock in hours'],
  ['staff','Details, compliance and van checks'],
@@ -10558,7 +10595,7 @@ function pfWeeks(n){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow
   const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()]};const st=W.map(m=>statsFor([0,1,2,3,4,5].map(i=>addD(m,i))));
   const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
   const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,Dd]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(Dd||{}).find(x=>keys.includes(dkey(x)));const r=k?Dd[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
-  return{weeks:W.map(sh),sc:st.map(x=>x&&x.sc?x.sc.score:null),pc:st.map(x=>x?x.pc:null),eta:st.map(x=>x&&x.eta!=null?x.eta*100:null),cp:st.map(x=>x&&x.cp!=null?x.cp*100:null),enq:st.map(x=>x?x.enqK:null),sv}}
+  return{weeks:W.map(sh),sc:st.map(x=>x&&x.sc?x.sc.score:null),pc:st.map(x=>x?x.pc:null),eta:st.map(x=>x&&x.eta!=null?x.eta*100:null),cp:st.map(x=>x&&x.cp!=null?x.cp*100:null),enq:st.map(x=>x?(x.enq||0)+(x.enqP||0):null),sv}}
 function pfCur(x){if(!x)return null;const L=window.SCORE.lost;return{pc:x.pc,days:x.days,eta:x.eta==null?null:x.eta*100,cp:x.cp==null?null:x.cp*100,enqK:x.enqK,enqN:x.enq,enqP:x.enqP,score:x.sc?x.sc.score:null,lost:x.sc?{enq:L(x.sc.enq),eta:L(x.sc.eta),scan:L(x.sc.scan)}:null}}
 function driverHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates);
@@ -10615,46 +10652,52 @@ window.PERFUI=(()=>{
   function st(k,v,t){if(v==null)return 'na';
     if(k==='eta')return v>=99.95?'gold':Math.round(v*10)/10>=t.etaG?'good':'bad';
     if(k==='cp')return v>=99.95?'gold':Math.round(v*10)/10>=t.cpG-1e-9?'good':'bad';
-    if(k==='enq')return v>=9999?'bad':v<=0?'gold':v<=1+1e-9?'good':'bad';
+    if(k==='enq')return v<=0?'gold':'bad';
     if(k==='sc')return v>=99.995?'gold':v>=96-1e-9?'good':'bad';
     if(k==='sv')return v>=100?'gold':v>=70?'good':'bad';
     return 'na'}
   const STX={gold:'★ Perfect',good:'✓ On target',bad:'✗ Under target',na:''};
   /* change against the last period; up is good unless lower is better */
-  function dlt(cur,prev,kind,lab){if(cur==null||prev==null||!lab)return '';let d=cur-prev;if(kind==='enq'&&(cur>=9999||prev>=9999))return '';
-    const small={pc:0.5,eta:0.05,cp:0.05,enq:0.05,sc:0.005,sv:0.05}[kind];if(Math.abs(d)<small)return `<span class="pf-d same">Same as ${E(lab)}</span>`;
+  function dlt(cur,prev,kind,lab){if(cur==null||prev==null||!lab)return '';let d=cur-prev;
+    const small={pc:0.5,eta:0.05,cp:0.05,enq:0.5,sc:0.005,sv:0.05}[kind];if(Math.abs(d)<small)return `<span class="pf-d same">Same as ${E(lab)}</span>`;
     const good=kind==='enq'?d<0:kind==='pc'?null:d>0;
-    const txt=kind==='pc'?(prev?Math.round(Math.abs(d)/prev*100)+'%':N(Math.abs(d))):kind==='eta'||kind==='cp'?(Math.round(Math.abs(d)*10)/10)+' pts':kind==='sc'?(Math.round(Math.abs(d)*100)/100).toFixed(2):(Math.round(Math.abs(d)*10)/10).toFixed(1);
+    const txt=kind==='pc'?(prev?Math.round(Math.abs(d)/prev*100)+'%':N(Math.abs(d))):kind==='eta'||kind==='cp'?(Math.round(Math.abs(d)*10)/10)+' pts':kind==='sc'?(Math.round(Math.abs(d)*100)/100).toFixed(2):kind==='enq'?N(Math.abs(d)):(Math.round(Math.abs(d)*10)/10).toFixed(1);
     return `<span class="pf-d ${good==null?'neu':good?'up':'dn'}">${d>0?'▲':'▼'} ${txt} <small>vs ${E(lab)}</small></span>`}
   function tile(k,label,val,status,sub,foot,d){return `<div class="pf-t pf-${k} s-${status}"><div class="pf-th"><span class="pf-i">${svg(k)}</span><span class="pf-l">${E(label)}</span></div>
     <b class="pf-v">${val}</b>${STX[status]?`<span class="pf-s">${STX[status]}</span>`:''}${sub?`<span class="pf-sub">${sub}</span>`:''}${foot?`<span class="pf-f">${foot}</span>`:''}${d||''}</div>`}
   /* m: {who, sub, tag, per, cur, prev, prevLab, rank, bests, bestsTitle, trend, own, t, none} */
+  /* a ring for the Contract Score: the further round, the better */
+  function ring(v,s){const r=52,C=2*Math.PI*r,f=v==null?0:Math.max(0,Math.min(1,(v-50)/50));
+    return `<div class="pf-ring s-${s}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="${r}" class="bg"/><circle cx="60" cy="60" r="${r}" class="fg" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 60 60)"/></svg><div class="pf-rv"><b>${v==null?'–':window.SCORE.fmt(v)}</b><small>Contract<br>Score</small></div></div>`}
+  /* one line in the scoreboard, with a bar showing how close to the target it is */
+  function line(k,label,val,s,tgTxt,info,bar,d){return `<div class="pf-ln s-${s}"><span class="pf-i">${svg(k)}</span><div class="pf-lt"><b>${E(label)}</b><small>${tgTxt}</small></div><div class="pf-lv"><b>${val}</b>${STX[s]?`<small>${k==='enq'?(s==='bad'?'✗ Over target':'★ None'):STX[s]}</small>`:''}</div>
+    ${bar?`<div class="pf-meter"><i style="width:${bar[0]}%"></i>${bar[1]!=null?`<em style="left:${bar[1]}%"></em>`:''}</div>`:''}${info||d?`<div class="pf-li">${info?`<span>${info}</span>`:''}${d||''}</div>`:''}</div>`}
+  const sc=(v,lo,hi)=>Math.max(2,Math.min(100,(v-lo)/(hi-lo)*100));
+  /* m: {who, sub, per, ctl, cur, prev, prevLab, rank, bests, bestsTitle, trend, own, t, none} */
   function page(m){
     const t=m.t||{etaG:98,cpG:99},c=m.cur,p=m.prev||{},L=m.prevLab;
-    const head0=`<section class="pf-hero"><div class="pf-who"><b>${E(m.who)}</b>${m.sub?`<span>${m.sub}</span>`:''}</div>
-      <div class="pf-per"><small>${E(m.per||'')}</small>${m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of} drivers</span>`:m.rank&&m.rank.why?`<span class="pf-rk nr">${E(m.rank.why)}</span>`:''}</div></section>`,head=head0+(m.ctl||'');
+    const rk=m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of} drivers</span>`:m.rank&&m.rank.why?`<span class="pf-rk nr">${E(m.rank.why)}</span>`:'';
+    const scs=c?st('sc',c.score,t):'na';
+    const board=c?`<div class="pf-board"><div class="pf-bsc">${ring(c.score,scs)}<div class="pf-bst">${STX[scs]?`<span class="pf-pill s-${scs}">${STX[scs]}</span>`:''}${c.lost?`<span class="pf-lost">Lost a day: enquiries <b>${c.lost.enq}</b> · ETA <b>${c.lost.eta}</b> · scan <b>${c.lost.scan}</b></span>`:''}${dlt(c.score,p.score,'sc',L)}</div></div>
+      <div class="pf-bpc"><small>Parcels</small><b>${N(c.pc)}</b><span>${c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:''}</span>${dlt(c.pc,p.pc,'pc',L)}</div></div>`:'';
+    const head=`<section class="pf-hero"><div class="pf-ht"><div class="pf-who"><b>${E(m.who)}</b>${m.sub?`<span>${m.sub}</span>`:''}</div><div class="pf-per"><small>${E(m.per||'')}</small>${rk}</div></div>${board}</section>`+(m.ctl||'');
     if(!c)return head+`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`+bests(m)+track(m);
-    const S0=window.SCORE,scs=st('sc',c.score,t);
-    const parts=c.lost?`<div class="pf-parts"><span><small>Enquiries</small><b>${c.lost.enq}</b></span><span><small>2 hr ETA</small><b>${c.lost.eta}</b></span><span><small>Scan</small><b>${c.lost.scan}</b></span></div><span class="pf-f">Points lost a day on average · green is 96 or more</span>`:'';
-    const main=`<div class="pf-main"><div class="pf-t pf-big pf-sc s-${scs}"><div class="pf-th"><span class="pf-i">${svg('sc')}</span><span class="pf-l">Contract Score</span>${STX[scs]?`<span class="pf-s">${STX[scs]}</span>`:''}</div>
-      <b class="pf-v">${c.score==null?'–':S0.fmt(c.score)}</b>${parts}${dlt(c.score,p.score,'sc',L)}</div>
-      <div class="pf-t pf-big pf-pc s-na"><div class="pf-th"><span class="pf-i">${svg('pc')}</span><span class="pf-l">Parcels</span></div>
-      <b class="pf-v">${N(c.pc)}</b>${c.days?`<div class="pf-parts"><span><small>Work days</small><b>${N(c.days)}</b></span><span><small>A day${c.perDriver?' per driver':''}</small><b>${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))}</b></span></div>`:''}${dlt(c.pc,p.pc,'pc',L)}</div></div>`;
-    const T=[
-      tile('eta','2 hr ETA',P1(c.eta),st('eta',c.eta,t),'','Target '+t.etaG+'%',dlt(c.eta,p.eta,'eta',L)),
-      tile('cp','Scan compliance',P1(c.cp),st('cp',c.cp,t),'','Target '+t.cpG+'%',dlt(c.cp,p.cp,'cp',L)),
-      tile('enq','Enquiries',K1(c.enqK),st('enq',c.enqK,t),`${N(c.enqN||0)} at fault${c.enqP?' · '+N(c.enqP)+' partly':''}`,'Per 1,000 parcels · target 1 or less',dlt(c.enqK,p.enqK,'enq',L)),
-      tile('sv','Survey',c.sv==null?'–':String(Math.round(c.sv*10)/10),st('sv',c.sv,t),c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'No surveys yet','Target 70 · not in the score',dlt(c.sv,p.sv,'sv',L))];
-    return head+main+`<div class="pf-grid pf-g4">${T.join('')}</div>${L&&m.prev?`<p class="pf-cmp">Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:''}${window.SCORE.howHTML('sc-how pf-how')}`+bests(m)+track(m)}
+    const et=c.enqT!=null?c.enqT:(c.enqN||0)+(c.enqP||0);
+    const rows=[
+      line('eta','2 hr ETA',P1(c.eta),st('eta',c.eta,t),'Target '+t.etaG+'%','',c.eta==null?null:[sc(c.eta,85,100),sc(t.etaG,85,100)],dlt(c.eta,p.eta,'eta',L)),
+      line('cp','Scan compliance',P1(c.cp),st('cp',c.cp,t),'Target '+t.cpG+'%','',c.cp==null?null:[sc(c.cp,90,100),sc(t.cpG,90,100)],dlt(c.cp,p.cp,'cp',L)),
+      line('enq','Enquiries',N(et),st('enq',et,t),'Target 0',`${N(c.enqN||0)} at fault${c.enqP?' · '+N(c.enqP)+' partly at fault':''}`,null,dlt(et,p.enqT!=null?p.enqT:(p.enqN!=null?(p.enqN||0)+(p.enqP||0):null),'enq',L)),
+      line('sv','Survey',c.sv==null?'–':String(Math.round(c.sv*10)/10),st('sv',c.sv,t),'Target 70 · not in the score',c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'No surveys yet',c.sv==null?null:[sc(c.sv,0,100),70],dlt(c.sv,p.sv,'sv',L))];
+    return head+`<section class="pf-box pf-lines">${rows.join('')}</section>${L&&m.prev?`<p class="pf-cmp">Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:''}${window.SCORE.howHTML('sc-how pf-how')}`+bests(m)+track(m)}
   function bests(m){const B=m.bests;if(!B||!B.length)return '';
-    return `<section class="pf-box pf-best"><h2><span aria-hidden="true">🏅</span> ${E(m.bestsTitle||'Personal bests')}</h2><div class="pf-bg">${B.map(b=>`<div class="pf-b"><small>${E(b.t)}</small><b>${E(b.v)}</b><span>${E(b.s||'')}</span></div>`).join('')}</div></section>`}
+    return `<section class="pf-box pf-best"><h2>${E(m.bestsTitle||'Personal bests')}</h2><div class="pf-bl">${B.map((b,i)=>`<div class="pf-bi"><span class="pf-md">${['🏆','🔥','📦','💯'][i]||'🏅'}</span><div><small>${E(b.t)}</small><span>${E(b.s||'')}</span></div><b>${E(b.v)}</b></div>`).join('')}</div></section>`}
   /* how it is tracking: last 6 weeks, one bar a week */
   function track(m){const R=m.trend;if(!R||!R.weeks||!R.weeks.length)return '';const t=m.t||{etaG:98,cpG:99};
     const rows=[['sc','Contract Score',R.sc,v=>window.SCORE.fmt(v),v=>Math.max(8,Math.min(100,(v-60)*2.5))],
       ['pc','Parcels',R.pc,v=>N(v),null],
       ['eta','2 hr ETA',R.eta,P1,v=>Math.max(8,Math.min(100,(v-85)*6.67))],
       ['cp','Scan compliance',R.cp,P1,v=>Math.max(8,Math.min(100,(v-90)*10))],
-      ['enq','Enquiries per 1k',R.enq,K1,v=>v<=0?8:Math.max(16,Math.min(100,v*25))],
+      ['enq','Enquiries',R.enq,v=>N(v),v=>v<=0?8:Math.max(16,Math.min(100,v*20))],
       ['sv','Survey',R.sv,v=>String(Math.round(v*10)/10),v=>Math.max(8,Math.min(100,v))]];
     const one=([k,l,vals,fmt,h])=>{vals=vals||[];const mx=Math.max(1,...vals.filter(v=>v!=null));const ix=vals.map((v,i)=>v==null?-1:i).filter(i=>i>=0);const cur=ix.length?vals[ix[ix.length-1]]:null,pv=ix.length>1?vals[ix[ix.length-2]]:null;
       const s=st(k,cur,t);let arrow='';if(cur!=null&&pv!=null&&Math.abs(cur-pv)>1e-6){const up=cur>pv,good=k==='enq'?!up:k==='pc'?null:up;arrow=`<i class="pf-ar ${good==null?'neu':good?'up':'dn'}">${up?'▲':'▼'}</i>`}
@@ -12475,7 +12518,7 @@ function pfKeys(C){return scope.t==='all'?Object.keys(C.P):scope.t==='pc'?Object
 function pfTrend(keys){const end=monday(range().to),W=[5,4,3,2,1,0].map(i=>add(end,-7*i));
   const A=W.map(m=>sumOf(keys,compute({from:m,to:add(m,5),label:'',sub:''}).per));if(!A.some(a=>a.days||a.scores.length))return null;
   const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()].slice(0,3)};
-  return{weeks:W.map(sh),sc:A.map(a=>a.days?a.sc/a.days:null),pc:A.map(a=>a.days?a.pc:null),eta:A.map(a=>{const v=pct(a.etaW,a.etaN);return v==null?null:v*100}),cp:A.map(a=>{const v=pct(a.cpW,a.cpN);return v==null?null:v*100}),enq:A.map(a=>a.days?epk(a.enq+(a.enqP||0),a.pc):null),sv:A.map(a=>nps(a.scores))}}
+  return{weeks:W.map(sh),sc:A.map(a=>a.days?a.sc/a.days:null),pc:A.map(a=>a.days?a.pc:null),eta:A.map(a=>{const v=pct(a.etaW,a.etaN);return v==null?null:v*100}),cp:A.map(a=>{const v=pct(a.cpW,a.cpN);return v==null?null:v*100}),enq:A.map(a=>a.days?a.enq+(a.enqP||0):null),sv:A.map(a=>nps(a.scores))}}
 function pfBests(keys,drv){const K=new Set(keys);const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()].slice(0,3)};
   const days=Object.values(S.days).filter(d=>d&&d.date&&d.rows).sort((x,y)=>x.date.localeCompare(y.date));
   let maxPc=0,maxD=null,perfect=0,run=0,best=0;const wk={};
@@ -14713,7 +14756,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610319900';
+const VERSION='202610320000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
