@@ -5787,6 +5787,16 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .cp-tb2 td .cp-d.none{color:var(--sh-muted);opacity:.7}
 
 .cp-tb2 td:first-child{width:36%;white-space:normal}
+
+.mc-nd{margin:8px 0 0;border:1px solid var(--sh-line);border-radius:12px;background:var(--sh-sunk)}
+.mc-nd>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:11px 14px;font-weight:800;font-size:.95rem;color:var(--sh-ink)}
+.mc-nd>summary::-webkit-details-marker{display:none}
+.mc-nd>summary b{min-width:26px;padding:1px 8px;border-radius:99px;background:rgba(214,69,65,.14);color:#B42318;text-align:center;font-size:.85rem}
+.mc-nd>summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--sh-muted);border-bottom:2px solid var(--sh-muted);transform:rotate(45deg);transition:transform .15s}
+.mc-nd[open]>summary::after{transform:rotate(-135deg)}
+.mc-nd .mc-not{display:flex!important;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0!important}
+.mc-nd .mc-not em{font-size:.85rem!important;padding:3px 10px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .mc-nd>summary b{color:#FF9B94}}:root[data-theme=dark] .mc-nd>summary b{color:#FF9B94}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6805,7 +6815,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
   const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
-   ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${notYet.length?`<span class="mc-not"><small>Not yet</small>${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span>`:exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>`}
+   ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${!notYet.length&&exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>${notYet.length?`<details class="mc-nd"${window.__mcOpen?' open':''}><summary><span>Not clocked on yet</span><b>${notYet.length}</b></summary><span class="mc-not">${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span></details>`:''}`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Last day before they go. Get their scanner back today.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
    ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
@@ -11190,6 +11200,7 @@ async function start(role){
   db.collection('leave').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));blocks=o;pushStat();
     if(busy||editing)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-leave .card'))return;render()},()=>{msg={err:true,t:'Could not load leave just now.'};render()});
 }
+document.addEventListener('toggle',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('mc-nd'))window.__mcOpen=e.target.open},true);
 window.LEAVE={share,dayMap:()=>{try{return dayMap()}catch(e){return {}}},ready:()=>isMgr()};
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -14877,7 +14888,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321000';
+const VERSION='202610321100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
