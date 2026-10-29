@@ -5882,6 +5882,17 @@ html body #sh-home#sh-home .ah-qa .qa b{font-size:1.15rem!important;text-align:l
 #sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:0!important;min-width:0}
 #sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lin{color:var(--sh-muted);font-weight:700}#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lbo{font-weight:800;color:var(--sh-ink)}
 #sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .pill{margin:0!important;align-self:center}
+
+/* title bar: scrolls with the page like before (no hide and show), and bigger */
+@media (max-width:899.98px){html.appui .sh-mtop{position:relative!important;transform:none!important;transition:none!important}html.appui .sh-mtop.tb-hide{transform:none!important}}
+:root:root:root .sh-mtop{padding-top:16px!important;padding-bottom:16px!important}
+:root:root:root .sh-mtop .sh-brand{gap:14px!important}
+:root:root:root .sh-mtop .sh-brand .sh-logo{width:62px!important;height:62px!important;border-radius:16px!important}
+:root:root:root .sh-mtop .sh-brand small{font-size:.82rem!important}
+:root:root:root .sh-mtop .sh-brand b{font-size:2rem!important;line-height:1.05}
+@media (max-width:400px){:root:root:root .sh-mtop .sh-brand b{font-size:1.62rem!important}:root:root:root .sh-mtop .sh-brand small{font-size:.66rem!important;letter-spacing:.06em!important}:root:root:root .sh-mtop .sh-brand .sh-logo{width:56px!important;height:56px!important}:root:root:root .sh-mtop .sh-brand{gap:11px!important}}
+
+@media (max-width:370px){:root:root:root .sh-mtop .sh-brand b{font-size:1.4rem!important}:root:root:root .sh-mtop .sh-brand .sh-logo{width:50px!important;height:50px!important}:root:root:root .sh-mtop .sh-brand small{font-size:.6rem!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6397,7 +6408,7 @@ window.__D=s=>{const v=s.data();return v==null?v:JSON.parse(JSON.stringify(v))};
 window.__waBtn=function(w){if(!w)return '';const link=location.origin+location.pathname+'#'+w.sec;
   const txt=w.sec==='briefs'?'📋 New team brief'+(w.title&&w.title!=='Team brief'?': '+w.title:'')+'\nPlease read it and sign in the PDS app:\n'+link:'📢 New update: '+w.title+'\nRead it in the PDS app:\n'+link;
   return '<a class="sh-btn wa-share" href="https://wa.me/?text='+encodeURIComponent(txt)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"/></svg>Share on WhatsApp</a>'};
-(()=>{if(window.__tbScroll)return;window.__tbScroll=1;let last=0,acc=0,tick=false;
+(()=>{if(true||window.__tbScroll)return;window.__tbScroll=1;let last=0,acc=0,tick=false;
   const run=()=>{tick=false;const t=document.querySelector('.sh-mtop');if(!t)return;const y=Math.max(0,window.scrollY||document.documentElement.scrollTop||0);const d=y-last;last=y;
     if(document.querySelector('#sh-set'))return;
     if(y<=t.offsetHeight){t.classList.remove('tb-hide','tb-float');acc=0;return}
@@ -14963,7 +14974,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322900';
+const VERSION='202610323000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
