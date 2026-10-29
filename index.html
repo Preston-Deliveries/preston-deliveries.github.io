@@ -5363,7 +5363,7 @@ html body #mod-runs .pl-mv button{width:34px;height:34px}
 html body #mod-runs .pl-row .pl-rm{width:34px;height:34px;margin-right:0}
 html body #mod-runs .pl-list{gap:4px}
 /* run planner: sections all on screen, no sliding; compact street list */
-html body #mod-runs .pl-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px;overflow:visible;padding-bottom:4px}
+html body #mod-runs .pl-chips{display:grid;grid-template-columns:1fr;gap:4px;overflow:visible;padding-bottom:4px}
 html body #mod-runs .pl-chips button{flex:none;min-width:0;padding:7px 8px;border-radius:10px;gap:5px;font-size:.85rem;justify-content:flex-start;box-sizing:border-box}
 html body #mod-runs .pl-chips button>i{flex:none;padding:0 6px;font-size:.8rem}
 html body #mod-runs .pl-chips button{overflow:hidden;text-overflow:ellipsis}
@@ -5372,6 +5372,7 @@ html body #mod-runs .pl-tray{gap:4px}
 html body #mod-runs .pl-tray .pl-t.tray-row{flex-direction:row;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.92rem}
 html body #mod-runs .pl-add2{padding:10px}
 html body #mod-runs .pl-chips button .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #mod-runs .pl-chips button{padding:8px 12px;font-size:.95rem}html body #mod-runs .pl-chips button .nm{white-space:normal}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -14232,7 +14233,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610314700';
+const VERSION='202610314800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
