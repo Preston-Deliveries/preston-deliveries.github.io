@@ -8784,6 +8784,7 @@ const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
+let accNow={};
 let db=null, people={}, filter='all', q='', openId=null, isNew=false, armDel=false, loaded=false, state='wait', msg=null;
 const title=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,b)=>a+b.toUpperCase()).replace(/\b(Ldv|Xl)\b/g,m=>m.toUpperCase());
 const fullName=p=>title([p.first,p.last].filter(Boolean).join(' '));
@@ -8875,7 +8876,7 @@ function detailHTML(){
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
     ?`<label class="f" for="dm_f_role">${l}<select id="dm_f_role">${ROLES.map(r=>`<option value="${r}" ${String(p.role||'')===r?'selected':''}>${esc(r==='PRINCIPLE'?'Principal':r)}</option>`).join('')}</select></label>`
-    :k==='appAccess'?`<label class="f" for="dm_f_appAccess">${l}<select id="dm_f_appAccess">${[['','Driver'],['admin','Admin (sees everything)']].map(([r,t])=>`<option value="${r}" ${String(p.appAccess||'')===r?'selected':''}>${t}</option>`).join('')}</select><small class="hint">Signs in with the email above</small></label>`
+    :k==='appAccess'?`<label class="f" for="dm_f_appAccess">${l}<select id="dm_f_appAccess">${[['','Driver'],['admin','Admin (sees everything)']].map(([r,t])=>`<option value="${r}" ${String(p.appAccess||'')===r?'selected':''}>${t}</option>`).join('')}</select><small class="hint">Signs in with the email above${(()=>{const n=accNow[openId];return n===undefined?'':' · Right now: '+(n===null?'not set up yet':n.role==='admin'?'Admin':'Driver')})()}</small></label>`
     :k==='payFreq'?`<label class="f" for="dm_f_payFreq">${l}<select id="dm_f_payFreq">${[['','4 weeks'],['fortnight','2 weeks'],['week','Week']].map(([r,t])=>`<option value="${r}" ${String(p.payFreq||'')===r?'selected':''}>${t}</option>`).join('')}</select></label>`
     :k==='fit2work'?`<label class="f" for="dm_f_fit2work">${l}<select id="dm_f_fit2work">${['','Passed','Pending','Failed','Not done'].map(r=>`<option value="${r}" ${String(p.fit2work||'')===r?'selected':''}>${r||'Not entered'}</option>`).join('')}</select></label>`
     :k==='notes'?`<label class="f wide" for="dm_f_notes">${l}<textarea id="dm_f_notes">${esc(val(k))}</textarea></label>`
@@ -8906,7 +8907,12 @@ async function save(){
   if(!o.first&&!o.last){msg={err:true,t:'Add at least a first or last name.'};render();return}
   const id=isNew?((o.login||(o.first+o.last)).toLowerCase().replace(/[^a-z0-9]/g,'')||'p')+(people[(o.login||'').toLowerCase()]?'-'+Math.random().toString(36).slice(2,6):''):openId;
   o.updatedAt=new Date().toISOString();
-  try{await db.doc('staff/'+id).set(o);people[id]=Object.assign({id},o);msg={t:isNew?'Added.':'Saved.'};isNew=false;openId=id;pushStat();render()}
+  try{await db.doc('staff/'+id).set(o);people[id]=Object.assign({id},o);msg={t:isNew?'Added.':'Saved.'};isNew=false;openId=id;pushStat();render();
+    if(window.__syncAccess){const nm=[o.first,o.last].filter(Boolean).join(' ');
+      if(o.appAccess==='admin'&&!o.email){msg={err:true,t:'Saved. Add their email so they can sign in as admin.'};render()}
+      else if(o.email){const r=await window.__syncAccess();const a=await window.__accessOf(o.email);accNow[id]=a;
+        if(o.appAccess==='admin')msg=a&&a.role==='admin'?{t:'Saved. '+nm+' now has admin. Ask them to close the app fully and open it again.'}:{err:true,t:'Saved, but admin did not switch on'+(r&&r.err?' ('+r.err+')':'')+'. Check your connection and save again.'};
+        render()}}}
   catch(e){msg={err:true,t:'Could not save just now. Check your connection and try again.'};render()}
 }
 async function del(){
@@ -8986,7 +8992,7 @@ document.addEventListener('click',e=>{
   if(a!=='del')armDel=false;
   if(a==='filter'){filter=v;msg=null;render();return}
   if(a==='col'){shown.has(v)?shown.delete(v):shown.add(v);try{localStorage.setItem('dm_cols',JSON.stringify([...shown].filter(x=>x!=='pw')))}catch(x){}render();return}
-  if(a==='open'){openId=v;isNew=false;msg=null;render();window.scrollTo(0,0);return}
+  if(a==='open'){openId=v;isNew=false;msg=null;render();window.scrollTo(0,0);{const p=people[v];if(p&&p.email&&window.__accessOf)window.__accessOf(p.email).then(x=>{accNow[v]=x;if(openId===v)render()})}return}
   if(a==='add'){openId='';isNew=true;msg=null;render();window.scrollTo(0,0);setTimeout(()=>$('f_first')?.focus(),0);return}
   if(a==='back'){openId=null;isNew=false;msg=null;render();return}
   if(a==='save'){save();return}
@@ -14181,7 +14187,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610313600';
+const VERSION='202610313700';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14384,9 +14390,11 @@ async function syncAccess(){
     const flush=async()=>{if(n){await b.commit();b=fs.batch();n=0}};
     for(const e in want){const h=have[e],w=want[e];if(h&&h.role==='admin'&&!h.viaStaff)continue;if(w.role==='admin')w.viaStaff=true;if(!h||h.role!==w.role||h.name!==w.name||h.staff!==w.staff||h.login!==w.login||h.run!==w.run){b.set(fs.doc('access/'+e),w);n++;if(n>=400)await flush()}}
     for(const e in have){if((have[e].role==='driver'||have[e].viaStaff)&&!want[e]){b.delete(fs.doc('access/'+e));n++;if(n>=400)await flush()}}
-    await flush();
-  }catch(e){console.warn('access sync',e)}
+    await flush();return {ok:true};
+  }catch(e){console.warn('access sync',e);return {ok:false,err:String(e&&(e.code||e.message)||e)}}
 }
+window.__syncAccess=()=>ROLE==='admin'?syncAccess():Promise.resolve({ok:false,err:'not admin'});
+window.__accessOf=async e=>{try{const d=await fs.doc('access/'+String(e||'').trim().toLowerCase()).get({source:'server'});return d.exists?d.data():null}catch(x){return undefined}};
 function watchStaff(){fs.collection('staff').onSnapshot(()=>{clearTimeout(syncT);syncT=setTimeout(syncAccess,2500)},()=>{})}
 
 /* ---------- screens before the app opens ---------- */
