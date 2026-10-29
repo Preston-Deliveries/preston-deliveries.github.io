@@ -5822,6 +5822,8 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill{background:#C8574F!important;border-color:#C8574F!important;color:#fff!important}
 
 #sh-home .dh-week .st4{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+
+.pfx .pr-q .pr-tx small{font-size:.98rem;color:var(--sh-ink);font-style:italic;line-height:1.4}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10858,6 +10860,7 @@ window.PERFUI=(()=>{
         row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
         row('sv','Survey',c.sv==null?'No surveys yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs),
         row('ftd','First time delivery',c.ftd==null?'No result · Target 92%':sub(SAY[st('ftd',c.ftd,t)],'Target 92%',dlt(c.ftd,p.ftd,'eta',L)),P1(c.ftd),st('ftd',c.ftd,t))]);
+      out+=sec('fb','What customers said',(m.said||[]).filter(Boolean).slice(0,6).map(x=>`<div class="pr-row pr-q"><span class="pr-ic">${ic('q')}</span><div class="pr-tx"><small>“${E(x)}”</small></div></div>`));
     }
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
@@ -14910,7 +14913,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321500';
+const VERSION='202610321600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
