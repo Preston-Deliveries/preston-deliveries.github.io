@@ -5347,6 +5347,21 @@ html body #mod-runs .pl-sheet.pl-inl{position:static!important;max-height:none!i
 #mod-runs .pl-newst.top{display:flex;gap:8px;margin:6px 0 12px}#mod-runs .pl-newst.top input{flex:1;min-width:0}#mod-runs .pl-newst.top .btn{white-space:nowrap}
 #mod-runs .pl input,#mod-runs .pl select{font-size:max(16px,1rem)}
 #mod-runs .pl-tray .tray-row.in{opacity:.72}#mod-runs .pl-tray .tray-row.in i{background:transparent;border:1px solid var(--line);color:var(--ink)}#mod-runs .pl-else{margin:10px 0 2px;font-weight:700}
+/* run planner: compact rows, buttons side by side */
+html body #mod-runs .pl-sec{align-items:center;padding:6px 0;gap:8px}
+html body #mod-runs .pl-secf{flex-direction:row;align-items:center;gap:8px}
+html body #mod-runs .pl-secf input{flex:1;min-width:0;padding-top:8px;padding-bottom:8px}
+html body #mod-runs .pl-secf small{white-space:nowrap;font-size:.8rem}
+html body #mod-runs .pl-num{width:32px;height:32px;font-size:.95rem}
+html body #mod-runs .pl-sect{flex-direction:row;gap:4px}
+html body #mod-runs .pl-ib{min-width:34px;width:34px;height:34px;border-radius:9px}
+html body #mod-runs .pl-ib.arm{width:auto}
+html body #mod-runs .pl-row{padding:4px 4px 4px 8px;gap:6px}
+html body #mod-runs .pl-body{padding:2px 0}
+html body #mod-runs .pl-mv{flex-direction:row;gap:4px}
+html body #mod-runs .pl-mv button{width:34px;height:34px}
+html body #mod-runs .pl-row .pl-rm{width:34px;height:34px;margin-right:0}
+html body #mod-runs .pl-list{gap:4px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6850,7 +6865,7 @@ function plDetails(r){const o=r.overview||{};
    <button type="button" class="pl-next" data-act="step" data-v="sections">Next: sections ›</button></section>`}
 function plSections(r){const ck=id=>'sec:'+id;
   return `<section class="pl-card"><h2>Sections</h2><p class="hint">Sections are the parts of the run in driving order, like the tubs or scanner sections. Name them so a fill in driver knows the area.</p>
-   ${r.sections.map((x,i)=>`<div class="pl-sec"><span class="pl-num">${i+1}</span><div class="pl-secf"><input type="text" id="sn-${x.id}" data-sec="${x.id}" data-bind="name" value="${esc(x.name)}" aria-label="Section ${i+1} name" placeholder="Section name"><small>${inSec(r,x.id).length} streets</small></div>
+   ${r.sections.map((x,i)=>`<div class="pl-sec"><span class="pl-num">${i+1}</span><div class="pl-secf"><input type="text" id="sn-${x.id}" data-sec="${x.id}" data-bind="name" value="${esc(x.name)}" aria-label="Section ${i+1} name" placeholder="Section name"><small>${inSec(r,x.id).length} street${inSec(r,x.id).length===1?'':'s'}</small></div>
      <div class="pl-sect"><button type="button" class="pl-ib" data-act="secUp" data-sec="${x.id}" aria-label="Move up" ${i===0?'disabled':''}>▲</button><button type="button" class="pl-ib" data-act="secDown" data-sec="${x.id}" aria-label="Move down" ${i===r.sections.length-1?'disabled':''}>▼</button>
      <button type="button" class="pl-ib del ${S.confirm===ck(x.id)?'arm':''}" data-act="delSection" data-sec="${x.id}" aria-label="Remove section">${S.confirm===ck(x.id)?'Sure?':'✕'}</button></div></div>`).join('')}
    <button type="button" class="pl-add" data-act="addSection">+ Add a section</button>
@@ -14207,7 +14222,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610314500';
+const VERSION='202610314600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
