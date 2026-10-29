@@ -10774,19 +10774,7 @@ window.PERFUI=(()=>{
       out+=sec('sc','Contract Score',[
         row('sc','Contract Score',sub(SAY[scs],'',dlt(c.score,p.score,'sc',L)),c.score==null?'–':window.SCORE.fmt(c.score),scs,true),
         ...(c.lost?[row('enq','Enquiries','Points lost a day',c.lost.enq,+c.lost.enq.replace('−','-')<0?'bad':'good'),row('eta','2 hr ETA','Points lost a day',c.lost.eta,+c.lost.eta.replace('−','-')<0?'bad':'good'),row('cp','Scan compliance','Points lost a day',c.lost.scan,+c.lost.scan.replace('−','-')<0?'bad':'good')]:[])]);
-      out+=sec('now',(m.per||'Results').replace(/ · .*/,'')==='Day'?'This day':'Results',[
-        row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
-        row('eta','2 hr ETA',sub(SAY[st('eta',c.eta,t)],'Target '+t.etaG+'%',dlt(c.eta,p.eta,'eta',L)),P1(c.eta),st('eta',c.eta,t)),
-        row('cp','Scan compliance',sub(SAY[st('cp',c.cp,t)],'Target '+t.cpG+'%',dlt(c.cp,p.cp,'cp',L)),P1(c.cp),st('cp',c.cp,t)),
-        row('enq','Enquiries',sub(es==='bad'?'Over target':'None','Target 0',dlt(et,pet,'enq',L))+(c.enqP?` · ${N(c.enqN||0)} at fault, ${N(c.enqP)} partly`:''),N(et),es),
-        row('sv','Survey',c.sv==null?'No surveys yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs)]);
     }
-    /* last 4 weeks: one row a week, newest first */
-    if(R.weeks&&R.weeks.length){const n=R.weeks.length,W=[];for(let i=n-1;i>=Math.max(0,n-4);i--){const v=R.sc?R.sc[i]:null;const bits=[R.pc&&R.pc[i]!=null?N(R.pc[i])+' parcels':'',R.eta&&R.eta[i]!=null?'ETA '+P1(R.eta[i]):'',R.cp&&R.cp[i]!=null?'Scan '+P1(R.cp[i]):'',R.enq&&R.enq[i]!=null?R.enq[i]+' enq':'',R.sv&&R.sv[i]!=null?'Survey '+Math.round(R.sv[i]*10)/10:''].filter(Boolean);
-        W.push(row('wk','Week of '+E(R.weeks[i]),bits.length?E(bits.join(' · ')):'No results',v==null?'–':window.SCORE.fmt(v),v==null?'na':st('sc',v,t)))}
-      out+=sec('wk','Last 4 weeks',W)}
-    const fb=feedback(c,t);const F=[...fb.need.map(x=>row('no','Work on',E(x),null)),...fb.good.map(x=>row('ok','Going well',E(x),null)),...(m.said||[]).slice(0,3).map(x=>row('q','Customer said','“'+E(x)+'”',null))];
-    out+=sec('fb','Feedback',F);
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
 
@@ -14839,7 +14827,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320400';
+const VERSION='202610320500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
