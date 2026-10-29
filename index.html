@@ -5797,6 +5797,26 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .mc-nd .mc-not{display:flex!important;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0!important}
 .mc-nd .mc-not em{font-size:.85rem!important;padding:3px 10px!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .mc-nd>summary b{color:#FF9B94}}:root[data-theme=dark] .mc-nd>summary b{color:#FF9B94}
+
+/* who's off: today and tomorrow tiles */
+.ah-off .ao-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 2px}
+.ah-off .ao-t{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;border:1px solid var(--sh-line);background:var(--sh-sunk);border-left:4px solid var(--sh-line);min-width:0}
+.ah-off .ao-t.off{border-left-color:#E07A1F}.ah-off .ao-t.in{border-left-color:#2E9A5E}
+.ah-off .ao-t small{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+.ah-off .ao-t>b{font-size:1.9rem;font-weight:800;line-height:1.05;color:var(--sh-ink);font-variant-numeric:tabular-nums}
+.ah-off .ao-t.off>b{color:#C2570C}.ah-off .ao-t.in>b{color:#1E8A4C}
+.ah-off .ao-s{font-size:.82rem;color:var(--sh-muted)}
+.ah-off .ao-ch{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}.ah-off .ao-ch i{font-style:normal;font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(224,122,31,.13);color:#A64A08}
+.ah-off .ao-wl{margin:10px 0 0;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+.ah-off .ao-wk{margin-top:6px!important}
+.ah-off .ao-wk button small{white-space:nowrap}
+.ah-off .ao-sel{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:8px;padding:9px 12px;border-radius:12px;background:var(--sh-sunk);border:1px solid var(--sh-line)}.ah-off .ao-sel>b{font-weight:800}.ah-off .ao-sel .ao-ch{margin:0}.ah-off .ao-sel .ok{font-weight:700;color:#1E8A4C}
+.ah-off .ao-cv{all:unset;box-sizing:border-box;cursor:pointer;display:block;width:100%;text-align:center;margin-top:10px;padding:10px;border-radius:12px;border:1px solid rgba(224,122,31,.45);color:#C2570C;font-weight:800}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ah-off .ao-t.off>b,:root:not([data-theme=light]) .ah-off .ao-cv{color:#FFA463}:root:not([data-theme=light]) .ah-off .ao-t.in>b,:root:not([data-theme=light]) .ah-off .ao-sel .ok{color:#5CCB8E}:root:not([data-theme=light]) .ah-off .ao-ch i{background:rgba(255,164,99,.15);color:#FFB27A}}
+:root[data-theme=dark] .ah-off .ao-t.off>b,:root[data-theme=dark] .ah-off .ao-cv{color:#FFA463}:root[data-theme=dark] .ah-off .ao-t.in>b,:root[data-theme=dark] .ah-off .ao-sel .ok{color:#5CCB8E}:root[data-theme=dark] .ah-off .ao-ch i{background:rgba(255,164,99,.15);color:#FFB27A}
+/* follow ups in a dropdown */
+.fuc .fu-nd{margin:0}.fuc .fu-nd>summary b.ok{background:rgba(31,157,85,.14);color:#167A42}
+.fuc .fu-in{padding:0 12px 12px}.fuc .fu-in .fu-p{margin:0 0 8px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6761,14 +6781,15 @@ function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
   const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const t0=new Date();t0.setHours(12,0,0,0);const t1=new Date(t0);t1.setDate(t0.getDate()+1);
   const we=d=>d.getDay()===0||d.getDay()===6;
-  const row=(lab,d)=>{const w=who(d);return `<div class="ao-l"><span class="k">${lab}</span>${we(d)&&!w.length?'<span class="ok">Weekend</span>':w.length?`<span class="c">${w.length} off</span><span class="nm">${esc(w.join(', '))}</span>`:'<span class="ok">✓ Everyone in</span>'}</div>`};
+  const tile=(lab,d)=>{const w=who(d);const wkend=we(d)&&!w.length;return `<div class="ao-t ${wkend?'we':w.length?'off':'in'}"><small>${lab}</small><b>${wkend?'–':w.length}</b><span class="ao-s">${wkend?'Weekend':w.length?(w.length===1?'person off':'people off'):'Everyone in'}</span>${w.length?`<span class="ao-ch">${w.map(x=>`<i>${esc(x)}</i>`).join('')}</span>`:''}</div>`};
   const mon=new Date(t0);const dw=(mon.getDay()+6)%7;if(dw>=5)mon.setDate(mon.getDate()+7-dw);else mon.setDate(mon.getDate()-dw);
   const wk=[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d});
   const sd=aoSel&&wk.find(d=>iso(d)===aoSel);
   const html=`<section class="dh-card ah-off"><button type="button" class="ao-h" data-nav="leave"><b>Who’s off</b><span>Calendar<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span></button>
-   ${row('Today',t0)}${row('Tomorrow',t1)}
-   <div class="ao-wk">${wk.map(d=>{const n=who(d).length,k=iso(d);return `<button type="button" data-aod="${k}" aria-pressed="${k===aoSel}" class="${n?'off':'in'}${k===iso(t0)?' now':''}"><small>${DN[d.getDay()]}</small><b>${n}</b></button>`}).join('')}</div>
-   ${sd?`<div class="ao-sel">${row(DN[sd.getDay()]+' '+sd.getDate(),sd)}</div>`:'<p class="ao-tip">Tap a day to see who is off.</p>'}<button type="button" class="ao-cv" data-nav="cover">Plan who covers ›</button></section>`;
+   <div class="ao-two">${tile('Today',t0)}${tile('Tomorrow',t1)}</div>
+   <div class="ao-wl">${dw>=5?'Next week':'This week'}</div>
+   <div class="ao-wk">${wk.map(d=>{const n=who(d).length,k=iso(d);return `<button type="button" data-aod="${k}" aria-pressed="${k===aoSel}" class="${n?'off':'in'}${k===iso(t0)?' now':''}"><small>${DN[d.getDay()]} ${d.getDate()}</small><b>${n}</b></button>`}).join('')}</div>
+   ${sd?(()=>{const w=who(sd);return `<div class="ao-sel"><b>${DN[sd.getDay()]} ${sd.getDate()}</b>${w.length?`<span class="ao-ch">${w.map(x=>`<i>${esc(x)}</i>`).join('')}</span>`:'<span class="ok">✓ Everyone in</span>'}</div>`})():'<p class="ao-tip">Tap a day to see who is off.</p>'}<button type="button" class="ao-cv" data-nav="cover">Plan who covers ›</button></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 /* Morning check: who is clocked on, enquiries without a fault decision, invoices not in yet, papers expiring */
 const MC={st:false,staff:{},clock:{},enq:{},inv:{},leave:{},worked:null,prev:null,scBusy:{}};
@@ -6894,8 +6915,8 @@ function fuHTML(L,pc){if(!FC.last)return '';if(!L.length)return '';const left=L.
 function adminFollow(){const el=$('ah_fu');if(!el||role!=='mgr')return;fcLoad();if(myFocus()){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
   const L=fuList();if(!L.length){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
   const PCS=[...new Set(L.map(x=>x.pc))].sort();const left=L.filter(x=>!FC.fu[x.id]).length;
-  const html=`<section class="dh-card fuc"><div class="fu-h"><h2>Follow ups · ${esc(tlNice(FC.last.date))}</h2><span class="${left?'':'ok'}">${left?left+' to talk to':'✓ All done'}</span></div><p class="fu-p">2 hr ETA under ${FU_ETA}% or scan compliance under ${FU_CP}%. Supervisors tick when they have spoken to the driver.</p>
-   ${PCS.map(pc=>{const g=L.filter(x=>x.pc===pc),d=g.filter(x=>FC.fu[x.id]).length;return `<details class="fu-g" ${d<g.length?'open':''}><summary><b>${esc(pc==='other'?'Other':pc.toUpperCase())}</b><span class="${d===g.length?'ok':''}">${d} of ${g.length} done</span></summary>${g.map(fuRow).join('')}</details>`}).join('')}</section>`;
+  const html=`<section class="dh-card fuc"><details class="mc-nd fu-nd"${window.__fuOpen?' open':''}><summary><span>Follow ups · ${esc(tlNice(FC.last.date))}</span><b class="${left?'':'ok'}">${left?left:'✓'}</b></summary><div class="fu-in"><p class="fu-p">2 hr ETA under ${FU_ETA}% or scan compliance under ${FU_CP}%. Tick when you have spoken to the driver. ${left?left+' to talk to.':'All done.'}</p>
+   ${PCS.map(pc=>{const g=L.filter(x=>x.pc===pc),d=g.filter(x=>FC.fu[x.id]).length;return `<details class="fu-g" ${d<g.length?'open':''}><summary><b>${esc(pc==='other'?'Other':pc.toUpperCase())}</b><span class="${d===g.length?'ok':''}">${d} of ${g.length} done</span></summary>${g.map(fuRow).join('')}</details>`}).join('')}</div></details></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
   const pc=f.pc,P=MC.staff,T=mcIso(new Date());const G=window.__runGrp||{};
@@ -11200,7 +11221,7 @@ async function start(role){
   db.collection('leave').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));blocks=o;pushStat();
     if(busy||editing)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-leave .card'))return;render()},()=>{msg={err:true,t:'Could not load leave just now.'};render()});
 }
-document.addEventListener('toggle',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('mc-nd'))window.__mcOpen=e.target.open},true);
+document.addEventListener('toggle',e=>{const t=e.target;if(!t||!t.classList)return;if(t.classList.contains('fu-nd'))window.__fuOpen=t.open;else if(t.classList.contains('mc-nd'))window.__mcOpen=t.open},true);
 window.LEAVE={share,dayMap:()=>{try{return dayMap()}catch(e){return {}}},ready:()=>isMgr()};
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -14888,7 +14909,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321100';
+const VERSION='202610321200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
