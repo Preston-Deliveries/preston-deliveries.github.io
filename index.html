@@ -5693,6 +5693,41 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .pfx .pf-sp i.s-good{background:var(--pf-g)}.pfx .pf-sp i.s-bad{background:var(--pf-b)}.pfx .pf-sp i.s-gold{background:var(--pf-o)}.pfx .pf-sp i.s-pc{background:var(--pf-or)}
 .pfx .pf-sp span:last-child{box-shadow:inset 0 0 0 1.5px var(--sh-ink);border-radius:4px}
 .pfx .pf-cap{margin:2px 2px 0;font-size:.82rem;color:var(--sh-muted)}
+
+/* one screen layout */
+.pfx{gap:10px}
+.pfx .pf-hd{padding:0 2px}.pfx .pf-hn{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pfx .pf-hd h2{margin:0;font-size:1.35rem;font-weight:800;color:var(--sh-ink);line-height:1.15;min-width:0}
+.pfx .pf-hd p{margin:2px 0 0;font-size:.85rem;color:var(--sh-muted)}.pfx .pf-hd p em{font-style:normal;font-weight:800;color:var(--sh-ink)}
+.pfx .pf-hd .pf-rk{flex:0 0 auto;background:var(--sh-sunk);border:1px solid var(--sh-line);color:var(--sh-muted);padding:3px 10px;font-size:.8rem}.pfx .pf-hd .pf-rk b{font-size:1rem;color:var(--sh-ink)}
+.pfx .pf-hd .pf-rk.r1{background:#F2B705;border-color:#F2B705;color:#3B2A00}.pfx .pf-hd .pf-rk.r1 b{color:#2A1E00}.pfx .pf-hd .pf-rk.r2{background:#D9E0E8;border-color:#C5CED9;color:#25303D}.pfx .pf-hd .pf-rk.r2 b{color:#111A27}.pfx .pf-hd .pf-rk.r3{background:#D9905A;border-color:#D9905A;color:#2E1606}.pfx .pf-hd .pf-rk.r3 b{color:#2E1606}
+.pfx .pf-one{display:flex;flex-direction:column;gap:8px}
+.pfx .pf-top2{display:grid;grid-template-columns:1.15fr 1fr;gap:8px}
+.pfx .pf-big2,.pfx .pf-q{display:flex;flex-direction:column;gap:2px;padding:11px 12px 10px;border-radius:14px;background:var(--sh-surface);border:1px solid var(--sh-line);border-left:5px solid var(--sh-line);min-width:0}
+.pfx .s-good{border-left-color:var(--pf-g)}.pfx .s-bad{border-left-color:var(--pf-b)}.pfx .s-gold{border-left-color:var(--pf-o)}.pfx .pf-big2.pc{border-left-color:var(--pf-or)}
+.pfx .pf-ql{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);line-height:1.2}
+.pfx .pf-big2 b{font-size:2.2rem;font-weight:800;line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--sh-ink)}
+.pfx .pf-q b{font-size:1.6rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--sh-ink)}
+.pfx .s-good>b{color:var(--pf-g)}.pfx .s-bad>b{color:var(--pf-b)}.pfx .s-gold>b{color:var(--pf-o)}
+.pfx .s-good.pf-big2{background:linear-gradient(180deg,var(--pf-gs),var(--sh-surface))}.pfx .s-bad.pf-big2{background:linear-gradient(180deg,var(--pf-bs),var(--sh-surface))}.pfx .s-gold.pf-big2{background:linear-gradient(180deg,var(--pf-os),var(--sh-surface))}
+.pfx .pf-qs{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;font-size:.75rem;color:var(--sh-muted)}
+.pfx .pf-qs em{font-style:normal;font-weight:800}.pfx .s-good .pf-qs em{color:var(--pf-g)}.pfx .s-bad .pf-qs em{color:var(--pf-b)}.pfx .s-gold .pf-qs em{color:var(--pf-o)}
+.pfx .pf-qi{font-size:.78rem;color:var(--sh-ink);line-height:1.25}
+.pfx .pf-one .pf-d{margin:0;padding:2px 0 0;font-size:.74rem}.pfx .pf-one .pf-d small{display:none}
+.pfx .pf-lost2{margin:-2px 2px 0;font-size:.78rem;color:var(--sh-muted)}.pfx .pf-lost2 b{color:var(--sh-ink)}
+.pfx .pf-g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (min-width:760px){.pfx .pf-g2{grid-template-columns:repeat(4,minmax(0,1fr))}.pfx .pf-big2 b{font-size:2.8rem}.pfx .pf-q b{font-size:2rem}.pfx .pf-big2,.pfx .pf-q{padding:14px 16px}}
+.pfx .pf-cap{margin:0 2px;font-size:.76rem;color:var(--sh-muted)}
+/* tighter period picker on this page */
+.pfx .pkx{gap:6px!important;padding:6px!important}.pfx .pkx .pseg2 button{padding-top:7px!important;padding-bottom:7px!important;min-height:0!important}
+
+.pfx .pf-ql i{font-style:normal;font-weight:700;letter-spacing:0;text-transform:none;opacity:.8}.pfx .pf-ql i::before{content:"target ";font-weight:600}
+.pfx .pf-qs{gap:2px 8px}.pfx .pf-qs .pf-d{padding:0}
+.pfx .pf-big2,.pfx .pf-q{padding:9px 11px 9px;gap:1px}
+.pfx .pf-big2 b{font-size:2.1rem}.pfx .pf-q b{font-size:1.55rem}
+.pfx .pkx .pseg2 button{padding-top:6px!important;padding-bottom:6px!important}
+
+@media (min-width:760px){.pfx .pf-big2 b{font-size:3rem}.pfx .pf-q b{font-size:2.1rem}.pfx .pf-big2,.pfx .pf-q{padding:14px 16px}.pfx .pf-ql{font-size:.8rem}.pfx .pf-qs,.pfx .pf-one .pf-d{font-size:.85rem}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10692,32 +10727,28 @@ window.PERFUI=(()=>{
   function tile(k,label,val,status,sub,foot,d){return `<div class="pf-t pf-${k} s-${status}"><div class="pf-th"><span class="pf-i">${svg(k)}</span><span class="pf-l">${E(label)}</span></div>
     <b class="pf-v">${val}</b>${STX[status]?`<span class="pf-s">${STX[status]}</span>`:''}${sub?`<span class="pf-sub">${sub}</span>`:''}${foot?`<span class="pf-f">${foot}</span>`:''}${d||''}</div>`}
   /* m: {who, sub, tag, per, cur, prev, prevLab, rank, bests, bestsTitle, trend, own, t, none} */
-  /* six small bars, one a week, the newest on the right */
-  function spark(k,vals,weeks,t,fmt){if(!vals||!vals.some(v=>v!=null))return '<div class="pf-sp none"></div>';
-    const H={sc:v=>Math.max(8,Math.min(100,(v-60)*2.5)),eta:v=>Math.max(8,Math.min(100,(v-85)*6.67)),cp:v=>Math.max(8,Math.min(100,(v-90)*10)),enq:v=>v<=0?8:Math.max(18,Math.min(100,v*20)),sv:v=>Math.max(8,Math.min(100,v))}[k];
-    const mx=Math.max(1,...vals.filter(v=>v!=null));
-    return `<div class="pf-sp" aria-label="Last ${vals.length} weeks">${vals.map((v,i)=>`<span title="Week of ${E(weeks[i])}: ${v==null?'no results':fmt(v)}"><i class="s-${v==null?'na':k==='pc'?'pc':st(k,v,t)}" style="height:${v==null?6:H?H(v):Math.max(8,v/mx*100)}%"></i></span>`).join('')}</div>`}
-  const SAY={gold:'Perfect',good:'On target',bad:'Under target',na:'No result'};
-  /* m: {who, sub, per, ctl, cur, prev, prevLab, rank, trend, own, t, none} */
+  const SAY={gold:'Perfect',good:'On target',bad:'Under target',na:''};
+  /* everything on one screen: score and parcels on top, the four measures in a 2 by 2 grid */
   function page(m){
-    const t=m.t||{etaG:98,cpG:99},c=m.cur||null,p=m.prev||{},L=m.prevLab,R=m.trend||{weeks:[]};
-    const rk=m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of}</span>`:'';
-    const head=`<header class="pf-hd"><div class="pf-hn"><h2>${E(m.who)}</h2>${rk}</div><p>${[m.sub,E(m.per||'')].filter(Boolean).join(' · ')}${m.rank&&m.rank.why?' · '+E(m.rank.why):''}</p></header>`+(m.ctl||'');
-    const et=c?(c.enqN||0)+(c.enqP||0):null,pet=p.enqN!=null?(p.enqN||0)+(p.enqP||0):null;
-    const fmtSc=v=>window.SCORE.fmt(v),fmtSv=v=>String(Math.round(v*10)/10);
-    const rows=[
-      ['sc','Contract Score','Green is 96 or more',c&&c.score!=null?fmtSc(c.score):'–',c?st('sc',c.score,t):'na',c&&c.lost?`Points lost a day: enquiries ${c.lost.enq} · ETA ${c.lost.eta} · scan ${c.lost.scan}`:'',c?dlt(c.score,p.score,'sc',L):'',R.sc,fmtSc],
-      ['pc','Parcels','',c?N(c.pc):'–','na',c&&c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'',c?dlt(c.pc,p.pc,'pc',L):'',R.pc,N],
-      ['eta','2 hr ETA','Target '+t.etaG+'%',c?P1(c.eta):'–',c?st('eta',c.eta,t):'na','',c?dlt(c.eta,p.eta,'eta',L):'',R.eta,P1],
-      ['cp','Scan compliance','Target '+t.cpG+'%',c?P1(c.cp):'–',c?st('cp',c.cp,t):'na','',c?dlt(c.cp,p.cp,'cp',L):'',R.cp,P1],
-      ['enq','Enquiries','Target 0',c?N(et):'–',c?st('enq',et,t):'na',c?`${N(c.enqN||0)} at fault${c.enqP?' · '+N(c.enqP)+' partly at fault':''}`:'',c?dlt(et,pet,'enq',L):'',R.enq,N],
-      ['sv','Survey','Target 70 · not in the score',c&&c.sv!=null?fmtSv(c.sv):'–',c?st('sv',c.sv,t):'na',c?(c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'No surveys yet'):'',c?dlt(c.sv,p.sv,'sv',L):'',R.sv,fmtSv]];
-    const say=(k,s)=>k==='enq'?(s==='bad'?'Over target':s==='gold'?'None':SAY[s]):k==='pc'?'':SAY[s];
-    const row=([k,l,tg,v,s,info,d,tr,fmt])=>`<div class="pf-row k-${k} s-${s}"><div class="pf-rl"><span class="pf-dot"></span><div><b>${E(l)}</b>${tg?`<small>${E(tg)}</small>`:''}</div></div>
-      <div class="pf-rv2"><b>${v}</b>${say(k,s)&&v!=='–'?`<small>${say(k,s)}</small>`:''}</div>
-      <div class="pf-rx">${info?`<span>${info}</span>`:''}${d||''}</div>${spark(k,tr,R.weeks,t,fmt)}</div>`;
-    const wk=R.weeks&&R.weeks.length?`<p class="pf-cap">Bars show the last ${R.weeks.length} weeks, ${E(R.weeks[0])} to ${E(R.weeks[R.weeks.length-1])}, newest on the right.${L&&m.prev?` Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.`:''}</p>`:'';
-    return head+(c?'':`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`)+`<section class="pf-list">${rows.map(row).join('')}</section>${wk}${window.SCORE.howHTML('sc-how pf-how')}`}
+    const t=m.t||{etaG:98,cpG:99},c=m.cur||null,p=m.prev||{},L=m.prevLab;
+    const rk=m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of}</span>`:m.rank&&m.rank.why?`<span class="pf-rk nr">Not ranked</span>`:'';
+    const head=`<header class="pf-hd"><div class="pf-hn"><h2>${E(m.who)}</h2>${rk}</div>${m.sub?`<p>${m.sub}</p>`:''}</header>`+(m.ctl||'');
+    if(!c)return head+`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`;
+    const et=(c.enqN||0)+(c.enqP||0),pet=p.enqN!=null?(p.enqN||0)+(p.enqP||0):null;
+    const scs=st('sc',c.score,t),say=(k,s)=>k==='enq'?(s==='bad'?'Over target':s==='gold'?'None':''):SAY[s];
+    const q=(k,l,v,s,tg,info,d)=>`<div class="pf-q s-${s}"><span class="pf-ql">${E(l)}${tg?` <i>${E(tg)}</i>`:''}</span><b>${v}</b><span class="pf-qs">${say(k,s)?`<em>${say(k,s)}</em>`:''}${d||''}</span>${info?`<span class="pf-qi">${info}</span>`:''}</div>`;
+    return head+`<section class="pf-one">
+      <div class="pf-top2">
+        <div class="pf-big2 s-${scs}"><span class="pf-ql">Contract Score <i>96+</i></span><b>${c.score==null?'–':window.SCORE.fmt(c.score)}</b><span class="pf-qs">${SAY[scs]?`<em>${SAY[scs]}</em>`:''}${dlt(c.score,p.score,'sc',L)}</span></div>
+        <div class="pf-big2 pc"><span class="pf-ql">Parcels</span><b>${N(c.pc)}</b><span class="pf-qs"><span>${c.days?`${N(c.days)} day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' each':''}`:''}</span>${dlt(c.pc,p.pc,'pc',L)}</span></div>
+      </div>
+      ${c.lost?`<p class="pf-lost2">Lost a day: enquiries <b>${c.lost.enq}</b> · ETA <b>${c.lost.eta}</b> · scan <b>${c.lost.scan}</b></p>`:''}
+      <div class="pf-g2">
+        ${q('eta','2 hr ETA',P1(c.eta),st('eta',c.eta,t),t.etaG+'%','',dlt(c.eta,p.eta,'eta',L))}
+        ${q('cp','Scan',P1(c.cp),st('cp',c.cp,t),t.cpG+'%','',dlt(c.cp,p.cp,'cp',L))}
+        ${q('enq','Enquiries',N(et),st('enq',et,t),'0',c.enqP?`${N(c.enqN||0)} at fault · ${N(c.enqP)} partly`:'',dlt(et,pet,'enq',L))}
+        ${q('sv','Survey',c.sv==null?'–':String(Math.round(c.sv*10)/10),st('sv',c.sv,t),'70',c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'',dlt(c.sv,p.sv,'sv',L))}
+      </div></section>${L&&m.prev?`<p class="pf-cap">Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:''}${window.SCORE.howHTML('sc-how pf-how')}`}
   return{page,st}})();
 
 window.ME={clearAlerts:()=>{const ids=(LAST||[]).map(n=>n.id);put('cleared',ids.concat(get('cleared')||[]).slice(0,600));put('seen',ids.concat(get('seen')||[]).slice(0,400));LAST=[];badge(0)},alertsPanel:async()=>{const L=await refresh(true);LAST=L;seenAtOpen=new Set(get('seen')||[]);const h=alertsHTML(L);put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);return h},warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
@@ -14769,7 +14800,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320100';
+const VERSION='202610320200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
