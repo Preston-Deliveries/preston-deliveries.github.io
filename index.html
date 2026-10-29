@@ -13691,7 +13691,9 @@ function cvSet(off,fn){const items=JSON.parse(JSON.stringify((CV.doc&&CV.doc.ite
 const cvOffIds=()=>new Set(cvOff().map(x=>x.id));
 function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork(TODAY());cvWatch()}cvAvg();
   if(!Object.keys(S.staff).length||!CV.doc){el.innerHTML='<div class="mt-wait">Loading…</div>';return}
-  const off=cvOff(),relief=drivers().filter(p=>window.__isRelief(p)),offIds=new Set(off.map(o=>o.id));
+  /* not shown as quick buttons (still in the + Add another driver list) */
+  const noChip=p=>['anika','leslie'].includes(String(p.first||'').toLowerCase().trim());
+  const off=cvOff(),relief=drivers().filter(p=>window.__isRelief(p)&&!noChip(p)),offIds=new Set(off.map(o=>o.id));
   const used=new Set();for(const it of CV.doc.items||[]){if(it.by)used.add(it.by);for(const h of it.help||[])used.add(h.id)}
   const all=drivers().filter(p=>!offIds.has(p.id));
   const rows=off.map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{help:[]};return{o,p,it}});
@@ -13705,7 +13707,7 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
      ${runInfo(p).length?`<div class="cv-info">${runInfo(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
      <div class="cv-chips">${relief.length?relief.map(r=>{const on=it.by===r.id||(it.help||[]).some(x=>x.id===r.id),busy=!on&&used.has(r.id);return `<button type="button" class="cv-c ${on?'on':''} ${busy?'busy':''}" data-cv="by" data-off="${esc(o.id)}" data-v="${esc(r.id)}" aria-pressed="${on}">${esc(shortName(r))}${busy?'<i>busy</i>':''}</button>`}).join(''):'<span class="cv-nr">No relief drivers. Set a driver\'s role to RELIEF on the Driver Details page.</span>'}</div>
      <div class="cv-help">${it.by&&!relief.some(r=>r.id===it.by)?`<span class="cv-hp by">${esc(it.byName)} <button type="button" data-cv="byclear" data-off="${esc(o.id)}" aria-label="Remove ${esc(it.byName)}">×</button></span>`:''}${(it.help||[]).filter(h=>!relief.some(r=>r.id===h.id)).map(h=>`<span class="cv-hp">${esc(h.name)} <button type="button" data-cv="unhelp" data-off="${esc(o.id)}" data-v="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">×</button></span>`).join('')}
-      <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&!window.__isRelief(x)).map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
+      <select data-cvsel="add" data-off="${esc(o.id)}" aria-label="Add another driver"><option value="">+ Add another driver</option>${all.filter(x=>x.id!==it.by&&!(it.help||[]).some(h=>h.id===x.id)&&(!window.__isRelief(x)||noChip(x))).map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div></div>`).join('')}
    <div class="cv-add"><select data-cvsel="off" aria-label="Add a driver who is off"><option value="">+ Add someone who is off (sick or other)</option>${all.map(x=>`<option value="${esc(x.id)}">${esc(nameOf(x))}${runsOf(x)?' ('+esc(runsOf(x))+')':''}</option>`).join('')}</select></div>
    <div class="cv-acts"><button type="button" class="sh-btn primary" data-cv="share">Show the cover sheet</button></div>
    <p class="mt-note">Drivers you assign see it on their Home the day before and on the day, with a button to open the run sheet.</p>
@@ -14208,7 +14210,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610314200';
+const VERSION='202610314300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
