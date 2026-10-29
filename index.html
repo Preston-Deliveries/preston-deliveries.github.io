@@ -10675,7 +10675,7 @@ function pfWeeks(n){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow
   const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
   const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,Dd]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(Dd||{}).find(x=>keys.includes(dkey(x)));const r=k?Dd[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
   return{weeks:W.map(sh),sc:st.map(x=>x&&x.sc?x.sc.score:null),pc:st.map(x=>x?x.pc:null),eta:st.map(x=>x&&x.eta!=null?x.eta*100:null),cp:st.map(x=>x&&x.cp!=null?x.cp*100:null),enq:st.map(x=>x?(x.enq||0)+(x.enqP||0):null),sv}}
-function pfCur(x){if(!x)return null;const L=window.SCORE.lost;return{pc:x.pc,days:x.days,eta:x.eta==null?null:x.eta*100,cp:x.cp==null?null:x.cp*100,enqK:x.enqK,enqN:x.enq,enqP:x.enqP,score:x.sc?x.sc.score:null,lost:x.sc?{enq:L(x.sc.enq),eta:L(x.sc.eta),scan:L(x.sc.scan)}:null}}
+function pfCur(x){if(!x)return null;const L=window.SCORE.lost;return{ftd:x.ftd==null?null:x.ftd*100,pc:x.pc,days:x.days,eta:x.eta==null?null:x.eta*100,cp:x.cp==null?null:x.cp*100,enqK:x.enqK,enqN:x.enq,enqP:x.enqP,score:x.sc?x.sc.score:null,lost:x.sc?{enq:L(x.sc.enq),eta:L(x.sc.eta),scan:L(x.sc.scan)}:null}}
 function driverHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates);
   const sv=mySurvey(PER==='cycle'?'cycle':'weekly',P.cyc?{cs:P.cyc.cs,wk:PER==='cycle'?null:(P.subW.find(z=>z.on)||{}).n}:null);
@@ -10725,7 +10725,8 @@ window.PERFUI=(()=>{
     cp:'<path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/>',
     enq:'<path d="M21 12a8 8 0 01-11.7 7.1L4 20l1-4.6A8 8 0 1121 12z"/><path d="M12 8v4M12 15.5v.5"/>',
     sc:'<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/>',
-    sv:'<path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0112 6.3 5.2 5.2 0 0121.3 12C19 16.6 12 21 12 21z"/>'};
+    sv:'<path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0112 6.3 5.2 5.2 0 0121.3 12C19 16.6 12 21 12 21z"/>',
+    ftd:'<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M9.5 15l2 2 3.5-4"/>'};
   const svg=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
   /* status of one number against its target: gold is perfect, good is on target, bad is under */
   function st(k,v,t){if(v==null)return 'na';
@@ -10734,6 +10735,7 @@ window.PERFUI=(()=>{
     if(k==='enq')return v<=0?'gold':'bad';
     if(k==='sc')return v>=99.995?'gold':v>=96-1e-9?'good':'bad';
     if(k==='sv')return v>=100?'gold':v>=70?'good':'bad';
+    if(k==='ftd')return v>=99.95?'gold':Math.round(v*10)/10>=92?'good':'bad';
     return 'na'}
   const STX={gold:'★ Perfect',good:'✓ On target',bad:'✗ Under target',na:''};
   /* change against the last period; up is good unless lower is better */
@@ -10774,6 +10776,10 @@ window.PERFUI=(()=>{
       out+=sec('sc','Contract Score',[
         row('sc','Contract Score',sub(SAY[scs],'',dlt(c.score,p.score,'sc',L)),c.score==null?'–':window.SCORE.fmt(c.score),scs,true),
         ...(c.lost?[row('enq','Enquiries','Points lost a day',c.lost.enq,+c.lost.enq.replace('−','-')<0?'bad':'good'),row('eta','2 hr ETA','Points lost a day',c.lost.eta,+c.lost.eta.replace('−','-')<0?'bad':'good'),row('cp','Scan compliance','Points lost a day',c.lost.scan,+c.lost.scan.replace('−','-')<0?'bad':'good')]:[])]);
+      out+=sec('now','Results',[
+        row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
+        row('sv','Survey',c.sv==null?'No surveys yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs),
+        row('ftd','First time delivery',c.ftd==null?'No result · Target 92%':sub(SAY[st('ftd',c.ftd,t)],'Target 92%',dlt(c.ftd,p.ftd,'eta',L)),P1(c.ftd),st('ftd',c.ftd,t))]);
     }
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
@@ -12584,7 +12590,7 @@ function scopeLabel(C){return scope.t==='all'?'Whole contract':scope.t==='pc'?(/
 function render(){try{render0();document.querySelectorAll('#mod-summary table.stk').forEach(t=>{if(!t.tHead)return;const h=[...t.tHead.rows[0].cells].map(c=>c.textContent.trim());for(const b of t.tBodies)for(const r of b.rows)[...r.cells].forEach((c,i)=>{if(h[i])c.dataset.l=h[i]})})}catch(e){console.error('summary render',e&&e.stack||e)}}
 /* ---------- the results page: whole contract, a postcode or one driver ---------- */
 function pfCur(a,drv){if(!a||!a.days)return null;const L=window.SCORE.lost,n=a.days,e=pct(a.etaW,a.etaN),c=pct(a.cpW,a.cpN);
-  return{pc:a.pc,days:a.wdates.size,perDay:drv?a.pc/Math.max(1,a.wdates.size):a.pc/n,perDriver:!drv,eta:e==null?null:e*100,cp:c==null?null:c*100,enqK:epk(a.enq+(a.enqP||0),a.pc),enqN:a.enq,enqP:a.enqP,score:a.sc/n,lost:{enq:L(a.le/n),eta:L(a.lt/n),scan:L(a.ls/n)},sv:nps(a.scores),svN:a.scores.length}}
+  const fd=pct(a.ftdW,a.ftdN);return{ftd:fd==null?null:fd*100,pc:a.pc,days:a.wdates.size,perDay:drv?a.pc/Math.max(1,a.wdates.size):a.pc/n,perDriver:!drv,eta:e==null?null:e*100,cp:c==null?null:c*100,enqK:epk(a.enq+(a.enqP||0),a.pc),enqN:a.enq,enqP:a.enqP,score:a.sc/n,lost:{enq:L(a.le/n),eta:L(a.lt/n),scan:L(a.ls/n)},sv:nps(a.scores),svN:a.scores.length}}
 function pfKeys(C){return scope.t==='all'?Object.keys(C.P):scope.t==='pc'?Object.keys(C.P).filter(k=>C.P[k].pc===scope.v):[scope.v]}
 function pfTrend(keys){const end=monday(range().to),W=[3,2,1,0].map(i=>add(end,-7*i));
   const A=W.map(m=>sumOf(keys,compute({from:m,to:add(m,5),label:'',sub:''}).per));if(!A.some(a=>a.days||a.scores.length))return null;
@@ -14827,7 +14833,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320500';
+const VERSION='202610320600';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
