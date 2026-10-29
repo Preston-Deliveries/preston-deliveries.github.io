@@ -8951,6 +8951,7 @@ function readForm(){
   const o={};for(const[k]of FIELDS)o[k]=v(k);
   o.first=o.first.toUpperCase();o.last=o.last.toUpperCase();o.login=o.login.toUpperCase().replace(/\s+/g,'');o.rego=o.rego.toUpperCase().replace(/\s+/g,'');o.van=o.van.toUpperCase();o.email=o.email.toLowerCase();
   o.runs=o.runs.toUpperCase().split(/[,+\s]+/).map(x=>x.replace(/^D?/,'')).filter(x=>/^\d+$/.test(x)).map(x=>'D'+x);
+  o.pw=String(o.pw||'').trim().replace(/^(\d+)\.0+$/,'$1');
   return o;
 }
 async function save(){
@@ -9088,7 +9089,7 @@ async function start(role){
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
   if(!db){state='nodb';render();return}
   db.collection('staff').onSnapshot(snap=>{
-    const next={};for(const d of snap.docs)next[d.id]=Object.assign({id:d.id},__D(d));
+    const next={};for(const d of snap.docs){const x=Object.assign({id:d.id},__D(d));/* passwords are whole numbers: 4521.0 shows as 4521 */if(x.pw!=null)x.pw=String(x.pw).trim().replace(/^(\d+)\.0+$/,'$1');next[d.id]=x}
     people=next;state='ok';loaded=true;pushStat();
     const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-staff .card'))return;
     render();
@@ -14302,7 +14303,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610316200';
+const VERSION='202610316300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
