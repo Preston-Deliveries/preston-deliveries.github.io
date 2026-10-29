@@ -5392,6 +5392,7 @@ html body #sh-ph.sh-ph,html body #sh-ph{box-shadow:none!important}
 #mod-staff a.wa{display:inline-grid;place-items:center;width:28px;height:28px;margin-left:6px;border-radius:50%;background:#25D366;color:#fff;vertical-align:middle;text-decoration:none}
 #mod-staff a.wa svg,#mod-staff a.wab svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
 #mod-staff a.sh-btn.wab{display:inline-flex;align-items:center;gap:6px;background:#25D366!important;color:#06341A!important;border-color:#25D366!important;text-decoration:none;font-weight:800}
+@media (min-width:900px){html body #sh-main#sh-main#sh-main #mod-compliance>*>section.card.cp{padding:16px 18px!important}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13922,7 +13923,7 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const f2w=v=>!v?{c:'none',t:'Not entered'}:v==='Passed'?{c:'ok',t:'Passed'}:v==='Pending'?{c:'warn',t:'Pending'}:{c:'bad',t:v};
   const vcBy={};for(const v of Object.values(CP.data.vc)){if(!v||!v.date)continue;const p=L.find(x=>x.id===v.driverId)||L.find(x=>norm([x.first,x.last].join(''))===norm(v.driver));if(!p)continue;if(!vcBy[p.id]||v.date>vcBy[p.id].date)vcBy[p.id]=v}
   const vst=p=>{const v=vcBy[p.id];if(!v)return{c:'bad',t:'Never checked'};const n=30-Math.round((fromIso(T)-fromIso(v.date))/864e5);if(v.outcome==='fail')return{c:'bad',t:'Failed '+sh(v.date)};return n<0?{c:'bad',t:-n+' days overdue'}:{c:v.outcome==='minor'?'warn':'ok',t:(v.outcome==='minor'?'Fixes needed, ':'')+'due '+sh(add(v.date,30))}};
-  const COLS=[['lic','Licence'],['rego','Rego'],['ten','Tenure'],['f2w','Fit2Work'],['vc','Van check']];
+  const COLS=[['lic','Licence'],['rego','Rego'],['ten','Tenure'],['f2w','Fit2Work']];
   const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),ten:st(p.tenDue),f2w:f2w(p.fit2work),vc:vst(p)}));
   const cnt=(k,c)=>rows.filter(r=>r[k].c===c).length;
   const score=r=>COLS.reduce((x,[k])=>x+(r[k].c==='bad'?100:r[k].c==='warn'?10:r[k].c==='none'?1:0),0);
@@ -13932,14 +13933,14 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const label=k=>k==='PRINCIPLE'?'Principal':/^\d{4}$/.test(k)?k:k==='XL'?'XL':tc(k);
   const tile=(k,l,word)=>{const b=cnt(k,'bad'),w=cnt(k,'warn'),n=cnt(k,'none');return `<div class="${b?'bad':w?'warn':n===rows.length?'':'ok'}"><small>${l}</small><b>${b} ${word}</b><span>${w} ${k==='f2w'?'pending':k==='vc'?'need fixes':'expiring'} · ${n} not entered</span></div>`};
   el.innerHTML=`<section class="card cp"><p class="mt-note cp-top">Expiring means in the next 30 days. F2W is Fit2Work.</p>
-   <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ten','Tenure','expired')}${tile('f2w','Fit2Work','failed')}${tile('vc','Van checks','overdue')}</div>
+   <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ten','Tenure','expired')}${tile('f2w','Fit2Work','failed')}</div>
    ${(()=>{const need=r=>COLS.some(([c])=>r[c].c==='bad'||r[c].c==='warn');const nN=rows.filter(need).length;
      const short=(c,x)=>x.c==='none'?'–':x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
      const list=CP.all?rows:rows.filter(need);
      return `<div class="segs cp-f" role="group" data-noprint><button type="button" data-cpf="0" aria-pressed="${!CP.all}">Needs attention <i>${nN}</i></button><button type="button" data-cpf="1" aria-pressed="${CP.all}">Everyone <i>${rows.length}</i></button></div>
      ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Tenure','F2W','Van'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
-     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr"><th colspan="6">${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr><td><b>${esc(shortName(r.p))}</b></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:'<p class="mt-note">✓ Nobody needs attention right now.</p>'}`})()}
-   <p class="mt-note">Add licence, rego and tenure dates and the Fit2Work status in each driver's record on the Driver Details page. Depot induction can be added later.</p>
+     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr"><th colspan="${COLS.length+1}">${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr><td><b>${esc(shortName(r.p))}</b></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:'<p class="mt-note">✓ Nobody needs attention right now.</p>'}`})()}
+   <p class="mt-note">Add licence, rego and tenure dates and the Fit2Work status in each driver's record on the Driver Management page. Depot induction can be added later.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
 window.MGRT={paint};
 })();
@@ -14301,7 +14302,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610316000';
+const VERSION='202610316200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
