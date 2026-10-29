@@ -5832,6 +5832,13 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .ah-off .ao-one .ao-ch{margin-top:8px}.ah-off .ao-one .ao-ch i{font-size:.88rem;padding:3px 10px}
 .ah-off .ao-wk{margin-top:10px!important}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ah-off .ao-one.off .ao-th span b{color:#FFA463}:root:not([data-theme=light]) .ah-off .ao-one.in .ao-th span b{color:#5CCB8E}}:root[data-theme=dark] .ah-off .ao-one.off .ao-th span b{color:#FFA463}:root[data-theme=dark] .ah-off .ao-one.in .ao-th span b{color:#5CCB8E}
+
+.ah-off .ao-nd{margin:4px 0 0}
+.ah-off .ao-nd>summary,.ah-off .ao-nd .ao-ns{display:flex;align-items:center;gap:8px;padding:11px 14px;font-weight:800;font-size:1.05rem;color:var(--sh-ink)}
+.ah-off .ao-nd>summary span,.ah-off .ao-ns span{display:flex;flex-direction:column;gap:1px}.ah-off .ao-nd small{font-size:.72rem!important;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--sh-muted)}
+.ah-off .ao-nd.off>summary{color:#C2570C}.ah-off .ao-nd.in .ao-ns{color:#1E8A4C}
+.ah-off .ao-nd .ao-ch{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 12px;margin:0}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ah-off .ao-nd.off>summary{color:#FFA463}:root:not([data-theme=light]) .ah-off .ao-nd.in .ao-ns{color:#5CCB8E}}:root[data-theme=dark] .ah-off .ao-nd.off>summary{color:#FFA463}:root[data-theme=dark] .ah-off .ao-nd.in .ao-ns{color:#5CCB8E}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6796,7 +6803,8 @@ function adminOff(){const el=$('ah_off');if(!el||role!=='mgr')return;
   const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const t0=new Date();t0.setHours(12,0,0,0);const t1=new Date(t0);t1.setDate(t0.getDate()+1);
   const we=d=>d.getDay()===0||d.getDay()===6;
-  const tile=(lab,d)=>{const w=who(d);const wkend=we(d)&&!w.length;return `<div class="ao-t ao-one ${wkend?'we':w.length?'off':'in'}"><div class="ao-th"><small>${lab}</small><span><b>${wkend?'–':w.length}</b><em>${wkend?'Weekend':w.length?(w.length===1?'person off':'people off'):'Everyone in'}</em></span></div>${w.length?`<span class="ao-ch">${w.map(x=>`<i>${esc(x)}</i>`).join('')}</span>`:''}</div>`};
+  const tile=(lab,d)=>{const w=who(d);const wkend=we(d)&&!w.length;const txt=wkend?'Weekend':w.length?w.length+(w.length===1?' person off':' people off'):'Everyone in';
+    return w.length?`<details class="mc-nd ao-nd ${'off'}"${window.__aoOpen?' open':''}><summary><span><small>${lab}</small>${txt}</span></summary><span class="ao-ch">${w.map(x=>`<i>${esc(x)}</i>`).join('')}</span></details>`:`<div class="mc-nd ao-nd ${wkend?'we':'in'}"><div class="ao-ns"><span><small>${lab}</small>${txt}</span></div></div>`};
   const mon=new Date(t0);const dw=(mon.getDay()+6)%7;if(dw>=5)mon.setDate(mon.getDate()+7-dw);else mon.setDate(mon.getDate()-dw);
   const wk=[0,1,2,3,4].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d});
   const sd=(aoSel&&wk.find(d=>iso(d)===aoSel))||t0,isT=iso(sd)===iso(t0),isTm=iso(sd)===iso(t1);
@@ -11237,7 +11245,7 @@ async function start(role){
   db.collection('leave').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},__D(d));blocks=o;pushStat();
     if(busy||editing)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-leave .card'))return;render()},()=>{msg={err:true,t:'Could not load leave just now.'};render()});
 }
-document.addEventListener('toggle',e=>{const t=e.target;if(!t||!t.classList)return;if(t.classList.contains('fu-nd'))window.__fuOpen=t.open;else if(t.classList.contains('mc-nd'))window.__mcOpen=t.open},true);
+document.addEventListener('toggle',e=>{const t=e.target;if(!t||!t.classList)return;if(t.classList.contains('fu-nd'))window.__fuOpen=t.open;else if(t.classList.contains('ao-nd'))window.__aoOpen=t.open;else if(t.classList.contains('mc-nd'))window.__mcOpen=t.open},true);
 window.LEAVE={share,dayMap:()=>{try{return dayMap()}catch(e){return {}}},ready:()=>isMgr()};
 render();
 window.addEventListener('app:role',e=>start(e.detail));
@@ -14921,7 +14929,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322000';
+const VERSION='202610322100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
