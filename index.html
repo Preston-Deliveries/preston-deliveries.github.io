@@ -5820,6 +5820,8 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 
 #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full{background-image:linear-gradient(to left,rgba(200,87,79,.24),rgba(200,87,79,.07) 30%,transparent 45%)!important;border-right:4px solid #C8574F!important}
 #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill{background:#C8574F!important;border-color:#C8574F!important;color:#fff!important}
+
+#sh-home .dh-week .st4{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10725,7 +10727,7 @@ async function homeCards(){
   const k0=PWK,k1=PDAY,k2=ANC;PWK=null;PDAY=null;ANC=null;let P;try{P=periods()}finally{PWK=k0;PDAY=k1;ANC=k2}
   const wd=P.week.dates,x=statsFor(wd),rk=x?resultsRank(wd):null,prk=x?resultsRank(wd.map(d=>addD(d,-7))):null;
   const sv=mySurvey('weekly',P.cyc?{cs:P.cyc.cs,wk:(P.subW.find(z=>z.on)||{}).n}:null);
-  const T=tiles4(x,sv,false),hit=T.filter(z=>z[2]===true).length,have=T.filter(z=>z[2]!=null).length;
+  const T=tiles4(x,sv,false).filter(z=>z[0]!=='Survey'),hit=T.filter(z=>z[2]===true).length,have=T.filter(z=>z[2]!=null).length;
   const wins=streaks();
   const news=(S().notices||[]).slice().sort((a,c)=>String(c.postedAt||'').localeCompare(String(a.postedAt||''))).slice(0,2);
   box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do" ${z.login?`data-me="run" data-login="${esc(z.login)}"`:`data-nav="${z.nav}"`}><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
@@ -14908,7 +14910,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610321400';
+const VERSION='202610321500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
