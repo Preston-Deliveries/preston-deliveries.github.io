@@ -5483,6 +5483,7 @@ html body #mod-invoices table.sublist td:nth-child(2) small{display:block}}
 #mod-invoices .st.st-none{background:transparent!important;border:1px dashed var(--sh-line)!important;color:var(--sh-muted)!important}
 @media (max-width:899.98px){#mod-invoices .iv-r{grid-template-columns:1fr 1fr 1fr}#mod-invoices .iv-r .c-who{grid-column:1/-1}#mod-invoices .iv-r .c-n.wide{grid-column:span 2}#mod-invoices .iv-r .c-act{grid-column:1/-1;justify-content:stretch}#mod-invoices .iv-r .c-act .sh-btn{flex:1}}
 :root[data-theme=dark] #mod-invoices .iv-r .why{color:#FFD66B}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-invoices .iv-r .why{color:#FFD66B}}
+#mod-invoices .iv-r .exd{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}#mod-invoices .iv-r .exd input{padding:3px 6px;border-radius:6px;border:1px solid var(--sh-line);background:var(--sh-bg,#fff);color:var(--sh-ink);font:600 .78rem var(--sh-body)}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13654,7 +13655,10 @@ async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.
 
 /* ---------- submitted invoices ---------- */
 let view='make',lper='',lf='all',lperPicked=false;
-function periods(){const set=new Set(Object.values(logs).map(x=>x.from).filter(Boolean));const[a]=period(0),[b]=period(-1);set.add(a);set.add(b);return[...set].sort().reverse()}
+function cycleOf(x){if(!x||!x.from)return '';const a=x.from,b=x.to&&x.to>=x.from?x.to:x.from;let best='',bo=-1;
+  for(let k=-30;k<=2;k++){const[s0,e0]=period(k),lo=a>s0?a:s0,hi=b<e0?b:e0;const o=hi>=lo?Math.round((fromIso(hi)-fromIso(lo))/864e5)+1:0;if(o>bo||(o===bo&&o>0&&s0<best)){bo=o;best=s0}}
+  if(bo<=0){/* outside every cycle: the one it starts in */for(let k=-30;k<=2;k++){const[s0]=period(k);if(s0<=a)best=s0}}return best}
+function periods(){const set=new Set();for(let k=-6;k<=0;k++)set.add(period(k)[0]);for(const x of Object.values(logs)){const c=cycleOf(x);if(c)set.add(c)}return[...set].sort().reverse()}
 function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:nameOf(p),login:p.login,role:String(p.role||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.name&&(x.login||Object.values(logs).some(l=>l.sid===x.id))&&!['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR'].includes(x.role)).sort((a,b)=>a.name.localeCompare(b.name))}
 function myListHTML(){
   const L=Object.entries(logs).map(([id,x])=>({id,...x})).sort((a,b)=>String(b.from).localeCompare(String(a.from)));
@@ -13707,31 +13711,32 @@ function checkInv(x){
   if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
   return out}
 function listHTML(){
-  const P2=periods();if(!lperPicked||!lper||!P2.includes(lper)){/* open on the newest pay period that has an invoice, so a new one shows straight away */const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from>=f&&l.from<=add(f,25)));lper=withLogs[0]||period(-1)[0]}
+  const P2=periods();if(!lperPicked||!lper||!P2.includes(lper)){/* open on the newest pay period that has an invoice, so a new one shows straight away */const withLogs=P2.filter(f=>Object.values(logs).some(l=>cycleOf(l)===f));lper=withLogs[0]||period(-1)[0]}
   const to=x=>add(x,25);
-  const L=Object.entries(logs).filter(([,x])=>x.from>=lper&&x.from<=to(lper)).map(([id,x])=>({id,...x})).sort((a,b)=>String(a.from).localeCompare(String(b.from)));const byS={};for(const x of L)byS[x.sid]=x;
+  const L=Object.entries(logs).filter(([,x])=>cycleOf(x)===lper).map(([id,x])=>({id,...x})).sort((a,b)=>String(a.from).localeCompare(String(b.from)));const byS={};for(const x of L)(byS[x.sid]=byS[x.sid]||[]).push(x);
   const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name,run:x.run||''});
   const done=v=>v&&(v.status==='checked'||v.status==='paid');
-  const all=D.map(d=>({...d,inv:byS[d.id]||null}));
-  const show=all.filter(r=>lf==='all'||(lf==='todo'?!r.inv:lf==='sub'?r.inv&&!done(r.inv):done(r.inv)));
-  const nRec=all.filter(r=>r.inv).length,nDone=all.filter(r=>done(r.inv)).length,nTodo=all.length-nRec;
+  const all=D.map(d=>({...d,invs:byS[d.id]||[]}));
+  const items=[];for(const r of all){if(!r.invs.length)items.push({r,v:null});else r.invs.forEach((v,i)=>items.push({r,v,last:i===r.invs.length-1,n:r.invs.length}))}
+  const show=items.filter(({v})=>lf==='all'||(lf==='todo'?!v:lf==='sub'?v&&!done(v):done(v)));
+  const nRec=all.filter(r=>r.invs.length).length,nInv=L.length,nDone=L.filter(done).length,nTodo=all.length-nRec;
   if(lper&&histFor!==lper&&window.needHist){histFor=lper;window.needHist(lper,['days','clock','timesheets']).then(()=>paint()).catch(()=>{})}
   /* activity statement days loaded for this pay period */
   const pDays=[];for(let d=lper;d<=to(lper);d=add(d,1))pDays.push(d);const aDays=pDays.filter(d=>act[d]);
-  const actP=id=>{let n=0,ob=0;for(const d of pDays){const o=actOb(id,d);if(o!=null){n++;ob+=o}}return n?ob:null};
+  const actR=(id,a,b)=>{let n=0,ob=0;for(let d=a;d&&d<=b;d=add(d,1)){const o=actOb(id,d);if(o!=null){n++;ob+=o}}return n?ob:null};const actP=id=>actR(id,lper,to(lper));
   const gstOf=(id,v)=>v&&v.gst!==undefined?!!v.gst:(cfgs[id]&&cfgs[id].gst!==undefined?!!cfgs[id].gst:!!(mes[id]&&mes[id].gst));
-  const fig=(r)=>{const v=r.inv;
+  const fig=(r,v)=>{
     if(v&&!v.ext&&v.rows&&v.T){const pc=v.rows.reduce((a,x)=>a+(x.t==='h'||x.t==='d'?0:num(x.pc)),0),A=actFor(v);return{ob:A?A.ob:actP(r.id),pc,sub:num(v.T.sub),gst:num(v.T.gst),tot:num(v.T.total),app:true}}
-    if(v&&v.ext){const g=gstOf(r.id,v),sub=v.sub!=null?num(v.sub):(v.total?num(v.total)/(g?1.1:1):null),gst=sub!=null&&g?Math.round(sub*10)/100:0;return{ob:actP(r.id),pc:v.pc!=null&&v.pc!==''?num(v.pc):null,sub,gst,tot:sub!=null?Math.round((sub+gst)*100)/100:null,g}}
-    if(v)return{ob:actP(r.id),pc:null,sub:null,gst:0,tot:num(v.total)||null};
+    if(v&&v.ext){const g=gstOf(r.id,v),sub=v.sub!=null?num(v.sub):(v.total?num(v.total)/(g?1.1:1):null),gst=sub!=null&&g?Math.round(sub*10)/100:0;return{ob:actR(r.id,v.from||lper,v.to||to(lper)),pc:v.pc!=null&&v.pc!==''?num(v.pc):null,sub,gst,tot:sub!=null?Math.round((sub+gst)*100)/100:null,g}}
+    if(v)return{ob:actR(r.id,v.from,v.to||v.from),pc:null,sub:null,gst:0,tot:num(v.total)||null};
     return{ob:actP(r.id),pc:null,sub:null,gst:0,tot:null}};
-  const F={};for(const r of all)F[r.id]=fig(r);
-  const sum=all.reduce((a,r)=>{const f=F[r.id];if(r.inv&&f.tot!=null){a.s+=f.sub||0;a.g+=f.gst||0;a.t+=f.tot}return a},{s:0,g:0,t:0});
-  const chk={};for(const x of L)chk[x.sid]=x.ext?[]:checkInv(x);
+  const F=new Map();for(const it of items)F.set(it,fig(it.r,it.v));
+  const sum=items.reduce((a,it)=>{const f=F.get(it);if(it.v&&f.tot!=null){a.s+=f.sub||0;a.g+=f.gst||0;a.t+=f.tot}return a},{s:0,g:0,t:0});
+  const chk={};for(const x of L)chk[x.id]=x.ext?[]:checkInv(x);
   const step=(n,okd,t,sub)=>`<li class="${okd?'ok':''}"><i>${okd?'✓':n}</i><span><b>${t}</b><small>${sub}</small></span></li>`;
-  const row=r=>{const v=r.inv,f=F[r.id],ck=chk[r.id]||[],D2=done(v),diff=f.ob!=null&&f.pc!=null?f.pc-f.ob:null;
+  const row=it=>{const {r,v}=it,f=F.get(it),ck=v?chk[v.id]||[]:[],D2=done(v),diff=f.ob!=null&&f.pc!=null?f.pc-f.ob:null;
     const st=!v?'<span class="st st-none">Not received</span>':D2?'<span class="st st-paid">Done</span>':'<span class="st st-submitted">Received</span>';
-    const how=!v?'':v.ext?'Email or paper':'In the app'+(v.no?' · No. '+esc(v.no):'');
+    const dates=v?`${esc(short(v.from))} to ${esc(short(v.to||v.from))}`:'';const how=!v?'':v.ext?`Email or paper · <span class="exd"><input type="date" data-imext="${esc(v.id)}" data-k="from" value="${esc(v.from||'')}" aria-label="Invoice from" ${D2?'disabled':''}> to <input type="date" data-imext="${esc(v.id)}" data-k="to" value="${esc(v.to||'')}" aria-label="Invoice to" ${D2?'disabled':''}></span>`:'In the app'+(v.no?' · No. '+esc(v.no):'')+' · '+dates;
     const pcCell=v&&v.ext?`<input type="text" inputmode="numeric" data-imext="${esc(v.id)}" data-k="pc" value="${f.pc!=null?f.pc:''}" placeholder="Parcels" aria-label="Parcels on ${esc(r.name)}'s invoice" ${D2?'disabled':''}>`:f.pc!=null?f.pc.toLocaleString('en-AU'):'–';
     const subCell=v&&v.ext?`<label class="extamt"><span>$</span><input type="text" inputmode="decimal" data-imext="${esc(v.id)}" data-k="sub" value="${f.sub!=null?f.sub.toFixed(2):''}" placeholder="Ex GST" aria-label="Subtotal ex GST for ${esc(r.name)}" ${D2?'disabled':''}></label><label class="gstk"><input type="checkbox" data-imext="${esc(v.id)}" data-k="gst" ${f.g?'checked':''} ${D2?'disabled':''}> GST registered</label>`:f.sub!=null?money(f.sub):'–';
     const acts=!v?`<button type="button" class="sh-btn sm ext" data-im="lext" data-v="${esc(r.id)}">Received</button><button type="button" class="lk sm" data-im="lmake" data-v="${esc(r.id)}">Make it in the app</button>`
@@ -13744,28 +13749,28 @@ function listHTML(){
       <div class="c-n wide"><small>Subtotal ex GST</small><b>${subCell}</b></div>
       <div class="c-n"><small>GST</small><b>${f.sub!=null?money(f.gst):'–'}</b></div>
       <div class="c-n"><small>Total</small><b>${f.tot!=null?money(f.tot):'–'}</b></div>
-      <div class="c-act">${acts}</div>
+      <div class="c-act">${acts}${v&&it.last?`<button type="button" class="lk sm" data-im="lext" data-v="${esc(r.id)}">+ Another invoice</button>`:''}</div>
       ${ck.length&&!D2?`<p class="why">Check: ${esc(ck.join('; '))}</p>`:''}</div>`};
   return `<section class="card im ivk"><h2>Check invoices</h2>
    <div class="row"><label class="f grow"><span>Pay period</span><select id="im_lper">${P2.map(f=>`<option value="${f}" ${f===lper?'selected':''}>${esc(nice(f))} to ${esc(nice(to(f)))}${f===period(0)[0]?' (this period)':f===period(-1)[0]?' (last period)':''}</option>`).join('')}</select></label></div>
    <ol class="ivsteps">
     ${step(1,aDays.length>0,'Upload the activity statement',aDays.length?`Loaded for ${aDays.length} day${aDays.length===1?'':'s'} of this pay period. <label class="lk actup">Upload another week<input type="file" id="im_act" accept=".xlsx,.xls" hidden></label>`:`<label class="sh-btn sm primary actup">Upload activity statement<input type="file" id="im_act" accept=".xlsx,.xls" hidden></label>`)}
     ${step(2,nTodo===0&&all.length>0,'Mark invoices received',`${nRec} of ${all.length} received. Invoices sent in the app come in by themselves. Tap <b>Received</b> for ones sent by email or on paper.`)}
-    ${step(3,nRec>0&&nDone===nRec,'Check each one',`Their parcels should match the activity onboard. For email or paper invoices, type their parcels and subtotal ex GST, and GST is added by itself.`)}
-    ${step(4,nRec>0&&nDone===nRec,'Tap Done',`${nDone} of ${nRec} done.`)}
+    ${step(3,nInv>0&&nDone===nInv,'Check each one',`Their parcels should match the activity onboard. For email or paper invoices, type their parcels and subtotal ex GST, and GST is added by itself.`)}
+    ${step(4,nInv>0&&nDone===nInv,'Tap Done',`${nDone} of ${nInv} invoice${nInv===1?'':'s'} done.`)}
    </ol>
-   <div class="tiles4"><div><span>Received</span><b>${nRec} of ${all.length}</b></div><div><span>Done</span><b>${nDone} of ${nRec}</b></div><div><span>Ex GST</span><b>${money(sum.s)}</b><small>GST ${money(sum.g)}</small></div><div><span>Period total</span><b>${money(sum.t)}</b></div></div>
-   <div class="segs" role="group">${[['all','Everyone',all.length],['todo','Not received',nTodo],['sub','To check',nRec-nDone],['done','Done',nDone]].map(([k,l,n])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l} <i>${n}</i></button>`).join('')}</div>
+   <div class="tiles4"><div><span>Received</span><b>${nRec} of ${all.length}</b></div><div><span>Done</span><b>${nDone} of ${nInv}</b></div><div><span>Ex GST</span><b>${money(sum.s)}</b><small>GST ${money(sum.g)}</small></div><div><span>Period total</span><b>${money(sum.t)}</b></div></div>
+   <div class="segs" role="group">${[['all','Everyone',all.length],['todo','Not received',nTodo],['sub','To check',nInv-nDone],['done','Done',nDone]].map(([k,l,n])=>`<button type="button" data-im="lf" data-v="${k}" aria-pressed="${lf===k}">${l} <i>${n}</i></button>`).join('')}</div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <div class="iv-list">${show.map(row).join('')||'<p class="sub">Nobody here.</p>'}</div>
    <div class="acts"><button type="button" class="sh-btn" data-im="pall" ${L.length&&!busy?'':'disabled'}>Print all app invoices (PDF)</button><button type="button" class="sh-btn" data-im="xsum" ${L.length?'':'disabled'}>Download summary (Excel)</button></div></section>`}
-async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>x.from===lper).map(([id,x])=>({id,...x})).filter(x=>x.rows&&x.T).sort((a,b)=>a.name.localeCompare(b.name));
+async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>cycleOf(x)===lper).map(([id,x])=>({id,...x})).filter(x=>x.rows&&x.T).sort((a,b)=>a.name.localeCompare(b.name));
   const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name});const cover={from:lper,to:add(lper,25),rows:D.map(d=>({name:d.name,inv:L.find(x=>x.sid===d.id)||null}))};
   busy=true;msg={t:'Making '+L.length+' invoices…'};paint();
   try{const blob=await pdfOf(L,cover);await save(blob,`Driver invoices ${lper} to ${add(lper,25)}.pdf`);msg={t:'Saved. The summary page is first, then each invoice.'}}catch(e){msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
   busy=false;paint()}
 async function exportSum(){if(typeof XLSX==='undefined')await window.loadXLSX();if(typeof XLSX==='undefined'){msg={err:true,t:'The spreadsheet tool did not load. Reload the page.'};paint();return}
-  const L=Object.values(logs).filter(x=>x.from===lper).sort((a,b)=>a.name.localeCompare(b.name));
+  const L=Object.values(logs).filter(x=>cycleOf(x)===lper).sort((a,b)=>a.name.localeCompare(b.name));
   const aoa=[['Driver','Run','Invoice no.','Invoice date','From','To','1 load parcels','2 load parcels','Extra parcels','Paid hours','Hours worked','Ex GST','GST','Total','Status']];
   for(const x of L){const T=x.T||{};aoa.push([x.name,x.run||'',x.ext?'Outside the app':x.no,x.date,x.from,x.to,T.l1||0,T.l2||0,T.xp||0,T.hr||0,x.worked||0,T.sub||0,T.gst||0,T.total||x.total||0,STAT[x.status]||'Submitted'])}
   const ws=XLSX.utils.aoa_to_sheet(aoa);ws['!cols']=[22,10,10,11,11,11,10,10,10,9,10,11,9,11,10].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Invoices');
@@ -13840,7 +13845,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='mail'){mailIt();return}
   if(a==='lsee'&&logs[v]){showPreview({...logs[v]});return}
   if(a==='xlsx'){dlOne(snap(),'xlsx',el);return}
-  if(a==='golist'){msg=null;lper=from;lperPicked=true;setView('list');return}
+  if(a==='golist'){msg=null;lper=cycleOf({from,to})||from;lperPicked=true;setView('list');return}
   if(a==='lf'){lf=v;paint();return}
   if(a==='pall'){printAll(el);return}
   if(a==='xsum'){exportSum();return}
@@ -13848,7 +13853,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='lxls'&&logs[v]){dlOne({...logs[v]},'xlsx',el);return}
   if(a==='lopen'){openLog(v);return}
   if(a==='lmake'){msg=null;from=lper;to=add(lper,25);invDate=TODAY;pick(v);setView('make');return}
-  if(a==='lext'){const p=staff[v]||{},id=v+'_'+lper;const doc={v:0,ext:true,sid:v,name:nameOf(p)||v,run:(p.runs||[]).filter(Boolean).join(', '),from:lper,to:add(lper,25),status:'submitted',at:new Date().toISOString(),submittedAt:new Date().toISOString(),submittedBy:'office'};logs[id]=doc;paint();try{await db.doc('invlog/'+id).set(doc)}catch(x){delete logs[id];msg={err:true,t:'Could not save just now.'};paint()}return}
+  if(a==='lext'){const p=staff[v]||{};let id=v+'_'+lper;if(logs[id])id=v+'_'+lper+'_'+Date.now().toString(36);const doc={v:0,ext:true,sid:v,name:nameOf(p)||v,run:(p.runs||[]).filter(Boolean).join(', '),from:lper,to:add(lper,25),status:'submitted',at:new Date().toISOString(),submittedAt:new Date().toISOString(),submittedBy:'office'};logs[id]=doc;paint();try{await db.doc('invlog/'+id).set(doc)}catch(x){delete logs[id];msg={err:true,t:'Could not save just now.'};paint()}return}
   if(a==='lextrm'&&logs[v]&&logs[v].ext){const keep=logs[v];delete logs[v];paint();try{await db.doc('invlog/'+v).delete()}catch(x){logs[v]=keep;msg={err:true,t:'Could not save just now.'};paint()}return}
   if(a==='lst'&&logs[v]){const s2=el.dataset.s;const up={status:s2,[s2+'At']:new Date().toISOString()};logs[v]={...logs[v],...up};paint();try{await db.doc('invlog/'+v).update(up)}catch(x){msg={err:true,t:'Could not update just now.'};paint()}return}
 });
@@ -13864,7 +13869,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.dataset.imx&&t.dataset.k==='why'){paint();return}
   if(t.dataset.imt){ticks[t.dataset.imt]=t.checked;paint();return}
   if(t.dataset.imext){const id=t.dataset.imext,x=logs[id],k=t.dataset.k||'sub';if(!x)return;const up={};
-    if(k==='gst')up.gst=!!t.checked;else{const raw=String(t.value).replace(/[^\d.]/g,'');const n=raw===''?null:Math.round(parseFloat(raw)*100)/100;if(raw!==''&&isNaN(n))return;up[k]=k==='pc'&&n!=null?Math.round(n):n}
+    if(k==='gst')up.gst=!!t.checked;else if(k==='from'||k==='to'){if(!t.value)return;up[k]=t.value;if(k==='from'&&x.to&&x.to<t.value)up.to=t.value}else{const raw=String(t.value).replace(/[^\d.]/g,'');const n=raw===''?null:Math.round(parseFloat(raw)*100)/100;if(raw!==''&&isNaN(n))return;up[k]=k==='pc'&&n!=null?Math.round(n):n}
     const nx={...x,...up};const g=nx.gst!==undefined?!!nx.gst:(cfgs[x.sid]&&cfgs[x.sid].gst!==undefined?!!cfgs[x.sid].gst:!!(mes[x.sid]&&mes[x.sid].gst));if(nx.sub!=null){up.gst=g;up.total=Math.round((num(nx.sub)+(g?Math.round(num(nx.sub)*10)/100:0))*100)/100}
     logs[id]={...x,...up};paint();(async()=>{try{await db.doc('invlog/'+id).update(up)}catch(e){msg={err:true,t:'Could not save that just now.'};paint()}})();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
@@ -14465,7 +14470,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610318100';
+const VERSION='202610318200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
