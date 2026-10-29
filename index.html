@@ -5871,6 +5871,17 @@ html body #sh-home#sh-home .ah-qa .qa b{font-size:1.15rem!important;text-align:l
 
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.lvr .mh b{color:var(--sh-ink)!important}:root:not([data-theme=light]) #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill.pill{background:#D9534B!important;color:#fff!important;opacity:1!important;filter:none!important}}
 :root[data-theme=dark] #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.lvr .mh b{color:var(--sh-ink)!important}:root[data-theme=dark] #sh-main#sh-main#sh-main #mod-leave .lvw .lvr.full .pill.pill{background:#D9534B!important;color:#fff!important;opacity:1!important;filter:none!important}
+
+/* leave week: date on top, number on the left, names next to it */
+#sh-main#sh-main#sh-main #mod-leave .lvw .lvr.lv2{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;padding:11px 14px!important}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lt b{font-size:1rem;font-weight:800;color:var(--sh-ink)}#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lt b em{font-style:normal;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted);margin-left:6px}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lb{display:flex;align-items:center;gap:12px;min-width:0}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .ln{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:56px;padding:4px 8px;border-radius:12px;background:var(--sh-sunk);border:1px solid var(--sh-line)}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .ln b{font-size:1.6rem;font-weight:800;line-height:1.05;color:var(--sh-ink);font-variant-numeric:tabular-nums}#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .ln small{font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--sh-muted);white-space:nowrap}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:0!important;min-width:0}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lin{color:var(--sh-muted);font-weight:700}#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .lbo{font-weight:800;color:var(--sh-ink)}
+#sh-main#sh-main#sh-main #mod-leave .lvw .lv2 .pill{margin:0!important;align-self:center}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -11023,9 +11034,8 @@ function weekHTML(){
    <div class="lvw">${days.map(d=>{const k=iso(d),o=m[k],st=status(k,o),n=o?o.n:0;
      const ppl=showNames&&o?o.names.map((x,i)=>({x,id:(o.ids||[])[i]})):[];const off=isMgr()&&o?o.office.map((x,i)=>({x,id:(o.oids||[])[i]})):[];
      const chip=(p,cls)=>isMgr()&&p.id?`<button type="button" class="pp ${cls}" data-lv="edit" data-v="${esc(p.id)}">${esc(tc(shortName(p.x)))}</button>`:`<span class="pp ${cls}">${esc(tc(isMgr()?shortName(p.x):p.x.split(' ')[0]))}</span>`;
-     return `<div class="lvr ${st.k}${k===today?' now':''}"><div class="d"><small>${DOW[(d.getDay()+6)%7]}</small><b>${d.getDate()}</b></div>
-       <div class="m"><span class="mh"><b>${st.k==='bo'?esc(st.t):n?`${n} driver${n===1?'':'s'} off`:'Nobody off'}</b>${st.k!=='bo'?`<span class="cap" aria-hidden="true">${Array.from({length:config().limit||3},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`:''}</span>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:''}</div>
-       <span class="pill">${esc(pillTxt(st,n))}</span></div>`}).join('')}</div>
+     return `<div class="lvr lv2 ${st.k}${k===today?' now':''}"><div class="lt"><b>${DOW[(d.getDay()+6)%7]} ${d.getDate()} ${MON[d.getMonth()].slice(0,3)}${k===today?' <em>Today</em>':''}</b><span class="pill">${esc(pillTxt(st,n))}</span></div>
+       <div class="lb">${st.k==='bo'?`<span class="lbo">${esc(st.t)}</span>`:`<div class="ln"><b>${n}</b><small>${n===1?'driver off':'drivers off'}</small></div>${ppl.length||off.length?`<span class="ppl">${ppl.map(p=>chip(p,'')).join('')}${off.map(p=>chip(p,'of')).join('')}</span>`:n?'':'<span class="lin">Everyone in</span>'}`}</div></div>`}).join('')}</div>
    ${isMgr()?'<p class="sub">Tap a name to change or remove that leave. Office staff are shown in grey and don’t count toward the limit.</p>':''}`;
 }
 function monthHTML(){
@@ -14953,7 +14963,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322800';
+const VERSION='202610322900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
