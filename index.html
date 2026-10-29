@@ -13496,7 +13496,7 @@ async function dlOne(inv,kind,btn){const old=btn?btn.textContent:'';if(btn){btn.
   if(btn){btn.disabled=false;btn.textContent=old}paint()}
 
 /* ---------- submitted invoices ---------- */
-let view='make',lper='',lf='all';
+let view='make',lper='',lf='all',lperPicked=false;
 function periods(){const set=new Set(Object.values(logs).map(x=>x.from).filter(Boolean));const[a]=period(0),[b]=period(-1);set.add(a);set.add(b);return[...set].sort().reverse()}
 function driversList(){return Object.entries(staff).map(([id,p])=>({id,name:nameOf(p),login:p.login,role:String(p.role||'').toUpperCase(),run:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.name&&(x.login||Object.values(logs).some(l=>l.sid===x.id))&&!['PRINCIPLE','PRINCIPAL','ADMIN','OFFICE COORDINATOR'].includes(x.role)).sort((a,b)=>a.name.localeCompare(b.name))}
 function myListHTML(){
@@ -13550,7 +13550,7 @@ function checkInv(x){
   if(ds.length)out.push(ds.length+' day'+(ds.length===1?'':'s')+' different from the records: '+ds.join(', '));
   return out}
 function listHTML(){
-  const P2=periods();if(!lper||!P2.includes(lper)){const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from===f));lper=withLogs[0]||period(-1)[0]}
+  const P2=periods();if(!lperPicked||!lper||!P2.includes(lper)){/* open on the newest pay period that has an invoice, so a new one shows straight away */const withLogs=P2.filter(f=>Object.values(logs).some(l=>l.from>=f&&l.from<=add(f,25)));lper=withLogs[0]||period(-1)[0]}
   const L=Object.entries(logs).filter(([,x])=>x.from>=lper&&x.from<=add(lper,25)).map(([id,x])=>({id,...x})).sort((a,b)=>String(a.from).localeCompare(String(b.from)));const byS={};for(const x of L)byS[x.sid]=x;
   const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name,run:x.run||''});
   const all=D.map(d=>({...d,inv:byS[d.id]||null}));
@@ -13619,7 +13619,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='mail'){mailIt();return}
   if(a==='lsee'&&logs[v]){showPreview({...logs[v]});return}
   if(a==='xlsx'){dlOne(snap(),'xlsx',el);return}
-  if(a==='golist'){msg=null;lper=from;setView('list');return}
+  if(a==='golist'){msg=null;lper=from;lperPicked=true;setView('list');return}
   if(a==='lf'){lf=v;paint();return}
   if(a==='pall'){printAll(el);return}
   if(a==='xsum'){exportSum();return}
@@ -13631,6 +13631,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
 });
 document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
   if(t.id==='im_sid'){if(t.value)pick(t.value);else{sid='';paint()}return}
+  if(t.id==='im_lper'){lper=t.value;lperPicked=true;paint();return}
   if(t.id==='im_from'){if(t.value)setPeriod(t.value,to);return}
   if(t.id==='im_to'){if(t.value)setPeriod(from,t.value);return}
   if(t.id==='im_date'){invDate=t.value||TODAY;saveDraft();return}
@@ -14234,7 +14235,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610315000';
+const VERSION='202610315100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
