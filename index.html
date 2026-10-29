@@ -5728,6 +5728,25 @@ html body #mod-summary .pfx .pf-top>.sh-btn{width:fit-content!important;max-widt
 .pfx .pkx .pseg2 button{padding-top:6px!important;padding-bottom:6px!important}
 
 @media (min-width:760px){.pfx .pf-big2 b{font-size:3rem}.pfx .pf-q b{font-size:2.1rem}.pfx .pf-big2,.pfx .pf-q{padding:14px 16px}.pfx .pf-ql{font-size:.8rem}.pfx .pf-qs,.pfx .pf-one .pf-d{font-size:.85rem}}
+
+/* results in the Menu look */
+.pfx .pr-sec{display:flex;flex-direction:column;gap:8px;--g:#6D3FC7;--gs:#ECE4FA}
+.pfx .pr-sec h3{margin:6px 4px 0;display:flex;align-items:center;gap:9px;font-size:1.05rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--g)}
+.pfx .pr-sec h3 i{width:11px;height:11px;border-radius:3px;background:var(--g)}
+.pfx .pr-sc{--g:#6D3FC7;--gs:#ECE4FA}.pfx .pr-now{--g:#1D5FD1;--gs:#E2ECFC}.pfx .pr-wk{--g:#14804A;--gs:#E0F3E8}.pfx .pr-fb{--g:#C2410C;--gs:#FDE8DC}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .pfx .pr-sc{--g:#B596F2;--gs:#2C2145}:root:not([data-theme=light]) .pfx .pr-now{--g:#7FA8F5;--gs:#1B2A47}:root:not([data-theme=light]) .pfx .pr-wk{--g:#5CCB8E;--gs:#16301F}:root:not([data-theme=light]) .pfx .pr-fb{--g:#FF9A62;--gs:#3A2112}}
+:root[data-theme=dark] .pfx .pr-sc{--g:#B596F2;--gs:#2C2145}:root[data-theme=dark] .pfx .pr-now{--g:#7FA8F5;--gs:#1B2A47}:root[data-theme=dark] .pfx .pr-wk{--g:#5CCB8E;--gs:#16301F}:root[data-theme=dark] .pfx .pr-fb{--g:#FF9A62;--gs:#3A2112}
+.pfx .pr-box{border-radius:16px;background:var(--sh-surface);border:1px solid var(--sh-line);overflow:hidden}
+.pfx .pr-row{display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid var(--sh-line)}.pfx .pr-row:first-child{border-top:0}
+.pfx .pr-ic{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--gs);color:var(--g)}
+.pfx .pr-ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pfx .pr-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.pfx .pr-tx b{font-size:1.05rem;font-weight:800;color:var(--sh-ink);line-height:1.2}.pfx .pr-tx small{font-size:.86rem;color:var(--sh-muted);line-height:1.3}
+.pfx .pr-v{flex:0 0 auto;font-size:1.45rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--sh-ink);text-align:right}
+.pfx .pr-v.s-good{color:var(--pf-g)}.pfx .pr-v.s-bad{color:var(--pf-b)}.pfx .pr-v.s-gold{color:var(--pf-o)}
+.pfx .pr-row.big{padding:16px}.pfx .pr-row.big .pr-v{font-size:2.1rem}.pfx .pr-row.big .pr-tx b{font-size:1.15rem}.pfx .pr-row.big .pr-ic{width:48px;height:48px}
+.pfx .pr-fb .pr-row .pr-tx b{font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--sh-muted)}.pfx .pr-fb .pr-row .pr-tx small{font-size:.98rem;color:var(--sh-ink)}
+.pfx .pr-fb .pr-row:has(svg circle+path[d^="M8"]) .pr-ic{background:var(--pf-gs);color:var(--pf-g)}.pfx .pr-fb .pr-row:has(svg path[d^="M12 7.5"]) .pr-ic{background:var(--pf-bs);color:var(--pf-b)}
+@media (min-width:760px){.pfx .pr-v{font-size:1.6rem}}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -10671,7 +10690,7 @@ function driverHTML(){
   return `<div class="dr pfx">${window.PERFUI.page({who:tc(me.name||''),sub:run?`Run ${esc(run.login||run.id)}${run.postcode?` · <em>${esc(run.postcode)}</em>`:''}`:'',
     per:when+' · '+per.label.replace(/^Week \d of the pay cycle · /,'').replace(/^Pay cycle /,''),ctl:pkHTML(P),
     cur,prev:cur&&prev?prev:null,prevLab:lab,rank:rk?(rk.rank!=null?{rank:rk.rank,of:rk.of}:{why:'Not ranked: needs '+rk.need+' day'+(rk.need===1?'':'s')+' worked'}):null,
-    bests:B,trend:pfWeeks(6),own,t:targets(),none:'No results '+(PER==='day'?'for this day':PER==='week'?'for this week':'for this month')+' yet.'})}</div>`;
+    bests:B,trend:pfWeeks(4),said:sv&&sv.found?(sv.said||[]):[],own,t:targets(),none:'No results '+(PER==='day'?'for this day':PER==='week'?'for this week':'for this month')+' yet.'})}</div>`;
 }
 /* My pay: what this pay period looks like so far */
 async function paySummary(){
@@ -10727,27 +10746,48 @@ window.PERFUI=(()=>{
     <b class="pf-v">${val}</b>${STX[status]?`<span class="pf-s">${STX[status]}</span>`:''}${sub?`<span class="pf-sub">${sub}</span>`:''}${foot?`<span class="pf-f">${foot}</span>`:''}${d||''}</div>`}
   /* m: {who, sub, tag, per, cur, prev, prevLab, rank, bests, bestsTitle, trend, own, t, none} */
   const SAY={gold:'Perfect',good:'On target',bad:'Under target',na:''};
-  /* everything on one screen: score and parcels on top, the four measures in a 2 by 2 grid */
+  const IX={wk:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 10"/>',no:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.2v.3"/>',q:'<path d="M7 7h4v4H8a3 3 0 003 3v2a5 5 0 01-5-5V8a1 1 0 011-1zM15 7h4v4h-3a3 3 0 003 3v2a5 5 0 01-5-5V8a1 1 0 011-1z"/>'};
+  const ic=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]||IX[k]}</svg>`;
+  /* the same look as the Menu: a coloured heading, then rows in one rounded box */
+  const sec=(g,title,rows)=>rows.length?`<section class="pr-sec pr-${g}"><h3><i></i>${E(title)}</h3><div class="pr-box">${rows.join('')}</div></section>`:'';
+  const row=(icon,title,sub,val,s,big)=>`<div class="pr-row${big?' big':''}"><span class="pr-ic">${ic(icon)}</span><div class="pr-tx"><b>${title}</b>${sub?`<small>${sub}</small>`:''}</div>${val!=null?`<div class="pr-v s-${s||'na'}">${val}</div>`:''}</div>`;
+  const plain=d=>String(d||'').replace(/<small>.*?<\/small>/g,'').replace(/<[^>]+>/g,'').trim();
+  function feedback(c,t,who){const good=[],need=[];if(!c)return{good,need};
+    const et=(c.enqN||0)+(c.enqP||0);
+    if(c.score!=null){if(c.score>=96-1e-9)good.push('Contract Score is green.');else need.push('Contract Score is under 96. Every point counts.')}
+    if(c.eta!=null){if(Math.round(c.eta*10)/10>=t.etaG)good.push('2 hr ETA parcels are on time.');else need.push('2 hr ETA is under '+t.etaG+'%. Deliver 2 hr parcels first.')}
+    if(c.cp!=null){if(Math.round(c.cp*10)/10>=t.cpG-1e-9)good.push('Scan compliance is on target.');else need.push('Scan compliance is under '+t.cpG+'%. Scan every parcel at the door.')}
+    if(et===0)good.push('No at fault enquiries.');else need.push(et+' at fault enquir'+(et===1?'y':'ies')+'. Take care with safe drops and always leave a card.');
+    if(c.sv!=null){if(c.sv>=70)good.push('Customers are happy.');else need.push('Survey is under 70. Be friendly and follow delivery instructions.')}
+    return{good,need}}
+  /* m: {who, sub, per, ctl, cur, prev, prevLab, rank, trend, own, t, none, said} */
   function page(m){
-    const t=m.t||{etaG:98,cpG:99},c=m.cur||null,p=m.prev||{},L=m.prevLab;
+    const t=m.t||{etaG:98,cpG:99},c=m.cur||null,p=m.prev||{},L=m.prevLab,R=m.trend||{weeks:[]};
     const rk=m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of}</span>`:m.rank&&m.rank.why?`<span class="pf-rk nr">Not ranked</span>`:'';
     const head=`<header class="pf-hd"><div class="pf-hn"><h2>${E(m.who)}</h2>${rk}</div>${m.sub?`<p>${m.sub}</p>`:''}</header>`+(m.ctl||'');
-    if(!c)return head+`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`;
-    const et=(c.enqN||0)+(c.enqP||0),pet=p.enqN!=null?(p.enqN||0)+(p.enqP||0):null;
-    const scs=st('sc',c.score,t),say=(k,s)=>k==='enq'?(s==='bad'?'Over target':s==='gold'?'None':''):SAY[s];
-    const q=(k,l,v,s,tg,info,d)=>`<div class="pf-q s-${s}"><span class="pf-ql">${E(l)}${tg?` <i>${E(tg)}</i>`:''}</span><b>${v}</b><span class="pf-qs">${say(k,s)?`<em>${say(k,s)}</em>`:''}${d||''}</span>${info?`<span class="pf-qi">${info}</span>`:''}</div>`;
-    return head+`<section class="pf-one">
-      <div class="pf-top2">
-        <div class="pf-big2 s-${scs}"><span class="pf-ql">Contract Score <i>96+</i></span><b>${c.score==null?'–':window.SCORE.fmt(c.score)}</b><span class="pf-qs">${SAY[scs]?`<em>${SAY[scs]}</em>`:''}${dlt(c.score,p.score,'sc',L)}</span></div>
-        <div class="pf-big2 pc"><span class="pf-ql">Parcels</span><b>${N(c.pc)}</b><span class="pf-qs"><span>${c.days?`${N(c.days)} day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' each':''}`:''}</span>${dlt(c.pc,p.pc,'pc',L)}</span></div>
-      </div>
-      ${c.lost?`<p class="pf-lost2">Lost a day: enquiries <b>${c.lost.enq}</b> · ETA <b>${c.lost.eta}</b> · scan <b>${c.lost.scan}</b></p>`:''}
-      <div class="pf-g2">
-        ${q('eta','2 hr ETA',P1(c.eta),st('eta',c.eta,t),t.etaG+'%','',dlt(c.eta,p.eta,'eta',L))}
-        ${q('cp','Scan',P1(c.cp),st('cp',c.cp,t),t.cpG+'%','',dlt(c.cp,p.cp,'cp',L))}
-        ${q('enq','Enquiries',N(et),st('enq',et,t),'0',c.enqP?`${N(c.enqN||0)} at fault · ${N(c.enqP)} partly`:'',dlt(et,pet,'enq',L))}
-        ${q('sv','Survey',c.sv==null?'–':String(Math.round(c.sv*10)/10),st('sv',c.sv,t),'70',c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'',dlt(c.sv,p.sv,'sv',L))}
-      </div></section>${L&&m.prev?`<p class="pf-cap">Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:''}${window.SCORE.howHTML('sc-how pf-how')}`}
+    let out=head;
+    if(!c)out+=`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`;
+    else{
+      const et=(c.enqN||0)+(c.enqP||0),pet=p.enqN!=null?(p.enqN||0)+(p.enqP||0):null,scs=st('sc',c.score,t);
+      const sub=(s,tg,d)=>[s,tg,plain(d)].filter(Boolean).join(' · ');
+      const svs=st('sv',c.sv,t),es=st('enq',et,t);
+      out+=sec('sc','Contract Score',[
+        row('sc','Contract Score',sub(SAY[scs],'',dlt(c.score,p.score,'sc',L)),c.score==null?'–':window.SCORE.fmt(c.score),scs,true),
+        ...(c.lost?[row('enq','Enquiries','Points lost a day',c.lost.enq,+c.lost.enq.replace('−','-')<0?'bad':'good'),row('eta','2 hr ETA','Points lost a day',c.lost.eta,+c.lost.eta.replace('−','-')<0?'bad':'good'),row('cp','Scan compliance','Points lost a day',c.lost.scan,+c.lost.scan.replace('−','-')<0?'bad':'good')]:[])]);
+      out+=sec('now',(m.per||'Results').replace(/ · .*/,'')==='Day'?'This day':'Results',[
+        row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
+        row('eta','2 hr ETA',sub(SAY[st('eta',c.eta,t)],'Target '+t.etaG+'%',dlt(c.eta,p.eta,'eta',L)),P1(c.eta),st('eta',c.eta,t)),
+        row('cp','Scan compliance',sub(SAY[st('cp',c.cp,t)],'Target '+t.cpG+'%',dlt(c.cp,p.cp,'cp',L)),P1(c.cp),st('cp',c.cp,t)),
+        row('enq','Enquiries',sub(es==='bad'?'Over target':'None','Target 0',dlt(et,pet,'enq',L))+(c.enqP?` · ${N(c.enqN||0)} at fault, ${N(c.enqP)} partly`:''),N(et),es),
+        row('sv','Survey',c.sv==null?'No surveys yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs)]);
+    }
+    /* last 4 weeks: one row a week, newest first */
+    if(R.weeks&&R.weeks.length){const n=R.weeks.length,W=[];for(let i=n-1;i>=Math.max(0,n-4);i--){const v=R.sc?R.sc[i]:null;const bits=[R.pc&&R.pc[i]!=null?N(R.pc[i])+' parcels':'',R.eta&&R.eta[i]!=null?'ETA '+P1(R.eta[i]):'',R.cp&&R.cp[i]!=null?'Scan '+P1(R.cp[i]):'',R.enq&&R.enq[i]!=null?R.enq[i]+' enq':'',R.sv&&R.sv[i]!=null?'Survey '+Math.round(R.sv[i]*10)/10:''].filter(Boolean);
+        W.push(row('wk','Week of '+E(R.weeks[i]),bits.length?E(bits.join(' · ')):'No results',v==null?'–':window.SCORE.fmt(v),v==null?'na':st('sc',v,t)))}
+      out+=sec('wk','Last 4 weeks',W)}
+    const fb=feedback(c,t);const F=[...fb.need.map(x=>row('no','Work on',E(x),null)),...fb.good.map(x=>row('ok','Going well',E(x),null)),...(m.said||[]).slice(0,3).map(x=>row('q','Customer said','“'+E(x)+'”',null))];
+    out+=sec('fb','Feedback',F);
+    return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
 
 window.ME={clearAlerts:()=>{const ids=(LAST||[]).map(n=>n.id);put('cleared',ids.concat(get('cleared')||[]).slice(0,600));put('seen',ids.concat(get('seen')||[]).slice(0,400));LAST=[];badge(0)},alertsPanel:async()=>{const L=await refresh(true);LAST=L;seenAtOpen=new Set(get('seen')||[]);const h=alertsHTML(L);put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);return h},warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
@@ -12558,7 +12598,7 @@ function render(){try{render0();document.querySelectorAll('#mod-summary table.st
 function pfCur(a,drv){if(!a||!a.days)return null;const L=window.SCORE.lost,n=a.days,e=pct(a.etaW,a.etaN),c=pct(a.cpW,a.cpN);
   return{pc:a.pc,days:a.wdates.size,perDay:drv?a.pc/Math.max(1,a.wdates.size):a.pc/n,perDriver:!drv,eta:e==null?null:e*100,cp:c==null?null:c*100,enqK:epk(a.enq+(a.enqP||0),a.pc),enqN:a.enq,enqP:a.enqP,score:a.sc/n,lost:{enq:L(a.le/n),eta:L(a.lt/n),scan:L(a.ls/n)},sv:nps(a.scores),svN:a.scores.length}}
 function pfKeys(C){return scope.t==='all'?Object.keys(C.P):scope.t==='pc'?Object.keys(C.P).filter(k=>C.P[k].pc===scope.v):[scope.v]}
-function pfTrend(keys){const end=monday(range().to),W=[5,4,3,2,1,0].map(i=>add(end,-7*i));
+function pfTrend(keys){const end=monday(range().to),W=[3,2,1,0].map(i=>add(end,-7*i));
   const A=W.map(m=>sumOf(keys,compute({from:m,to:add(m,5),label:'',sub:''}).per));if(!A.some(a=>a.days||a.scores.length))return null;
   const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()].slice(0,3)};
   return{weeks:W.map(sh),sc:A.map(a=>a.days?a.sc/a.days:null),pc:A.map(a=>a.days?a.pc:null),eta:A.map(a=>{const v=pct(a.etaW,a.etaN);return v==null?null:v*100}),cp:A.map(a=>{const v=pct(a.cpW,a.cpN);return v==null?null:v*100}),enq:A.map(a=>a.days?a.enq+(a.enqP||0):null),sv:A.map(a=>nps(a.scores))}}
@@ -12597,7 +12637,7 @@ function render0(){
   box.innerHTML=`<div class="smx pfx"><div class="pf-top"><button type="button" class="sh-btn sm" data-sm="pdf">Download PDF</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${window.PERFUI.page({who,sub:drv?sub:esc(sub),per:perL,ctl,cur:pfCur(a,drv),prev:pa?pfCur(pa,drv):null,prevLab:PC&&PC.R?PC.R.lab:'',prevPart:PC&&PC.R&&PC.R.part,rank:drv?pfRank(C,scope.v):null,
-     bests:pfBests(keys,drv),bestsTitle:drv?'Personal bests':'Best results',trend:pfTrend(keys),own:drv?false:undefined,trackTitle:'How '+(scope.t==='all'?'the contract is':scope.t==='pc'?scope.v+' is':'they are')+' tracking',t:targets(),none:'No results for this period yet.'})}
+     said:a.scores.filter(x=>x.c).sort((x,y)=>x.s-y.s).map(x=>x.c),trend:pfTrend(keys),own:drv?false:undefined,trackTitle:'How '+(scope.t==='all'?'the contract is':scope.t==='pc'?scope.v+' is':'they are')+' tracking',t:targets(),none:'No results for this period yet.'})}
   </div>`;
 }
 window.SUMMARY={openLogin:l=>{const k=dkey(l);scope={t:'drv',v:k};if(window.APP)APP.go('summary');render();window.scrollTo(0,0)}};
@@ -14799,7 +14839,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610320300';
+const VERSION='202610320400';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
