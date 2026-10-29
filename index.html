@@ -11142,7 +11142,8 @@ function editHTML(){
   const b=editing==='new'?{name:prefill||'',from:today,to:today,note:''}:blocks[editing];if(!b){editing=null;return ''}
   const names=Object.values(staff).map(p=>tc([p.first,p.last].filter(Boolean).join(' '))).sort();
   return `<div class="lvx"><button type="button" class="sh-btn back" data-lv="cancel">‹ Leave calendar</button><section class="card"><h2>${editing==='new'?'Add leave':esc(b.name)}</h2>
-   <div class="grid"><label class="f" for="lv_who">Who<input type="text" id="lv_who" list="lv_people" value="${esc(b.name)}" autocomplete="off"><datalist id="lv_people">${names.map(n=>`<option value="${esc(n)}">`).join('')}</datalist></label>
+   <div class="grid"><label class="f" for="lv_whosel">Who<select id="lv_whosel"><option value="">Choose a name</option>${[...new Set(names)].filter(Boolean).map(n=>`<option value="${esc(n)}" ${n===b.name?'selected':''}>${esc(n)}</option>`).join('')}<option value="__other" ${b.name&&!names.includes(b.name)?'selected':''}>Someone not on the list…</option></select>
+    <input type="text" id="lv_who" value="${esc(b.name)}" placeholder="Type their name" autocomplete="off" ${b.name&&!names.includes(b.name)?'':'hidden'} style="margin-top:8px"></label>
    <label class="f" for="lv_from">First day off<input type="date" id="lv_from" value="${esc(b.from)}"></label><label class="f" for="lv_to">Last day off<input type="date" id="lv_to" value="${esc(b.to)}"></label>
    <label class="f wide" for="lv_note">Note (only you see this)<input type="text" id="lv_note" value="${esc(b.note||'')}"></label></div>
    <p class="sub">Weekends inside the dates are not counted.</p>
@@ -11235,7 +11236,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#mod-leave tr[data-lv=edit],#mod-leave tr[data-lv=tot]'))e.target.click()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='lv_rqn'){rq.note=t.value;return}if(t.id==='lv_rqc'){rq.cover=t.value;return}if(t.dataset&&t.dataset.rq){rqReply[t.dataset.rq]=t.value;return}
   if(e.target.id==='lv_tq'){tq=e.target.value;topen=null;$('tt').innerHTML=totTable()}});
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='lv_rqf'){rq.from=t.value;if(rq.to&&rq.to<rq.from)rq.to=rq.from;if(!rq.to)rq.to=rq.from;render();return}if(t.id==='lv_rqt'){rq.to=t.value;render();return}if(t.id==='lv_rqa'){rq.ack=t.checked;render();return}
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='lv_whosel'){const w=document.getElementById('lv_who');if(!w)return;if(t.value==='__other'){w.hidden=false;w.value='';w.focus()}else{w.hidden=true;w.value=t.value}return}if(t.id==='lv_rqf'){rq.from=t.value;if(rq.to&&rq.to<rq.from)rq.to=rq.from;if(!rq.to)rq.to=rq.from;render();return}if(t.id==='lv_rqt'){rq.to=t.value;render();return}if(t.id==='lv_rqa'){rq.ack=t.checked;render();return}
   if(e.target.id==='lv_tper'){tper=e.target.value;topen=null;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_tsort'){tsort=e.target.value;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_imp'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value=''}});
 async function start(role){
   const n=new Date();month=new Date(n.getFullYear(),n.getMonth(),1);wk=monday(n);if((n.getDay()+6)%7>=5)wk.setDate(wk.getDate()+7);
@@ -14937,7 +14938,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610322200';
+const VERSION='202610322300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
