@@ -5556,6 +5556,66 @@ html body #mod-invoices table.sublist td:nth-child(2) small{display:block}}
 #mod-invoices .pick .tpl.tpl .fn{font-size:.8rem;color:var(--sh-muted)}
 
 @media (max-width:700px){.sh-ph .sh-hubtabs:has(>button:nth-child(4):last-child){display:grid!important;grid-template-columns:1fr 1fr;gap:6px;width:100%!important;max-width:none!important}.sh-ph .sh-hubtabs:has(>button:nth-child(4):last-child)>button{width:auto!important;margin:0!important;min-width:0}}
+/* results page: drivers (My results) and admin (Summary) */
+.pfx{--pf-g:#1E8E4E;--pf-gs:#E6F4EC;--pf-b:#C8382E;--pf-bs:#FCEBEA;--pf-o:#B87A00;--pf-os:#FFF4D6;--pf-or:#F47B20;display:flex;flex-direction:column;gap:14px;max-width:980px;margin:0 auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .pfx{--pf-g:#4CC97E;--pf-gs:#15301F;--pf-b:#FF7A70;--pf-bs:#3A1B19;--pf-o:#F2C04D;--pf-os:#3A2E10}}
+:root[data-theme=dark] .pfx{--pf-g:#4CC97E;--pf-gs:#15301F;--pf-b:#FF7A70;--pf-bs:#3A1B19;--pf-o:#F2C04D;--pf-os:#3A2E10}
+.pfx .pf-hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#14263D,#1F3B5E);color:#fff;border-bottom:3px solid var(--pf-or)}
+.pfx .pf-who{display:flex;flex-direction:column;gap:3px;min-width:0}.pfx .pf-who b{font-size:1.45rem;line-height:1.15;font-weight:800}.pfx .pf-who span{font-size:.9rem;color:#C9D6E8}
+.pfx .pf-who em{font-style:normal;font-weight:800;padding:1px 8px;border-radius:99px;background:rgba(255,255,255,.14);color:#fff}
+.pfx .pf-per{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}.pfx .pf-per small{font-size:.85rem;color:#C9D6E8;font-weight:600}
+.pfx .pf-rk{display:inline-flex;align-items:baseline;gap:5px;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.12);font-size:.85rem;color:#E4ECF6}.pfx .pf-rk b{font-size:1.25rem;color:#fff}
+.pfx .pf-rk.r1{background:#F2B705;color:#3B2A00}.pfx .pf-rk.r1 b{color:#2A1E00}.pfx .pf-rk.r2{background:#D9E0E8;color:#25303D}.pfx .pf-rk.r2 b{color:#111A27}.pfx .pf-rk.r3{background:#D9905A;color:#2E1606}.pfx .pf-rk.r3 b{color:#2E1606}
+.pfx .pf-rk.nr{font-size:.8rem;max-width:260px;text-align:right;border-radius:12px}
+.pfx .pf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:720px){.pfx .pf-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+.pfx .pf-t{position:relative;display:flex;flex-direction:column;gap:4px;padding:14px 14px 12px;border-radius:16px;background:var(--sh-surface);border:1px solid var(--sh-line);overflow:hidden;min-width:0}
+.pfx .pf-t::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--sh-line)}
+.pfx .pf-t.s-good::before{background:var(--pf-g)}.pfx .pf-t.s-bad::before{background:var(--pf-b)}.pfx .pf-t.s-gold::before{background:var(--pf-o)}.pfx .pf-t.pf-pc::before{background:var(--pf-or)}
+.pfx .pf-th{display:flex;align-items:center;gap:8px}.pfx .pf-i{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--sh-sunk);color:var(--sh-muted)}
+.pfx .pf-i svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pfx .pf-pc .pf-i{background:#FDEBDD;color:#C25A0C}.pfx .s-good .pf-i{background:var(--pf-gs);color:var(--pf-g)}.pfx .s-bad .pf-i{background:var(--pf-bs);color:var(--pf-b)}.pfx .s-gold .pf-i{background:var(--pf-os);color:var(--pf-o)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .pfx .pf-pc .pf-i{background:#3A2312;color:#FFA463}}:root[data-theme=dark] .pfx .pf-pc .pf-i{background:#3A2312;color:#FFA463}
+.pfx .pf-l{font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--sh-muted);line-height:1.2}
+.pfx .pf-v{font-size:2rem;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums;color:var(--sh-ink);margin-top:6px;letter-spacing:-.01em}
+.pfx .s-good .pf-v{color:var(--pf-g)}.pfx .s-bad .pf-v{color:var(--pf-b)}.pfx .s-gold .pf-v{color:var(--pf-o)}
+.pfx .pf-s{align-self:flex-start;font-size:.78rem;font-weight:800;padding:2px 9px;border-radius:99px}
+.pfx .s-good .pf-s{background:var(--pf-gs);color:var(--pf-g)}.pfx .s-bad .pf-s{background:var(--pf-bs);color:var(--pf-b)}.pfx .s-gold .pf-s{background:var(--pf-os);color:var(--pf-o)}
+.pfx .pf-sub{font-size:.85rem;color:var(--sh-ink);line-height:1.3}.pfx .pf-f{font-size:.78rem;color:var(--sh-muted);line-height:1.3}
+.pfx .pf-d{margin-top:auto;padding-top:6px;font-size:.8rem;font-weight:800;color:var(--sh-muted)}.pfx .pf-d small{font-weight:600;color:var(--sh-muted)}
+.pfx .pf-d.up{color:var(--pf-g)}.pfx .pf-d.dn{color:var(--pf-b)}.pfx .pf-d.neu{color:var(--sh-ink)}
+.pfx .pf-cmp{margin:-4px 2px 0;font-size:.82rem;color:var(--sh-muted)}
+.pfx .pf-none{padding:22px;text-align:center;border:1px dashed var(--sh-line);border-radius:16px;color:var(--sh-muted);background:var(--sh-surface)}
+.pfx .pf-how{margin:0}
+.pfx .pf-box{padding:16px;border-radius:18px;background:var(--sh-surface);border:1px solid var(--sh-line)}
+.pfx .pf-box h2{margin:0 0 10px;font-size:1.15rem;font-weight:800;color:var(--sh-ink)}
+.pfx .pf-bg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media (min-width:720px){.pfx .pf-bg{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pfx .pf-b{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:var(--pf-os);border:1px solid rgba(184,122,0,.25)}
+.pfx .pf-b small{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--pf-o)}.pfx .pf-b b{font-size:1.5rem;font-weight:800;color:var(--sh-ink);font-variant-numeric:tabular-nums}.pfx .pf-b span{font-size:.8rem;color:var(--sh-muted);line-height:1.25}
+.pfx .pf-note{margin:-4px 0 10px;font-size:.85rem;color:var(--sh-muted)}
+.pfx .pf-trs{display:grid;grid-template-columns:1fr;gap:4px}@media (min-width:720px){.pfx .pf-trs{grid-template-columns:1fr 1fr;column-gap:24px}}
+.pfx .pf-tr{display:grid;grid-template-columns:minmax(0,1fr) 150px;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--sh-line)}
+.pfx .pf-trh{display:flex;flex-direction:column;gap:1px;min-width:0}.pfx .pf-trh span{font-size:.85rem;color:var(--sh-muted);font-weight:700}.pfx .pf-trh b{font-size:1.15rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--sh-ink);display:flex;align-items:center;gap:6px}
+.pfx .pf-trh b.s-good{color:var(--pf-g)}.pfx .pf-trh b.s-bad{color:var(--pf-b)}.pfx .pf-trh b.s-gold{color:var(--pf-o)}
+.pfx .pf-ar{font-style:normal;font-size:.75rem}.pfx .pf-ar.up{color:var(--pf-g)}.pfx .pf-ar.dn{color:var(--pf-b)}.pfx .pf-ar.neu{color:var(--sh-muted)}
+.pfx .pf-bars{display:flex;align-items:flex-end;gap:5px;height:42px}.pfx .pf-bars span{flex:1;height:100%;display:flex;align-items:flex-end;background:var(--sh-sunk);border-radius:5px;overflow:hidden}
+.pfx .pf-bars i{display:block;width:100%;border-radius:5px 5px 0 0;background:var(--sh-line)}
+.pfx .pf-bars i.s-good{background:var(--pf-g)}.pfx .pf-bars i.s-bad{background:var(--pf-b)}.pfx .pf-bars i.s-gold{background:var(--pf-o)}.pfx .pf-bars i.s-pc{background:var(--pf-or)}
+.pfx .pf-wk{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:10px;margin-top:2px}.pfx .pf-wk::before{content:""}
+.pfx .pf-wk{display:flex;justify-content:flex-end;gap:5px}.pfx .pf-wk span{width:21px;text-align:center;font-size:.62rem;color:var(--sh-muted);white-space:nowrap}
+.pfx .pf-key{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 0;font-size:.78rem;color:var(--sh-muted);align-items:center}.pfx .pf-key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:-6px}
+.pfx .pf-key i.s-gold{background:var(--pf-o)}.pfx .pf-key i.s-good{background:var(--pf-g)}.pfx .pf-key i.s-bad{background:var(--pf-b)}
+@media (max-width:420px){.pfx .pf-v{font-size:1.7rem}.pfx .pf-t{padding:12px 11px 10px}.pfx .pf-tr{grid-template-columns:minmax(0,1fr) 130px}}
+/* admin: who to show */
+.pfx .pf-scope{display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:16px;background:var(--sh-surface);border:1px solid var(--sh-line)}
+.pfx .pf-chips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.pfx .pf-chips button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:10px 4px;border-radius:12px;font-weight:800;font-size:.95rem;background:var(--sh-sunk);color:var(--sh-ink);border:1px solid var(--sh-line)}
+.pfx .pf-chips button[aria-pressed=true]{background:var(--pf-or);border-color:var(--pf-or);color:#fff}
+.pfx .pf-sel{display:flex;flex-direction:column;gap:4px}.pfx .pf-sel span{font-size:.75rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--sh-muted)}
+.pfx .pf-sel select{width:100%;min-height:44px;font:inherit;font-size:1rem;padding:8px 10px;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink)}
+.pfx .pf-top{display:flex;justify-content:flex-end}.pfx .pf-top .sh-btn{width:auto!important;flex:0 0 auto}
+
+#mod-summary .pfx .pf-top{display:flex!important;justify-content:flex-end!important}#mod-summary .pfx .pf-top .sh-btn{width:auto!important;min-width:0!important;flex:0 0 auto!important;padding-left:14px;padding-right:14px}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -6140,7 +6200,7 @@ const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
- {t:'Driver Results',s:[['results','Results'],['summary','Summary'],['survey','Survey'],['me','Driver profile']]},
+ {t:'Driver Results',s:[['results','Results'],['summary','Summary'],['survey','Survey']]},
  {t:'Run Sheets and Sort Sheets',s:[['runs','Run sheets'],['sort','Sort sheets']]},
  {t:'Leave Calendar',s:[['leave','Leave'],['cover','Cover planner']]},
  {t:'Precards and Lockers',s:[['precards','Precards'],['lockers','Parcel lockers']]},
@@ -6473,7 +6533,7 @@ function stat(key,text){stats[key]=text;const el=$('sh-st-'+key);if(el&&(role===
 function isNew(key,text){if(!text)return false;if(key==='updates')return !/^No /.test(text);if(key==='briefs'){const m=String(text).match(/(\d{1,2} [A-Za-z]+ \d{4})/);const t=m?Date.parse(m[1]):NaN;return isFinite(t)&&Date.now()-t<8*864e5}return false}
 function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||''):'';const nw=isNew(s,stats[s]);return `<button type="button" class="sh-li g-${GROUP_OF[s]}" data-nav="${s}"><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(NAMES[s])}</b><small id="sh-st-${s}"${st?'':' hidden'}>${esc(st)}</small></span><span class="nw" id="sh-nw-${s}"${nw?'':' hidden'}>New</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
 /* the driver Menu: everything else, as big tiles */
-const AMENU=[['','office',[['results','Results, summary, survey and profiles'],['leave','Who is off and cover planner'],['guide','How we do things'],
+const AMENU=[['','office',[['results','Results, summary and survey'],['leave','Who is off and cover planner'],['guide','How we do things'],
  ['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],
  ['enquiries','Customer enquiries and NCRs'],['updates','Driver news and weekly brief'],['invoices','Invoices and clock in hours'],
  ['staff','Details, compliance and van checks'],
@@ -8095,7 +8155,7 @@ function mountBoard(box,rows){
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("[data-rbk]")&&window.ME&&ME.warm)ME.warm()},{passive:true});setTimeout(()=>{if(window.ME&&ME.warm)ME.warm()},1500);
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
-    const d=e.target.closest("[data-rbk]");if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
+    const d=e.target.closest("[data-rbk]");if(d&&window.SUMMARY&&window.SUMMARY.openLogin)window.SUMMARY.openLogin(d.dataset.rbk);else if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
 }
 /* the picture for the team: always light, sized for a phone, every driver ranked */
 let LOGO=null;
@@ -10479,25 +10539,28 @@ async function homeCards(){
    </button>
 `;
 }
+function pfWeeks(n){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();if(!all.length)return null;
+  const last=all[all.length-1],lmon=addD(last,-((fromIso(last).getDay()+6)%7));const W=[];for(let i=n-1;i>=0;i--)W.push(addD(lmon,-7*i));
+  const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()]};const st=W.map(m=>statsFor([0,1,2,3,4,5].map(i=>addD(m,i))));
+  const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
+  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,Dd]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(Dd||{}).find(x=>keys.includes(dkey(x)));const r=k?Dd[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
+  return{weeks:W.map(sh),sc:st.map(x=>x&&x.sc?x.sc.score:null),pc:st.map(x=>x?x.pc:null),eta:st.map(x=>x&&x.eta!=null?x.eta*100:null),cp:st.map(x=>x&&x.cp!=null?x.cp*100:null),enq:st.map(x=>x?x.enqK:null),sv}}
+function pfCur(x){if(!x)return null;const L=window.SCORE.lost;return{pc:x.pc,days:x.days,eta:x.eta==null?null:x.eta*100,cp:x.cp==null?null:x.cp*100,enqK:x.enqK,enqN:x.enq,enqP:x.enqP,score:x.sc?x.sc.score:null,lost:x.sc?{enq:L(x.sc.enq),eta:L(x.sc.eta),scan:L(x.sc.scan)}:null}}
 function driverHTML(){
   const P=periods(),per=P[PER]||P.week,x=statsFor(per.dates);
   const sv=mySurvey(PER==='cycle'?'cycle':'weekly',P.cyc?{cs:P.cyc.cs,wk:PER==='cycle'?null:(P.subW.find(z=>z.on)||{}).n}:null);
   const rk=x?resultsRank(per.dates):null;
-  let prev=null,lab='';if(x){if(PER==='week'){prev=resultsRank(per.dates.map(d=>addD(d,-7)));lab='last week'}else if(PER==='cycle'){prev=resultsRank(per.dates.map(d=>addD(d,-28)));lab='last pay cycle'}else{const all=Object.keys(data.days).filter(k=>myRow(data.days[k].rows)).sort().filter(k=>k<per.dates[0]);if(all.length){prev=resultsRank([all[all.length-1]]);lab='your last day'}}}
-  const T=tiles4(x,sv,true),fb=fbLists(per,x,sv),run=myRun();
-  const when={day:'This day',week:'This week',cycle:'This pay cycle'}[PER];
-  return `<div class="dr">
-  <div class="dr-who"><b>${esc(tc(me.name||''))}</b>${run?`<span>Run ${esc(run.login||run.id)}${run.postcode?` · <em class="pcol dg-${esc(run.postcode)}">${esc(run.postcode)}</em>`:''}</span>`:''}</div>
-  ${pkHTML(P)}
-  <section class="dr-rank"><small>${when} · ${esc(per.label.replace(/^Week \d of the pay cycle · /,''))}</small>
-   ${x&&rk?`<div class="rk">${rk.rank!=null?`<b class="${rkc(rk)}">${ord(rk.rank)}</b><span>out of ${rk.of} drivers</span>`:`<b class="nr">Not ranked</b>`}</div>${rk.rank==null?`<p class="nrt">${esc(nrTxt(rk))}</p>`:''}${scoreHTML(x,rk)}${moveTxt(rk,prev,lab)}`:`<p class="nores">No results ${PER==='day'?'for this day':PER==='week'?'for this week':'for this pay cycle'} yet.</p>`}</section>
-  <div class="dr-tiles">${T.map(z=>tileHTML(z,false)).join('')}${pcsHTML(x)}</div>
-  ${window.SCORE.howHTML('sc-how')}
-  ${fb.good.length||fb.need.length?`<section class="dr-fb">${fb.need.length?`<div class="need"><h3>Work on</h3><ul>${fb.need.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}${fb.good.length?`<div class="good"><h3>Going well</h3><ul>${fb.good.map(z=>`<li>${esc(z)}</li>`).join('')}</ul></div>`:''}</section>`:''}
-  ${bestsHTML(bests())}
-  ${trendHTML(true)}
-  ${sv&&sv.found&&sv.said.length?`<section class="me-box g-perf dr-said"><h2>What customers said</h2>${sv.said.slice(0,3).map(z=>`<p class="me-q">“${esc(z)}”</p>`).join('')}</section>`:''}
-  </div>`;
+  let pd=null,lab='';if(PER==='week'){pd=per.dates.map(d=>addD(d,-7));lab='last week'}else if(PER==='cycle'){pd=per.dates.map(d=>addD(d,-28));lab='last month'}else{const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort().filter(k=>k<per.dates[0]);if(all.length){pd=[all[all.length-1]];lab='your last day'}}
+  const cur=pfCur(x),prev=pd?pfCur(statsFor(pd)):null;
+  if(cur){cur.sv=sv&&sv.found&&sv.avg!=null?Math.round(sv.avg*100)/10:null;cur.svN=sv&&sv.found?sv.n:0}
+  const b=bests(),shd=s0=>{const d=fromIso(s0);return d.getDate()+' '+MON[d.getMonth()]};
+  const B=b?[{t:'Best week',v:b.bw?window.SCORE.fmt(b.bw.v):'–',s:b.bw?'Week of '+shd(b.bw.m):'Needs 3 days in a week'},{t:'Longest streak',v:b.best?String(b.best):'–',s:b.best===1?'day at 96 or more':'days in a row at 96 or more'},{t:'Most parcels',v:b.maxPc?b.maxPc.toLocaleString('en-AU'):'–',s:b.maxPcD?'in a day, '+shd(b.maxPcD):''},{t:'Perfect days',v:String(b.perfect),s:'with a score of 100'}]:null;
+  const run=myRun(),own=!(isAdminView()&&PICK);
+  const when={day:'Day',week:'Week',cycle:'Month'}[PER];
+  return `<div class="dr pfx">${window.PERFUI.page({who:tc(me.name||''),sub:run?`Run ${esc(run.login||run.id)}${run.postcode?` · <em>${esc(run.postcode)}</em>`:''}`:'',
+    per:when+' · '+per.label.replace(/^Week \d of the pay cycle · /,'').replace(/^Pay cycle /,''),ctl:pkHTML(P),
+    cur,prev:cur&&prev?prev:null,prevLab:lab,rank:rk?(rk.rank!=null?{rank:rk.rank,of:rk.of}:{why:'Not ranked: needs '+rk.need+' day'+(rk.need===1?'':'s')+' worked'}):null,
+    bests:B,trend:pfWeeks(6),own,t:targets(),none:'No results '+(PER==='day'?'for this day':PER==='week'?'for this week':'for this month')+' yet.'})}</div>`;
 }
 /* My pay: what this pay period looks like so far */
 async function paySummary(){
@@ -10520,6 +10583,70 @@ async function paySummary(){
   let r=null;const end=D[D.length-1]<t?D[D.length-1]:t;try{r=await window.INVMAKE.pay(me.staff,D[0],end)}catch(e){}
   const e=document.getElementById('ps_earn');if(!e)return;if(!r){e.remove();return}
   e.innerHTML=`<b>about $${Math.round(r.total).toLocaleString('en-AU')}</b><span>${r.gstReg?'Including GST. ':''}A rough guide. Your invoice is the final amount.</span>`}
+/* One results page for drivers and admin: six tiles, bests and how it is tracking. Both Summary (admin) and My results (drivers) use this. */
+window.PERFUI=(()=>{
+  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const N=v=>v==null?'–':Math.round(v).toLocaleString('en-AU');
+  const P1=v=>v==null?'–':(v>=99.95?'100':(Math.round(v*10)/10).toFixed(1).replace(/\.0$/,''))+'%';
+  const K1=v=>v==null?'–':v>=9999?'n/a':(Math.round(v*10)/10).toFixed(1);
+  const ordn=n=>{const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+  const IC={pc:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>',
+    eta:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2"/><path d="M9 2h6"/>',
+    cp:'<path d="M4 7V5a1 1 0 011-1h2M17 4h2a1 1 0 011 1v2M20 17v2a1 1 0 01-1 1h-2M7 20H5a1 1 0 01-1-1v-2"/><path d="M8 9v6M11 9v6M14 9v6M17 9v6"/>',
+    enq:'<path d="M21 12a8 8 0 01-11.7 7.1L4 20l1-4.6A8 8 0 1121 12z"/><path d="M12 8v4M12 15.5v.5"/>',
+    sc:'<path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6L3.3 9.2l6.1-.6z"/>',
+    sv:'<path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0112 6.3 5.2 5.2 0 0121.3 12C19 16.6 12 21 12 21z"/>'};
+  const svg=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${IC[k]}</svg>`;
+  /* status of one number against its target: gold is perfect, good is on target, bad is under */
+  function st(k,v,t){if(v==null)return 'na';
+    if(k==='eta')return v>=99.95?'gold':Math.round(v*10)/10>=t.etaG?'good':'bad';
+    if(k==='cp')return v>=99.95?'gold':Math.round(v*10)/10>=t.cpG-1e-9?'good':'bad';
+    if(k==='enq')return v>=9999?'bad':v<=0?'gold':v<=1+1e-9?'good':'bad';
+    if(k==='sc')return v>=99.995?'gold':v>=96-1e-9?'good':'bad';
+    if(k==='sv')return v>=100?'gold':v>=70?'good':'bad';
+    return 'na'}
+  const STX={gold:'★ Perfect',good:'✓ On target',bad:'✗ Under target',na:''};
+  /* change against the last period; up is good unless lower is better */
+  function dlt(cur,prev,kind,lab){if(cur==null||prev==null||!lab)return '';let d=cur-prev;if(kind==='enq'&&(cur>=9999||prev>=9999))return '';
+    const small={pc:0.5,eta:0.05,cp:0.05,enq:0.05,sc:0.005,sv:0.05}[kind];if(Math.abs(d)<small)return `<span class="pf-d same">Same as ${E(lab)}</span>`;
+    const good=kind==='enq'?d<0:kind==='pc'?null:d>0;
+    const txt=kind==='pc'?(prev?Math.round(Math.abs(d)/prev*100)+'%':N(Math.abs(d))):kind==='eta'||kind==='cp'?(Math.round(Math.abs(d)*10)/10)+' pts':kind==='sc'?(Math.round(Math.abs(d)*100)/100).toFixed(2):(Math.round(Math.abs(d)*10)/10).toFixed(1);
+    return `<span class="pf-d ${good==null?'neu':good?'up':'dn'}">${d>0?'▲':'▼'} ${txt} <small>vs ${E(lab)}</small></span>`}
+  function tile(k,label,val,status,sub,foot,d){return `<div class="pf-t pf-${k} s-${status}"><div class="pf-th"><span class="pf-i">${svg(k)}</span><span class="pf-l">${E(label)}</span></div>
+    <b class="pf-v">${val}</b>${STX[status]?`<span class="pf-s">${STX[status]}</span>`:''}${sub?`<span class="pf-sub">${sub}</span>`:''}${foot?`<span class="pf-f">${foot}</span>`:''}${d||''}</div>`}
+  /* m: {who, sub, tag, per, cur, prev, prevLab, rank, bests, bestsTitle, trend, own, t, none} */
+  function page(m){
+    const t=m.t||{etaG:98,cpG:99},c=m.cur,p=m.prev||{},L=m.prevLab;
+    const head0=`<section class="pf-hero"><div class="pf-who"><b>${E(m.who)}</b>${m.sub?`<span>${m.sub}</span>`:''}</div>
+      <div class="pf-per"><small>${E(m.per||'')}</small>${m.rank&&m.rank.rank!=null?`<span class="pf-rk r${m.rank.rank<=3?m.rank.rank:'x'}"><b>${ordn(m.rank.rank)}</b> of ${m.rank.of} drivers</span>`:m.rank&&m.rank.why?`<span class="pf-rk nr">${E(m.rank.why)}</span>`:''}</div></section>`,head=head0+(m.ctl||'');
+    if(!c)return head+`<div class="pf-none">${E(m.none||'No results for this period yet.')}</div>`+bests(m)+track(m);
+    const lostTxt=c.lost?`Lost a day: enquiries ${c.lost.enq} · ETA ${c.lost.eta} · scan ${c.lost.scan}`:'';
+    const T=[
+      tile('pc','Parcels',N(c.pc),'na',c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),
+      tile('eta','2 hr ETA',P1(c.eta),st('eta',c.eta,t),'','Target '+t.etaG+'%',dlt(c.eta,p.eta,'eta',L)),
+      tile('cp','Scan compliance',P1(c.cp),st('cp',c.cp,t),'','Target '+t.cpG+'%',dlt(c.cp,p.cp,'cp',L)),
+      tile('enq','Enquiries',K1(c.enqK),st('enq',c.enqK,t),`${N(c.enqN||0)} at fault${c.enqP?' · '+N(c.enqP)+' partly':''}`,'Per 1,000 parcels · target 1 or less',dlt(c.enqK,p.enqK,'enq',L)),
+      tile('sc','Contract Score',c.score==null?'–':window.SCORE.fmt(c.score),st('sc',c.score,t),lostTxt,'Green is 96 or more',dlt(c.score,p.score,'sc',L)),
+      tile('sv','Survey',c.sv==null?'–':String(Math.round(c.sv*10)/10),st('sv',c.sv,t),c.svN?`${N(c.svN)} customer${c.svN===1?'':'s'}`:'No surveys yet','Target 70 · not in the score',dlt(c.sv,p.sv,'sv',L))];
+    return head+`<div class="pf-grid">${T.join('')}</div>${L&&m.prev?`<p class="pf-cmp">Arrows compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:''}${window.SCORE.howHTML('sc-how pf-how')}`+bests(m)+track(m)}
+  function bests(m){const B=m.bests;if(!B||!B.length)return '';
+    return `<section class="pf-box pf-best"><h2><span aria-hidden="true">🏅</span> ${E(m.bestsTitle||'Personal bests')}</h2><div class="pf-bg">${B.map(b=>`<div class="pf-b"><small>${E(b.t)}</small><b>${E(b.v)}</b><span>${E(b.s||'')}</span></div>`).join('')}</div></section>`}
+  /* how it is tracking: last 6 weeks, one bar a week */
+  function track(m){const R=m.trend;if(!R||!R.weeks||!R.weeks.length)return '';const t=m.t||{etaG:98,cpG:99};
+    const rows=[['sc','Contract Score',R.sc,v=>window.SCORE.fmt(v),v=>Math.max(8,Math.min(100,(v-60)*2.5))],
+      ['pc','Parcels',R.pc,v=>N(v),null],
+      ['eta','2 hr ETA',R.eta,P1,v=>Math.max(8,Math.min(100,(v-85)*6.67))],
+      ['cp','Scan compliance',R.cp,P1,v=>Math.max(8,Math.min(100,(v-90)*10))],
+      ['enq','Enquiries per 1k',R.enq,K1,v=>v<=0?8:Math.max(16,Math.min(100,v*25))],
+      ['sv','Survey',R.sv,v=>String(Math.round(v*10)/10),v=>Math.max(8,Math.min(100,v))]];
+    const one=([k,l,vals,fmt,h])=>{vals=vals||[];const mx=Math.max(1,...vals.filter(v=>v!=null));const ix=vals.map((v,i)=>v==null?-1:i).filter(i=>i>=0);const cur=ix.length?vals[ix[ix.length-1]]:null,pv=ix.length>1?vals[ix[ix.length-2]]:null;
+      const s=st(k,cur,t);let arrow='';if(cur!=null&&pv!=null&&Math.abs(cur-pv)>1e-6){const up=cur>pv,good=k==='enq'?!up:k==='pc'?null:up;arrow=`<i class="pf-ar ${good==null?'neu':good?'up':'dn'}">${up?'▲':'▼'}</i>`}
+      return `<div class="pf-tr"><div class="pf-trh"><span>${E(l)}</span><b class="s-${s}">${cur==null?'–':fmt(cur)}${arrow}</b></div><div class="pf-bars">${vals.map((v,i)=>`<span title="${E(R.weeks[i])}: ${v==null?'no results':fmt(v)}"><i class="s-${v==null?'na':k==='pc'?'pc':st(k,v,t)}" style="height:${v==null?4:h?h(v):Math.max(8,v/mx*100)}%"></i></span>`).join('')}</div></div>`};
+    return `<section class="pf-box pf-track"><h2>${E(m.trackTitle||(m.own===false?'How they are tracking':'How you are tracking'))}</h2><p class="pf-note">One bar a week, from the week of ${E(R.weeks[0])} to the week of ${E(R.weeks[R.weeks.length-1])}. The newest is on the right.</p>
+      <div class="pf-trs">${rows.map(one).join('')}</div>
+      <p class="pf-key"><i class="s-gold"></i>Perfect <i class="s-good"></i>On target <i class="s-bad"></i>Under target</p></section>`}
+  return{page,st}})();
+
 window.ME={clearAlerts:()=>{const ids=(LAST||[]).map(n=>n.id);put('cleared',ids.concat(get('cleared')||[]).slice(0,600));put('seen',ids.concat(get('seen')||[]).slice(0,400));LAST=[];badge(0)},alertsPanel:async()=>{const L=await refresh(true);LAST=L;seenAtOpen=new Set(get('seen')||[]);const h=alertsHTML(L);put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);return h},warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
@@ -12067,7 +12194,7 @@ function perHTML(){
   return `<div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['month','Month'],['year','Year']].map(([v,l])=>`<button type="button" data-sm="per" data-v="${v}" aria-pressed="${period===v}">${l}</button>`).join('')}</div>
     <div class="pchips"><button type="button" class="pnav" data-sm="prev" aria-label="Earlier">‹</button><div class="pchs">${chips}</div><button type="button" class="pnav" data-sm="next" aria-label="Later">›</button></div>`;
 }
-function latestDay(){const ds=Object.values(S.days).map(d=>d&&d.date).filter(Boolean).sort();return ds.length?ds[ds.length-1]:TODAY}
+function latestDay(){const ds=Object.values(S.days).filter(d=>d&&d.date&&d.rows&&Object.keys(d.rows).length).map(d=>d.date).sort();return ds.length?ds[ds.length-1]:TODAY}
 function range(){
   if(period==='day')return{from:anchor,to:anchor,label:longD(anchor),sub:'Day'};
   if(period==='year'){const d=fromIso(anchor),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;return{from:y+'-07-01',to:(y+1)+'-06-30',label:'Financial year '+y+'/'+String(y+1).slice(2),sub:'1 Jul '+y+' to 30 Jun '+(y+1)}}
@@ -12324,26 +12451,54 @@ function driverHTML(C,k){
 /* ---------- render ---------- */
 function scopeLabel(C){return scope.t==='all'?'Whole contract':scope.t==='pc'?(/^\d/.test(scope.v)?'Postcode '+scope.v:scope.v):((C.P[scope.v]||{}).name||scope.v)}
 function render(){try{render0();document.querySelectorAll('#mod-summary table.stk').forEach(t=>{if(!t.tHead)return;const h=[...t.tHead.rows[0].cells].map(c=>c.textContent.trim());for(const b of t.tBodies)for(const r of b.rows)[...r.cells].forEach((c,i)=>{if(h[i])c.dataset.l=h[i]})})}catch(e){console.error('summary render',e&&e.stack||e)}}
+/* ---------- the results page: whole contract, a postcode or one driver ---------- */
+function pfCur(a,drv){if(!a||!a.days)return null;const L=window.SCORE.lost,n=a.days,e=pct(a.etaW,a.etaN),c=pct(a.cpW,a.cpN);
+  return{pc:a.pc,days:a.wdates.size,perDay:drv?a.pc/Math.max(1,a.wdates.size):a.pc/n,perDriver:!drv,eta:e==null?null:e*100,cp:c==null?null:c*100,enqK:epk(a.enq+(a.enqP||0),a.pc),enqN:a.enq,enqP:a.enqP,score:a.sc/n,lost:{enq:L(a.le/n),eta:L(a.lt/n),scan:L(a.ls/n)},sv:nps(a.scores),svN:a.scores.length}}
+function pfKeys(C){return scope.t==='all'?Object.keys(C.P):scope.t==='pc'?Object.keys(C.P).filter(k=>C.P[k].pc===scope.v):[scope.v]}
+function pfTrend(keys){const end=monday(range().to),W=[5,4,3,2,1,0].map(i=>add(end,-7*i));
+  const A=W.map(m=>sumOf(keys,compute({from:m,to:add(m,5),label:'',sub:''}).per));if(!A.some(a=>a.days||a.scores.length))return null;
+  const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()].slice(0,3)};
+  return{weeks:W.map(sh),sc:A.map(a=>a.days?a.sc/a.days:null),pc:A.map(a=>a.days?a.pc:null),eta:A.map(a=>{const v=pct(a.etaW,a.etaN);return v==null?null:v*100}),cp:A.map(a=>{const v=pct(a.cpW,a.cpN);return v==null?null:v*100}),enq:A.map(a=>a.days?epk(a.enq+(a.enqP||0),a.pc):null),sv:A.map(a=>nps(a.scores))}}
+function pfBests(keys,drv){const K=new Set(keys);const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()].slice(0,3)};
+  const days=Object.values(S.days).filter(d=>d&&d.date&&d.rows).sort((x,y)=>x.date.localeCompare(y.date));
+  let maxPc=0,maxD=null,perfect=0,run=0,best=0;const wk={};
+  for(const d of days){const rs=Object.entries(d.rows).filter(([l])=>K.has(dkey(l))).map(([,r])=>r||{});if(!rs.length)continue;
+    const pc=rs.reduce((t,r)=>t+(+r.pc||0),0);if(pc>maxPc){maxPc=pc;maxD=d.date}
+    const sc=rs.reduce((t,r)=>t+window.SCORE.day(r).score,0)/rs.length;if(sc>=99.995)perfect++;if(sc>=96-1e-9){run++;if(run>best)best=run}else run=0;
+    const m=monday(d.date),w=wk[m]=wk[m]||{s:0,n:0,d:0};w.s+=sc;w.n++;}
+  let bw=null;for(const[m,w]of Object.entries(wk)){if(w.n<3)continue;const v=w.s/w.n;if(!bw||Math.round(v*100)>Math.round(bw.v*100))bw={m,v}}
+  if(!days.some(d=>Object.keys(d.rows).some(l=>K.has(dkey(l)))))return null;
+  return[{t:'Best week',v:bw?window.SCORE.fmt(bw.v):'–',s:bw?'Week of '+sh(bw.m):'Needs 3 days in a week'},
+    {t:'Longest streak',v:best?String(best):'–',s:'day'+(best===1?'':'s')+' in a row at 96 or more'},
+    {t:drv?'Most parcels':'Busiest day',v:maxPc?fmtN(maxPc):'–',s:maxD?'in a day, '+sh(maxD):''},
+    {t:'Perfect days',v:String(perfect),s:drv?'with a score of 100':'every driver scored 100'}]}
+function pfRank(C,k){const need=period==='day'?1:period==='week'?3:12;const Q=Object.keys(C.P).map(x=>[x,C.per[x]]).filter(([,a])=>a&&a.days>=need).map(([x,a])=>[x,Math.round(a.sc/a.days*100)/100]).sort((a,b)=>b[1]-a[1]);
+  const a=C.per[k];if(!a||!a.days)return null;if(a.days<need)return{why:'Not ranked: needs '+need+' days worked'};const i=Q.findIndex(([x])=>x===k);if(i<0)return null;let r=i+1;while(r>1&&Q[r-2][1]===Q[i][1])r--;return{rank:r,of:Q.length}}
 function render0(){
   const box=document.getElementById('sm_root');if(!box)return;
   if(mode!=='mgr'){box.innerHTML='<div class="smx"><div class="empty">Loading summary…</div></div>';return}
-  if(!anchor)anchor=latestDay();
+  if(!anchor||window.__smAuto!==false){anchor=latestDay();if(LD.days)window.__smAuto=false}
   const C=compute(),R=C.R;
   {const pr=prevRange(R);PC=pr?compute(pr):null;if(PC)PC.R=pr;if(pr&&window.needHist)window.needHist(pr.from,['days','enqlog'])}
-  if(window.needHist&&R&&R.from){window.needHist(R.from,['days','leave','enqlog','vchecks','timesheets','clock']);window.needHist(add(R.from,-35),['weeks']);window.needHist(add(monday(R.to),-21),['days'])}
-  const body=scope.t==='all'?contractHTML(C):scope.t==='pc'?postcodeHTML(C,scope.v):driverHTML(C,scope.v);
-  box.innerHTML=`<div class="smx">
-   <div class="head"><h1>Summary</h1><div class="act"><button type="button" class="sh-btn primary" data-sm="pdf">Download PDF</button></div></div>
-   <div class="ctl">
-    <div class="srch"><input type="search" id="sm_q" placeholder="Search a driver, driver number, login or postcode" value="${esc(q)}" autocomplete="off" aria-label="Search"><div class="sug" id="sm_sug" hidden></div></div>
-    ${perHTML()}
-   </div>
-   <div class="scopes pcbig" role="group" aria-label="Postcode">${[['all','All'],...['4214','4215','4217','4218'].map(p=>['pc:'+p,p])].map(([k,l])=>{const on=k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k;return `<button type="button" data-sm="scope" data-v="${k}" aria-pressed="${on}">${l}</button>`}).join('')}</div>
+  if(window.needHist&&R&&R.from){window.needHist(R.from,['days','enqlog']);window.needHist(add(R.from,-42),['weeks','days']);if(!window.__pfAll){window.__pfAll=1;window.needHist('2026-01-01',['days'])}}
+  if(scope.t==='drv'&&!C.P[scope.v])scope={t:'all'};
+  const keys=pfKeys(C),drv=scope.t==='drv',a=sumOf(keys,C.per),pa=PC?sumOf(keys,PC.per):null,p=drv?C.P[scope.v]:null;
+  const P=C.P,grp=[...PCS,XLR,ADM,''];
+  const opts=grp.map(g=>{const L=Object.keys(P).filter(k=>P[k].pc===g||(g===''&&!grp.slice(0,-1).includes(P[k].pc))).sort((x,y)=>P[x].name.localeCompare(P[y].name));if(!L.length)return '';
+    return `<optgroup label="${esc(g||'Others')}">${L.map(k=>`<option value="${esc(k)}" ${drv&&scope.v===k?'selected':''}>${esc(P[k].name)}${P[k].nos.length?' · '+esc(P[k].nos.join(', ')):''}</option>`).join('')}</optgroup>`}).join('');
+  const ctl=`<section class="pf-scope"><div class="pf-chips" role="group" aria-label="Show">${[['all','All'],...PCS.map(x=>['pc:'+x,x])].map(([k,l])=>`<button type="button" data-sm="pfscope" data-v="${k}" aria-pressed="${k==='all'?scope.t==='all':scope.t==='pc'&&'pc:'+scope.v===k}">${l}</button>`).join('')}</div>
+    <label class="pf-sel"><span>Or one driver</span><select id="sm_pfdrv"><option value="">Choose a driver</option>${opts}</select></label>${perHTML()}</section>`;
+  const who=scope.t==='all'?'Contract 1161':scope.t==='pc'?'Postcode '+scope.v:p.name;
+  const sub=scope.t==='all'?`${keys.filter(k=>C.per[k]&&C.per[k].days).length} drivers worked`:scope.t==='pc'?`${keys.filter(k=>C.per[k]&&C.per[k].days).length} drivers worked`:[p.nos.length?'Driver '+p.nos.join(', '):'',p.pc?`<em>${esc(p.pc)}</em>`:''].filter(Boolean).join(' · ');
+  const perL=(period==='day'?'Day · ':period==='week'?'Week · ':period==='month'?'Month · ':'')+R.label;
+  box.innerHTML=`<div class="smx pfx"><div class="pf-top"><button type="button" class="sh-btn sm" data-sm="pdf">Download PDF</button></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   ${body}
-   ${(()=>{try{return scope.t==='all'?smTrend(Object.keys(C.P),'Contract 1161'):scope.t==='pc'?smTrend(Object.keys(C.P).filter(k=>C.P[k].pc===scope.v),scope.v):smTrend([scope.v],'')}catch(e){return ''}})()}
+   ${window.PERFUI.page({who,sub:drv?sub:esc(sub),per:perL,ctl,cur:pfCur(a,drv),prev:pa?pfCur(pa,drv):null,prevLab:PC&&PC.R?PC.R.lab:'',prevPart:PC&&PC.R&&PC.R.part,rank:drv?pfRank(C,scope.v):null,
+     bests:pfBests(keys,drv),bestsTitle:drv?'Personal bests':'Best results',trend:pfTrend(keys),own:drv?false:undefined,trackTitle:'How '+(scope.t==='all'?'the contract is':scope.t==='pc'?scope.v+' is':'they are')+' tracking',t:targets(),none:'No results for this period yet.'})}
   </div>`;
 }
+window.SUMMARY={openLogin:l=>{const k=dkey(l);scope={t:'drv',v:k};if(window.APP)APP.go('summary');render();window.scrollTo(0,0)}};
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='sm_pfdrv'){const v=e.target.value;scope=v?{t:'drv',v}:{t:'all'};render();window.scrollTo(0,0)}});
 function renderSug(){
   const el=$('sug');if(!el)return;const M=matches(q,people());
   if(!q.trim()||!M.length){el.hidden=true;el.innerHTML='';return}
@@ -12406,6 +12561,7 @@ document.addEventListener('click',e=>{
   if(a==='per'){period=v;try{localStorage.setItem('sm_period',period)}catch(x){}render();return}
   if(a==='chip'){anchor=v;render();return}
   if(a==='scope'){scope=v==='all'||(scope.t==='pc'&&'pc:'+scope.v===v)?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
+  if(a==='pfscope'){scope=v==='all'?{t:'all'}:{t:'pc',v:v.slice(3)};render();return}
   if(a==='pcback'){scope={t:'all'};render();const y=window.__smPcY||0;window.scrollTo(0,y);return}
   if(a==='pc'){window.__smPcY=window.scrollY;scope={t:'pc',v};render();const t=document.getElementById('sm_pcdrv');if(t){const y=t.getBoundingClientRect().top+window.scrollY-12;window.scrollTo(0,Math.max(0,y))}return}
   if(a==='drv'){back=scope.t!=='drv'?{s:scope,y:window.scrollY}:back;scope={t:'drv',v};render();window.scrollTo(0,0);return}
@@ -14540,7 +14696,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610319700';
+const VERSION='202610319800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
