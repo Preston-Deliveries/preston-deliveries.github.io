@@ -5410,6 +5410,11 @@ html body #sh-ph.sh-ph,html body #sh-ph{box-shadow:none!important}
 #mod-invoices .iw-wkd .wk-days{padding:0 10px 10px}
 :root[data-theme=dark] #mod-invoices .iw-wkd .wk-tick.on{color:#5FD08F}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-invoices .iw-wkd .wk-tick.on{color:#5FD08F}}
+#sh-main .cv-sh-r.nm1{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px}
+#sh-main .cv-sh-r.nm1 .who{display:flex;flex-direction:column;gap:1px;min-width:0}
+#sh-main .cv-sh-r.nm1 .who .nm{font-size:1.15rem;font-weight:800;color:var(--sh-ink,#13201C)}
+#sh-main .cv-sh-r.nm1 .who small{color:var(--sh-muted,#56655f);font-weight:600;font-size:.82rem}
+#sh-main .cv-h .nm{font-size:1.1rem}#sh-main .cv-h .run.sm{font-size:.75rem;padding:1px 6px;opacity:.85}
 </style>
 <div class="sh-app">
 <nav class="sh-side" aria-label="Sections"><div class="sh-brand"><img class="sh-logo" src="icon-192.png" alt="" width="34" height="34"><span class="bt"><small>Preston Delivery Service</small><b>Contract 1161</b></span></div><div class="sh-vt" hidden></div><div class="sh-links" id="sh-links"></div><div class="sh-role"></div></nav>
@@ -13820,12 +13825,12 @@ function cover(){const el=$('cv_root');if(!el)return;if(!CV.day){CV.day=nextWork
   const all=drivers().filter(p=>!offIds.has(p.id));
   const rows=off.map(o=>{const p=S.staff[o.id]||{},it=cvItem(o.id)||{help:[]};return{o,p,it}});
   if(CV.share){el.innerHTML=`<div class="cv-share" id="cv_card"><div class="cv-sh-h"><small>Preston Delivery Service · Contract 1161</small><b>Cover for ${esc(longd(CV.day))}</b></div>
-    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r"><span class="run">${esc(runsOf(p)||'Run')}</span><span class="who"><s>${esc(shortName(p))}</s> off${runInfo(p).length?' · '+esc(runInfo(p).join(' · ')):''}</span><span class="arr">→</span><span class="by ${it.by?'':it.none?'nc':'none'}">${it.by?esc([it.byName].concat((it.help||[]).map(h=>h.name)).join(' + ')):it.none?'No cover needed':'No cover yet'}</span></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
+    ${rows.length?rows.map(({p,it})=>`<div class="cv-sh-r nm1"><span class="who"><b class="nm">${esc(nameOf(p))}</b><small>off · ${esc(runsOf(p)||'No run')}${runInfo(p).length?' · '+esc(runInfo(p).join(' · ')):''}</small></span><span class="arr">→</span><span class="by ${it.by?'':it.none?'nc':'none'}">${it.by?esc([it.byName].concat((it.help||[]).map(h=>h.name)).join(' + ')):it.none?'No cover needed':'No cover yet'}</span></div>`).join(''):'<p class="cv-none">Nobody is off. Every run is covered.</p>'}
     </div><div class="cv-acts" data-noprint><button type="button" class="sh-btn" data-cv="share">‹ Back to planner</button><button type="button" class="sh-btn primary" data-cv="img">${(navigator.canShare&&matchMedia('(pointer:coarse)').matches)?'Share picture to WhatsApp':'Copy picture for WhatsApp'}</button></div>${CV.msg?`<p class="mt-msg">${esc(CV.msg)}</p>`:''}`;return}
   const left=rows.filter(r=>!r.it.by&&!r.it.none).length;
   el.innerHTML=`<section class="card cv"><div class="cv-top"><button type="button" class="cv-nav" data-cv="prev" aria-label="Day before">‹</button><div><small>Cover for</small><b>${esc(longd(CV.day))}</b></div><button type="button" class="cv-nav" data-cv="next" aria-label="Day after">›</button></div>
    <p class="cv-sum">${rows.length?(left?`<b>${left}</b> of ${rows.length} run${rows.length===1?'':'s'} still need cover`:`✓ All ${rows.length} run${rows.length===1?'':'s'} covered`):'Nobody is off this day.'}</p>
-   ${rows.map(({o,p,it})=>`<div class="cv-r ${it.by||it.none?'done':''} ${it.none?'nc':''}"><div class="cv-h"><span class="run">${esc(runsOf(p)||'No run')}</span><b>${esc(nameOf(p))}</b><span class="tag">${o.from==='leave'?'On leave':'Off'}</span>${o.from==='added'?`<button type="button" class="cv-x" data-cv="unoff" data-v="${esc(o.id)}" aria-label="Remove">×</button>`:''}</div>
+   ${rows.map(({o,p,it})=>`<div class="cv-r ${it.by||it.none?'done':''} ${it.none?'nc':''}"><div class="cv-h"><b class="nm">${esc(nameOf(p))}</b><span class="run sm">${esc(runsOf(p)||'No run')}</span><span class="tag">${o.from==='leave'?'On leave':'Off'}</span>${o.from==='added'?`<button type="button" class="cv-x" data-cv="unoff" data-v="${esc(o.id)}" aria-label="Remove">×</button>`:''}</div>
      ${runInfo(p).length?`<div class="cv-info">${runInfo(p).map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}
      <button type="button" class="cv-nc ${it.none?'on':''}" data-cv="nocover" data-off="${esc(o.id)}" aria-pressed="${!!it.none}">${it.none?'✓ No cover needed':'No cover needed'}</button>
      ${it.none?'':`<div class="cv-chips">${relief.length?relief.map(r=>{const on=it.by===r.id||(it.help||[]).some(x=>x.id===r.id),busy=!on&&used.has(r.id);return `<button type="button" class="cv-c ${on?'on':''} ${busy?'busy':''}" data-cv="by" data-off="${esc(o.id)}" data-v="${esc(r.id)}" aria-pressed="${on}">${esc(shortName(r))}${busy?'<i>busy</i>':''}</button>`}).join(''):'<span class="cv-nr">No relief drivers. Set a driver\'s role to RELIEF on the Driver Management page.</span>'}</div>
@@ -14334,7 +14339,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610316700';
+const VERSION='202610316800';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
