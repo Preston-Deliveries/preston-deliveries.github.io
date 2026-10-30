@@ -1752,7 +1752,6 @@ function sheetHTML(r){
       <h2>${esc(x.name)}</h2><p>${list.length} street${list.length>1?'s':''}${x.note?` · ${esc(x.note)}`:''}</p></div></div>
       <div class="sh-tablewrap"><table class="sh-t"><thead><tr><th class="n">#</th><th>Street</th><th class="r">Evens</th><th class="r">Odds</th><th>Notes</th></tr></thead><tbody>
       ${list.map(s=>{n++;const info=[];
-        if(s.split) info.push(`<span class="sh-line"><span class="tag split">Split</span> Only ${esc(s.split)}</span>`);
         if(s.note) info.push(`<span class="sh-line">${esc(s.note)}</span>`);
         for(const p of s.stops||[]){const t=TYPES[p.type]||TYPES.note;info.push(`<span class="sh-line"><span class="tag ${t.tone}">${t.label}</span>${p.num?` <b>No. ${esc(p.num)}</b>`:''}${p.detail?` ${esc(p.detail)}`:''}</span>`)}
         return `<tr class="${s.hv?'hv':''} ${s.off?'off':''}"><td class="n">${n}</td><td class="s">${s.off?'<span class="sh-arrow">↳</span> ':''}${esc(s.name)}${s.off?`<span class="sh-offnote">Small street off ${esc(s.off)}</span>`:''}${vm[s.id]?`<br><span class="tag visit">${vm[s.id]}</span>`:''}</td><td class="r" data-l="Evens">${esc(s.evens)}</td><td class="r" data-l="Odds">${esc(s.odds)}</td><td><div class="sh-info">${info.join('')}</div></td></tr>`}).join('')}
@@ -1800,7 +1799,7 @@ function printDoc(r){
   r.sections.forEach((x,i)=>{const list=inSec(r,x.id);if(!list.length)return;
     blocks.push(`<div class="b sec"><span class="no">${i+1}</span><span class="nm">${esc(x.name)}</span><span class="ct">${list.length} street${list.length>1?'s':''}</span>${x.note?`<span class="sn">${esc(x.note)}</span>`:''}</div>`);
     for(const s of list){n++;const info=[];
-      if(s.split)info.push(`<span class="tag split">Split</span> Only ${esc(s.split)}`);
+      
       if(s.note)info.push(esc(s.note));
       for(const p of s.stops||[]){const t=TYPES[p.type]||TYPES.note;info.push(`<span class="tag ${t.tone}">${t.label}</span>${p.num?` <b>No. ${esc(p.num)}</b>`:''}${p.detail?` ${esc(p.detail)}`:''}`)}
       blocks.push(`<div class="b st${s.hv?' hv':''}${s.off?' off':''}"><span class="n">${n}</span><span class="s">${s.off?'↳ ':''}${esc(s.name)}${vm[s.id]?` <span class="tag visit">${vm[s.id]}</span>`:''}</span><span class="r">${esc(s.evens||'')}</span><span class="r">${esc(s.odds||'')}</span><span class="i">${info.join(' <span class="dot">·</span> ')}</span></div>`)}});
@@ -9419,7 +9418,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010011';
+const VERSION='202611010012';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
