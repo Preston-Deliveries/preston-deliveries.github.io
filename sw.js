@@ -7,7 +7,8 @@ const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'ap
 const LIBS = [
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
-  'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js'
+  'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js',
+  'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js'
 ];
 /* Outside files worth keeping: the Firebase app code, the spreadsheet and screenshot tools, and the fonts */
 const KEEP = [/^https:\/\/www\.gstatic\.com\/firebasejs\//, /^https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\//, /^https:\/\/fonts\.(googleapis|gstatic)\.com\//];
