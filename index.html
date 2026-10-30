@@ -6,6 +6,11 @@
 <title>Contract 1161</title>
 <meta name="description" content="Preston Delivery Service, Contract 1161">
 <meta name="theme-color" content="#0F1A2A">
+<script>/* One clock for the whole app: Queensland time, whatever the phone is set to */
+window.__qISO=function(d){try{var o={};new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d||new Date()).forEach(function(x){o[x.type]=x.value});return o.year+'-'+o.month+'-'+o.day}catch(e){var t=new Date((d||new Date()).getTime()+36e6);return t.toISOString().slice(0,10)}};
+window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0],p[1]-1,+p[2],12)};
+(function(){var day=window.__qISO();document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&window.__qISO()!==day)location.reload()})})();
+</script>
 <script>try{var t=localStorage.getItem("theme1161");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var z=localStorage.getItem("ts1161");if(z==="l"||z==="xl")document.documentElement.setAttribute("data-ts",z)}catch(e){}</script>
 <meta name="robots" content="noindex,nofollow">
 <link rel="manifest" href="manifest.webmanifest">
@@ -19,6 +24,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style id="fix-oct31">:root:root:root #sh-home .sh-hero .ck-big,:root:root:root .ck-big{min-height:60px!important;font-size:1.2rem!important}:root:root:root #sh-home .sh-hero .ck-link,:root:root:root .ck-link{font-size:1rem!important;min-height:48px!important;padding:10px 4px!important;display:inline-flex!important;align-items:center}.ck-tz{font-size:.9rem;opacity:.85;margin:6px 0 0}.ck-y{margin-top:12px}</style>
 </head>
 <body>
 <div id="web-gate" data-web><div class="wg-card"><div class="wg-top"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="wg-body"><div class="wg-spin" aria-hidden="true"></div><p class="wg-load">Opening Contract 1161…</p></div></div></div>
@@ -1120,7 +1126,7 @@ async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__
   {const A0='2026-10-05',n0=Math.floor((new Date(T+'T12:00:00')-new Date(A0+'T12:00:00'))/864e5/28)-1;live(db.collection('invlog').where('from','>=',mcAdd(A0,Math.max(0,n0)*28)),m=>MC.inv=m)}
   live(db.collection('leave'),m=>MC.leave=m);
   /* last pay period: 4 weeks from Monday 5 Oct 2026, Monday to Saturday of the 4th week */
-  const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,25);MC.prev=[s,e];
+  const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,26);MC.prev=[s,e];
   if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
 }
 function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
@@ -2924,7 +2930,7 @@ function defaultWeek(iso){const w=Math.round((monday(fromISO(iso))-ANCHOR)/DAY/7
 function cycleStart(iso,week){return toISO(addDays(monday(fromISO(iso)),-(week-1)*7))}
 function cycleLabel(start){const s=fromISO(start),e=addDays(s,25);return `${s.toLocaleDateString("en-AU",{day:"numeric",month:"short"})} to ${e.toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"})}`}
 
-const TODAY=toISO(new Date()), NOW_WEEK=defaultWeek(TODAY), NOW_CYCLE=cycleStart(TODAY,NOW_WEEK);
+const TODAY=window.__qISO(), NOW_WEEK=defaultWeek(TODAY), NOW_CYCLE=cycleStart(TODAY,NOW_WEEK);
 // A week later than the current one belongs to the previous cycle (e.g. uploading week 4 during week 1)
 const cycleFor=w=>w>NOW_WEEK?toISO(addDays(fromISO(NOW_CYCLE),-28)):NOW_CYCLE;
 const weekRange=(cs,w)=>{const s=addDays(fromISO(cs),(w-1)*7),e=addDays(s,6);return `${s.toLocaleDateString("en-AU",{day:"numeric",month:"short"})} to ${e.toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric"})}`};
@@ -4178,6 +4184,8 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 
 </script>
 <script type="text/x-mod" data-mod="briefs">
+/* a signature is only ever shown as a picture: anything else is dropped */
+const sigSrc=v=>/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(String(v||''))?v:'';
 (()=>{
 const $=id=>document.getElementById('tb_'+id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -4230,7 +4238,7 @@ const when=v=>{const d=new Date(v);return isNaN(d)?'':d.toLocaleDateString('en-A
 function signHTML(b){
   if(!me)return '';
   const s=mySig(b.id);
-  if(s)return `<section class="sign done"><h3>Signed ✓</h3><p>You confirmed you read and understood this brief on <b>${esc(when(s.signedAt))}</b>.</p>${s.sig?`<img class="sigimg" src="${s.sig}" alt="Your signature">`:''}</section>`;
+  if(s)return `<section class="sign done"><h3>Signed ✓</h3><p>You confirmed you read and understood this brief on <b>${esc(when(s.signedAt))}</b>.</p>${s.sig?`<img class="sigimg" src="${sigSrc(s.sig)}" alt="Your signature">`:''}</section>`;
   return `<section class="sign"><h3>Sign this brief</h3>
     <label class="agree"><input type="checkbox" id="tb_agree" ${pad.agree?'checked':''}> I have read and understood this team brief and its attachments.</label>
     <p class="sub">Sign with your finger in the box below.</p>
@@ -4240,7 +4248,7 @@ function signHTML(b){
 }
 function signedHTML(b){
   const L=sigsFor(b.id);
-  return `<section class="sign mgrs"><h3>Signed by ${L.length} ${L.length===1?'person':'people'}</h3>${L.length?`<div class="sigl">${L.map(x=>`<div class="sigr"><b>${esc(x.name||x.staff)}</b><span>${esc(when(x.signedAt))}</span>${x.sig?`<img src="${x.sig}" alt="Signature of ${esc(x.name||'')}">`:''}</div>`).join('')}</div>`:'<p class="sub">No one has signed this brief yet.</p>'}
+  return `<section class="sign mgrs"><h3>Signed by ${L.length} ${L.length===1?'person':'people'}</h3>${L.length?`<div class="sigl">${L.map(x=>`<div class="sigr"><b>${esc(x.name||x.staff)}</b><span>${esc(when(x.signedAt))}</span>${x.sig?`<img src="${sigSrc(x.sig)}" alt="Signature of ${esc(x.name||'')}">`:''}</div>`).join('')}</div>`:'<p class="sub">No one has signed this brief yet.</p>'}
    ${(()=>{const ns=notSigned.filter(n=>!L.some(x=>x.staff===n.id));return ns.length?`<details class="ns"><summary>Not signed yet (${ns.length})</summary><p>${ns.map(n=>esc(n.name)).join(', ')}</p></details><div class="remind"><button type="button" class="sh-btn" data-tb="remind" data-v="${esc(b.id)}">Remind on WhatsApp</button><span>Opens WhatsApp with the names of everyone who hasn't signed. Pick the group, then tap send.</span></div>`:(notSigned.length?'<p class="sub">Everyone has signed this brief.</p>':'')})()}</section>`;
 }
 let notSigned=[];
@@ -6693,7 +6701,7 @@ const longD=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MO
 const ANCHOR='2026-10-05';
 const cycleStart=s=>{const days=Math.round((fromIso(monday(s))-fromIso(ANCHOR))/864e5);const k=Math.floor(days/28);return add(ANCHOR,k*28)};
 const monthName=cs=>{const d=fromIso(add(cs,14));return MON[d.getMonth()]+' '+d.getFullYear()};
-const TODAY=iso(new Date());
+const TODAY=window.__qISO();
 const dkey=d=>String(d||'').toUpperCase().replace(/\s+/g,'');
 const normName=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 
@@ -7197,7 +7205,7 @@ const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const fromIso=s=>{const[a,b,c]=String(s).split('-').map(Number);return new Date(a,b-1,c)};
 const nice=s=>{if(!s)return '';const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()};
 const longD=s=>{if(!s)return '';const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()};
-const TODAY=iso(new Date());
+const TODAY=window.__qISO();
 const daysBetween=(a,b)=>Math.round((fromIso(b)-fromIso(a))/864e5);
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 const ITEMS=[
@@ -7415,7 +7423,7 @@ const monday=s=>{const d=fromIso(s);d.setDate(d.getDate()-((d.getDay()+6)%7));re
 const short=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]};
 const longD=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()};
 const dkey=d=>String(d||'').toUpperCase().replace(/\s+/g,'');
-const TODAY=iso(new Date());
+const TODAY=window.__qISO();
 const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return m?(+m[1])*60+(+m[2]):null};
 const fmtH=m=>m==null?'':(Math.floor(m/60))+'h '+pad(m%60)+'m';
 const OFFICE=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
@@ -7730,8 +7738,9 @@ const toMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1
 const hrs=m=>m==null?'':Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
 const longDay=iso=>{const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'})};
 const BREAKS=[0,15,30,45,60];
+const qldNote=()=>`<p class="ck-tz">Queensland time. It is ${esc(nice(hmOf(new Date())))} in Queensland now.</p>`;
 
-let db=null,me=null,today=null,yday=null,T=null,Y=null,ui={},busy=false,msg=null,loaded=false,hist=[],noRec=false;
+let db=null,me=null,today=null,yday=null,T=null,Y=null,ui={},busy=false,msg=null,loaded=false,hist=[],noRec=false,lastAct='';
 const box=()=>document.getElementById('sh-clock');
 const page=()=>document.getElementById('ck_page');
 const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
@@ -7757,17 +7766,20 @@ function html(){
   if(loaded&&!ok())return '';
   if(!loaded)return `<section class="ck"><div class="ck-load">Loading your shift…</div></section>`;
   const m=msg?`<p class="ck-msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
-  // an earlier shift left open
-  if(Y&&Y.start&&!Y.finish){
-    return `<section class="ck warn"><div class="ck-h"><span class="ck-dot"></span><b>You didn't finish ${esc(longDay(yday))}</b></div>
+  // an earlier shift left open: shown under today's card, so it never stops a driver starting today
+  const yo=Y&&Y.start&&!Y.finish,toY=yo&&lastAct==='yfin';return todayCard(m,toY?'':m)+(yo?yCard(toY?m:''):'');
+}
+function yCard(m){
+    return `<section class="ck warn ck-y"><div class="ck-h"><span class="ck-dot"></span><b>You didn't finish ${esc(longDay(yday))}</b></div>
     <p>You started at ${esc(nice(Y.start))}. What time did you finish?</p>
-    <div class="ck-row"><input type="time" id="ck-yt" value="${esc(ui.yt||'')}" aria-label="Finish time"></div>
+    <div class="ck-row"><input type="time" id="ck-yt" value="${esc(ui.yt||'')}" aria-label="Finish time"></div>${qldNote()}
     ${endQs('y')}
     <button type="button" class="ck-big stop" data-ck="yfin" ${busy||!answered('y')?'disabled':''}>Save that day</button>${m}</section>`;
-  }
+}
+function todayCard(_m,m){
   if(!T||!T.start){
     if(ui.late)return `<section class="ck"><div class="ck-h"><b>When did you start today?</b></div>
-      <div class="ck-row"><input type="time" id="ck-st" value="${esc(ui.st||'')}" aria-label="Start time"></div>
+      <div class="ck-row"><input type="time" id="ck-st" value="${esc(ui.st||'')}" aria-label="Start time"></div>${qldNote()}
       <button type="button" class="ck-big go" data-ck="latestart" ${busy?'disabled':''}>Save start time</button>
       <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
     return `<section class="ck idle"><div class="ck-h"><b>Good ${greet()}, ${esc(first())}</b></div>
@@ -7777,11 +7789,11 @@ function html(){
   }
   if(!T.finish){
     if(ui.edit)return `<section class="ck on"><div class="ck-h"><span class="ck-dot on"></span><b>Change your start time</b></div>
-      <div class="ck-row"><input type="time" id="ck-et" value="${esc(ui.et!=null?ui.et:T.start)}" aria-label="Start time"></div>
+      <div class="ck-row"><input type="time" id="ck-et" value="${esc(ui.et!=null?ui.et:T.start)}" aria-label="Start time"></div>${qldNote()}
       <button type="button" class="ck-big go" data-ck="saveedit" ${busy?'disabled':''}>Save start time</button>
       <button type="button" class="ck-link" data-ck="cancel">Cancel</button>${m}</section>`;
     if(ui.fin)return `<section class="ck"><div class="ck-h"><span class="ck-dot on"></span><b>Finishing up</b></div>
-      ${ui.late?`<p class="ck-q">What time did you finish?</p><div class="ck-row"><input type="time" id="ck-ft" value="${esc(ui.ft||'')}" aria-label="Finish time"></div>`:''}
+      ${ui.late?`<p class="ck-q">What time did you finish?</p><div class="ck-row"><input type="time" id="ck-ft" value="${esc(ui.ft||'')}" aria-label="Finish time"></div>${qldNote()}`:''}
       ${endQs('')}
       <button type="button" class="ck-big stop" data-ck="${ui.late?'latefin':'finish'}" ${busy||!answered('')?'disabled':''}>${ui.late?'Save finish time':'Finish shift now'}</button>
       ${answered('')?'':'<p class="ck-note">Answer the questions above to finish.</p>'}
@@ -7830,24 +7842,26 @@ async function mount(){restore();render();if(!fresh){if(!loadP)loadP=load();awai
 /* No signal: times are saved on the phone and sent when the signal comes back. Tapped times then count as typed, because Google's clock can only stamp them once they arrive. */
 let OFF=false;
 async function online(){if(navigator.onLine===false)return false;try{const ac=new AbortController();const t=setTimeout(()=>ac.abort(),3500);await fetch('https://firestore.googleapis.com/?ping='+Date.now(),{mode:'no-cors',cache:'no-store',signal:ac.signal});clearTimeout(t);return true}catch(e){return false}}
-const put=p=>{if(!OFF)return p;p.catch(e=>console.warn(e));return Promise.resolve()};
-async function save(fn,okMsg){busy=true;msg=null;render();OFF=!(await online());try{await fn();msg=okMsg?{t:okMsg+(OFF?' No signal right now, so it is saved on this phone and will send by itself when you have signal.':'')}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
+let SLOW=false;
+const within=(p,ms)=>new Promise((ok,no)=>{let done=false;const t=setTimeout(()=>{if(done)return;done=true;SLOW=true;p.then(()=>{},e=>{console.warn(e);msg={err:true,t:'That did not save. Ask the office to check your times.'};render()});ok()},ms||8000);p.then(v=>{if(done)return;done=true;clearTimeout(t);ok(v)},e=>{if(done)return;done=true;clearTimeout(t);no(e)})});
+const put=p=>{if(!OFF)return within(p);p.catch(e=>console.warn(e));return Promise.resolve()};
+async function save(fn,okMsg){busy=true;msg=null;SLOW=false;render();OFF=!(await online());try{await fn();msg=okMsg?{t:okMsg+(OFF||SLOW?' No signal right now, so it is saved on this phone and will send by itself when you have signal.':'')}:null;ui={};hist=[T,...hist.filter(h=>h&&h.date!==today&&(!Y||h.date!==Y.date)),Y].filter(Boolean)}catch(e){console.warn(e);msg={err:true,t:e&&e.code==='permission-denied'?'That could not be saved. Ask the office to check your details.':'Could not save. Check your signal and try again.'}}busy=false;render()}
 const base=()=>({staff:me.staff,name:me.name||'',date:today});
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-ck]');if(!el||!((box()&&box().contains(el))||(page()&&page().contains(el))))return;
-  const a=el.dataset.ck;
+  const a=el.dataset.ck;if(!['brk','yn','step'].includes(a))lastAct=a;
+  if(busy&&['start','finish','latestart','latefin','yfin','saveedit','undostart','undofinish','clear'].includes(a))return;
   if(a==='brk'){ui[el.dataset.k]=+el.dataset.v;render();return}
   if(a==='yn'){ui[el.dataset.k]=el.dataset.v==='1';render();return}
   if(a==='step'){const k=el.dataset.k;ui[k]=Math.max(0,(parseInt(ui[k],10)||0)+(+el.dataset.v));render();return}
   if(a==='edit'){ui={edit:true};msg=null;render();return}
   if(a==='askundo'){ui={undo:el.dataset.v};msg=null;render();return}
   if(a==='undostart'){if(!T||T.finish)return;busy=true;msg=null;render();
-    try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);ui={};msg={t:'Removed. Nothing is logged for today.'}}
+    try{SLOW=false;await within(db.doc('clock/'+today+'_'+me.staff).delete());if(!SLOW){const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there')}T=null;hist=hist.filter(h=>h&&h.date!==today);ui={};msg={t:'Removed. Nothing is logged for today.'}}
     catch(e){console.warn(e);msg={err:true,t:'Could not remove it. Check you have signal, or ask the office to clear it.'}}busy=false;render();return}
   if(a==='undofinish'){if(!T||!T.finish)return;busy=true;msg=null;render();
-    try{const keep={};for(const[k,v]of Object.entries(T))if(!['finish','finishAt','finishLate','brk','held','heldCount','extra','twoLoads'].includes(k))keep[k]=v;keep.updatedAt=new Date().toISOString();
-      if(T.startAt&&typeof T.startAt!=='string'){const cur=await db.doc('clock/'+today+'_'+me.staff).get();if(cur.exists){const o=__D(cur);if(o.startAt)keep.startAt=o.startAt}}
-      await db.doc('clock/'+today+'_'+me.staff).set(keep);T=keep;ui={};msg={t:'Done. You are back on shift since '+nice(T.start)+'.'}}
+    try{const GONE=['finish','finishAt','finishLate','brk','held','heldCount','extra','twoLoads'];const del=window.firebase.firestore.FieldValue.delete();const f={updatedAt:db.serverTime?db.serverTime():new Date().toISOString()};for(const k of GONE)if(k in T)f[k]=del;
+      await within(db.doc('clock/'+today+'_'+me.staff).update(f));const keep={};for(const[k,v]of Object.entries(T))if(!GONE.includes(k))keep[k]=v;T=keep;ui={};msg={t:'Done. You are back on shift since '+nice(T.start)+'.'}}
     catch(e){console.warn(e);msg={err:true,t:'Could not undo it. Check you have signal, or ask the office to fix it.'}}busy=false;render();return}
   if(a==='clear'){if(me.role!=='admin')return;if(!confirm('Clear your entry for today? You can start again after.'))return;
     busy=true;render();try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);msg={t:'Cleared. You can start again.'}}catch(e){console.warn(e);msg={err:true,t:'Could not clear it: '+((e&&(e.code||e.message))||'unknown')}}busy=false;render();return}
@@ -7891,7 +7905,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const TOPICS=[['app','The app'],['idea','A feature idea'],['work','Work'],['person','A person'],['problem','A problem'],['outside','Outside work'],['other','Something else']];
-const TOPIC=Object.fromEntries(TOPICS);
+const TOPIC=Object.fromEntries([...TOPICS,['bank','Bank details changed']]);
 const STATUS={new:'New',read:'Read',done:'Done'};
 const toDate=v=>{if(!v)return null;if(typeof v==='string'||typeof v==='number')return new Date(v);if(v.toDate)return v.toDate();if(v.seconds!=null)return new Date(v.seconds*1000);return null};
 function when(v){const d=toDate(v);if(!d||isNaN(d))return '';const now=new Date(),t=d.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'});
@@ -8009,16 +8023,16 @@ const add=(s,n)=>{const d=fromIso(s);d.setDate(d.getDate()+n);return iso(d)};
 const monday=s=>{const d=fromIso(s);const k=(d.getDay()+6)%7;d.setDate(d.getDate()-k);return iso(d)};
 const nice=s=>{if(!s)return '';const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear()};
 const short=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
-const TODAY=iso(new Date());
+const TODAY=window.__qISO();
 const money=n=>'$'+(Math.round((+n||0)*100)/100).toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=v=>v===''||v==null||isNaN(+v)?0:+v;
 /* pay periods are 4 weeks long, counted from Monday 5 Oct 2026 */
 const ANCHOR='2026-10-05';
-const PERM={};function period(k){if(PERM[k])return PERM[k];const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);const n=Math.floor(d/28)+k;const s=add(ANCHOR,n*28);return PERM[k]=[s,add(s,25)]}
+const PERM={};function period(k){if(PERM[k])return PERM[k];const d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5);const n=Math.floor(d/28)+k;const s=add(ANCHOR,n*28);return PERM[k]=[s,add(s,26)]}
 /* how often a driver is paid: every 4 weeks (most), every 2 weeks or every week. Set on the Driver Management page. */
 const freqOf=id=>{const f=String(((staff[id||sid]||{}).payFreq)||'').toLowerCase();return f.startsWith('week')?7:f.startsWith('fort')?14:28};
 const FREQL={7:'weekly',14:'fortnightly',28:'4 weekly'};
-function periodF(k,id){const L=freqOf(id),d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5),n=Math.floor(d/L)+k,s=add(ANCHOR,n*L);return[s,add(s,L-3)]}
+function periodF(k,id){const L=freqOf(id),d=Math.floor((fromIso(TODAY)-fromIso(ANCHOR))/864e5),n=Math.floor(d/L)+k,s=add(ANCHOR,n*L);return[s,add(s,L-2)]}
 const DEFC={gst:true,hourly:false,r1:2.15,r2:2.22,rx:0.4,rh:40,rd:300,abn:'',address:'',phone:'',email:'',acct:'',bsb:'',acctNo:''};
 
 let act={};/* weekly Driver Activity Summary from Australia Post: onboard items a day, by scanner login (reference only) */
@@ -8276,26 +8290,46 @@ function snap(){syncCfg();const R=rows(),T=totals(R);let worked=0;for(const r of
     extras:extras.filter(x=>num(x.amt)>0).map(x=>({d:x.d||'',amt:num(x.amt),why:String(x.why||'').trim()})),
     T,worked:Math.round(worked*100)/100}}
 async function buildXlsx(inv){
+  /* Fills Kim's invoice template (columns D to H: 1 load, 2 loads, extra parcels, hours, day rate; totals in column I).
+     Every figure is written as a plain number worked out here, the same way the app and the PDF work it out,
+     so days with their own hourly or day rate and extra work all come out exactly right. */
   await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',()=>window.JSZip);const c=inv.cfg;
   const F=window.IV_FILES||{};const k=c.gst?'gst':'nogst';const bin=atob(F[k].b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
-  const zip=await window.JSZip.loadAsync(u);let x=await zip.file('xl/worksheets/sheet1.xml').async('string');const set=(r,v)=>{x=setCell(x,r,v)};
+  const zip=await window.JSZip.loadAsync(u);let x=await zip.file('xl/worksheets/sheet1.xml').async('string');
+  x=x.replace(/<f[^>]*\/>|<f[\s\S]*?<\/f>/g,'');
+  const set=(r,v)=>{x=setCell(x,r,v)};const r2=n=>Math.round((+n||0)*100)/100;
   set('C6',inv.name);set('C7',c.abn);set('C8',c.address);set('C9',c.phone);set('C10',c.email);
-  set('G6',inv.no);set('G7',serial(inv.date));set('G8',serial(inv.from));set('G9',serial(inv.to));
+  set('H6',inv.no);set('H7',serial(inv.date));set('H8',serial(inv.from));set('H9',serial(inv.to));
   set('C13',c.acct);set('C14',c.bsb);set('C15',c.acctNo);
-  /* day rate drivers: the template has no day column, so each day goes in the hours column as 1 at the day rate */
-  const dayMode=inv.rows.some(r=>r.t==='d')&&!inv.rows.some(r=>r.t==='h');
-  set('C20',+c.r1);set('D20',+c.r2);set('E20',+c.rx);set('F20',dayMode?num(c.rd):+c.rh);
-  const rate=[+c.r1,+c.r2,+c.rx,dayMode?num(c.rd):+c.rh],cols=['C','D','E','F'],keys=['l1','l2','xp','hr'];const grid={};
-  for(const r0 of inv.rows){const r=dayMode&&r0.t==='d'?{...r0,hr:1}:r0;if(r.wk>3)continue;const row=21+r.wk*7+r.di;grid[row]=r;keys.forEach((k,i)=>set(cols[i]+row,num(r[k])?num(r[k]):''))}
-  /* fill in the totals too, so the file shows the right figures in any app, not only Excel */
-  const q=[0,0,0,0];
-  for(let w=0;w<4;w++){const wt=[0,0,0,0];let wsum=0;for(let di=0;di<6;di++){const row=21+w*7+di,v=grid[row];
-      if(v){let dt=0;keys.forEach((k,i)=>{const n=num(v[k]);wt[i]+=n;dt+=n*rate[i]});wsum+=dt;x=setCached(x,'G'+row,dt)}else x=setCached(x,'G'+row,'')}
-    const tr=27+w*7;cols.forEach((cc,i)=>{x=setCached(x,cc+tr,wt[i]);q[i]+=wt[i]});x=setCached(x,'G'+tr,wsum)}
-  let sub=0;for(let i=0;i<4;i++){x=setCached(x,'E'+(51+i),q[i]);x=setCached(x,'F'+(51+i),rate[i]);x=setCached(x,'G'+(51+i),q[i]*rate[i]);sub+=q[i]*rate[i]}
-  if(c.gst){const g=Math.round(sub*10)/100;x=setCached(x,'G55',sub);x=setCached(x,'G56',g);x=setCached(x,'G57',sub+g)}else x=setCached(x,'G55',sub);
+  const R=inv.rows||[],X=inv.extras||[];
+  const isD=r=>r.t==='d',isH=r=>r.t==='h'||(!r.t&&num(r.hr)>0);
+  const rateOf=(L,f)=>{const v=[...new Set(L.map(f).map(n=>r2(n)))];return v.length===1?v[0]:v.length?'varies':''};
+  const hrRate=rateOf(R.filter(r=>isH(r)&&num(r.hr)),r=>r.rh||c.rh),dRate=rateOf(R.filter(isD),r=>r.rd||c.rd);
+  set('D20',r2(c.r1));set('E20',r2(c.r2));set('F20',r2(c.rx));set('G20',hrRate===''?r2(c.rh):hrRate);set('H20',dRate===''?r2(c.rd):dRate);
+  const amt=r=>r.amt!=null?num(r.amt):num(r.l1)*num(c.r1)+num(r.l2)*num(c.r2)+num(r.xp)*num(c.rx)+num(r.hr)*num(r.rh||c.rh)+(isD(r)?num(r.rd||c.rd):0);
+  const grid={};for(const r of R){if(r.wk>3)continue;grid[21+r.wk*7+r.di]=r}
+  const q={l1:0,l2:0,xp:0,hr:0,dd:0},m={l1:0,l2:0,xp:0,hr:0,dd:0};
+  const xpAmt=r=>{const a=amt(r)-num(r.l1)*num(c.r1)-num(r.l2)*num(c.r2);return isH(r)||isD(r)?0:a};
+  for(let w=0;w<4;w++){const wt={l1:0,l2:0,xp:0,hr:0,dd:0};let ws=0;
+    for(let di=0;di<6;di++){const row=21+w*7+di,v=grid[row];set('C'+row,serial(add(inv.from,w*7+di)));
+      if(!v){['D','E','F','G','H','I'].forEach(cc=>set(cc+row,''));continue}
+      const d={l1:num(v.l1),l2:num(v.l2),xp:num(v.xp),hr:isH(v)?num(v.hr):0,dd:isD(v)?1:0};
+      set('D'+row,d.l1||'');set('E'+row,d.l2||'');set('F'+row,d.xp||'');set('G'+row,d.hr||'');set('H'+row,d.dd||'');
+      const a=r2(amt(v));set('I'+row,a||'');ws+=a;
+      for(const kk in d){wt[kk]+=d[kk];q[kk]+=d[kk]}
+      m.l1+=d.l1*num(c.r1);m.l2+=d.l2*num(c.r2);m.xp+=xpAmt(v);if(isH(v))m.hr+=amt(v);if(isD(v))m.dd+=amt(v)}
+    const tr=27+w*7;set('D'+tr,wt.l1);set('E'+tr,wt.l2);set('F'+tr,wt.xp);set('G'+tr,r2(wt.hr));set('H'+tr,wt.dd);set('I'+tr,r2(ws))}
+  const lines=[['l1',51,r2(c.r1)],['l2',52,r2(c.r2)],['xp',53,r2(c.rx)],['hr',54,hrRate===''?r2(c.rh):hrRate],['dd',55,dRate===''?r2(c.rd):dRate]];
+  let sub=0;for(const[kk,row,rt]of lines){set('G'+row,r2(q[kk]));set('H'+row,rt);set('I'+row,r2(m[kk]));sub+=r2(m[kk])}
+  /* extra work (with the reason) goes beside the summary and is counted in the subtotal */
+  const ex=X.filter(z=>num(z.amt)>0);
+  if(ex.length){set('B50','EXTRA WORK');ex.slice(0,7).forEach((z,i)=>{set('B'+(51+i),(z.d?short(z.d)+'  ':'')+String(z.why||'Extra work'));set('D'+(51+i),r2(z.amt))});
+    if(ex.length>7)set('B58','and '+(ex.length-7)+' more, see the PDF');for(const z of ex)sub+=r2(z.amt);set('E56','Subtotal incl. extra work (ex GST)')}
+  sub=r2(sub);const g=c.gst?r2(sub*0.1):0;
+  set('I56',sub);set('I57',g);set('I58',r2(sub+g));
+  if(inv.T&&inv.T.total!=null&&Math.abs(r2(sub+g)-num(inv.T.total))>0.01)console.warn('Excel total differs from the app',sub+g,inv.T.total);
   zip.file('xl/worksheets/sheet1.xml',x);
-  let wb=await zip.file('xl/workbook.xml').async('string');wb=wb.replace(/<calcPr([^>]*?)\/>/,(m,a)=>'<calcPr'+a.replace(/ fullCalcOnLoad="[^"]*"/,'')+' fullCalcOnLoad="1"/>');zip.file('xl/workbook.xml',wb);
+  let wb=await zip.file('xl/workbook.xml').async('string');wb=wb.replace(/ fullCalcOnLoad="[^"]*"/,'');zip.file('xl/workbook.xml',wb);
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
 const C={INK:[22,30,45],MUT:[96,108,124],LINE:[214,220,228],NAVY:[19,33,58],SOFT:[244,246,249]};
 function drawInvoice(doc,inv){return inv&&inv.v===2?drawInvoice2(doc,inv):drawInvoice1(doc,inv)}
@@ -8404,8 +8438,15 @@ function drawCover(doc,cv){
 const STAT={submitted:'Submitted',checked:'Checked',paid:'Paid'};
 
 /* ---------- submit and download from the maker ---------- */
+/* bank details changed by a driver: stamped with Google's time, and the office gets a message in Feedback */
+const BANKK=['acct','bsb','acctNo'];
+const bankChanged=(a,b)=>BANKK.some(k=>String((a||{})[k]||'').trim()!==String((b||{})[k]||'').trim());
 async function saveCfg(){const me2={};for(const k of MEK)me2[k]=cfg[k]||'';me2.at=new Date().toISOString();
-  if(role==='drv'){if(!(cfgs[sid]&&cfgs[sid].gst!==undefined))me2.gst=!!cfg.gst;await db.doc('invme/'+sid).set(me2);mes[sid]=me2;return}
+  if(role==='drv'){if(!(cfgs[sid]&&cfgs[sid].gst!==undefined))me2.gst=!!cfg.gst;const was=mes[sid]||{};const had=BANKK.some(k=>String(was[k]||'').trim());const chg=bankChanged(me2,was);
+    if(chg)me2.bankAt=db.serverTime?db.serverTime():new Date().toISOString();else if(was.bankAt)me2.bankAt=was.bankAt;
+    await db.doc('invme/'+sid).set(me2);mes[sid]={...me2,bankAt:chg?new Date().toISOString():was.bankAt};
+    if(chg&&had){const p=P()||{};try{await db.doc('feedback/bank_'+sid+'_'+Date.now()).set({staff:sid,name:nameOf(p)||'',topic:'bank',text:'Bank details were changed in the app. New account name: '+(me2.acct||'')+', BSB '+(me2.bsb||'')+', account ending '+String(me2.acctNo||'').slice(-3)+'. Check with the driver before the next pay.',followUp:true,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()})}catch(e){console.warn(e)}}
+    return}
   const rc={};for(const k of RATEK)rc[k]=cfg[k];await db.doc('invcfg/'+sid).set(rc);cfgs[sid]=rc;await db.doc('invme/'+sid).set(me2);mes[sid]=me2}
 const OFFICE_EMAIL='pds2004@hotmail.com.au',OFFICE_NAME='Kim';
 async function writeLog(inv){const id=logId(sid,from);const prev=logs[id];const by=(window.__webMe&&window.__webMe.email)||'';
@@ -8488,8 +8529,9 @@ function tlOf(x){const o={ok:[],un:[],no:[],sus:[]};if(!x||!x.rows)return o;
   return o}
 function tlLine(x){const o=tlOf(x),n=o.ok.length+o.un.length+o.no.length+o.sus.length;if(!n)return '';
   return `<small class="tlk">2 loads: ${[o.ok.length?`<span class="ok">✓ ${o.ok.length} confirmed</span>`:'',o.un.length?`<span class="un">${o.un.length} not checked</span>`:'',o.no.length?`<span class="no">✗ ${o.no.length} checked as 1 load</span>`:'',o.sus.length?`<span class="no">⚠ ${o.sus.length} changed after the check</span>`:''].filter(Boolean).join(' · ')}</small>`}
+function bankWarn(id){const m=mes[id]||{};if(!m.bankAt)return '';const d=String(m.bankAt).slice(0,10);if(d<add(TODAY,-60))return '';return 'bank details were changed on '+nice(d)+': check with the driver before paying'}
 function checkInv(x){
-  if(x&&x.v===2&&x.rows&&x.T){const out=[],oc=officeRates(x.sid),xc=x.cfg||{},ic=cfgs[x.sid]||{};
+  if(x&&x.v===2&&x.rows&&x.T){const out=[],oc=officeRates(x.sid),xc=x.cfg||{},ic=cfgs[x.sid]||{};{const b=bankWarn(x.sid);if(b)out.push(b)}
     if(['r1','r2','rx'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001))out.push('parcel rates are different from the set rates');
     if(ic.gst!==undefined&&!!ic.gst!==!!xc.gst)out.push(xc.gst?'charged GST but is set as not registered':'no GST but is set as registered');
     if(ic.hourly&&+ic.rh>0&&x.rows.some(r=>r.t==='h'&&Math.abs(num(r.rh)-num(ic.rh))>0.001))out.push('hourly rate is different from '+money(ic.rh));
@@ -8507,7 +8549,7 @@ function checkInv(x){
     if(false){const L=tlOf(x);if(L.no.length)out.push('2 loads on '+L.no.join(', ')+' but the morning check said 1 load');if(L.sus.length)out.push('driver changed back to 2 loads after the check on '+L.sus.join(', '))}
     return out}
 
-  const out=[];if(!x||!x.rows||!x.T)return out;
+  const out=[];if(!x||!x.rows||!x.T)return out;{const b=bankWarn(x.sid);if(b)out.push(b)}
   const oc=mergeCfg(x.sid),xc=x.cfg||{};
   if(['r1','r2','rx','rh'].some(k=>Math.abs(num(xc[k])-num(oc[k]))>0.0001)||!!xc.gst!==!!oc.gst||!!xc.hourly!==!!oc.hourly)out.push('rates are different from the rates set for this driver');
   const t={l1:0,l2:0,xp:0,hr:0};for(const r of x.rows)for(const k in t)t[k]+=num(r[k]);
@@ -8526,7 +8568,7 @@ function checkInv(x){
 let ckStep='stmt',ckCur=null,ckAll=false;
 const PAYN={p:'Parcel rate',d:'Day rate',h:'Hourly',b:'Parcels and hours'};
 function payOf(id,v){return (v&&v.pay)||(v&&v.cfg&&v.cfg.pay)||loadAns(id).pay||'p'}
-function slotsOf(id){const n=freqOf(id),out=[];for(let k=0;k<28/n;k++){const a=add(lper,k*n);out.push([a,add(a,n-3)])}return out}
+function slotsOf(id){const n=freqOf(id),out=[];for(let k=0;k<28/n;k++){const a=add(lper,k*n);out.push([a,add(a,n-2)])}return out}
 function stDays(id,a,b){const L=[];for(let d=a;d&&d<=b;d=add(d,1)){const x=act[d]&&act[d].rows&&act[d].rows[loginOf(id)];if(x)L.push({d,ob:+x.ob||0,sp:x.sp!=null?+x.sp:(x.hrs!=null?+x.hrs:null)})}return L}
 const ovl=(a,b,c,d)=>{const lo=a>c?a:c,hi=b<d?b:d;return hi>=lo};
 function ckData(){
@@ -8698,7 +8740,7 @@ const fromIso=s=>new Date(s+'T12:00:00'),add=(s,n)=>{const d=fromIso(s);d.setDat
 const dOf=v=>!v?'':typeof v==='string'?v.slice(0,10):v.toDate?iso(v.toDate()):v.seconds?iso(new Date(v.seconds*1000)):'';
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const sh=s=>{const d=fromIso(s);return d.getDate()+' '+MON[d.getMonth()]},shd=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]},longd=s=>{const d=fromIso(s);return DOWL[d.getDay()]+' '+d.getDate()+' '+MONL[d.getMonth()]};
-const TODAY=()=>iso(new Date());
+const TODAY=()=>window.__qISO();
 const tc=s=>String(s||'').toLowerCase().replace(/\b\w/g,x=>x.toUpperCase());
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 const shortName=p=>{const w=nameOf(p).split(' ').filter(Boolean);return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
@@ -9270,7 +9312,8 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 'use strict';
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
-const VERSION='202610323700';
+/* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
+const VERSION='202611010001';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -9616,13 +9659,14 @@ async function checkVersion(){
   if(Date.now()-vLast<3*60e3)return;vLast=Date.now();
   try{const h=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});const tag=h.ok?(h.headers.get('etag')||h.headers.get('last-modified')||''):'';const first=vTag===null;if(tag&&vTag===tag)return;vTag=tag||null;if(first&&tag&&navigator.serviceWorker&&navigator.serviceWorker.controller)return}catch(e){}
   try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);
-    if(m&&m[1]!==VERSION&&m[1]>VERSION){const k='c1161_v_'+m[1];try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+m[1]+location.hash)}}catch(e){}
+    if(m&&+m[1]>+VERSION)goNew(m[1])}catch(e){}
 }
 setTimeout(checkVersion,1500);
 /* The phone's saved copy opens first; if a newer version arrives in the background, refresh once */
 const vBorn=Date.now();
-function goNew(v){const k='c1161_v_'+v;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v+location.hash)}
-if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type!=='c1161-update'||!d.v||!(d.v>VERSION))return;
+/* try up to twice per new version: the first reload can still land on the old saved copy */
+function goNew(v){const k='c1161_v_'+v;try{const n=+(sessionStorage.getItem(k)||0);if(n>=2)return;sessionStorage.setItem(k,String(n+1))}catch(e){}location.replace(location.pathname+'?v='+v+location.hash)}
+if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};if(d.type!=='c1161-update'||!d.v||!(+d.v>+VERSION))return;
   const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
   if(Date.now()-vBorn<15000&&!typing){goNew(d.v);return}
   if(document.getElementById('upd-pop'))return;const b=document.createElement('button');b.id='upd-pop';b.type='button';b.textContent='New version ready. Tap to refresh.';

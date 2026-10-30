@@ -23,38 +23,74 @@ service cloud.firestore {
     function isMember() {
       return isAdmin() || hasAccess();
     }
-    // Only admins can see these. Everything else can be read by anyone on the team list.
-    function adminOnly(col) {
-      return col in ['staff', 'weeks', 'precards', 'lockers', 'leave', 'leavecfg',
-        'dircfg', 'ntdrafts', 'uniorders', 'enquiries', 'enqimg', 'enqcfg', 'enqpending',
-        'enqlog', 'compliance', 'vchecks', 'timesheets', 'settings', 'access', 'meta', 'clock', 'briefsigs', 'feedback', 'reports', 'reportimg', 'invcfg', 'invlog', 'invme', 'leavereq', 'tlcheck', 'followup', 'activity'];
-    }
-
     function myStaff() {
       return get(accessPath()).data.staff;
     }
-    // Clock in and out: drivers add their own times only. Tapped times must be Google's server time.
+
+    // Queensland dates (the app runs on Queensland time only, UTC+10, no daylight saving)
+    function qldToday() {
+      return (request.time + duration.value(10, 'h')).date();
+    }
+    function dayOf(d) {
+      return d is string && d.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        ? timestamp.date(int(d.split('-')[0]), int(d.split('-')[1]), int(d.split('-')[2]))
+        : timestamp.date(1970, 1, 1);
+    }
+    function isToday(d) {
+      return dayOf(d) == qldToday();
+    }
+    // today or one of the 5 days before (catching up a shift that was never finished)
+    function isRecent(d) {
+      return dayOf(d) <= qldToday() && dayOf(d) >= qldToday() - duration.value(5, 'd');
+    }
+    function hm(v) {
+      return v is string && v.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$');
+    }
+
+    // Collections every driver may read. Everything not listed here is admin only.
+    function memberReadable(col) {
+      return col in ['runs', 'cover', 'notices', 'updates', 'briefs', 'briefpages'];
+    }
+
+    // Clock in and out: drivers add their own times only, for today (or catch up the last few days).
+    // Tapped times are Google's server time. The 2 loads answer can't be changed once a supervisor has checked it.
     match /clock/{id} {
       allow read: if isAdmin() || (hasAccess() && (resource == null || resource.data.staff == myStaff()));
       allow create: if isAdmin() || (hasAccess()
         && request.resource.data.staff == myStaff()
         && id == request.resource.data.date + '_' + myStaff()
+        && isToday(request.resource.data.date)
         && request.resource.data.keys().hasOnly(['staff', 'name', 'date', 'start', 'startAt', 'startLate', 'startEdited', 'finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
+        && !('finish' in request.resource.data)
+        && hm(request.resource.data.start)
+        && request.resource.data.updatedAt == request.time
         && (request.resource.data.startLate == true || request.resource.data.startAt == request.time));
       allow update: if isAdmin() || (hasAccess()
         && resource.data.staff == myStaff()
         && request.resource.data.staff == myStaff()
+        && request.resource.data.date == resource.data.date
+        && request.resource.data.updatedAt == request.time
+        && (!('twoLoads' in request.resource.data.diff(resource.data).affectedKeys())
+            || !exists(/databases/$(database)/documents/tlcheck/$(id)))
         && ((!('finish' in resource.data)
-          && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(['start', 'startEdited', 'updatedAt'])
-               && request.resource.data.startEdited == true)
-            || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
-               && (request.resource.data.finishLate == true || request.resource.data.finishAt == request.time))))
-        // tapped Finish by mistake: take the finish off again and carry on the shift
+          && (
+            // change today's start time
+            (isToday(resource.data.date)
+               && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['start', 'startEdited', 'updatedAt'])
+               && request.resource.data.startEdited == true && hm(request.resource.data.start))
+            // finish today, or finish a day in the last few days that was left open
+            || (isRecent(resource.data.date)
+               && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt'])
+               && hm(request.resource.data.finish)
+               && (request.resource.data.finishLate == true || (isToday(resource.data.date) && request.resource.data.finishAt == request.time)))))
+        // tapped Finish by mistake: take the finish off again, today only
         || (('finish' in resource.data) && !('finish' in request.resource.data)
+          && isToday(resource.data.date)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['finish', 'finishAt', 'finishLate', 'brk', 'held', 'heldCount', 'extra', 'twoLoads', 'updatedAt']))));
-      // tapped Start by mistake: drivers can remove their own entry while the shift is still open
-      allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff() && !('finish' in resource.data));
+      // tapped Start by mistake: drivers can remove today's entry while the shift is still open
+      allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff() && !('finish' in resource.data) && isToday(resource.data.date));
     }
+
     // Team brief sign off: each person signs once for themselves; only admins change or remove
     match /briefsigs/{id} {
       allow read: if isAdmin() || (hasAccess() && (resource == null || resource.data.staff == myStaff()));
@@ -63,9 +99,11 @@ service cloud.firestore {
         && id == request.resource.data.brief + '_' + myStaff()
         && request.resource.data.keys().hasOnly(['brief', 'staff', 'name', 'agreed', 'sig', 'signedAt'])
         && request.resource.data.signedAt == request.time
-        && request.resource.data.sig is string && request.resource.data.sig.size() < 300000);
+        && request.resource.data.sig is string && request.resource.data.sig.size() < 300000
+        && request.resource.data.sig.matches('^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$'));
       allow update, delete: if isAdmin();
     }
+
     // Feedback: anyone on the team can send a message for themselves; only admins can read, change or delete
     match /feedback/{id} {
       allow read, update, delete: if isAdmin();
@@ -76,6 +114,7 @@ service cloud.firestore {
         && request.resource.data.at == request.time
         && request.resource.data.text is string && request.resource.data.text.size() <= 4000);
     }
+
     // Incident, vehicle accident and safety hazard reports: anyone on the team can send their own; only admins can read, change or delete
     match /reports/{id} {
       allow read, update, delete: if isAdmin();
@@ -94,6 +133,7 @@ service cloud.firestore {
         && request.resource.data.at == request.time
         && request.resource.data.img is string && request.resource.data.img.size() < 900000);
     }
+
     // Driver invoices. Each driver can read only their own records; the office sets rates; drivers enter their own ABN and bank details
     match /timesheets/{id} {
       allow read: if isAdmin() || (hasAccess() && id.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}_' + myStaff()));
@@ -103,23 +143,34 @@ service cloud.firestore {
       allow read: if isAdmin() || (hasAccess() && id == myStaff());
       allow write: if isAdmin();
     }
+    // A driver's own invoice details. A change to bank details must carry Google's time (bankAt),
+    // which the office sees on the invoice check, and the app also sends the office a message.
     match /invme/{id} {
       allow read: if isAdmin() || (hasAccess() && id == myStaff());
       allow write: if isAdmin() || (hasAccess() && id == myStaff()
-        && request.resource.data.keys().hasOnly(['abn', 'address', 'phone', 'email', 'acct', 'bsb', 'acctNo', 'gst', 'at']));
+        && request.resource.data.keys().hasOnly(['abn', 'address', 'phone', 'email', 'acct', 'bsb', 'acctNo', 'gst', 'at', 'bankAt'])
+        && (resource == null
+          || (request.resource.data.get('acct', '') == resource.data.get('acct', '')
+              && request.resource.data.get('bsb', '') == resource.data.get('bsb', '')
+              && request.resource.data.get('acctNo', '') == resource.data.get('acctNo', '')
+              && request.resource.data.get('bankAt', null) == resource.data.get('bankAt', null))
+          || request.resource.data.bankAt == request.time));
     }
+    // Sent invoices: a driver sends each pay period once. After that only the office changes it
+    // (to fix something, the office deletes it and the driver sends it again).
     match /invlog/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.sid == myStaff());
       allow create: if isAdmin() || (hasAccess()
         && request.resource.data.sid == myStaff()
         && id == myStaff() + '_' + request.resource.data.from
-        && request.resource.data.status == 'submitted');
-      allow update: if isAdmin() || (hasAccess()
-        && resource.data.sid == myStaff() && resource.data.status == 'submitted'
-        && request.resource.data.sid == myStaff()
-        && request.resource.data.status == 'submitted');
-      allow delete: if isAdmin();
+        && request.resource.data.status == 'submitted'
+        && !('ext' in request.resource.data)
+        && request.resource.data.get('submittedBy', '') != 'office'
+        && request.resource.data.get('checkedAt', null) == null
+        && request.resource.data.get('paidAt', null) == null);
+      allow update, delete: if isAdmin();
     }
+
     // Uniform orders: a driver sends their own order into the app; only admins see everyone's, change or delete
     match /uniorders/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
@@ -130,6 +181,7 @@ service cloud.firestore {
         && request.resource.data.items is list && request.resource.data.items.size() <= 20);
       allow update, delete: if isAdmin();
     }
+
     // Leave requests: drivers ask for their own time off and can cancel it while it is waiting; only admins approve or decline
     match /leavereq/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
@@ -137,10 +189,12 @@ service cloud.firestore {
         && request.resource.data.staff == myStaff()
         && request.resource.data.keys().hasOnly(['staff', 'name', 'from', 'to', 'days', 'note', 'cover', 'long', 'status', 'at'])
         && request.resource.data.status == 'pending'
-        && request.resource.data.at == request.time);
+        && request.resource.data.at == request.time
+        && (!('note' in request.resource.data) || request.resource.data.note.size() <= 2000));
       allow update: if isAdmin();
       allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff() && resource.data.status == 'pending');
     }
+
     // The team list: admins see everyone; a driver can read only their own record (for how often they are paid)
     match /staff/{id} {
       allow read: if isAdmin() || (hasAccess() && id == myStaff());
@@ -151,8 +205,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Each driver's own results and survey, made by the app when an admin sends results to drivers
+    match /myres/{id} {
+      allow read: if isAdmin() || (hasAccess() && id == myStaff());
+      allow write: if isAdmin();
+    }
+
+    // What admins send to drivers (directory, run sheets, guide, precards...). Every driver's results and
+    // survey stay admin only; drivers get their own copy in myres instead.
+    match /shared/{id} {
+      allow read: if isAdmin() || (isMember() && !id.matches('^(results|survey)~.*'));
+      allow write: if isAdmin();
+    }
+
+    // Everything else: drivers can read only the collections named in memberReadable, and only admins write
     match /{col}/{docId} {
-      allow read: if isAdmin() || (isMember() && !adminOnly(col));
+      allow read: if isAdmin() || (isMember() && memberReadable(col));
       allow write: if isAdmin();
     }
   }

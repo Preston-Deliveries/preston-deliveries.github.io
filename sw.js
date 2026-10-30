@@ -1,6 +1,7 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
 const CACHE = 'pds-app-v1';
+/* sw 3: a refresh for a new version always fetches the newest copy */
 /* sw 2: saved copy first */
 const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
@@ -48,13 +49,14 @@ self.addEventListener('fetch', e => {
         if (!(a && b && a === b)) {
           const [ot, nt] = await Promise.all([saved.clone().text(), r.clone().text()]);
           const ov = (ot.match(/const VERSION='(\d+)'/) || [])[1] || '', nv = (nt.match(/const VERSION='(\d+)'/) || [])[1] || '';
-          if (nv && nv > ov) for (const cl of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) cl.postMessage({ type: 'c1161-update', v: nv });
+          if (nv && +nv > +ov) for (const cl of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) cl.postMessage({ type: 'c1161-update', v: nv });
         }
       }
       return r;
     })();
     e.respondWith((async () => {
       const saved = await (await caches.open(CACHE)).match('./');
+      if (url.searchParams.has('v')) return fresh.catch(() => saved || Response.error());
       if (saved) { e.waitUntil(fresh.catch(() => {})); return saved }
       return fresh;
     })());
