@@ -1374,8 +1374,8 @@ function renderHome(){
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1></section><div class="sh-wait">Opening your tools</div>`;return}
   if(role==='drv'){
-    box.innerHTML=`<section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section><div class="dh-cards wx-wrap"><div id="wx_box"></div></div><div id="dh_cards" class="dh-cards"><div class="dh-card dh-wait">Getting your week ready…</div></div>`;
-    if(window.CLOCK)window.CLOCK.mount();try{WX.render($('wx_box'))}catch(e){}
+    box.innerHTML=`<section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section><div class="dh-cards"><section class="dh-card ah-find"><h2>Find a street</h2><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street name" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Find a street"><div id="ah_fres" aria-live="polite"></div></section></div><div class="dh-cards wx-wrap"><div id="wx_box"></div></div><div id="dh_cards" class="dh-cards"><div class="dh-card dh-wait">Getting your week ready…</div></div>`;
+    if(window.CLOCK)window.CLOCK.mount();findRender();try{WX.render($('wx_box'))}catch(e){}
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
