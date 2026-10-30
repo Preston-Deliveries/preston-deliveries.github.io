@@ -9353,7 +9353,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010004';
+const VERSION='202611010005';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -9783,10 +9783,9 @@ async function freshCheck(){try{
   let changed=was&&v(was)!==v(now);
   const sid=window.__webMe&&window.__webMe.staff;
   if(ROLE!=='admin'&&sid){const a=(window.__MYRES||{}).updatedAt||'';const b=await fs.doc('myres/'+sid).get({source:'server'});const n=b.exists?String(DEC(b.data()).updatedAt||''):'';if(n&&n!==String(a))changed=true}
-  if(!changed||document.getElementById('upd-pop'))return;
-  const btn=document.createElement('button');btn.id='upd-pop';btn.type='button';btn.textContent='New info from the office. Tap to see it.';
-  btn.style.cssText='position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:99999;background:#0F2A44;color:#fff;border:0;border-radius:999px;padding:14px 22px;font:600 16px system-ui;box-shadow:0 6px 20px rgba(0,0,0,.25)';
-  btn.onclick=()=>location.reload();document.body.appendChild(btn)}catch(e){}}
+  if(!changed)return;
+  /* no pop up: quietly load the newer info the next time the app is brought back to the screen */
+  if(!window.__freshPending){window.__freshPending=1;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')location.reload()})}}catch(e){}}
 /* the role above may come from this computer's saved copy; check it with the server and reopen if it changed */
 async function recheckRole(){if(OWNERS.includes(EMAIL))return;try{const s=await fs.doc('access/'+EMAIL).get({source:'server'});const r=s.exists?(s.data().role==='admin'?'admin':'driver'):null;
   if(r&&r!==ROLE){let n=0;try{n=+sessionStorage.getItem('rr1161')||0}catch(e){}if(n<2){try{sessionStorage.setItem('rr1161',String(n+1))}catch(e){}location.reload()}}
