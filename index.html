@@ -26,7 +26,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <style id="fix-oct31">:root:root:root #sh-home .sh-hero .ck-big,:root:root:root .ck-big{min-height:60px!important;font-size:1.2rem!important}:root:root:root #sh-home .sh-hero .ck-link,:root:root:root .ck-link{font-size:1rem!important;min-height:48px!important;padding:10px 4px!important;display:inline-flex!important;align-items:center}.ck-tz{font-size:.9rem;opacity:.85;margin:6px 0 0}.ck-y{margin-top:12px}</style>
-</head>
+<style id="seg-hidden-fix">:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs,.seg,.segs,.modes,.lvseg,.pseg2,.rtabs,.tstabs)[hidden]{display:none!important}</style></head>
 <body>
 <div id="web-gate" data-web><div class="wg-card"><div class="wg-top"><small>Preston Delivery Service</small><b>Contract 1161</b></div><div class="wg-body"><div class="wg-spin" aria-hidden="true"></div><p class="wg-load">Opening Contract 1161…</p></div></div></div>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://www.gstatic.com" crossorigin>
@@ -1664,7 +1664,7 @@ function renderTop(){
   document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.mode)));
   document.querySelectorAll('#views button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.view)));
   document.querySelectorAll('#pcs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.pc)));
-  document.getElementById('modes').hidden=!canWrite||S.view!=='runs';
+  document.getElementById('modes').hidden=!canWrite||(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})()||window.__webMe&&window.__webMe.role!=='admin'||S.view!=='runs';
   document.getElementById('drivers').hidden=S.view!=='runs';
   document.getElementById('drivers').innerHTML=ids().map(id=>{
     const r=S.runs[id], tot=r.streets.length, p=placedOf(r).length, pct=tot?Math.round(p/tot*100):0;
@@ -9353,7 +9353,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010005';
+const VERSION='202611010006';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
