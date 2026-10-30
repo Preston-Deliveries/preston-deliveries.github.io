@@ -99,8 +99,21 @@ service cloud.firestore {
         && id == request.resource.data.brief + '_' + myStaff()
         && request.resource.data.keys().hasOnly(['brief', 'staff', 'name', 'agreed', 'sig', 'signedAt'])
         && request.resource.data.signedAt == request.time
-        && request.resource.data.sig is string && request.resource.data.sig.size() < 300000
-        && request.resource.data.sig.matches('^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$'));
+        && (!('sig' in request.resource.data) || validSig(request.resource.data.sig)));
+      allow update, delete: if isAdmin();
+    }
+    function validSig(v) {
+      return v is string && v.size() < 300000 && v.matches('^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$');
+    }
+    // The signature pictures, kept apart so the sign off list stays small. Loaded only when a brief is opened or printed.
+    match /briefsigimg/{id} {
+      allow read: if isAdmin() || (hasAccess() && (resource == null || resource.data.staff == myStaff()));
+      allow create: if isAdmin() || (hasAccess()
+        && request.resource.data.staff == myStaff()
+        && id == request.resource.data.brief + '_' + myStaff()
+        && request.resource.data.keys().hasOnly(['brief', 'staff', 'sig', 'at'])
+        && request.resource.data.at == request.time
+        && validSig(request.resource.data.sig));
       allow update, delete: if isAdmin();
     }
 
@@ -156,19 +169,26 @@ service cloud.firestore {
               && request.resource.data.get('bankAt', null) == resource.data.get('bankAt', null))
           || request.resource.data.bankAt == request.time));
     }
-    // Sent invoices: a driver sends each pay period once. After that only the office changes it
-    // (to fix something, the office deletes it and the driver sends it again).
-    match /invlog/{id} {
-      allow read: if isAdmin() || (hasAccess() && resource.data.sid == myStaff());
-      allow create: if isAdmin() || (hasAccess()
-        && request.resource.data.sid == myStaff()
-        && id == myStaff() + '_' + request.resource.data.from
+    // Sent invoices: a driver can send and resend their own invoice until the office has checked it.
+    // Once checked or paid, only the office can change it. A driver can't mark it as made by the office or as checked,
+    // and the office check works the total out again at the set rates, so a changed amount is flagged.
+    function driverInvoice() {
+      return request.resource.data.sid == myStaff()
         && request.resource.data.status == 'submitted'
         && !('ext' in request.resource.data)
         && request.resource.data.get('submittedBy', '') != 'office'
         && request.resource.data.get('checkedAt', null) == null
-        && request.resource.data.get('paidAt', null) == null);
-      allow update, delete: if isAdmin();
+        && request.resource.data.get('paidAt', null) == null
+        && request.resource.data.total == request.resource.data.T.total;
+    }
+    match /invlog/{id} {
+      allow read: if isAdmin() || (hasAccess() && resource.data.sid == myStaff());
+      allow create: if isAdmin() || (hasAccess() && driverInvoice()
+        && id == myStaff() + '_' + request.resource.data.from);
+      allow update: if isAdmin() || (hasAccess() && driverInvoice()
+        && resource.data.sid == myStaff() && resource.data.status == 'submitted'
+        && request.resource.data.from == resource.data.from);
+      allow delete: if isAdmin();
     }
 
     // Uniform orders: a driver sends their own order into the app; only admins see everyone's, change or delete
