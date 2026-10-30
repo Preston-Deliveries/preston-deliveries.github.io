@@ -1792,10 +1792,77 @@ function sheetText(r){
       for(const p of s.stops||[]) L.push(`    ${(TYPES[p.type]||TYPES.note).label}${p.num?' No. '+p.num:''}: ${p.detail||''}`)}});
   return L.join('\n');
 }
+/* Printed run sheet: compact, two columns per page, shrinks text step by step until it fits on 2 pages */
 function printDoc(r){
-  return `<!doctype html><html><head><meta charset="utf-8"><title>Run sheet ${esc(r.driver)} ${esc(r.login)}</title>
-
-<style>:root{--surface:#fff;--sunk:#F4F6F5;--ink:#111;--muted:#555;--line:#C9D1CD;--hv:#FFE48A;--hv-ink:#3F3200;--danger:#B3261E;--danger-soft:#FBE3E1;--t-blue:#DCE8FB;--t-blue-ink:#1A4A8F;--t-purple:#ECE0FA;--t-purple-ink:#5B2A92;--t-red:#FBE0DD;--t-red-ink:#9B2218;--t-green:#DDF2E2;--t-green-ink:#1E6B34;--t-teal:#D8F0EE;--t-teal-ink:#0F5E57;--t-amber:#FBEBCF;--t-amber-ink:#7A4A00;--t-grey:#E8ECEA;--t-grey-ink:#3E4A46;--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Barlow",Arial,sans-serif}*{box-sizing:border-box}body{margin:0;padding:16px;font-family:var(--body);font-size:14px;color:#111;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4;margin:12mm}@media print{body{padding:0}.sheet{border:0!important;padding:0!important}}${SHEET_CSS}</style></head><body>${sheetHTML(r)}</body></html>`;
+  const o=r.overview||{}, placed=placedOf(r), cnt=stopsCount(r), vm=visitMap(r);
+  const before=[['How to sort',o.sort],['Before you leave',o.depot],['Good to know',o.notes]].filter(x=>x[1]&&x[1].trim());
+  let n=0;const blocks=[];
+  r.sections.forEach((x,i)=>{const list=inSec(r,x.id);if(!list.length)return;
+    blocks.push(`<div class="b sec"><span class="no">${i+1}</span><span class="nm">${esc(x.name)}</span><span class="ct">${list.length} street${list.length>1?'s':''}</span>${x.note?`<span class="sn">${esc(x.note)}</span>`:''}</div>`);
+    for(const s of list){n++;const info=[];
+      if(s.split)info.push(`<span class="tag split">Split</span> Only ${esc(s.split)}`);
+      if(s.note)info.push(esc(s.note));
+      for(const p of s.stops||[]){const t=TYPES[p.type]||TYPES.note;info.push(`<span class="tag ${t.tone}">${t.label}</span>${p.num?` <b>No. ${esc(p.num)}</b>`:''}${p.detail?` ${esc(p.detail)}`:''}`)}
+      blocks.push(`<div class="b st${s.hv?' hv':''}${s.off?' off':''}"><span class="n">${n}</span><span class="s">${s.off?'↳ ':''}${esc(s.name)}${s.off?` <i>off ${esc(s.off)}</i>`:''}${vm[s.id]?` <span class="tag visit">${vm[s.id]}</span>`:''}</span><span class="r">${esc(s.evens||'')}</span><span class="r">${esc(s.odds||'')}</span>${info.length?`<div class="i">${info.map(t=>`<div>${t}</div>`).join('')}</div>`:''}</div>`)}});
+  const chips=Object.entries(cnt).map(([k,v])=>{const t=TYPES[k]||TYPES.note;return `<span class="tag ${t.tone}">${v} × ${t.label}</span>`}).join(' ');
+  const meta=[['Driver no.',r.login],['Bay',r.bay],['Sections',r.sections.filter(x=>inSec(r,x.id).length).length],['Streets',placed.length],r.van&&['Van',r.van],r.start&&['Start',r.start]].filter(Boolean);
+  const head=`<div class="hd"><div class="t"><div class="ey">Run sheet · Postcode ${esc(r.postcode)}</div><h1>${esc(r.driver)}</h1></div><dl>${meta.map(m=>`<div><dt>${m[0]}</dt><dd>${esc(m[1])}</dd></div>`).join('')}</dl></div>
+    ${chips?`<div class="al"><b>On this run:</b> ${chips}</div>`:''}
+    ${before.length?`<div class="bf">${before.map(b=>`<div><h3>${b[0]}</h3><p>${esc(b[1])}</p></div>`).join('')}</div>`:''}
+    <div class="key"><span class="sw"></span> Yellow = high volume street · Deliver top to bottom, left column then right column · E = evens, O = odds</div>`;
+  const small=`<div class="hd2"><b>${esc(r.driver)}</b> · ${esc(r.login)} · Bay ${esc(r.bay)} · Postcode ${esc(r.postcode)} <span>continued</span></div>`;
+  const foot=`Preston Delivery Services · Contract 1161${r.updatedAt?` · Updated ${new Date(r.updatedAt).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})}`:''}`;
+  const css=`:root{--ink:#111;--muted:#555;--line:#C9D1CD;--sunk:#F2F4F3;--hv:#FFE48A;--t-blue:#DCE8FB;--t-blue-ink:#1A4A8F;--t-purple:#ECE0FA;--t-purple-ink:#5B2A92;--t-red:#FBE0DD;--t-red-ink:#9B2218;--t-green:#DDF2E2;--t-green-ink:#1E6B34;--t-teal:#D8F0EE;--t-teal-ink:#0F5E57;--t-amber:#FBEBCF;--t-amber-ink:#7A4A00;--t-grey:#E8ECEA;--t-grey-ink:#3E4A46;--display:"Barlow Condensed","Arial Narrow",Arial,sans-serif}
+*{box-sizing:border-box}html{font-size:13px}body{margin:0;background:#fff;color:var(--ink);font-family:Barlow,Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#pool{position:absolute;left:-9999px;width:351px}
+.pg{width:718px;height:1047px;background:#fff;display:flex;flex-direction:column;overflow:hidden;margin:0 0 20px}
+.cols{flex:1;min-height:0;display:flex;gap:16px;margin-top:8px}.col{flex:1;min-width:0;height:100%;overflow:hidden;border-top:2px solid var(--ink)}
+.ft{font-size:.75rem;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:4px;margin-top:6px}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:6px}
+.ey{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-size:2.2rem;line-height:1;margin:2px 0 0}
+dl{display:flex;gap:14px;margin:0}dl div{display:flex;flex-direction:column}dt{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}dd{margin:0;font-family:var(--display);font-size:1.4rem;font-weight:700;line-height:1.05}
+.hd2{font-size:.95rem;border-bottom:2px solid var(--ink);padding-bottom:4px}.hd2 span{float:right;color:var(--muted);font-size:.8rem}
+.al{margin-top:6px;font-size:.85rem;line-height:1.7}
+.bf{display:flex;gap:8px;margin-top:6px}.bf div{flex:1;background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.bf h3{margin:0 0 2px;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.bf p{margin:0;font-size:.85rem;white-space:pre-wrap;line-height:1.3}
+.key{margin-top:6px;font-size:.78rem;color:var(--muted)}.sw{display:inline-block;width:11px;height:11px;background:var(--hv);border:1px solid var(--line);vertical-align:-1px}
+.b.sec{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--ink);color:#fff;padding:3px 6px;margin-top:6px;border-radius:4px}
+.col>.b.sec:first-child{margin-top:4px}
+.sec .no{font-family:var(--display);font-weight:700;font-size:1.15rem;background:#fff;color:var(--ink);border-radius:3px;min-width:1.5rem;text-align:center;line-height:1.3}
+.sec .nm{font-family:var(--display);font-weight:700;font-size:1.15rem}.sec .ct{font-size:.78rem;opacity:.8;margin-left:auto}.sec .sn{flex-basis:100%;font-size:.78rem;opacity:.9}
+.b.st{display:grid;grid-template-columns:1.9rem minmax(0,1fr) auto auto;column-gap:6px;align-items:baseline;padding:2px 4px;border-bottom:1px solid var(--line);line-height:1.25}
+.st .n{color:var(--muted);font-weight:700;text-align:right;font-size:.85rem}.st .s{font-weight:700}.st .s i{font-weight:400;font-style:normal;color:var(--muted);font-size:.8rem}
+.st .r{font-size:.85rem;white-space:nowrap;text-align:right;min-width:3.2rem}
+.st .r:nth-of-type(3)::before{content:"E ";color:var(--muted);font-size:.7rem}.st .r:nth-of-type(4)::before{content:"O ";color:var(--muted);font-size:.7rem}
+.st .r:empty::before{content:""}
+.st.off .s{padding-left:.8rem}
+.st .i{grid-column:2/-1;font-size:.8rem;line-height:1.3;color:#222}
+.st.hv{background:var(--hv)}
+.tag{display:inline-block;font-size:.66rem;font-weight:700;padding:0 5px;border-radius:999px;text-transform:uppercase;white-space:nowrap;line-height:1.5}
+.tag.blue{background:var(--t-blue);color:var(--t-blue-ink)}.tag.purple{background:var(--t-purple);color:var(--t-purple-ink)}.tag.red{background:var(--t-red);color:var(--t-red-ink)}.tag.green{background:var(--t-green);color:var(--t-green-ink)}.tag.teal{background:var(--t-teal);color:var(--t-teal-ink)}.tag.amber{background:var(--t-amber);color:var(--t-amber-ink)}.tag.grey,.tag.visit{background:var(--t-grey);color:var(--t-grey-ink)}.tag.split{border:1px solid currentColor}
+.warn{color:#B3261E;font-weight:600;margin-top:8px}`;
+  const js=`(function(){
+var pool=document.getElementById('pool'),out=document.getElementById('out'),H=${JSON.stringify(head)},H2=${JSON.stringify(small)},F=${JSON.stringify(foot)};
+var items=[].slice.call(pool.children);
+function build(fs){
+  document.documentElement.style.fontSize=fs+'px';out.innerHTML='';
+  var pages=[],col=null,ci=2;
+  function newPage(){var p=document.createElement('div');p.className='pg';p.innerHTML=(pages.length?H2:H)+'<div class="cols"><div class="col"></div><div class="col"></div></div><div class="ft"><span>'+F+'</span><span class="pn"></span></div>';out.appendChild(p);pages.push(p);ci=0;col=p.querySelectorAll('.col')[0]}
+  function next(){ci++;if(ci>1)newPage();else col=pages[pages.length-1].querySelectorAll('.col')[ci]}
+  newPage();
+  for(var k=0;k<items.length;k++){var it=items[k].cloneNode(true);col.appendChild(it);
+    var nxt=items[k+1];
+    if(it.classList.contains('sec')&&nxt){var c2=nxt.cloneNode(true);col.appendChild(c2);var over=col.scrollHeight>col.clientHeight+1;col.removeChild(c2);if(over){col.removeChild(it);next();col.appendChild(it)}}
+    else if(col.scrollHeight>col.clientHeight+1&&col.children.length>1){col.removeChild(it);next();col.appendChild(it)}
+    if(pages.length>8)break}
+  pages.forEach(function(p,i){p.querySelector('.pn').textContent='Page '+(i+1)+' of '+pages.length});
+  return pages.length}
+var sizes=[13,12.5,12,11.5,11,10.5,10,9.5,9,8.5,8];
+for(var i=0;i<sizes.length;i++){if(build(sizes[i])<=2)break}
+pool.remove();
+})();`;
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Run sheet ${esc(r.driver)} ${esc(r.login)}</title><style>${css}</style></head><body><div id="pool">${blocks.join('')}</div><div id="out"></div>${blocks.length?'':'<div class="warn">No streets have been put into sections yet.</div>'}<script>${js}<\/script></body></html>`;
 }
 
 /* ---------- render ---------- */
@@ -9353,7 +9420,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010008';
+const VERSION='202611010009';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
