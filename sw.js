@@ -1,9 +1,8 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
-const CACHE = 'pds-app-v1';
-/* sw 3: a refresh for a new version always fetches the newest copy */
-/* sw 2: saved copy first */
-const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+const CACHE = 'pds-app-v2';
+/* sw 4: the app page always comes live from the internet; no saved copy of the app is kept */
+const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js',
@@ -29,6 +28,8 @@ self.addEventListener('activate', e => {
   })());
 });
 
+const OFFLINE = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>No internet</title><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0F2A44;color:#fff;font:18px system-ui;text-align:center;padding:24px;box-sizing:border-box}h1{font-size:28px;margin:0 0 12px}p{margin:0 0 24px;opacity:.85}button{background:#F27A1A;color:#fff;border:0;border-radius:12px;padding:16px 28px;font:600 18px system-ui}</style></head><body><div><h1>No internet</h1><p>The app needs internet to open. Check your signal or WiFi, then try again.</p><button onclick="location.reload()">Try again</button></div></body></html>`;
+
 const timeout = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('slow')), ms); p.then(r => { clearTimeout(t); ok(r) }, x => { clearTimeout(t); no(x) }) });
 
 self.addEventListener('fetch', e => {
@@ -36,31 +37,9 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* The app page itself: open the saved copy straight away so it starts fast,
-     then fetch the newest copy in the background. If it is a newer version, tell the app so it can refresh. */
+  /* The app page itself: always the live version from the internet. With no signal, say so plainly. */
   if (req.mode === 'navigate' && url.origin === location.origin) {
-    const fresh = (async () => {
-      const c = await caches.open(CACHE);
-      const r = await fetch(new Request(url.origin + url.pathname, { cache: 'no-cache', credentials: 'same-origin' }));
-      if (!r.ok) return r;
-      const saved = await c.match('./');
-      await c.put('./', r.clone());
-      if (saved) {
-        const a = saved.headers.get('etag'), b = r.headers.get('etag');
-        if (!(a && b && a === b)) {
-          const [ot, nt] = await Promise.all([saved.clone().text(), r.clone().text()]);
-          const ov = (ot.match(/const VERSION='(\d+)'/) || [])[1] || '', nv = (nt.match(/const VERSION='(\d+)'/) || [])[1] || '';
-          if (nv && +nv > +ov) for (const cl of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) cl.postMessage({ type: 'c1161-update', v: nv });
-        }
-      }
-      return r;
-    })();
-    e.respondWith((async () => {
-      const saved = await (await caches.open(CACHE)).match('./');
-      if (url.searchParams.has('v')) return fresh.catch(() => saved || Response.error());
-      if (saved) { e.waitUntil(fresh.catch(() => {})); return saved }
-      return fresh;
-    })());
+    e.respondWith(fetch(req, { cache: 'no-store' }).catch(() => new Response(OFFLINE, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })));
     return;
   }
 
