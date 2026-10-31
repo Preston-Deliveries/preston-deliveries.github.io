@@ -8386,7 +8386,6 @@ function render(){
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
    <p class="hint">To change someone's times, tap Adjust and search their name.</p>`:`${searchHTML()}
-   <p class="hint tsor">Or open a day to add someone who forgot to clock in.</p>
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    ${W.secs}
    <p class="hint">Newest day first. Tap a day to open or close it. Every shift is logged when the driver taps Start shift and Finish shift in the app. Tapped means they tapped it at the time; Entered later means they typed it afterwards. Type over any time to change it, use + Add someone for a driver who forgot to clock in, or the bin to delete.</p>`}
@@ -10081,7 +10080,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010138';
+const VERSION='202611010139';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
