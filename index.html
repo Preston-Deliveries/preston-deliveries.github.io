@@ -4077,7 +4077,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['visa','Work status'],['visaType','Visa type or subclass'],['visaDue','Visa expiry'],['workRights','Work rights'],['vevoAt','VEVO checked on','date you checked on VEVO'],['dob','Date of birth'],['address','Home address'],['abn','ABN'],['gst','GST registered'],['payFreq','Paid every'],['appAccess','Access level'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['visa','Work status'],['visaType','Visa type or subclass'],['visaDue','Visa expiry'],['workRights','Work rights'],['vevoAt','VEVO checked on','date you checked on VEVO'],['dob','Date of birth'],['address','Home address'],['abn','ABN'],['gst','GST registered'],['bankName','Bank account name'],['bsb','BSB'],['acct','Account number'],['payFreq','Paid every'],['appAccess','Access level'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -4151,8 +4151,8 @@ const IND_ITEMS=['Signing in at the depot and where to park','Their bay, trolley
 const OBC={},OBI={},indTick={};let obView=false,newFull=false,onbAutoBusy=false;
 function onbPatch(d,p){const U=v=>String(v||'').toUpperCase(),P={};const put=(k,v)=>{if(v!=null&&v!=='')P[k]=v};
   put('first',U(d.first));put('last',U(d.last));put('mobile',d.mobile);put('dob',d.dob);put('address',d.address);put('abn',d.abn);put('gst',d.gst);put('van',U(d.van));put('rego',U(d.rego).replace(/\s+/g,''));
-  put('ecName',d.ecName);put('ecPhone',d.ecPhone);put('licDue',d.licDue);put('visa',d.work);put('visaType',d.visaType);put('visaDue',d.visaDue);put('workRights',d.workRights);
-  const extra=[d.vanType?'Van: '+d.vanType:'',d.shirt||d.pants?'Uniform: '+[d.shirt?'shirt '+d.shirt:'',d.pants?'pants '+d.pants:''].filter(Boolean).join(', '):'',d.bankName||d.bsb||d.acct?'Bank: '+[d.bankName,d.bsb?'BSB '+d.bsb:'',d.acct?'acc '+d.acct:''].filter(Boolean).join(' '):'',d.passport?'Passport: '+d.passport:''].filter(Boolean);
+  put('ecName',d.ecName);put('ecPhone',d.ecPhone);put('licDue',d.licDue);put('visa',d.work);put('visaType',d.visaType);put('visaDue',d.visaDue);put('workRights',d.workRights);put('bankName',d.bankName);put('bsb',String(d.bsb||'').replace(/\D/g,'').replace(/^(\d{3})(\d{3})$/,'$1 $2'));put('acct',String(d.acct||'').replace(/\s+/g,''));
+  const extra=[d.vanType?'Van: '+d.vanType:'',d.shirt||d.pants?'Uniform: '+[d.shirt?'shirt '+d.shirt:'',d.pants?'pants '+d.pants:''].filter(Boolean).join(', '):'',d.passport?'Passport: '+d.passport:''].filter(Boolean);
   if(extra.length&&!/From welcome steps/.test(p.notes||''))P.notes=[p.notes,'From welcome steps: '+extra.join(' · ')].filter(Boolean).join('\n');
   return P}
 /* when a new driver sends in their welcome steps, put their answers straight into their record */
@@ -4335,7 +4335,7 @@ function detailHTML(){
       ${!isNew&&p.onboard==='pending'?onbHTML(p)+apHTML(p):''}
       ${isNew&&!newFull?`<p class="dm-newh">Just add their <b>email</b>, and their <b>mobile</b> if you want to WhatsApp them the app link. They fill in everything else themselves through the welcome steps, and it goes straight into their record for you to check.</p>
       <div class="grid">${grp('New driver',['email','mobile'])}</div><input type="checkbox" id="dm_f_onbnew" checked hidden>
-      <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay',['payFreq'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
+      <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay and bank',['payFreq','bankName','bsb','acct'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
       ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':(p.onboard?onbHTML(p):'')+apHTML(p))+indHTML(p)}
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
@@ -8730,7 +8730,7 @@ async function init(r){
   const p={first:me.name||wm.name||'',login:String(wm.login||'').toUpperCase(),runs:[wm.run||''],email:wm.email||''};
   if(!p.login){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.login=String(d.login||'').toUpperCase();p.runs=d.runs||[];p.mobile=d.mobile||'';p.first=d.first;p.last=d.last}}catch(e){}}
   staff[sid]=p;
-  if(p.payFreq===undefined){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.payFreq=d.payFreq||''}}catch(e){}}
+  try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2)||{};if(p.payFreq===undefined)p.payFreq=d.payFreq||'';for(const k of['abn','address','gst','bankName','bsb','acct','mobile','email'])if(d[k]&&!p[k])p[k]=d[k];if(!p.first&&!p.last){p.first=d.first;p.last=d.last}}}catch(e){}
   [from,to]=periodF(0);
   try{const s2=await db.doc('invcfg/'+sid).get();if(s2.exists)cfgs[sid]=__D(s2)}catch(e){}
   try{const s2=await db.doc('invme/'+sid).get();if(s2.exists)mes[sid]=__D(s2)}catch(e){}
@@ -8740,7 +8740,7 @@ async function init(r){
 function lastCfg(id){const L=Object.values(logs).filter(x=>x.sid===id&&x.cfg&&x.cfg.pay).sort((a,b)=>String(b.at).localeCompare(String(a.at)));return L[0]?L[0].cfg:null}
 function lsGet(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-function mergeCfg(id){const p=staff[id]||{},ic=cfgs[id]||{},im=mes[id]||{};const c={...DEFC,phone:p.mobile||'',email:p.email||''};
+function mergeCfg(id){const p=staff[id]||{},ic=cfgs[id]||{},im=mes[id]||{};const c={...DEFC,phone:p.mobile||'',email:p.email||'',abn:p.abn||'',address:p.address||'',acct:p.bankName||'',bsb:p.bsb||'',acctNo:p.acct||''};if(p.gst==='Yes'||p.gst==='No')c.gst=p.gst==='Yes';
   for(const k of MEK){const v=im[k]!==undefined&&im[k]!==''?im[k]:ic[k];if(v!==undefined&&v!=='')c[k]=v}
   for(const k of RATEK)if(ic[k]!==undefined&&ic[k]!=='')c[k]=ic[k];
   if(ic.gst===undefined&&im.gst!==undefined)c.gst=im.gst;
@@ -8802,7 +8802,7 @@ function dayTotal(v){return v.t==='d'?num(v.rd):v.t==='h'?num(v.hr)*num(v.rh):nu
 function knownAns(id){const s=lsGet('im_ans_'+id),l=lastCfg(id);return !!((s&&s.pay)||(l&&l.pay))}
 function loadAns(id){const ic=cfgs[id]||{},im=mes[id]||{},a={gst:null,pay:null,rh:'',rd:''};
   for(const s of[lsGet('im_ans_'+id),lastCfg(id)]){if(!s)continue;if(a.gst===null&&s.gst!=null)a.gst=!!s.gst;if(!a.pay&&s.pay)a.pay=s.pay;if(a.rh===''&&s.rh!=null&&s.rh!==''&&+s.rh>0)a.rh=+s.rh;if(a.rd===''&&s.rd!=null&&s.rd!==''&&+s.rd>0)a.rd=+s.rd}
-  if(a.gst===null){if(im.gst!==undefined)a.gst=!!im.gst;else if(ic.gst!==undefined)a.gst=!!ic.gst}
+  if(a.gst===null){if(im.gst!==undefined)a.gst=!!im.gst;else if(ic.gst!==undefined)a.gst=!!ic.gst;else{const p=staff[id]||{};if(p.gst==='Yes'||p.gst==='No')a.gst=p.gst==='Yes'}}
   if(!a.pay&&ic.daily)a.pay='d';
   if(!a.pay&&ic.hourly!==undefined)a.pay=ic.hourly?'h':'p';
   if(a.rd===''&&+ic.rd>0)a.rd=+ic.rd;
@@ -8937,7 +8937,7 @@ document.addEventListener('click',e=>{const t=document.getElementById('im_toast'
 function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
   box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
-function pick(id){openFlags=null;sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':'gst';addOpen=false;
+function pick(id){openFlags=null;sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':ans.gst!==null?'pay':'gst';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
 function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
@@ -9972,7 +9972,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010070';
+const VERSION='202611010071';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
