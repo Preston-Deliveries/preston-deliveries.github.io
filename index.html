@@ -4647,7 +4647,7 @@ function render(){
   const l=list();
   const shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.precards;
   box.innerHTML=`<div class="pcx">
-   <div class="head"><h1>Precard list</h1><span class="cnt">${cnt('approved')} approved addresses</span>
+   <div class="head"><h1>Precard list</h1>
      <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-pc="add">+ Add an address</button>`:''}${isMgr()?`<button type="button" class="sh-btn" data-pc="pdf">Download PDF</button><button type="button" class="sh-btn" data-pc="xlsx">Download Excel</button>`:''}</div></div>
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-pc="share">Send latest to drivers</button></div>`:`<p class="lead">Card these addresses to the Post Office instead of attempting delivery. Tap an address for the reason.</p>`}
    ${isMgr()?`<div class="tabs" role="group" aria-label="List"><button type="button" data-pc="tab" data-v="approved" aria-pressed="${tab==='approved'}">Approved <small>${cnt('approved')}</small></button><button type="button" data-pc="tab" data-v="review" aria-pressed="${tab==='review'}">Under review <small>${cnt('review')}</small></button></div>`:''}
@@ -4795,7 +4795,7 @@ function render(){
   const l=list(),shared=window.APP&&APP.SNAP&&APP.SNAP.updated&&APP.SNAP.updated.lockers;
   const add='';
   box.innerHTML=`<div class="pcx">
-   <div class="head"><h1>Parcel lockers</h1><span class="cnt">${cnt('building')} building, ${cnt('auspost')} Australia Post</span>
+   <div class="head"><h1>Parcel lockers</h1>
      <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-lk="add">+ Add a locker</button>`:''}${isMgr()?`<button type="button" class="sh-btn" data-lk="pdf">Download PDF</button><button type="button" class="sh-btn" data-lk="xlsx">Download Excel</button>`:''}</div></div>
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lk="share">Send latest to drivers</button></div>`:`<p class="lead">${tab==='building'?'Lockers inside apartment buildings on our runs. Read the note before you go in.':'Public Australia Post lockers you can card parcels to.'}</p>`}
    <div class="tabs lk2" role="group" aria-label="Locker type">${Object.entries({building:'Building',auspost:'Australia Post'}).map(([k,v])=>`<button type="button" data-lk="tab" data-v="${k}" aria-pressed="${tab===k}">${v} <small>${cnt(k)}</small></button>`).join('')}</div>
@@ -10089,7 +10089,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010108';
+const VERSION='202611010109';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
