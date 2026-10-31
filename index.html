@@ -4156,8 +4156,8 @@ function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb">
   const imgs=OBI[id]||[];
   return `<section class="dm-onb"><h3>New driver welcome steps <span class="dm-onbst ${p.onboard==='done'?'ok':o&&o.status==='submitted'?'go':''}">${esc(st)}</span></h3>
    <div class="dm-onba">${p.mobile?`<a class="sh-btn wab" href="https://wa.me/${esc(waOf(p.mobile))}?text=${encodeURIComponent(msgTxt)}" target="_blank" rel="noopener">${WAI}Send the app link</a>`:''}<button type="button" class="sh-btn" data-dmp="1">See what they look like</button>${o?`<button type="button" class="sh-btn" data-dmx="onbview">${obView?'Hide their answers':'See their answers'}</button>`:''}${o&&o.status==='submitted'&&p.onboard!=='done'?`<button type="button" class="sh-btn" data-dmx="onbcopy">Copy their answers into this record</button><button type="button" class="sh-btn primary" data-dmx="onbdone">Mark checked and done</button>`:''}</div>
-   ${obView&&o?`<div class="dm-onbv"><div class="dm-onbt">${row('Name',[d.first,d.last].filter(Boolean).join(' '))}${row('Date of birth',niceD(d.dob))}${row('Mobile',d.mobile)}${row('Address',d.address)}${row('Emergency contact',[d.ecName,d.ecPhone].filter(Boolean).join(', '))}${row('ABN',d.abn)}${row('GST registered',d.gst)}${row('Bank',[d.bankName,d.bsb?'BSB '+d.bsb:'',d.acct?'Acc '+d.acct:''].filter(Boolean).join(' · '))}${row('Van',[d.vanType,d.van,d.rego].filter(Boolean).join(' · '))}${row('Uniform',[d.shirt?'Shirt '+d.shirt:'',d.pants?'Pants '+d.pants:''].filter(Boolean).join(', '))}${row('Work status',d.work)}${row('Visa',[d.visaType,d.visaDue?'expires '+niceD(d.visaDue):'',d.workRights].filter(Boolean).join(' · '))}${row('Passport',d.passport)}${row('Licence expiry',niceD(d.licDue))}${row('Police check date',niceD(d.polAt))}${row('Agreed to the rules',d.agree?'Yes':'')}</div>
-     <div class="dm-onbi">${imgs.length?imgs.map(x=>`<figure><img src="data:image/jpeg;base64,${x.img}" alt=""><figcaption>${esc(({lic1:'Licence front',lic2:'Licence back',ins:'Vehicle insurance',pl:'Public liability',pol:'Police check',visa:'Visa grant'})[x.key]||x.key)}</figcaption></figure>`).join(''):'<p class="hint">Loading photos…</p>'}${d.sig?`<figure><img src="${esc(d.sig)}" alt="Signature"><figcaption>Signature</figcaption></figure>`:''}</div></div>`:''}
+   ${obView&&o?`<div class="dm-onbv"><div class="dm-onbt">${row('Name',[d.first,d.last].filter(Boolean).join(' '))}${row('Date of birth',niceD(d.dob))}${row('Mobile',d.mobile)}${row('Address',d.address)}${row('Emergency contact',[d.ecName,d.ecPhone].filter(Boolean).join(', '))}${row('ABN',d.abn)}${row('GST registered',d.gst)}${row('Bank',[d.bankName,d.bsb?'BSB '+d.bsb:'',d.acct?'Acc '+d.acct:''].filter(Boolean).join(' · '))}${row('Van',[d.vanType,d.van,d.rego].filter(Boolean).join(' · '))}${row('Uniform',[d.shirt?'Shirt '+d.shirt:'',d.pants?'Pants '+d.pants:''].filter(Boolean).join(', '))}${row('Work status',d.work)}${row('Visa',[d.visaType,d.visaDue?'expires '+niceD(d.visaDue):'',d.workRights].filter(Boolean).join(' · '))}${row('Passport',d.passport)}${row('Licence expiry',niceD(d.licDue))}${row('Agreed to the rules',d.agree?'Yes':'')}</div>
+     <div class="dm-onbi">${imgs.length?imgs.map(x=>`<figure><img src="data:image/jpeg;base64,${x.img}" alt=""><figcaption>${esc(({lic1:'Licence front',lic2:'Licence back',visa:'Visa grant'})[x.key]||x.key)}</figcaption></figure>`).join(''):'<p class="hint">Loading photos…</p>'}${d.sig?`<figure><img src="${esc(d.sig)}" alt="Signature"><figcaption>Signature</figcaption></figure>`:''}</div></div>`:''}
    ${p.onboard!=='done'?`<details class="dm-onbm"><summary>Message to send them</summary><pre>${esc(msgTxt)}</pre><button type="button" class="sh-btn" data-dmx="onbcopymsg">Copy message</button></details>`:''}</section>`}
 function indHTML(p){const id=p.id;if(p.indAt)return `<section class="dm-ind"><h3>Site induction <span class="dm-onbst ok">✓ Done ${esc(niceD(p.indAt))}${p.indBy?' by '+esc(p.indBy):''}</span></h3><button type="button" class="sh-btn" data-dmx="indundo">Undo</button></section>`;
   const T=indTick[id]||(indTick[id]=new Set());return `<section class="dm-ind"><h3>Site induction <span class="dm-onbst">Not done</span></h3><p class="hint">Go through each one with them at the depot, tick it off, then sign off. Any admin can do this.</p>
@@ -4180,7 +4180,6 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
     const put=(k,v)=>{if(v!=null&&v!=='')P[k]=v};
     put('first',U(d.first));put('last',U(d.last));put('mobile',d.mobile);put('dob',d.dob);put('address',d.address);put('abn',d.abn);put('gst',d.gst);put('van',U(d.van));put('rego',U(d.rego).replace(/\s+/g,''));
     put('ecName',d.ecName);put('ecPhone',d.ecPhone);put('licDue',d.licDue);put('visa',d.work);put('visaType',d.visaType);put('visaDue',d.visaDue);put('workRights',d.workRights);
-    if(d.polAt&&!people[id].fit2work)P.fit2work='Pending';
     await saveExtra(id,P,'Their answers are now in this record. Check it over before you save.');return}});
 function render(){
   const box=$('root');if(!box)return;
@@ -9859,7 +9858,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010063';
+const VERSION='202611010064';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10340,7 +10339,7 @@ window.ONB={
 };
 const OB={sid:'',step:0,d:{},imgs:{},busy:false,msg:null,staff:null,preview:false};
 const OB_STEPS=['Welcome','Your details','Work rights','Documents','Read and sign','All set'];
-const OB_DOCS=[['lic1','Driver licence (front)',true],['lic2','Driver licence (back)',true],['ins','Vehicle insurance certificate',false],['pl','Public liability insurance',false],['pol','Police check (Fit2Work)',false],['visa','Visa grant notice',false]];
+const OB_DOCS=[['lic1','Driver licence (front)',true],['lic2','Driver licence (back)',true],['visa','Visa grant notice',false]];
 const obEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function onbCheck(){
   try{
@@ -10366,7 +10365,7 @@ function onbMissing(){const d=OB.d,m=[];const need=(k,t)=>{if(!String(d[k]||'').
   if(OB.step===3){if(!OB.imgs.lic1)m.push('licence front photo');if(!OB.imgs.lic2)m.push('licence back photo');need('licDue','licence expiry');if(d.work==='Visa holder'&&!OB.imgs.visa)m.push('visa grant notice')}
   if(OB.step===4){if(!d.agree)m.push('tick that you agree');if(!d.sig)m.push('your signature')}
   return m}
-function onbRender(){const w=document.getElementById('onb');if(!w)return;const s=OB.step,d=OB.d,miss=onbMissing();
+function onbRender(){const w=document.getElementById('onb');if(!w)return;const s=OB.step,d=OB.d,miss=onbMissing();const ob0=w.querySelector('.ob-body'),keepY=ob0&&w.dataset.step===String(s)?ob0.scrollTop:0;w.dataset.step=String(s);
   let body='';
   if(s===0)body=`<h1>Welcome to Preston Delivery Service</h1>
     <p>We deliver parcels for <b>Australia Post</b> on <b>Contract 1161</b>, across the Gold Coast postcodes 4214, 4215, 4217 and 4218.</p>
@@ -10386,7 +10385,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
   if(s===3)body=`<h1>Documents</h1><p class="ob-h">Take a clear photo of your driver licence, front and back${d.work==='Visa holder'?', and your visa grant notice':''}. Make sure nothing is cut off and the writing is readable.</p>
     ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}`;
   if(s===4)body=`<h1>Read and sign</h1><p class="ob-h">These are our main rules. You can read all of them any time in the <b>Driver Guide</b>.</p>
-    <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego, insurance or visa changes.</li></ul>
+    <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego or visa changes.</li></ul>
     <label class="ob-ck"><input type="checkbox" data-ob="agree" ${d.agree?'checked':''}> I have read these rules and the Driver Guide, and I agree to follow them.</label>
     <div class="ob-sig"><b>Sign here</b><canvas id="ob_sig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear">Clear signature</button></div>`;
   if(s===5)body=`<h1>All set, ${obEsc(String(d.first||'').split(' ')[0].toLowerCase().replace(/^\w/,c=>c.toUpperCase()))}!</h1>
@@ -10399,6 +10398,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     <div class="ob-body">${body}</div>
     <div class="ob-ft">${OB.msg?`<p class="ob-msg ${OB.msg.err?'err':''}">${obEsc(OB.msg.t)}</p>`:''}${miss.length&&s>0?`<p class="ob-need">Still needed: ${obEsc(miss.join(', '))}</p>`:''}
      <div class="ob-acts">${s>0?`<button type="button" class="sh-btn" data-obx="back">‹ Back</button>`:''}<button type="button" class="sh-btn primary" data-obx="next" ${OB.busy||miss.length?'disabled':''}>${OB.busy?'Saving…':s===0?'Let’s start':s===OB_STEPS.length-1?'Send to the office':'Next ›'}</button></div></div></div>`;
+  {const ob1=w.querySelector('.ob-body');if(ob1&&keepY)ob1.scrollTop=keepY}
   if(s===4)obSigInit()}
 function obSigInit(){const c=document.getElementById('ob_sig');if(!c)return;const g=c.getContext('2d');g.lineWidth=4;g.lineCap='round';g.strokeStyle='#111';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
   if(OB.d.sig){const im=new Image();im.onload=()=>g.drawImage(im,0,0,c.width,c.height);im.src=OB.d.sig}
