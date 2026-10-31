@@ -1429,12 +1429,12 @@ window.WX=(()=>{
  const join=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
  function tips(hrs,nowH){const out=[];
    const storm=hrs.find(x=>x.c>=95);
-   if(storm)out.push(['t-st',['⛈️ Storms around '+hm(storm.t)+(storm.where.length<4?' in '+join(storm.where):''),'Lightning: wait in the van.']]);
+   if(storm)out.push(['t-st',['⛈️ Storms around '+hm(storm.t),'Lightning: wait in the van.']]);
    const W=hrs.filter(wet);
    if(W.length){const first=W[0],peak=W.reduce((m,x)=>x.mm>m.mm?x:m,W[0]),l0=lv(first),lp=lv(peak),last=W[W.length-1];
      const where=[...new Set(W.flatMap(x=>x.wetIn))].sort();const P=[];
      const nowWet=nowH!=null&&+first.t.slice(11,13)<=nowH;
-     P.push((nowWet?(l0===3?'Heavy rain now':l0===2?'Steady rain now':'Raining now'):['','Light rain from','Steady rain from','Heavy rain from'][l0]+' '+hm(first.t))+(where.length<4?' in '+join(where):''));
+     P.push((nowWet?(l0===3?'Heavy rain now':l0===2?'Steady rain now':'Raining now'):['','Light rain from','Steady rain from','Heavy rain from'][l0]+' '+hm(first.t)));
      if(lp>l0)P.push((lp===3?'Heavy':'Heavier')+' around '+hm(peak.t));
      const lh=+last.t.slice(11,13);if(lh<END)P.push('Clearing by '+hm('2000-01-01T'+String(lh+1).padStart(2,'0')));
      P.push('Bag your parcels.');
@@ -1461,7 +1461,7 @@ window.WX=(()=>{
    const perPc=PCS.map(([pc],k)=>{const H=d[k].hourly;const ii=(isToday?idx.filter(i=>+H.time[i].slice(11,13)>=Math.max(START,nowH)):idx);if(!ii.length)return '';const p=Math.max(...ii.map(i=>H.precipitation_probability[i]||0)),c=Math.max(...ii.map(i=>H.weather_code[i]||0));return `<span class="wx-pc"><b>${pc}</b> ${IC(c)} 💧${p}%</span>`}).join('');
    const label=isToday?(nowH<START?'Today':'Rest of today'):'Tomorrow';
    el.innerHTML=`<section class="dh-card wx"><div class="wx-now">${working?`<span class="wx-ic">${IC(curC)}</span><span class="wx-c"><span class="wx-l">Now</span><span><b class="wx-t ${tc(cur)}">${cur}°</b> <span class="wx-x">${TX(curC)}</span></span></span>`:`<span class="wx-ic">${IC(dayC)}</span><span class="wx-c"><span class="wx-l">${label}</span><span><span class="wx-x">${TX(dayC)}</span></span></span>`}<span class="wx-c wx-d"><span class="wx-l">${isToday?'Today':'Tomorrow'} 6am to 5pm</span><span><em class="${tc(hi)}">${hi}°</em>/${lo}° · 💧${rain}%</span></span></div>
-     ${perPc?`<div class="wx-pcs">${perPc}</div>`:''}${T.map(([k,P])=>`<p class="wx-tip ${k}">${P.map(x=>`<span>${x}</span>`).join(' · ')}</p>`).join('')}</section>`}
+     ${T.map(([k,P])=>`<p class="wx-tip ${k}">${P.map(x=>`<span>${x}</span>`).join(' · ')}</p>`).join('')}</section>`}
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
@@ -9787,7 +9787,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010048';
+const VERSION='202611010049';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
