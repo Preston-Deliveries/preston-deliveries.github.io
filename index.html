@@ -6064,7 +6064,7 @@ function render(){
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the calendar from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lv="share">Send latest to drivers</button></div>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${busy?`<p class="msg" role="status">${esc(busy)}</p>`:''}
    ${armImport?`<div class="confirm"><p>Replace imported leave from <b>${esc(nice(armImport.range.from))}</b> to <b>${esc(nice(armImport.range.to))}</b> with <b>${armImport.blocks.length} bookings</b> from ${esc(armImport.file)}? Leave before or after those dates, and leave you added by hand, stays.</p><button type="button" class="sh-btn primary" data-lv="doimport">Replace</button><button type="button" class="sh-btn" data-lv="noimport">Cancel</button></div>`:''}
-   ${isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-lv="view" data-v="cal" aria-pressed="${view==='cal'}">Calendar</button><button type="button" data-lv="view" data-v="req" aria-pressed="${view==='req'}">Requests${pendN()?` <span class="n">${pendN()}</span>`:''}</button><button type="button" data-lv="view" data-v="list" aria-pressed="${view==='list'}">Upcoming leave</button><button type="button" data-lv="view" data-v="tot" aria-pressed="${view==='tot'}">Driver totals</button><button type="button" data-lv="view" data-v="set" aria-pressed="${view==='set'}">Limit and blackouts</button></div>`:''}
+   ${isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-lv="view" data-v="cal" aria-pressed="${view==='cal'}">Calendar</button><button type="button" data-lv="view" data-v="req" aria-pressed="${view==='req'}">Requests${pendN()?` <span class="n">${pendN()}</span>`:''}</button><button type="button" data-lv="view" data-v="list" aria-pressed="${view==='list'}">Upcoming</button><button type="button" data-lv="view" data-v="tot" aria-pressed="${view==='tot'}">Totals</button><button type="button" data-lv="view" data-v="set" aria-pressed="${view==='set'}">Limits</button></div>`:''}
    ${view==='req'&&isMgr()?mgrReqHTML():view==='tot'&&isMgr()?totHTML():view==='list'&&isMgr()?listHTML():view==='set'&&isMgr()?setHTML():calHTML()}
   </div>`;
 }
@@ -10084,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010127';
+const VERSION='202611010128';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11028,6 +11028,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .bar.onesrch>*{flex:1 1 100%!important;width:100%!important;max-width:none!important;min-width:0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .lvkey{display:flex!important;flex-wrap:nowrap!important;gap:6px!important;width:100%!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .lvkey>span{flex:1 1 auto!important;min-width:0!important;text-align:center!important;justify-content:center!important;white-space:nowrap!important;padding-left:6px!important;padding-right:6px!important;font-size:.9rem!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .tabs[role=group]{flex-wrap:wrap!important;overflow:visible!important;height:auto!important;row-gap:2px!important;column-gap:14px!important;padding-top:4px!important;padding-bottom:4px!important}
 </style>
 </body>
 </html>
