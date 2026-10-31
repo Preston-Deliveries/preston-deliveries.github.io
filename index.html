@@ -5327,8 +5327,10 @@ const ICON={
 /* per person memory on this phone: which notifications were seen, and when each first showed up */
 let me=null,db=null,data=null,loading=null,seenAtOpen=null;
 const KEY=k=>'me1161_'+((me&&(me.staff||me.email))||'x')+'_'+k;
-const get=k=>{try{return JSON.parse(localStorage.getItem(KEY(k)))}catch(e){return null}};
-const put=(k,v)=>{try{localStorage.setItem(KEY(k),JSON.stringify(v))}catch(e){}};
+/* who this phone belongs to can be known by email first and by staff record later, so read and write every name it has had */
+const KEYS=k=>{const out=new Set([KEY(k)]);try{const W=window.__webMe||(window.parent&&window.parent.__webMe)||{};[me&&me.staff,me&&me.email,W.staff,W.email,W.ownStaff].filter(Boolean).forEach(v=>out.add('me1161_'+v+'_'+k))}catch(e){}return [...out]};
+const get=k=>{let out=null;for(const key of KEYS(k)){let v=null;try{v=JSON.parse(localStorage.getItem(key))}catch(e){}if(v==null)continue;if(Array.isArray(v))out=[...new Set((out||[]).concat(v))];else if(out==null)out=v}return out};
+const put=(k,v)=>{for(const key of KEYS(k)){try{localStorage.setItem(key,JSON.stringify(v))}catch(e){}}};
 
 async function who(){
   let w=window.__webMe;try{if(!w&&window.parent!==window)w=window.parent.__webMe}catch(e){}
@@ -5757,7 +5759,7 @@ async function showProfile(){
   renderProfile();
 }
 document.addEventListener('click',e=>{
-  const a=e.target.closest('[data-al]');if(a){const n=LAST.find(x=>x.id===a.dataset.al);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
+  const a=e.target.closest('[data-al]');if(a){const id=a.dataset.al;put('cleared',[id].concat(get('cleared')||[]).slice(0,600));put('seen',[id].concat(get('seen')||[]).slice(0,400));const n=LAST.find(x=>x.id===id);LAST=LAST.filter(x=>x.id!==id);if(n){if(n.run||n.nav==='runs'){openRun();return}if(window.APP)APP.go(n.nav)}return}
   const rb=e.target.closest('[data-me="run"]');if(rb)openRun(rb.dataset.login);
   const pd=e.target.closest('[data-pd]');if(pd&&document.getElementById('me_box')&&document.getElementById('me_box').contains(pd)){PDAY=pd.dataset.pd;renderProfile();return}
   const inMe=el=>el&&document.getElementById('me_box')&&document.getElementById('me_box').contains(el);
@@ -5976,7 +5978,7 @@ window.PERFUI=(()=>{
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
   return{page,st}})();
 
-window.ME={clearAlerts:()=>{const ids=(LAST||[]).map(n=>n.id);put('cleared',ids.concat(get('cleared')||[]).slice(0,600));put('seen',ids.concat(get('seen')||[]).slice(0,400));LAST=[];badge(0)},alertsPanel:async()=>{const L=await refresh(true);LAST=L;seenAtOpen=new Set(get('seen')||[]);const h=alertsHTML(L);put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);return h},warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
+window.ME={clearAlerts:()=>{const ids=[...new Set((LAST||[]).map(n=>n.id).concat([...document.querySelectorAll('[data-al]')].map(b=>b.dataset.al)))];put('cleared',ids.concat(get('cleared')||[]).slice(0,600));put('seen',ids.concat(get('seen')||[]).slice(0,400));LAST=[];badge(0)},alertsPanel:async()=>{const L=await refresh(true);LAST=L;seenAtOpen=new Set(get('seen')||[]);const h=alertsHTML(L);put('seen',L.map(n=>n.id).concat([...seenAtOpen]).slice(0,400));badge(0);return h},warm:async()=>{try{await load();await staffList()}catch(e){}},dotw:async()=>{try{await load()}catch(e){}await dotwLoad();return dotwHTML(dotw())},profile:showProfile,alerts:showAlerts,refresh,home:homeCards,paySummary,openLogin:async l=>{try{const q=STAFF&&STAFF.find(x=>x.login===dkey(l));if(window.APP)APP.go('me');const bx=document.getElementById('me_box');if(bx)bx.innerHTML=(STAFF?pickerHTML():'')+'<div class="me-wait">Loading '+esc(q?q.name:'profile')+'…</div>';await staffList();const p=(STAFF||[]).find(x=>x.login===dkey(l));if(p)await setPick(p.staff)}catch(e){console.warn(e)}}};
 function start(){setTimeout(()=>refresh(),400)}
 window.addEventListener('app:role',start);
 if(window.APP&&APP.role&&APP.role!=='loading')start();
@@ -10097,7 +10099,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010149';
+const VERSION='202611010150';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
