@@ -1417,7 +1417,7 @@ const INTENTS=[
  [/\b(who (hasn'?t|has not|didn'?t) clock(ed)?|not clocked|missing (clock|times)|timesheets?|hours (this|last) week|my hours|how many hours|when did i (start|finish)|what time did i (start|finish)|my (start|finish) times?|fix my times?)\b/,'@times'],
  [/\b(clock (me )?(in|on|out|off)|start (my |the )?(shift|day|work)|finish (my |the )?(shift|day|work)|end (my |the )?(shift|day)|i forgot to clock|i('?m| am) (here|starting|finishing|done))\b/,'clock'],
  [/\b(my pay|pay ?day|pay ?slip|when (do|will) i get paid|how much\b.{0,25}\b(earn|earned|made|make|paid|owed|owe|get)|earnings|invoices?|send (my )?invoice|my rate|gst|abn)\b/,'invoices'],
- [/\b(how (am i|did i) (go|going|doing|do)|my (results|scores|stats|numbers|eta|scans)|results|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'@res'],
+ [/\b(how (am i|did i) (go|going|doing|do)|my (results?|scores?|stats|numbers|eta|scans)|results?|(results?|how (did )?i (go|went)) (for|on|from|in|last|this|yesterday|today)|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'@res'],
  [/\b(survey|nps|customer (score|feedback|rating)|ratings?|rankings?|promoters?|detractors?)\b/,'survey'],
  [/\b(accident|crash(ed)?|incident|hazard|near miss|injur(y|ed)|hurt myself|report (a|an|something|it)|dog (bit|bite|attack|rushed|chased)|bitten|slipped|tripped|fell (over|down)|abused|threatened|aggressive (customer|person)|unsafe|damaged (a|the|their) (car|fence|gate|letterbox|property))\b/,'reports'],
  [/\b(van checks?|check (my|the) van|prestart|vehicle check|tyres?|flat tyre|oil|warning light|windscreen|brakes?|van (broke|broken|won'?t start|service)|break ?down|broke down|service due)\b/,'vchecks'],
@@ -1483,6 +1483,34 @@ function vWait(sel,cb,ms){const t0=Date.now();(function tick(){const el=document
 function vFill(sel,val){vWait(sel,el=>{el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));try{el.scrollIntoView({block:'center'})}catch(e){}})}
 function vClick(sel){vWait(sel,el=>{el.click()})}
 function vFlashText(secSel,word){vWait(secSel,box=>{setTimeout(()=>{const w=word.toLowerCase();const el=[...box.querySelectorAll('h2,h3,h4,b,strong,.nm,button,label')].find(e=>(e.textContent||'').toLowerCase().includes(w));if(el){const c=el.closest('.card,section,li,div')||el;c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('v-flash');setTimeout(()=>c.classList.remove('v-flash'),2400)}},250)})}
+/* "2 days ago", "last week", "the 25th", "last Monday", "this month"... -> which period and date */
+function voiceWhen(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ')+' ';
+  const W={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,couple:2,few:3};
+  const num=x=>/^\d+$/.test(x)?+x:(W[x]||null);
+  const now=new Date();now.setHours(12,0,0,0);const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const back=n=>{const d=new Date(now);d.setDate(d.getDate()-n);return d};
+  const DAYS=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'],MONS=['january','february','march','april','may','june','july','august','september','october','november','december'];
+  const nice=d=>DAYS[d.getDay()][0].toUpperCase()+DAYS[d.getDay()].slice(1)+' '+d.getDate()+' '+MONS[d.getMonth()][0].toUpperCase()+MONS[d.getMonth()].slice(1,3);
+  let m;
+  if(/ today | this morning /.test(t))return {per:'day',iso:iso(now),label:'today'};
+  if(/ day before yesterday /.test(t)){const d=back(2);return {per:'day',iso:iso(d),label:nice(d)}}
+  if(/ yesterday /.test(t)){const d=back(1);return {per:'day',iso:iso(d),label:'yesterday'}}
+  if((m=t.match(/ (\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|couple|few)( of)? days? ago /))&&num(m[1])){const d=back(num(m[1]));return {per:'day',iso:iso(d),label:nice(d)}}
+  if((m=t.match(/ (\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|couple|few)( of)? weeks? ago /))&&num(m[1])){const n=num(m[1]);return {per:'week',iso:iso(back(7*n)),label:n===1?'last week':n+' weeks ago',weeksBack:n}}
+  if((m=t.match(/ (\d+|a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|couple|few)( of)? months? ago /))&&num(m[1])){const n=num(m[1]);return {per:'cycle',iso:iso(back(28*n)),label:n===1?'last month':n+' months ago'}}
+  if((m=t.match(/ (last|past|this|on|for) (sunday|monday|tuesday|wednesday|thursday|friday|saturday) /))||(m=t.match(/ ()(sunday|monday|tuesday|wednesday|thursday|friday|saturday) /))){const want=DAYS.indexOf(m[2]);let n=(now.getDay()-want+7)%7;if(n===0&&m[1]==='last')n=7;const d=back(n);return {per:'day',iso:iso(d),label:nice(d)}}
+  if((m=t.match(/ (\d{1,2})(st|nd|rd|th)?( of)? (january|february|march|april|may|june|july|august|september|october|november|december) /))||(m=t.match(/ (january|february|march|april|may|june|july|august|september|october|november|december) (\d{1,2})(st|nd|rd|th)? /))){
+    const dn=+(/^\d/.test(m[1])?m[1]:m[2]),mn=MONS.indexOf(/^\d/.test(m[1])?m[4]:m[1]);const d=new Date(now.getFullYear(),mn,dn,12);if(d>now)d.setFullYear(d.getFullYear()-1);return {per:'day',iso:iso(d),label:nice(d)}}
+  if((m=t.match(/ the (\d{1,2})(st|nd|rd|th) /))){const d=new Date(now.getFullYear(),now.getMonth(),+m[1],12);if(d>now)d.setMonth(d.getMonth()-1);return {per:'day',iso:iso(d),label:nice(d)}}
+  if((m=t.match(/ (in |for |during )?(january|february|march|april|may|june|july|august|september|october|november|december) /))){const mn=MONS.indexOf(m[2]);const d=new Date(now.getFullYear(),mn,15,12);if(d>now)d.setFullYear(d.getFullYear()-1);return {per:'cycle',iso:iso(d),label:MONS[mn][0].toUpperCase()+MONS[mn].slice(1)}}
+  if(/ (last|previous) week /.test(t))return {per:'week',iso:iso(back(7)),label:'last week',weeksBack:1};
+  if(/ (last|previous) month /.test(t))return {per:'cycle',iso:iso(back(28)),label:'last month'};
+  if(/ (this|current) (week)|weekly | for the week | week so far /.test(t))return {per:'week',iso:iso(now),label:'this week'};
+  if(/ (this|current) (month|cycle|pay cycle)| monthly | for the month | month so far | so far | this year | last year | for the year /.test(t))return {per:'cycle',iso:/ last year /.test(t)?iso(back(365)):iso(now),label:/ year /.test(t)?'the month (there is no year view)':'this month'};
+  if(/ (a |the )?day /.test(t))return {per:'day',iso:iso(now),label:'today'};
+  if(/ week /.test(t))return {per:'week',iso:iso(now),label:'this week'};
+  if(/ month /.test(t))return {per:'cycle',iso:iso(now),label:'this month'};
+  return null}
 function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';const go=()=>{if(window.APP)APP.go(page)};
   if(page==='guide'){const tp=guideTopic(said);if(tp){if(window.APP&&APP.section!=='guide')APP.go('guide');setTimeout(()=>{location.hash='guide/'+tp.id},60);return 'Opening “'+tp.title+'” in the Driver Guide.'}return null}
   if(page==='reports'){const k=/\b(crash|accident|van|car|ute|truck|hit|reversing|reversed|collision|bumped|panel)\b/.test(t)?'vehicle':/\b(hazard|unsafe|slip|trip|broken|leak|lighting|dangerous|forklift)\b/.test(t)?'hazard':/\b(dog|bit|bitten|abuse|abused|threat|assault|injur|hurt|fell|damage|theft|stolen|customer|police|near miss)/.test(t)?'incident':null;
@@ -1496,11 +1524,10 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='vchecks'&&role==='mgr'&&/\b(new|do|start|add)\b/.test(t)){go();vClick('[data-vc="new"]');return 'Opening a new van check.'}
   if(page==='briefs'&&role==='mgr'&&/\b(new|add|create)\b/.test(t)){go();vClick('[data-tb="new"]');return 'Opening New team brief.'}
   if(page==='results'&&/\b(rank|where (do|am) i|find me|my results|how (am|did) i)\b/.test(t)){go();vClick('[data-rt="find"]');return 'Opening your results.'}
-  if(page==='me'){const per=/\b(month|monthly|this cycle|cycle|so far)\b/.test(t)?'cycle':/\b(week|weekly|this week|last week)\b/.test(t)?'week':/\b(today|yesterday|day)\b/.test(t)?'day':null;
-    if(per){try{localStorage.setItem('me1161_per',per)}catch(x){}}
-    go();if(per){vWait('[data-per="'+per+'"]',el=>{if(el.getAttribute('aria-pressed')!=='true')el.click()},9000);
-      if(per==='day'&&/\byesterday\b/.test(t)){const y=new Date(Date.now()-864e5);const iso=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');setTimeout(()=>vWait('[data-pd="'+iso+'"]',el=>el.click(),9000),500)}}
-    return 'Opening your results'+(per==='cycle'?' for the month':per==='week'?' for the week':per==='day'?(/\byesterday\b/.test(t)?' for yesterday':' for the day'):'')+'.'}
+  if(page==='me'){const w=voiceWhen(t);go();
+    if(w){vWait('#me_box [data-per]',()=>{if(window.__mePeriod)window.__mePeriod(w.per,w.iso)},9000)}
+    return 'Opening your results'+(w?' for '+w.label:'')+'.'}
+  if(page==='results'){const w=voiceWhen(t);if(w&&w.weeksBack>0){go();vWait('#r_prevWeek',el=>{let n=w.weeksBack;(function step(){if(n-->0){el.click();setTimeout(step,250)}})()},6000);return 'Opening Driver Results for '+w.label+'.'}}
   if(page==='uniform'){const m=t.match(/\b(boots?|hi ?vis|vests?|shirts?|polos?|shorts|pants|trousers|hats?|caps?|jackets?|jumpers?)\b/);if(m){go();vFlashText('#mod-uniform',m[1].replace(/s$/,'').replace('hi vis','hi'));return 'Opening Uniform at '+m[1]+'.'}return null}
   const fills={directory:'#dy_q',precards:'#pc_q',lockers:'#lk_q',staff:'#dm_q'};
   if(fills[page]){let q=term;if(!q){const m=t.match(/\b(?:for|of|call|ring|text|at|on|is|was)\s+([a-z0-9' ]+?)\s*$/);if(m)q=m[1].replace(/\b(the|a|please|number|phone|carded|precarded)\b/g,'').trim()}
@@ -5155,6 +5182,13 @@ function subRowHTML(P){
 }
 function hoursFor(dates){const set=new Set(dates);let m=0,n=0;for(const c of (data&&data.clock)||[]){if(!set.has(c.date)||!c.start)continue;n++;if(c.finish)m+=Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0))}return{m,n}}
 let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
+/* voice search: jump straight to a day, week or month */
+window.__mePeriod=function(per,iso){PER=per;try{localStorage.setItem('me1161_per',PER)}catch(e){}
+  const today=dayOf(new Date());if(iso&&iso>today)iso=today;ANC=iso&&iso<today?iso:null;PDAY=per==='day'?(iso||today):null;
+  let cs=null;try{cs=periods().cs}catch(e){}
+  if(cs&&typeof ensureDays==='function')ensureDays(cs).then(()=>{try{renderProfile()}catch(e){}});
+  if(per==='week'||per==='cycle'){try{const P=periods();if(cs)ensureDays(addD(cs,-28)).then(()=>{try{renderProfile()}catch(e){}})}catch(e){}}
+  try{renderProfile()}catch(e){}};
 const pctf=v=>v==null?'n/a':(v>=.9995?'100':(v*100).toFixed(1).replace(/\.0$/,''))+'%';
 function initials(n){const p=String(n||'').trim().split(/\s+/);return((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase()}
 /* minimal stats: driver results, customer surveys, parcels, feedback */
@@ -9604,7 +9638,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010027';
+const VERSION='202611010028';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
