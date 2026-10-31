@@ -1545,7 +1545,7 @@ const VKEYS={invoices:'money earn earned earning earnings paid pay payment payme
  leave:'leave holiday holidays vacation sick','@res':'results result score scores stats statistics performance eta scans scanning rank',survey:'survey nps ranking rankings rating',
  reports:'accident crash crashed incident hazard injury injured hurt bitten bite slipped tripped',vchecks:'tyre tyres brakes prestart inspection oil windscreen breakdown',uniform:'uniform shirt shirts shorts pants trousers hat jacket vest polo boots jumper cap',
  briefs:'toolbox brief briefs',guide:'rule rules policy policies guide procedure procedures allowed',precards:'precard precards carded',lockers:'locker lockers',
- updates:'news updates announcement announcements notice',cover:'cover covering floater floaters roster relief',directory:'phone contact contacts number numbers call ring',
+ updates:'news updates announcement announcements notice',cover:'cover covering floater floaters roster relief',directory:'phone contact contacts number numbers call ring mobile mobiles',
  feedback:'feedback suggestion suggestions idea ideas',enquiries:'enquiry enquiries complaint complaints',me:'profile bank',
  '#.dh-card.wx':'weather rain raining forecast temperature umbrella storm sunny',
  '@times':'clock clocked clocking hours timesheet timesheets shift shifts started finished'};
@@ -1648,6 +1648,12 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='uniform'){const m=t.match(/\b(boots?|hi ?vis|vests?|shirts?|polos?|shorts|pants|trousers|hats?|caps?|jackets?|jumpers?)\b/);if(m){go();vFlashText('#mod-uniform',m[1].replace(/s$/,'').replace('hi vis','hi'));return 'Opening Uniform at '+m[1]+'.'}return null}
   const fills={directory:'#dy_q',precards:'#pc_q',lockers:'#lk_q',staff:'#dm_q'};
   if(fills[page]){let q=term;if(!q){const m=t.match(/\b(?:for|of|call|ring|text|at|on|is|was)\s+([a-z0-9' ]+?)\s*$/);if(m)q=m[1].replace(/\b(the|a|please|number|phone|carded|precarded)\b/g,'').trim()}
+    /* a person's name: "Jason's number", "Jasons phone", "number for Jason" -> Jason */
+    if(page==='directory'||page==='staff'){const pm=t.match(/\b([a-z]+)(?:'s|s)?\s+(?:phone\s+)?(?:number|mobile|phone|contact|email|details)\b/);if(pm&&!/^(my|the|a|his|her|their|what|whats|phone)$/.test(pm[1]))q=pm[0].replace(/\s+(?:phone\s+)?(?:number|mobile|phone|contact|email|details)\b.*$/,'');
+      q=String(q||'').replace(/'s\b/g,'').replace(/\b(what|whats|is|the|number|phone|mobile|please|give|me|get|show)\b/g,'').replace(/\s+/g,' ').trim();
+      /* "jasons" -> "jason" when that is the real name */
+      try{const names=new Set(((window.RUNS&&RUNS.list&&RUNS.list())||[]).flatMap(x=>String(x.driver||'').toLowerCase().split(' ')));const w=q.split(' ');
+        q=w.map(x=>x.length>3&&x.endsWith('s')&&!names.has(x)&&names.has(x.slice(0,-1))?x.slice(0,-1):x).join(' ')}catch(x){}}
     if(q&&q.length>1){go();vFill(fills[page],q);return 'Opening '+NAMES[page]+' and searching “'+q+'”.'}return null}
   if(page==='runs'||page==='sort'){const me=window.__webMe||{};const R=window.RUNS;if(!R||!R.list)return null;const L=R.list();
     const NUMW={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50};
@@ -9791,7 +9797,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010053';
+const VERSION='202611010054';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
