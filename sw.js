@@ -1,6 +1,6 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
-const CACHE = 'pds-app-v3';
+const CACHE = 'pds-app-v4';
 /* sw 4: the app page always comes live from the internet; no saved copy of the app is kept */
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
@@ -81,7 +81,7 @@ self.addEventListener('push', e => {
   e.waitUntil(self.registration.showNotification(title, {
     body: d.body || '',
     icon: 'icon-192.png',
-    badge: 'icon-192.png',
+    badge: 'badge-96.png',
     tag: d.kind ? 'pds-' + d.kind + '-' + Date.now() : undefined,
     data: { url: d.url || '' },
     vibrate: [200, 100, 200]
