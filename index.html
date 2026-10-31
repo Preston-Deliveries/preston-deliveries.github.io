@@ -4192,9 +4192,7 @@ const myRec=()=>{let w={};try{w=window.__webMe||{}}catch(x){}if(w.ownStaff&&peop
 const meFull=()=>{const me=myRec();if(me)return title([me.first,me.last].filter(Boolean).join(' '));let w={};try{w=window.__webMe||{}}catch(x){}return w.name?title(w.name):''};
 const meName=()=>{const me=myRec();if(me)return title(me.first||[me.first,me.last].filter(Boolean).join(' '));let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}return e.split('@')[0]||'Admin'};
 const OBT={};function onbLoad(id){if(!window.ONB||(OBC[id]!==undefined&&Date.now()-(OBT[id]||0)<30000))return;OBT[id]=Date.now();if(OBC[id]===undefined)OBC[id]=null;window.ONB.get(id).then(o=>{const was=JSON.stringify(OBC[id]);OBC[id]=o||false;if(openId===id&&was!==JSON.stringify(OBC[id]))render()});}
-function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
-  onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
-  const first=title(String(p.first||'').split(' ')[0]),msgTxt=`Hi${first?' '+first:''}, welcome to Preston Delivery Service! Please set up our app on your phone before your first day. It takes about 10 minutes.
+function onbMsg(p){const first=title(String(p.first||'').split(' ')[0]);return `Hi${first?' '+first:''}, welcome to Preston Delivery Service! Please set up our app on your phone before your first day. It takes about 10 minutes.
 
 1. Open this link on your phone: https://preston-deliveries.github.io
 iPhone: open it in Safari. Android: open it in Chrome.
@@ -4210,7 +4208,10 @@ Then check your email and tap the link to confirm it.
 
 5. Sign in and follow the welcome steps.
 
-Any problems, just message me.`;
+Any problems, just message me.`}
+function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
+  onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
+  const msgTxt=onbMsg(p);
   const d=o&&o.d||{};const row=(l,v)=>v?`<div class="dm-onbr"><span>${l}</span><b>${esc(v)}</b></div>`:'';
   const imgs=OBI[id]||[];
   return `<section class="dm-onb"><h3>New driver welcome steps <span class="dm-onbst ${p.onboard==='done'?'ok':o&&o.status==='submitted'?'go':''}">${esc(st)}</span></h3>
@@ -4368,6 +4369,13 @@ async function indPDF(p,btn,blank){const o=blank?{}:(OBC[p.id]||{}),r=blank?{}:(
 async function saveExtra(id,patch,okMsg){const p=Object.assign({},people[id],patch);const o=Object.assign({},p);delete o.id;o.updatedAt=new Date().toISOString();
   try{await db.doc('staff/'+id).set(o);people[id]=Object.assign({id},o);msg={t:okMsg};render()}catch(e){msg={err:true,t:'Could not save just now. Check your connection and try again.'};render()}}
 document.addEventListener('click',e=>{const bb=e.target.closest&&e.target.closest('#mod-staff [data-dmb]');if(bb)apPDF(null,bb,true)});
+/* add a new driver and copy the app link message in one tap (copy first, while the tap still counts) */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mod-staff [data-dmac]');if(!b)return;
+  const em=String(($('f_email')||{}).value||'').trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg={err:true,t:'Add their email first, so they can sign up.'};render();if($('f_email'))$('f_email').focus();return}
+  const txt=onbMsg({email:em,first:''});let ok=false;
+  try{const ta=document.createElement('textarea');ta.value=txt;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(x){}
+  if(!ok&&navigator.clipboard){navigator.clipboard.writeText(txt).catch(()=>{})}
+  save().then(()=>{if(msg&&!msg.err){msg={t:'Added, and the message is copied. Paste it into a text, WhatsApp or email to them.'};render()}})});
 window.__dmFind=q=>{const ws=String(q||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>1);if(!ws.length)return null;
   let best=null,bs=0;for(const p of Object.values(people)){const nm=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(' ').filter(Boolean),lg=String(p.login||'').toLowerCase();let sc=0;
     for(const w of ws){const w2=w.length>3&&w.endsWith('s')?w.slice(0,-1):w;if(nm.includes(w)||nm.includes(w2))sc+=3;else if(lg&&(lg===w||lg==='d'+w))sc+=3;else if(nm.some(n=>n.length>3&&n.startsWith(w2)))sc+=1}
@@ -4454,7 +4462,7 @@ function detailHTML(){
       ${!isNew&&p.onboard==='pending'?onbHTML(p)+apHTML(p):''}
       ${isNew&&!newFull?`<p class="dm-newh">Just add their <b>email</b>, and their <b>mobile</b> if you want to WhatsApp them the app link. They fill in everything else themselves through the welcome steps, and it goes straight into their record for you to check.</p>
       <div class="grid">${grp('New driver',['email','mobile'])}</div><input type="checkbox" id="dm_f_onbnew" checked hidden>
-      <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay and bank',['payFreq','bankName','bsb','acct'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
+      <div class="dm-onba"><button type="button" class="sh-btn primary" data-dmac="1">📋 Add and copy message</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay and bank',['payFreq','bankName','bsb','acct'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
       ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':(p.onboard?onbHTML(p):'')+apHTML(p))+indHTML(p)+agrRecHTML(p)}
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
@@ -10100,7 +10108,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010089';
+const VERSION='202611010090';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
