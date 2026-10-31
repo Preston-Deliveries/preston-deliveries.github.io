@@ -49,7 +49,7 @@ service cloud.firestore {
 
     // Collections every driver may read. Everything not listed here is admin only.
     function memberReadable(col) {
-      return col in ['runs', 'cover', 'notices', 'updates', 'briefs', 'briefpages'];
+      return col in ['runs', 'cover', 'notices', 'updates', 'briefs', 'briefpages', 'pushcfg'];
     }
 
     // Clock in and out: drivers add their own times only, for today (or catch up the last few days).
@@ -223,6 +223,18 @@ service cloud.firestore {
     match /access/{email} {
       allow read: if isAdmin() || (signedIn() && email == myEmail());
       allow write: if isAdmin();
+    }
+
+    // Phones that have notifications turned on. Each person can only save their own phone.
+    // Admins see all; drivers can see which phones belong to admins (so a serious report can ding the office).
+    // A phone's address on its own can't send anything; only the notification sender (with its private key) can.
+    match /push/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid) || (isMember() && resource.data.role == 'admin');
+      allow create, update: if isMember() && request.auth.uid == uid
+        && request.resource.data.email == myEmail()
+        && request.resource.data.role == (isAdmin() ? 'admin' : 'driver')
+        && (isAdmin() || request.resource.data.staff == myStaff());
+      allow delete: if isAdmin() || (signedIn() && request.auth.uid == uid);
     }
 
     // Each driver's own results and survey, made by the app when an admin sends results to drivers
