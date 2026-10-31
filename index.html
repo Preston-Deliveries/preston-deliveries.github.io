@@ -1460,6 +1460,39 @@ function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g
     return {page,term}}
   const kp=voiceKey(t,vis);if(kp)return {page:kp,term:''};
   return null}
+/* Voice: go straight to the exact thing asked for, not just the page */
+const STOP=new Set('how do i a an the what is can when if to my me for of on at it its in and or does should with please about you your tell show find open take where whats there any i\'m im'.split(' '));
+function guideTopic(said){const T=window.__T||[];if(!T.length)return null;
+  const ws=String(said||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w&&!STOP.has(w));if(!ws.length)return null;
+  const all=t=>[t.title,t.lead,t.kw,(t.do||[]).join(' '),(t.dont||[]).join(' '),(t.steps||[]).flat().join(' '),t.remember].join(' ').toLowerCase();
+  let best=null,bs=0;for(const t of T){const ti=String(t.title||'').toLowerCase(),kw=String(t.kw||'').toLowerCase(),al=all(t);let sc=0;
+    for(const w of ws){const st=w.length>4?w.replace(/(ing|ed|es|s)$/,''):w;if(ti.includes(st))sc+=5;else if(kw.includes(st))sc+=3;else if(al.includes(st))sc+=1}
+    if(ws.join(' ').length>3&&ti.includes(ws.join(' ')))sc+=6;if(sc>bs){bs=sc;best=t}}
+  return bs>=3?best:null}
+function vWait(sel,cb,ms){const t0=Date.now();(function tick(){const el=document.querySelector(sel);if(el&&el.offsetParent!==null){cb(el);return}if(Date.now()-t0<(ms||3500))setTimeout(tick,120)})()}
+function vFill(sel,val){vWait(sel,el=>{el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));try{el.scrollIntoView({block:'center'})}catch(e){}})}
+function vClick(sel){vWait(sel,el=>{el.click()})}
+function vFlashText(secSel,word){vWait(secSel,box=>{setTimeout(()=>{const w=word.toLowerCase();const el=[...box.querySelectorAll('h2,h3,h4,b,strong,.nm,button,label')].find(e=>(e.textContent||'').toLowerCase().includes(w));if(el){const c=el.closest('.card,section,li,div')||el;c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('v-flash');setTimeout(()=>c.classList.remove('v-flash'),2400)}},250)})}
+function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';const go=()=>{if(window.APP)APP.go(page)};
+  if(page==='guide'){const tp=guideTopic(said);if(tp){if(window.APP&&APP.section!=='guide')APP.go('guide');setTimeout(()=>{location.hash='guide/'+tp.id},60);return 'Opening “'+tp.title+'” in the Driver Guide.'}return null}
+  if(page==='reports'){const k=/\b(crash|accident|van|car|ute|truck|hit|reversing|reversed|collision|bumped|panel)\b/.test(t)?'vehicle':/\b(hazard|unsafe|slip|trip|broken|leak|lighting|dangerous|forklift)\b/.test(t)?'hazard':/\b(dog|bit|bitten|abuse|abused|threat|assault|injur|hurt|fell|damage|theft|stolen|customer|police|near miss)/.test(t)?'incident':null;
+    if(k){go();vClick('[data-rp="kind"][data-v="'+k+'"]');return {vehicle:'Opening a vehicle accident report.',hazard:'Opening a safety hazard report.',incident:'Opening an incident report.'}[k]}return null}
+  if(page==='leave'){if(/\b(book|request|ask|apply|need|want|take|sick|can'?t come|day off|days off|time off)\b/.test(t)){go();vClick(role==='mgr'?'[data-lv="add"]':'[data-lv="rqopen"]');return role==='mgr'?'Opening Add leave.':'Opening Ask for days off.'}return null}
+  if(page==='invoices'){if(/\b(make|send|create|new|do|submit|write)\b.{0,15}\binvoice/.test(t)){go();vClick('[data-iv="tab"][data-v="make"]');return 'Opening Make my invoice.'}
+    if(/\b(my invoices|paid|earn|earned|money|owed|pay)\b/.test(t)){go();vClick('[data-iv="tab"][data-v="mine"]');return 'Opening My invoices.'}return null}
+  if(page==='vchecks'&&role==='mgr'&&/\b(new|do|start|add)\b/.test(t)){go();vClick('[data-vc="new"]');return 'Opening a new van check.'}
+  if(page==='briefs'&&role==='mgr'&&/\b(new|add|create)\b/.test(t)){go();vClick('[data-tb="new"]');return 'Opening New team brief.'}
+  if(page==='results'&&/\b(rank|where (do|am) i|find me|my results|how (am|did) i)\b/.test(t)){go();vClick('[data-rt="find"]');return 'Opening your results.'}
+  if(page==='uniform'){const m=t.match(/\b(boots?|hi ?vis|vests?|shirts?|polos?|shorts|pants|trousers|hats?|caps?|jackets?|jumpers?)\b/);if(m){go();vFlashText('#mod-uniform',m[1].replace(/s$/,'').replace('hi vis','hi'));return 'Opening Uniform at '+m[1]+'.'}return null}
+  const fills={directory:'#dy_q',precards:'#pc_q',lockers:'#lk_q',staff:'#dm_q'};
+  if(fills[page]){let q=term;if(!q){const m=t.match(/\b(?:for|of|call|ring|text|at|on|is|was)\s+([a-z0-9' ]+?)\s*$/);if(m)q=m[1].replace(/\b(the|a|please|number|phone|carded|precarded)\b/g,'').trim()}
+    if(q&&q.length>1){go();vFill(fills[page],q);return 'Opening '+NAMES[page]+' and searching “'+q+'”.'}return null}
+  if(page==='runs'){const me=window.__webMe||{};const R=window.RUNS;if(R&&R.list){const L=R.list();
+      const nm=t.match(/\b([a-z]+)'?s run\b/);let hit=null;
+      if(nm&&nm[1]!=='my'){hit=L.find(x=>String(x.driver||'').toLowerCase().split(' ')[0]===nm[1])}
+      else if(/\bmy\b/.test(t)&&me.login){hit=L.find(x=>String(x.login||'').toUpperCase()===String(me.login).toUpperCase())}
+      if(hit&&R.openId(hit.id))return 'Opening '+(hit.driver||'the')+' run sheet.'}return null}
+  return null}
 let hVoice=null;
 function pickVoice(){try{const V=speechSynthesis.getVoices()||[];const rank=v=>{const l=(v.lang||'').replace('_','-').toLowerCase();let r=l==='en-au'?0:l==='en-gb'?2:l.startsWith('en')?4:9;if(!v.localService)r-=1;if(/natural|neural|wavenet|premium|enhanced|online/i.test(v.name))r-=1;return r};
   hVoice=V.filter(v=>/^en/i.test(v.lang||'')).sort((a,b)=>rank(a)-rank(b))[0]||null}catch(x){}}
@@ -1479,7 +1512,9 @@ document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.close
     const said=String(alts[0]||'').toLowerCase();
     const streetFirst=/\b(who does|who's got|who has|whose|who delivers|gate code|code for|access for|where is|where's|which bay|what bay|whose run)\b/.test(said);
     let spot=null;
-    if(!streetFirst){const it=voiceIntent(said);if(it){if(it.page[0]==='#'){spot=document.querySelector(it.page.slice(1))}else{findPin=it.page;ans=null;q=it.term||'';pages=[it.page]}}}
+    if(!streetFirst){const it=voiceIntent(said);if(it){if(it.page[0]==='#'){spot=document.querySelector(it.page.slice(1))}else{
+      const dm=voiceDeep(it.page,alts[0]||'',it.term);if(dm){hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>${esc(dm)}</b>`);return}
+      findPin=it.page;ans=null;q=it.term||'';pages=[it.page]}}}
     if(spot){findQ='';const inp0=$('ah_fq');if(inp0)inp0.value='';findRender();
       const card=spot.closest('.dh-card')||spot;const txt=(card.innerText||'').replace(/\s+/g,' ').trim().slice(0,160);
       hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>Here it is.</b>${card.classList.contains('wx')&&txt?`<span class="hd" style="margin-top:6px;opacity:.9">${esc(txt)}</span>`:''}`);
@@ -2279,7 +2314,7 @@ if(!ok){set(5,7);ps.forEach(function(p){var z=H/p.scrollHeight;if(z<1){p.style.z
 }
 
 async function shareRuns(){if(!window.APP)throw new Error('unavailable');await APP.publish({runs:JSON.parse(JSON.stringify(S.runs))})}
-window.RUNS={find(q){if(!S.loaded&&!Object.keys(S.runs).length)return null;const t=normName(q);if(!t)return [];const res=streetIndex().filter(g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t));res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));return res.map(g=>({name:g.name,pc:g.pc,parts:g.parts.map(x=>({id:x.id,login:String(x.login||''),driver:String(x.driver||''),rg:x.rg,col:x.col,bay:String((S.runs[x.id]||{}).bay||'')}))}))},openId(id){if(!S.runs[id])return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';S.mode='sheet';remember();if(window.APP)APP.go('runs');return true},list(){return allIds().map(i=>({login:String(S.runs[i].login||'').toUpperCase(),postcode:String(S.runs[i].postcode||''),driver:String(S.runs[i].driver||'')}))},driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
+window.RUNS={find(q){if(!S.loaded&&!Object.keys(S.runs).length)return null;const t=normName(q);if(!t)return [];const res=streetIndex().filter(g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t));res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));return res.map(g=>({name:g.name,pc:g.pc,parts:g.parts.map(x=>({id:x.id,login:String(x.login||''),driver:String(x.driver||''),rg:x.rg,col:x.col,bay:String((S.runs[x.id]||{}).bay||'')}))}))},openId(id){if(!S.runs[id])return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';S.mode='sheet';remember();if(window.APP)APP.go('runs');return true},list(){return allIds().map(i=>({id:i,login:String(S.runs[i].login||'').toUpperCase(),postcode:String(S.runs[i].postcode||''),driver:String(S.runs[i].driver||'')}))},driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
 window.RUNS.vClean=voiceClean;window.RUNS.vAnswer=voiceAnswer;
 function useSnapshot(){
   const snap=window.APP&&APP.SNAP&&APP.SNAP.runs;
@@ -9541,7 +9576,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010023';
+const VERSION='202611010024';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
