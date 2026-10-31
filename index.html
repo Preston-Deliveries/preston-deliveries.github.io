@@ -1089,7 +1089,7 @@ function pushRow(){const P=window.PUSH;if(!P)return '';const st=P.state();
    :st==='unsupported'?`<p class="pu-st">This ${/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'phone can’t get notifications from the app yet. Open the app from its home screen icon and try again.':'browser can’t get notifications. Try Chrome or Edge.'}</p>`
    :`<p class="pu-st">Get a ding on this device for important things only.</p><button type="button" class="sh-btn primary" data-pu="on">Turn on notifications</button>`;
   return `<div class="dm-row pu-row"><h3>Notifications</h3>${body}${P.role&&P.role()==='admin'?`<button type="button" class="sh-btn" data-pu="admin">Notification settings</button>`:''}<p class="pu-msg" id="pu_msg" role="status"></p></div>`}
-const PU_TYPES=[['cover','Put on someone’s run (to that driver)'],['leave','Leave approved or declined (to that driver)'],['report','Serious reports and vehicle accidents (to admins)'],['absence','Short notice absences (to admins)']];
+const PU_TYPES=[['update','New update posted (to all drivers)'],['enquiry','New customer enquiry (to that driver)'],['report','New report from a driver (to admins)'],['feedback','New feedback from a driver (to admins)'],['uniform','New uniform order (to admins)']];
 let puState={cfg:null,phones:null,log:null,msg:null,busy:false};
 async function openPushAdmin(){closeSettings();const P=window.PUSH;if(!P)return;
   const w=document.createElement('div');w.id='sh-set';w.className='pu-adm';w.setAttribute('role','dialog');w.setAttribute('aria-label','Notification settings');
@@ -5737,12 +5737,11 @@ async function rqSend(){if(rqBusy)return;if(!me||!me.staff){msg={err:true,t:'You
   const days=weekdaysBetween(rq.from,rq.to);if(!days.length){msg={err:true,t:'Those dates are all on a weekend.'};render();return}
   const lg=isLong(rq.from,rq.to);rqBusy=true;msg=null;render();
   const id=me.staff+'_'+rq.from+'_'+Date.now().toString(36);const doc={staff:me.staff,name:tc(me.name||''),from:rq.from,to:rq.to,days,note:rq.note.trim(),cover:lg?rq.cover.trim():'',long:lg,status:'pending',at:db.serverTime?db.serverTime():new Date().toISOString()};
-  try{await db.doc('leavereq/'+id).set(doc);try{const q=new Date(Date.now()+864e5+10*36e5).toISOString().slice(0,10);if(rq.from<=q&&window.PUSH)PUSH.send('absence')}catch(x){}reqs[id]={...doc,at:new Date().toISOString()};rqOpen=false;rq={from:'',to:'',note:'',cover:'',ack:false};msg={t:'Request sent. You will see the answer under My requests.'}}catch(e){msg={err:true,t:'Could not send just now. Check your connection and try again.'}}
+  try{await db.doc('leavereq/'+id).set(doc);reqs[id]={...doc,at:new Date().toISOString()};rqOpen=false;rq={from:'',to:'',note:'',cover:'',ack:false};msg={t:'Request sent. You will see the answer under My requests.'}}catch(e){msg={err:true,t:'Could not send just now. Check your connection and try again.'}}
   rqBusy=false;render()}
 async function rqDecide(id,ok){const r=reqs[id];if(!r)return;const reply=String(rqReply[id]||'').trim();
   try{if(ok){const bid=String(r.name||'leave').toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+r.from;const doc={name:r.name,from:r.from,to:r.to,days:r.days||weekdaysBetween(r.from,r.to),note:[r.note,r.long?'Own cover: '+(r.cover||'not given'):''].filter(Boolean).join('. '),source:'request',updatedAt:new Date().toISOString()};await db.doc('leave/'+bid).set(doc);blocks[bid]={id:bid,...doc}}
     await db.doc('leavereq/'+id).update({status:ok?'approved':'declined',reply,decidedAt:new Date().toISOString()});
-    try{if(window.PUSH&&r.staff){const nd=x=>{const d=new Date(x+'T12:00:00');return d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})};PUSH.send('leave',{staff:r.staff,staffName:r.name,title:ok?'Leave approved':'Leave request declined',body:ok?('Your leave '+nd(r.from)+(r.to&&r.to!==r.from?' to '+nd(r.to):'')+' is approved.'):'Your leave request was declined. Tap to see why.',url:'#leave'})}}catch(x){}reqs[id]={...r,status:ok?'approved':'declined',reply};delete rqReply[id];
     msg={t:ok?'Approved and added to the calendar. Press Send latest to drivers when you are ready.':'Declined. The driver will see it in the app.'};pushStat();render()}
   catch(e){msg={err:true,t:'Could not save just now.'};render()}}
 /* ---------- render ---------- */
@@ -6359,7 +6358,7 @@ async function save(){
   if(isNew)o.postedAt=new Date().toISOString();else{o.postedAt=items[id].postedAt;o.edited=new Date().toISOString()}
   if(!isNew&&!items[id].live&&o.live)o.postedAt=new Date().toISOString(),delete o.edited;
   const was=items[id];
-  try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;
+  try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;if(o.live&&!(was&&was.live))try{window.PUSH&&PUSH.send('update',{title:'New update from the office',body:String(o.title||'Tap to read it.'),url:'#updates'})}catch(x){}
     msg={t:o.live?'Posted. Drivers get a pop up and a red 1 on Updates.':'Saved as a draft. Drivers can’t see it yet.',wa:o.live?{sec:'updates',title:o.title}:null};render();
     if(o.live||(was&&was.live)){const ok=await syncDrivers();if(!ok){msg={err:true,t:'Saved, but it could not be sent to the drivers’ link just now. Edit and save it again to retry.',wa:msg&&msg.wa};render()}}
     setTimeout(()=>document.getElementById('nt_n_'+id)?.scrollIntoView({block:'nearest'}),0)}
@@ -6570,7 +6569,7 @@ function doneHTML(done){
   ${bulkBar(done,'done')}
   ${done.length?listHTML(done,'done'):'<div class="empty">No completed orders yet.</div>'}`;
 }
-async function saveOrder(name,items){const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);const o={name,items,status:'requested',requestedAt:new Date().toISOString()};await db.doc('uniorders/'+id).set(o);orders[id]=Object.assign({id},o);return id}
+async function saveOrder(name,items){const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);const o={name,items,status:'requested',requestedAt:new Date().toISOString()};await db.doc('uniorders/'+id).set(o);orders[id]=Object.assign({id},o);try{window.PUSH&&PUSH.role()!=='admin'&&PUSH.send('uniform')}catch(x){}return id}
 /* ---------- printable forms ---------- */
 function loadScript(src){return new Promise((res,rej)=>{if([...document.scripts].some(s=>s.src===src))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 async function pdfLibs(){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');return window.jspdf.jsPDF}
@@ -7061,7 +7060,7 @@ document.addEventListener('click',async ev=>{
     if(!r.fault){msg={err:true,t:'Choose Yes, at fault or No, not at fault.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now};
-    try{await db.doc('enqlog/'+id).set(doc);recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'}}catch(x){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0);return}
+    try{await db.doc('enqlog/'+id).set(doc);if(!r.id&&doc.login)try{window.PUSH&&PUSH.send('enquiry',{login:doc.login})}catch(x){}recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'}}catch(x){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
@@ -8414,7 +8413,7 @@ async function send(){
   if(busy||!db||!me)return;const text=form.text.trim();if(!form.topic||text.length<3||form.call===null)return;
   busy=true;msg=null;render();
   const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5)+'_'+me.staff;
-  try{await db.doc('feedback/'+id).set({staff:me.staff,name:me.name||'',topic:form.topic,text,followUp:form.call,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()});
+  try{await db.doc('feedback/'+id).set({staff:me.staff,name:me.name||'',topic:form.topic,text,followUp:form.call,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()});try{window.PUSH&&PUSH.role()!=='admin'&&PUSH.send('feedback')}catch(x){}
     sent=tc(String(me.name||'').split(' ')[0]);form={topic:'',text:'',call:null};busy=false;render();window.scrollTo(0,0)}
   catch(e){busy=false;msg={err:true,t:'Could not send just now. Check your connection and try again.'};render()}
 }
@@ -9263,7 +9262,7 @@ function cvOff(){const out=[];const seen=new Set();let lv={};try{lv=(window.LEAV
   return out}
 function cvItem(id){return((CV.doc&&CV.doc.items)||[]).find(x=>x.off===id)}
 async function cvSave(items){const d=await getDb();if(!d)return;const before=JSON.parse(JSON.stringify((CV.doc&&CV.doc.items)||[])),day=CV.day;CV.doc={date:CV.day,items};cover();
-  try{await d.doc('cover/'+CV.day).set({date:CV.day,items,updatedAt:new Date().toISOString()});cvNotify(before,items,day)}catch(e){CV.msg='Could not save just now. Check your connection.';cover()}}
+  try{await d.doc('cover/'+CV.day).set({date:CV.day,items,updatedAt:new Date().toISOString()})}catch(e){CV.msg='Could not save just now. Check your connection.';cover()}}
 function cvNotify(before,items,day){if(!window.PUSH)return;const old=new Map(before.map(x=>[x.off,x]));const when=longd(day);
   for(const it of items){const o=old.get(it.off)||{help:[]};const run=(it.offName||'a driver')+'’s run'+(it.login?' ('+it.login+')':'');
     const send=(sid,what)=>{const p=S.staff[sid]||{};try{PUSH.send('cover',{staff:sid,staffName:shortName(p),title:what,body:run+' on '+when+'. Tap to view.',url:'#home'})}catch(x){}};
@@ -9573,7 +9572,7 @@ async function send(){
     const serious=['Doctor or medical centre','Hospital or ambulance'].includes(f.treat);
     const data={kind,staff:forId,name:forName,run:forRun,...(by?{by}:{}),f:clean(),photos:ph,serious,status:'new',at:db.serverTime?db.serverTime():new Date().toISOString()};
     await db.doc('reports/'+id).set(data);
-    if(mode!=='mgr'&&(serious||kind==='vehicle'))try{window.PUSH&&PUSH.send('report')}catch(x){}
+    if(mode!=='mgr')try{window.PUSH&&PUSH.send('report')}catch(x){}
     sent={first:mode==='mgr'?'':tc(String(me.name||'').split(' ')[0]),serious,copy:{...data,id,f:{...clean(),kind},at:new Date().toISOString()},imgs:photos.slice()};
     busy=false;kind=null;f=null;photos=[];render();window.scrollTo(0,0);
   }catch(e){busy=false;msg={err:true,t:'Could not send just now. Check your connection and try again. Nothing you typed has been lost.'};render()}
@@ -9774,7 +9773,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010038';
+const VERSION='202611010039';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10226,7 +10225,7 @@ function pushDev(){let d='';try{d=localStorage.getItem('pushdev1161')||''}catch(
 const pushId=()=>UID+'_'+pushDev();
 const pushKind=()=>/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'Phone':'Computer';
 async function pushSave(){const tok=await pushToken();if(!tok)throw new Error('No token');const me=window.__webMe||{};
-  await fs.doc('push/'+pushId()).set({token:tok,uid:UID,email:EMAIL,role:ROLE==='admin'?'admin':'driver',staff:String(me.staff||''),name:String(NAME||me.name||''),pcs:pushPcs(),device:pushKind(),at:new Date().toISOString()});
+  await fs.doc('push/'+pushId()).set({token:tok,uid:UID,email:EMAIL,role:ROLE==='admin'?'admin':'driver',staff:String(me.staff||''),login:String(me.login||'').toUpperCase(),name:String(NAME||me.name||''),pcs:pushPcs(),device:pushKind(),at:new Date().toISOString()});
   fs.doc('push/'+UID).delete().catch(()=>{});
   try{localStorage.setItem('push1161','1')}catch(e){}}
 window.PUSH={

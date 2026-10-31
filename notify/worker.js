@@ -18,12 +18,13 @@ const FS = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(d
 
 /* What each kind of notification is, who may send it, and who gets it */
 const KINDS = {
-  urgent:  { who: 'admin',  to: 'chosen' },   // the "Ding phones" tick box on an update
-  cover:   { who: 'admin',  to: 'staff'  },   // put on someone's run in the Cover Planner
-  leave:   { who: 'admin',  to: 'staff'  },   // leave approved or declined
-  test:    { who: 'admin',  to: 'self'   },   // test button on the Notifications page
-  report:  { who: 'member', to: 'admins', title: 'Serious report', body: 'A driver has sent a serious report. Tap to view.', url: '#reports' },
-  absence: { who: 'member', to: 'admins', title: 'Short notice absence', body: 'A driver can’t come in. Tap to view.', url: '#leave' }
+  urgent:   { who: 'admin',  to: 'chosen' },   // Send a notification button on Home
+  test:     { who: 'admin',  to: 'self'   },   // Check it works on my devices
+  update:   { who: 'admin',  to: 'chosen' },   // a new update posted (everyone)
+  enquiry:  { who: 'admin',  to: 'login',  title: 'New customer enquiry', body: 'There’s a new customer enquiry about one of your deliveries. Tap to view.', url: '' },
+  report:   { who: 'member', to: 'admins', title: 'New report', body: 'A driver has sent a report. Tap to view.', url: '#reports' },
+  feedback: { who: 'member', to: 'admins', title: 'New feedback', body: 'A driver has sent feedback. Tap to view.', url: '#feedback' },
+  uniform:  { who: 'member', to: 'admins', title: 'New uniform order', body: 'A driver has ordered uniform. Tap to view.', url: '#uniform' }
 };
 
 export default {
@@ -70,6 +71,7 @@ export default {
       if (K.to === 'admins') filter = eq('role', 'admin');
       else if (K.to === 'self') filter = eq('email', me.email);
       else if (K.to === 'staff') { if (!b.staff) return out({ error: 'Pick a driver' }, 400); filter = eq('staff', String(b.staff)); }
+      else if (K.to === 'login') { if (!b.login) return out({ error: 'No driver' }, 400); filter = eq('login', String(b.login).toUpperCase()); }
       else if (K.to === 'chosen') {
         if (b.staff) filter = eq('staff', String(b.staff));
         else if (b.pc) filter = { fieldFilter: { field: { fieldPath: 'pcs' }, op: 'ARRAY_CONTAINS', value: { stringValue: String(b.pc) } } };
