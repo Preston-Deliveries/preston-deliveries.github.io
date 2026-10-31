@@ -2345,6 +2345,8 @@ async function act(a,el){
 const PAL=['#1F5FA8','#C2410C','#15803D','#7C3AED','#B91C1C','#0E7490','#A16207','#BE185D','#4D7C0F','#475569','#9333EA'];
 function remember(){try{localStorage.setItem('v1161',JSON.stringify({pc:S.pc}))}catch{}}
 function recall(){try{const v=JSON.parse(localStorage.getItem('v1161')||'null');if(v&&v.pc)S.pc=v.pc}catch{}}
+/* a driver opens on their own run, not the first run in the postcode */
+function pickMine(){try{const W=window.__webMe||(window.parent&&window.parent.__webMe)||{};if(W.role==='admin'&&!window.__UV)return false;const L=String(W.run||W.login||'').split(',')[0].trim().toUpperCase();if(!L)return false;const id=Object.keys(S.runs).find(k=>String(S.runs[k].login||'').toUpperCase()===L);if(!id)return false;S.pc=String(S.runs[id].postcode);S.cur=id;return true}catch(e){return false}}
 function focusQ(){setTimeout(()=>document.getElementById('lookupQ')?.focus(),0)}
 const normName=t=>String(t||'').toUpperCase().replace(/[^A-Z0-9 ]/g,'').replace(/\s+/g,' ').trim();
 function niceRange(v){
@@ -2554,6 +2556,7 @@ function useSnapshot(){
   const h=decodeURIComponent((location.hash||'').slice(1));
   if(h&&S.runs[h]){S.cur=h;S.pc=String(S.runs[h].postcode);S.view='runs';if(window.APP)APP.go('runs')}
   else if(['4214','4215','4217','4218'].includes(h)){S.pc=h;S.view='lookup';if(window.APP)APP.go('sort')}
+  else pickMine();
   if(!S.cur||!S.runs[S.cur]||!ids().includes(S.cur)) S.cur=ids()[0]||null;
   setStatus('');render();
 }
@@ -2584,6 +2587,7 @@ function useSnapshot(){
       const h=decodeURIComponent((location.hash||'').slice(1));
       if(h&&S.runs[h]){S.cur=h;S.pc=String(S.runs[h].postcode);S.view='runs';S.mode='sheet';if(window.APP)APP.go('runs')}
       else if(['4214','4215','4217','4218'].includes(h)){S.pc=h;S.view='lookup';if(window.APP)APP.go('sort')}
+      else if(!canWrite)pickMine();
       if(!S.cur||!S.runs[S.cur]||!ids().includes(S.cur)) S.cur=ids()[0]||null;
       setStatus(canWrite?'All changes saved':'View only'); render(); return}
     if(!S.cur||!S.runs[S.cur]){S.cur=ids()[0]||null;render();return}
@@ -6615,13 +6619,14 @@ function render(){
   if(editing&&isMgr()){box.innerHTML=editHTML();return}
   const L=sorted().filter(n=>!impOnly||n.important),pins=L.filter(n=>n.pinned),rest=L.filter(n=>!n.pinned);
   /* only the newest update and pinned ones are open; older ones sit in closed weeks or months */
-  const latest=rest[0]||null,G=groups(rest.slice(1));
+  /* updates about something still coming up stay open with the newest one */
+  const top=rest.filter((n,i)=>i===0||(n.date&&n.live&&!isPast(n))),G=groups(rest.filter(n=>!top.includes(n)));
   box.innerHTML=`<div class="ntx">
    ${isMgr()?'<button type="button" class="sh-btn primary nt-add" data-nt="new">+ New update</button>':''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa&&isMgr()?window.__waBtn(msg.wa):''}`:''}
    <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div></div>
    ${pins.length?`<section class="grp pin"><h2>Pinned <span>${pins.length}</span></h2><div class="list">${pins.map(cardHTML).join('')}</div></section>`:''}
-   ${latest?`<section class="grp"><h2>Latest</h2><div class="list">${cardHTML(latest)}</div></section>`:''}
+   ${top.length?`<section class="grp"><h2>Latest</h2><div class="list">${top.map(cardHTML).join('')}</div></section>`:''}
    ${G.length?'<h2 class="nt-older">Older updates</h2>':''}
    ${G.map((g,i)=>{const open=!closedG.has(g.k)&&openG.has(g.k);return `<section class="grp"><button type="button" class="gh" data-nt="grp" data-v="${g.k}" aria-expanded="${open}"><h2>${esc(g.t)} <span>${g.L.length} update${g.L.length===1?'':'s'}${g.imp?`, ${g.imp} important`:''}</span></h2><i aria-hidden="true">${open?'▾':'▸'}</i></button>${open?`<div class="list">${g.L.map(cardHTML).join('')}</div>`:''}</section>`}).join('')}
    ${!L.length?`<div class="empty">${impOnly?'No important updates.':isMgr()?'No updates yet. Press + New update to post one.':'No updates right now.'}</div>`:''}
@@ -7403,7 +7408,7 @@ document.addEventListener('change',async ev=>{const el=ev.target;
     el.value='';render();return}
 });
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.matches&&ev.target.matches('#mod-enquiries tr[data-eq=open]'))ev.target.click()});
-function pushStat(){if(!window.APP)return;const yr=String(new Date().getFullYear());const L=enqs().filter(r=>String(r.date).startsWith(yr)),no=ncrs().filter(n=>nState(n)!=='closed').length;APP.stat('enquiries',(no?no+' open NCR'+(no===1?'':'s')+', ':'')+L.length?`${L.length} this year, ${L.filter(r=>r.fault==='yes').length} at fault`:'No enquiries recorded')}
+function pushStat(){if(!window.APP)return;const yr=String(new Date().getFullYear());const L=enqs().filter(r=>String(r.date).startsWith(yr)),no=ncrs().filter(n=>nState(n)!=='closed').length;APP.stat('enquiries',(no?no+' open NCR'+(no===1?'':'s')+', ':'')+(L.length?`${L.length} this year, ${L.filter(r=>r.fault==='yes').length} at fault`:'No enquiries recorded'))}
 /* Jonathan's list of old at fault enquiries (given 27 Oct 2026). Added once, matched to drivers by name on the Drivers page.
    Each one has a fixed id, so it is never added twice. Any name that can't be matched opens in "Paste a list" to pick the driver. */
 const SEED=`TUE 6/10 NATHAN INGRAM 1 at fault
@@ -8310,19 +8315,21 @@ function checkStat(){if(!window.APP||!APP.stat)return;const T=nowDay(),c=checkDa
 let ckPer='day';
 const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const dshort=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
+/* Sunday is not a work day: Day view shows the Saturday before */
+const ckBase=T=>ckPer==='day'&&fromIso(T).getDay()===0?add(T,-1):T;
 function ckRange(){
-  const T=nowDay(),b=ckDay||T;
+  const T=nowDay(),b=ckDay||ckBase(T);
   if(ckPer==='week'){const m=monday(b),e=add(m,6);return{from:m,to:e>T?T:e,label:'Week of '+short(m)+' to '+short(e),cur:m<=T&&T<=e}}
   if(ckPer==='month'){const f=b.slice(0,8)+'01',d=fromIso(f);d.setMonth(d.getMonth()+1);d.setDate(0);const e=iso(d);return{from:f,to:e>T?T:e,label:MONL[fromIso(f).getMonth()]+' '+f.slice(0,4),cur:f<=T&&T<=e}}
   return{from:b,to:b,label:(b===T?'Today, ':'')+dshort(b),cur:b===T};
 }
 function ckStep(n){
-  const T=nowDay(),b=ckDay||T;let x;
+  const T=nowDay(),b=ckDay||ckBase(T);let x;
   if(ckPer==='week')x=add(b,28*n);else if(ckPer==='month'){const d=fromIso(b.slice(0,8)+'01');d.setMonth(d.getMonth()+n);x=iso(d)}else x=add(b,7*n);
   ckDay=x>=T?null:x;
 }
 function ckPick(){
-  const T=nowDay(),b=ckDay||T;const chip=(v,on,bb,sm,dim)=>`<button type="button" data-ts="ckpick" data-v="${v}" aria-pressed="${on}" class="${dim?'dim':''}" ${v>T?'disabled':''}><b>${bb}</b><small>${sm}</small></button>`;
+  const T=nowDay(),b=ckDay||ckBase(T);const chip=(v,on,bb,sm,dim)=>`<button type="button" data-ts="ckpick" data-v="${v}" aria-pressed="${on}" class="${dim?'dim':''}" ${v>T?'disabled':''}><b>${bb}</b><small>${sm}</small></button>`;
   let c='';
   if(ckPer==='day'){const m=monday(b);c=[0,1,2,3,4,5].map(i=>{const d=add(m,i),x=fromIso(d);return chip(d,d===b,DOW[x.getDay()].slice(0,3),x.getDate()+' '+MON[x.getMonth()].slice(0,3),d>T)}).join('')}
   else if(ckPer==='week'){const k=Math.floor(Math.round((fromIso(monday(b))-fromIso('2026-10-05'))/864e5)/28),cs=add('2026-10-05',28*k);c=[0,1,2,3].map(i=>{const f=add(cs,7*i),x=fromIso(f);return chip(f,f===monday(b),'Week '+(i+1),x.getDate()+' '+MON[x.getMonth()].slice(0,3),f>T)}).join('')}
@@ -8598,6 +8605,8 @@ function endQs(p){
   ${loads(p+'l')}`;
 }
 const answered=p=>ui[p+'b']!=null&&typeof ui[p+'l']==='boolean';
+/* the clock card is drawn on Home and on My times, so read the box from the card that was tapped */
+const ckVal=(el,id)=>{const c=el&&el.closest&&el.closest('section.ck,.ck');const x=(c&&c.querySelector('#'+id))||[...document.querySelectorAll('#'+id)].find(e=>e.offsetParent)||document.getElementById(id);return x?x.value:''};
 const endData=p=>{const o={brk:ui[p+'b'],extra:Math.max(0,parseInt(ui[p+'x'],10)||0),twoLoads:ui[p+'l']};return o};
 function breakHTML(k){const v=ui[k];return `<p class="ck-q">How long was your break?</p><div class="ck-chips" role="group" aria-label="Break">${BREAKS.map(b=>`<button type="button" data-ck="brk" data-k="${k}" data-v="${b}" aria-pressed="${v===b}">${b?b+' min':'None'}</button>`).join('')}</div>`}
 const first=()=>{const n=String(me&&me.name||'').trim().split(/\s+/)[0]||'';return n?n.charAt(0)+n.slice(1).toLowerCase():'there'};
@@ -8645,7 +8654,7 @@ document.addEventListener('click',async e=>{
     catch(e){console.warn(e);msg={err:true,t:'Could not undo it. Check you have signal, or ask the office to fix it.'}}busy=false;render();return}
   if(a==='clear'){if(me.role!=='admin')return;if(!confirm('Clear your entry for today? You can start again after.'))return;
     busy=true;render();try{await db.doc('clock/'+today+'_'+me.staff).delete();const chk=await db.doc('clock/'+today+'_'+me.staff).get();if(chk.exists)throw new Error('still there');T=null;hist=hist.filter(h=>h&&h.date!==today);msg={t:'Cleared. You can start again.'}}catch(e){console.warn(e);msg={err:true,t:'Could not clear it: '+((e&&(e.code||e.message))||'unknown')}}busy=false;render();return}
-  if(a==='saveedit'){const t=(document.getElementById('ck-et')||{}).value;if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
+  if(a==='saveedit'){const t=ckVal(el,'ck-et');if(!t){msg={err:true,t:'Pick your start time.'};render();return}if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const f={start:t,startEdited:true,updatedAt:UT()};await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f}},'Start time changed to '+nice(t)+'.');return}
   if(a==='late'){ui={late:true};msg=null;render();return}
   if(a==='cancel'){ui={};msg=null;render();return}
@@ -8653,17 +8662,17 @@ document.addEventListener('click',async e=>{
   if(a==='finlate'){ui={fin:true,late:true};msg=null;render();return}
   if(a==='start'){const now=new Date();const d0={...base(),start:hmOf(now),startAt:db.serverTime?db.serverTime():now.toISOString(),startLate:false,updatedAt:UT()};
     await save(async()=>{const d=OFF?{...base(),start:hmOf(now),startLate:true,updatedAt:UT()}:d0;await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=OFF?d:{...d,startAt:now.toISOString()}},'Shift started at '+nice(d0.start)+'. Have a good run.');return}
-  if(a==='latestart'){const t=(document.getElementById('ck-st')||{}).value;if(!t){msg={err:true,t:'Pick the time you started.'};render();return}
+  if(a==='latestart'){const t=ckVal(el,'ck-st');if(!t){msg={err:true,t:'Pick the time you started.'};render();return}
     if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const d={...base(),start:t,startLate:true,updatedAt:UT()};
     await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=d},'Start time saved.');return}
   if(a==='finish'){if(!answered(''))return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,...endData(''),updatedAt:UT()};
     await save(async()=>{const g=OFF?(({finishAt,...r})=>({...r,finishLate:true}))(f):f;await put(db.doc('clock/'+today+'_'+me.staff).update(g));T={...T,...g}},'Shift finished. Thanks!');return}
-  if(a==='latefin'){const t=(document.getElementById('ck-ft')||{}).value;if(!t||!answered('')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
+  if(a==='latefin'){const t=ckVal(el,'ck-ft');if(!t||!answered('')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(T.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData(''),updatedAt:UT()};
     await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f}},'Finish time saved.');return}
-  if(a==='yfin'){const t=(document.getElementById('ck-yt')||{}).value;if(!t||!answered('y')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
+  if(a==='yfin'){const t=ckVal(el,'ck-yt');if(!t||!answered('y')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(Y.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData('y'),updatedAt:UT()};
     await save(async()=>{await put(db.doc('clock/'+yday+'_'+me.staff).update(f));Y={...Y,...f}},'Thanks, yesterday is saved.');return}
@@ -10085,7 +10094,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010143';
+const VERSION='202611010145';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
