@@ -812,14 +812,27 @@ function navHTML(){const v=new Set(visible());const T=tabSecs();
   const S0=new Set((GG.find(x=>x.k==='start')||{secs:[]}).secs);
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&(g.k==='start'||!S0.has(x)));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'||!g.name?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''} ${s===cur||(hubT(s)&&hubOf(cur)===hubOf(s))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group"></div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
+/* Page actions: the less used buttons of a page live in one "⋯" menu in the header */
+window.PAGE_ACTIONS=window.PAGE_ACTIONS||{};
+PAGE_ACTIONS.results=()=>{if(role!=='mgr')return [];const t=document.getElementById('r_tool');const imp=t&&t.dataset.tab==='import';
+  return imp?[['Back to results','#r_tabs [data-rtab="view"]']]:[['Load new results','#r_tabs [data-rtab="import"]'],['Download PDF','[data-rb="pdf"]'],['Save image','[data-rb="share"]']]};
+function pactBtn(){const f=PAGE_ACTIONS[cur];if(!f)return '';let L=[];try{L=f()||[]}catch(e){}if(!L.length)return '';return `<div class="sh-pactw"><button type="button" class="sh-pact" data-pact aria-haspopup="menu" aria-expanded="false" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button><div class="sh-pactmenu" role="menu" hidden></div></div>`}
+function closeHdMenus(ex){document.querySelectorAll('.sh-hubmenu:not([hidden]),.sh-pactmenu:not([hidden])').forEach(m=>{if(m===ex)return;m.hidden=true;const b=m.previousElementSibling;if(b)b.setAttribute('aria-expanded','false')})}
+document.addEventListener('click',e=>{const t=e.target;
+  const hb=t.closest&&t.closest('[data-hubdd]');if(hb){const m=hb.nextElementSibling;const open=m.hidden;closeHdMenus(m);m.hidden=!open;hb.setAttribute('aria-expanded',String(open));e.stopPropagation();return}
+  const pa=t.closest&&t.closest('[data-pact]');if(pa){const m=pa.nextElementSibling;const open=m.hidden;closeHdMenus(m);if(open){let L=[];try{L=(PAGE_ACTIONS[cur]||(()=>[]))()||[]}catch(x){}m.innerHTML=L.map(([l,sel],i)=>`<button type="button" role="menuitem" data-pai="${i}">${esc(l)}</button>`).join('');m.__L=L}m.hidden=!open;pa.setAttribute('aria-expanded',String(open));e.stopPropagation();return}
+  const pi=t.closest&&t.closest('[data-pai]');if(pi){const m=pi.closest('.sh-pactmenu');const it=(m.__L||[])[+pi.dataset.pai];closeHdMenus();if(it){if(typeof it[1]==='function')it[1]();else{const el=document.querySelector(it[1]);if(el)el.click()}setTimeout(renderPageHead,60)}return}
+  if(!(t.closest&&t.closest('.sh-hubmenu,.sh-pactmenu')))closeHdMenus()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHdMenus()});
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
   if(cur==='home'||(cur==='me'&&role!=='mgr')){ph.hidden=true;ph.innerHTML='';return}
   const hb0=hubOf(cur),T0=role==='mgr'?['home','menu']:tabSecs(),isTab=T0.includes(cur)||(hb0&&hb0.s.some(x=>T0.includes(x[0])));
   const BK=isTab?'':'<button type="button" class="sh-back" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>';
-  const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1></div>`;
+  const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1>${pactBtn()}</div>`;
   {const hb=hubOf(cur);if(hb){const vv=new Set(visible());const tabs=hb.s.filter(x=>vv.has(x[0]));if(tabs.length>1){const d0=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';ph.hidden=false;ph.className='sh-ph dph hub';
-    ph.innerHTML=`<div class="in">${H1(hb.t)}<nav class="sh-hubtabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav>${d0?`<p>${esc(d0)}</p>`:''}</div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
+    const curL=(tabs.find(x=>x[0]===cur)||[cur,NAMES[cur]||''])[1];
+    ph.innerHTML=`<div class="in"><div class="ttl sh-hubrow">${BK}<div class="sh-hubdd"><button type="button" class="sh-hubbtn" data-hubdd aria-haspopup="menu" aria-expanded="false" aria-label="${esc(hb.t)}: ${esc(curL)}. Choose another"><h1>${esc(curL)}</h1><svg class="chv" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><div class="sh-hubmenu" role="menu" hidden><small class="sh-hubhd">${esc(hb.t)}</small>${tabs.map(([x,l])=>`<button type="button" role="menuitem" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</div></div>${pactBtn()}</div>${d0?`<p>${esc(d0)}</p>`:''}</div>`;markDup();return}}}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
   {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['updates','menu'].includes(cur);ph.className+=' dph';
@@ -1611,7 +1624,7 @@ function guideTopic(said){const T=window.__T||[];if(!T.length)return null;
   return bs>=3?best:null}
 function vWait(sel,cb,ms){const t0=Date.now();(function tick(){const el=document.querySelector(sel);if(el&&el.offsetParent!==null){cb(el);return}if(Date.now()-t0<(ms||3500))setTimeout(tick,120)})()}
 function vFill(sel,val){vWait(sel,el=>{el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));try{el.scrollIntoView({block:'center'})}catch(e){}})}
-function vClick(sel){vWait(sel,el=>{el.click()})}
+function vClick(sel){const t0=Date.now();(function tick(){const el=document.querySelector(sel);if(el&&(el.offsetParent!==null||Date.now()-t0>900)){el.click();try{if(typeof renderPageHead==='function')setTimeout(renderPageHead,80)}catch(x){}return}if(Date.now()-t0<4000)setTimeout(tick,120)})()}
 function vFlashText(secSel,word){vWait(secSel,box=>{setTimeout(()=>{const w=word.toLowerCase();const el=[...box.querySelectorAll('h2,h3,h4,b,strong,.nm,button,label')].find(e=>(e.textContent||'').toLowerCase().includes(w));if(el){const c=el.closest('.card,section,li,div')||el;c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('v-flash');setTimeout(()=>c.classList.remove('v-flash'),2400)}},250)})}
 /* "2 days ago", "last week", "the 25th", "last Monday", "this month"... -> which period and date */
 function voiceWhen(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ')+' ';
@@ -1859,6 +1872,12 @@ document.addEventListener('click',e=>{
   const n=e.target.closest('[data-nav]');if(n){closeMore();go(n.dataset.nav);return}
   const s=e.target.closest('[data-sh]');if(s&&s.dataset.sh==='print'){printPage(s);return}if(s&&s.dataset.sh==='uv'){if(!previewChild)openUserView();return}if(s&&s.dataset.sh==='mv'){if(previewChild){try{window.parent.__closeUV()}catch(x){}}else closeUserView();return}if(s&&s.dataset.sh==='shareAll')shareAll(s);if(s&&s.dataset.sh==='backup')backup(s);if(s&&s.dataset.sh==='shareRuns')shareRuns(s);if(s&&s.dataset.sh==='shareDirectory')sharePart(s,()=>window.DIRECTORY.share(),'directory');if(s&&s.dataset.sh==='shareLeave')sharePart(s,()=>window.LEAVE.share(),'leave calendar');if(s&&s.dataset.sh==='shareLockers')sharePart(s,()=>window.LOCKERS.share(),'locker list');if(s&&s.dataset.sh==='sharePrecards')sharePart(s,()=>window.PRECARDS.share(),'precard list');
 });
+/* Day / Week / Month as a small dropdown next to the date arrows */
+function pkEnhance(){document.querySelectorAll('.pkx .pseg2').forEach(sg=>{const B=[...sg.querySelectorAll('button')];if(!B.length)return;let sel=sg.previousElementSibling;
+  if(!sel||!sel.classList||!sel.classList.contains('pk-sel')){sel=document.createElement('select');sel.className='pk-sel';sel.setAttribute('aria-label','Day, week or month');sg.parentNode.insertBefore(sel,sg);
+    sel.addEventListener('change',()=>{const b=[...sg.querySelectorAll('button')][+sel.value];if(b)b.click()})}
+  const h=B.map((b,i)=>`<option value="${i}" ${b.getAttribute('aria-pressed')==='true'?'selected':''}>${esc(b.textContent.trim())}</option>`).join('');if(sel.__h!==h){sel.__h=h;sel.innerHTML=h}})}
+{let pkT=0;new MutationObserver(()=>{if(pkT)return;pkT=requestAnimationFrame(()=>{pkT=0;pkEnhance()})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-pressed']})}
 /* older records load only when a page asks for them (see the data layer) */
 window.needHist=function(from,cols){from=(!from||from<'1000')?'':from;try{let W=window.__history?window:null;if(!W){try{if(window.parent!==window&&window.parent.__history)W=window.parent}catch(e){}}if(!W)return Promise.resolve();
   if(cols&&cols.every(c=>{const f=W.__historyFrom(c);return f===''||(from&&from>=f)}))return Promise.resolve();return W.__history(from,cols)}catch(e){return Promise.resolve()}};
@@ -10089,7 +10108,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010092';
+const VERSION='202611010094';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10859,5 +10878,43 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
  let t=0;const q=()=>{clearTimeout(t);t=setTimeout(free,120)};
  const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,400);return}new MutationObserver(q).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});window.addEventListener('resize',q);free()};go();})();
 </script>
+<style id="compact-ui">
+#sh-ph .sh-hubrow{display:flex;align-items:center;gap:8px;min-width:0}
+#sh-ph .sh-hubdd{position:relative;min-width:0;flex:0 1 auto}
+#sh-ph .sh-hubbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:8px;max-width:100%;padding:4px 10px 4px 2px;border-radius:12px}
+#sh-ph .sh-hubbtn h1{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sh-ph .sh-hubbtn .chv{width:22px;height:22px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.7;transition:transform .15s}
+#sh-ph .sh-hubbtn[aria-expanded=true] .chv{transform:rotate(180deg)}
+#sh-ph .sh-hubbtn:focus-visible,#sh-ph .sh-pact:focus-visible{outline:2px solid var(--pds-orange,#F2782D);outline-offset:2px}
+#sh-ph .sh-hubdd:has(.sh-hubmenu .bdg) .sh-hubbtn::after{content:'';width:9px;height:9px;border-radius:50%;background:#E5484D;flex:0 0 auto;margin-left:-4px}
+:root:root #sh-ph .sh-hubmenu{position:absolute;top:calc(100% + 6px);left:0;z-index:60;display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;gap:2px!important;min-width:220px;max-width:min(320px,86vw);padding:6px!important;margin:0!important;border-radius:14px;background:var(--sh-surface,#fff);border:1px solid var(--sh-line,rgba(127,127,127,.25));box-shadow:0 12px 32px rgba(0,0,0,.22);overflow:visible!important}
+:root:root #sh-ph .sh-hubmenu[hidden]{display:none!important}
+#sh-ph .sh-hubhd{display:block;padding:6px 12px 4px;font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;opacity:.6}
+:root:root:root #sh-ph .sh-hubmenu button{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;align-items:center;justify-content:space-between;gap:10px;width:100%;height:auto!important;min-height:44px!important;padding:10px 12px!important;border-radius:10px!important;font-weight:700!important;font-size:1rem!important;line-height:1.2!important;background:transparent!important;color:var(--sh-ink)!important;flex:none!important}
+:root:root:root #sh-ph .sh-hubmenu button:hover{background:var(--sh-sunk,rgba(127,127,127,.1))!important}
+:root:root:root #sh-ph .sh-hubmenu button[aria-current=page]{background:rgba(242,120,45,.14)!important;color:var(--pds-orange,#F2782D)!important}
+:root:root:root #sh-ph .sh-hubmenu button[aria-current=page]::after{content:'✓';font-weight:800}
+#sh-ph .sh-pactw{position:relative;margin-left:auto;flex:0 0 auto}
+#sh-ph .sh-pact{all:unset;box-sizing:border-box;cursor:pointer;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--sh-sunk,rgba(127,127,127,.1));color:var(--sh-ink)}
+#sh-ph .sh-pact svg{width:22px;height:22px;fill:currentColor}
+#sh-ph .sh-pactmenu{position:absolute;top:calc(100% + 6px);right:0;z-index:60;display:flex;flex-direction:column;gap:2px;min-width:210px;padding:6px;border-radius:14px;background:var(--sh-surface,#fff);border:1px solid var(--sh-line,rgba(127,127,127,.25));box-shadow:0 12px 32px rgba(0,0,0,.22)}
+#sh-ph .sh-pactmenu[hidden]{display:none}
+#sh-ph .sh-pactmenu button{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:1rem;color:var(--sh-ink)}
+#sh-ph .sh-pactmenu button:hover{background:var(--sh-sunk,rgba(127,127,127,.1))}
+#sh-ph .ttl{display:flex;align-items:center;gap:8px}
+/* period: one slim row */
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx{flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;padding:6px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pk-sel{flex:0 0 auto;height:44px;min-height:44px!important;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink);font:800 1rem var(--sh-body);padding:0 34px 0 12px;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F2782D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;cursor:pointer;width:auto}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep{flex:1 1 190px!important;width:auto!important;margin:0!important;min-width:0}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-a{width:40px!important;height:44px!important;min-height:44px!important;font-size:1.5rem!important;border-radius:12px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-c{height:44px!important;min-height:44px!important;border-radius:12px!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-c b{font-size:.98rem!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-t small{font-size:.66rem!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pchips{flex-basis:100%!important}
+/* Results (admin): load and download live in the ⋯ menu */
+:root:root:root:root:not(.drvui) body #sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs,:root:root:root:root:not(.drvui) body #sh-main#sh-main#sh-main#sh-main#sh-main #r_tool .rb-dl{display:none!important}
+:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .persub.pkx{display:flex!important;grid-template-columns:none!important}
+</style>
 </body>
 </html>
