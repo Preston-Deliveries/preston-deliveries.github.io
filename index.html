@@ -1417,7 +1417,7 @@ const INTENTS=[
  [/\b(who (hasn'?t|has not|didn'?t) clock(ed)?|not clocked|missing (clock|times)|timesheets?|hours (this|last) week|my hours|how many hours|when did i (start|finish)|what time did i (start|finish)|my (start|finish) times?|fix my times?)\b/,'@times'],
  [/\b(clock (me )?(in|on|out|off)|start (my |the )?(shift|day|work)|finish (my |the )?(shift|day|work)|end (my |the )?(shift|day)|i forgot to clock|i('?m| am) (here|starting|finishing|done))\b/,'clock'],
  [/\b(my pay|pay ?day|pay ?slip|when (do|will) i get paid|how much\b.{0,25}\b(earn|earned|made|make|paid|owed|owe|get)|earnings|invoices?|send (my )?invoice|my rate|gst|abn)\b/,'invoices'],
- [/\b(how (am i|did i) (go|going|doing|do)|my (results|scores|stats|numbers|eta|scans)|results|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'results'],
+ [/\b(how (am i|did i) (go|going|doing|do)|my (results|scores|stats|numbers|eta|scans)|results|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'@res'],
  [/\b(survey|nps|customer (score|feedback|rating)|ratings?|rankings?|promoters?|detractors?)\b/,'survey'],
  [/\b(accident|crash(ed)?|incident|hazard|near miss|injur(y|ed)|hurt myself|report (a|an|something|it)|dog (bit|bite|attack|rushed|chased)|bitten|slipped|tripped|fell (over|down)|abused|threatened|aggressive (customer|person)|unsafe|damaged (a|the|their) (car|fence|gate|letterbox|property))\b/,'reports'],
  [/\b(van checks?|check (my|the) van|prestart|vehicle check|tyres?|flat tyre|oil|warning light|windscreen|brakes?|van (broke|broken|won'?t start|service)|break ?down|broke down|service due)\b/,'vchecks'],
@@ -1442,19 +1442,20 @@ const INTENTS=[
  [/\b(performance review|review|warnings?)\b/,'review']];
 /* single words that point to a page, for when the phrase doesn't match exactly */
 const VKEYS={invoices:'money earn earned earning earnings paid pay payment payments payslip invoice invoices wage wages income owed owe owing',
- leave:'leave holiday holidays vacation sick',results:'results result score scores stats statistics performance eta scans scanning rank',survey:'survey nps ranking rankings rating',
+ leave:'leave holiday holidays vacation sick','@res':'results result score scores stats statistics performance eta scans scanning rank',survey:'survey nps ranking rankings rating',
  reports:'accident crash crashed incident hazard injury injured hurt bitten bite slipped tripped',vchecks:'tyre tyres brakes prestart inspection oil windscreen breakdown',uniform:'uniform shirt shirts shorts pants trousers hat jacket vest polo boots jumper cap',
  briefs:'toolbox brief briefs',guide:'rule rules policy policies guide procedure procedures allowed',precards:'precard precards carded',lockers:'locker lockers',
  updates:'news updates announcement announcements notice',cover:'cover covering floater floaters roster relief',directory:'phone contact contacts number numbers call ring',
  feedback:'feedback suggestion suggestions idea ideas',enquiries:'enquiry enquiries complaint complaints',me:'profile bank',
  '#.dh-card.wx':'weather rain raining forecast temperature umbrella storm sunny',
  '@times':'clock clocked clocking hours timesheet timesheets shift shifts started finished'};
-function voiceKey(t,vis){const ws=t.trim().split(' ');for(const[pg,list]of Object.entries(VKEYS)){const L=list.split(' ');if(ws.some(w=>L.includes(w.replace(/'s$/,'')))){let page=pg;if(page[0]==='#')return page;if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';if(vis.includes(page)&&NAMES[page])return page}}return null}
+function voiceKey(t,vis){const ws=t.trim().split(' ');for(const[pg,list]of Object.entries(VKEYS)){const L=list.split(' ');if(ws.some(w=>L.includes(w.replace(/'s$/,'')))){let page=pg;if(page[0]==='#')return page;if(page==='@res')page=(/\b(my|i|me|i'm)\b/.test(t)||role!=='mgr')&&vis.includes('me')?'me':'results';if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';if(vis.includes(page)&&NAMES[page])return page}}return null}
 function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';
   const vis=visible();
   for(const[rx,pg]of INTENTS){if(!rx.test(t))continue;let page=pg;
     if(page[0]==='#'){if(document.querySelector('#sh-main '+page.slice(1))||document.querySelector(page.slice(1)))return {page,term:''};continue}
     if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';
+    if(page==='@res')page=(/\b(my|i|me|i'm)\b/.test(t)||role!=='mgr')&&vis.includes('me')?'me':'results';
     if(!vis.includes(page)||!NAMES[page])continue;
     let term='';if(page==='directory'){const m=t.match(/\b(?:for|of|call|ring)\s+([a-z' ]+?)\s*$/);if(m)term=m[1].replace(/\b(the|a|please)\b/g,'').trim()}
     return {page,term}}
@@ -1483,6 +1484,10 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='vchecks'&&role==='mgr'&&/\b(new|do|start|add)\b/.test(t)){go();vClick('[data-vc="new"]');return 'Opening a new van check.'}
   if(page==='briefs'&&role==='mgr'&&/\b(new|add|create)\b/.test(t)){go();vClick('[data-tb="new"]');return 'Opening New team brief.'}
   if(page==='results'&&/\b(rank|where (do|am) i|find me|my results|how (am|did) i)\b/.test(t)){go();vClick('[data-rt="find"]');return 'Opening your results.'}
+  if(page==='me'){const per=/\b(month|monthly|this cycle|cycle|so far)\b/.test(t)?'cycle':/\b(week|weekly|this week|last week)\b/.test(t)?'week':/\b(today|yesterday|day)\b/.test(t)?'day':null;
+    go();if(per){vClick('[data-per="'+per+'"]');
+      if(per==='day'&&/\byesterday\b/.test(t)){const y=new Date(Date.now()-864e5);const iso=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');setTimeout(()=>vClick('[data-pd="'+iso+'"]'),400)}}
+    return 'Opening your results'+(per==='cycle'?' for the month':per==='week'?' for the week':per==='day'?(/\byesterday\b/.test(t)?' for yesterday':' for the day'):'')+'.'}
   if(page==='uniform'){const m=t.match(/\b(boots?|hi ?vis|vests?|shirts?|polos?|shorts|pants|trousers|hats?|caps?|jackets?|jumpers?)\b/);if(m){go();vFlashText('#mod-uniform',m[1].replace(/s$/,'').replace('hi vis','hi'));return 'Opening Uniform at '+m[1]+'.'}return null}
   const fills={directory:'#dy_q',precards:'#pc_q',lockers:'#lk_q',staff:'#dm_q'};
   if(fills[page]){let q=term;if(!q){const m=t.match(/\b(?:for|of|call|ring|text|at|on|is|was)\s+([a-z0-9' ]+?)\s*$/);if(m)q=m[1].replace(/\b(the|a|please|number|phone|carded|precarded)\b/g,'').trim()}
@@ -9576,7 +9581,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010024';
+const VERSION='202611010025';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
