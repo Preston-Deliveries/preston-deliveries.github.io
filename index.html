@@ -10067,7 +10067,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010081';
+const VERSION='202611010082';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10591,7 +10591,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     <p>We deliver parcels for <b>Australia Post</b> on <b>Contract 1161</b>, across the Gold Coast postcodes 4214, 4215, 4217 and 4218.</p>
     <p>Before your first day we need a few details and photos of your documents. It takes about <b>10 minutes</b>. You can stop at any time and carry on later; we keep what you have done.</p>
     <ul class="ob-l"><li>Your details and bank account (for your invoices)</li><li>Your work rights</li><li>Photos of your driver licence</li><li>Sign the Australia Post declaration</li><li>Read and sign our main rules</li><li>What to bring on your first day</li></ul>
-    <p>On your first day a supervisor will take you through a <b>site induction</b> at the depot.</p>`;
+    <p>On your first day, a supervisor or manager will take you through a <b>quick site induction</b> at the depot.</p>`;
   if(s===1)body=`<h1>Your details</h1><p class="ob-h">Only the office can see these.</p>
     <div class="ob-g">${ofld('first','First name',{req:1})}${ofld('last','Last name',{req:1})}${ofld('dob','Date of birth',{type:'date',req:1})}${ofld('mobile','Mobile',{type:'tel',req:1})}</div>
     ${ofld('address','Home address',{req:1,ph:'Street, suburb, postcode'})}
@@ -10614,6 +10614,8 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     <p>Two last things so the app works properly for you:</p>
     <ol class="ob-l"><li><b>Put the app on your home screen</b> if you haven’t yet, so it opens like a normal app.<br><b>iPhone</b> (in Safari): tap the Share button <span aria-hidden="true">⬆</span>, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.<br><b>Android</b> (in Chrome): tap the 3 dots ⋮ at the top right, then <b>Add to Home screen</b> or <b>Install app</b>.</li><li><b>Turn on notifications</b> so you get messages from the office. On an iPhone this only works once the app is on your home screen.</li></ol>
     ${window.PUSH&&PUSH.state()==='on'?'<p class="ob-ok">✓ Notifications are on.</p>':`<button type="button" class="sh-btn" data-obx="push">🔔 Turn on notifications</button>`}
+    <h2>Your first day</h2>
+    <p>When you arrive at the depot, a supervisor or manager will take you through a <b>quick site induction</b>. It covers signing in, parking, safety, first aid and emergency procedures. At the end you both sign it on their phone.</p>
     <h2>Your Fit2Work police check</h2>
     <p>Every driver who delivers for Australia Post must pass a <b>Fit2Work</b> police check and work rights check. It’s free and done online.</p>
     <ol class="ob-l"><li>Watch your email (and junk folder) for an email from Equifax Fit2Work with a username and password. It usually comes within 2 business days of us setting you up.</li><li>Complete it within <b>10 business days</b>. You’ll need your addresses from the last 5 years, a selfie holding your photo ID, and 4 ID documents.</li><li>Tell the office once you’ve submitted it.</li></ol>
@@ -10635,7 +10637,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     <li><span aria-hidden="true">🖊️</span><div><b>A pen</b> for cards and notes.</div></li></ul>
     <h2>Your equipment</h2>
     <p>Carry trolleys, bags and flutes for parcels are <b>not supplied</b>. You’ll need to get your own from a store like <b>Bunnings</b>, which we highly recommend. If you need something to start with, we can lend you temporary equipment if available.</p>
-    <p>When you tap <b>Send to the office</b>, we’ll check your details. A supervisor will do your site induction on your first day.</p>`;
+    <p>When you tap <b>Send to the office</b>, we’ll check your details.</p>`;
   w.innerHTML=`<div class="ob-pn"><div class="ob-top"><span class="ob-brand">≡PDS</span><span class="ob-stp">${OB.mode==='dec'?'Please sign':`Step ${s+1} of ${OB_STEPS.length} · ${OB_STEPS[s]}`}</span>${OB.preview?'<button type="button" class="ob-x" data-obx="close" aria-label="Close preview">✕</button>':''}</div>${OB.preview?'<div class="ob-pv">Preview only. Nothing you type here is saved.</div>':''}
     ${OB.mode==='dec'?'':`<div class="ob-bar"><i style="width:${Math.round((s+1)/OB_STEPS.length*100)}%"></i></div>`}
     <div class="ob-body">${body}</div>
