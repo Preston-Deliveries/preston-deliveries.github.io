@@ -845,11 +845,14 @@ const DLSEL='#sh-main .sh-sec :is(button,a.sh-btn,a.btn)';
 function tagDl(R){(R?under(R,DLSEL):document.querySelectorAll(DLSEL)).forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^(print|imprimir|ਪ੍ਰਿੰਟ)/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
   const parents=new Set((R?under(R,'#sh-main .sh-sec .dlb').concat(R.filter(r=>r.isConnected&&r.parentNode&&r.parentNode.querySelector&&r.parentNode.querySelector(':scope>.dlb')).map(r=>r.parentNode.querySelector(':scope>.dlb'))):[...document.querySelectorAll('#sh-main .sh-sec .dlb')]).map(b=>b.parentNode));
   parents.forEach(p=>{const kids=[...p.children];const dl=kids.filter(k=>k.classList.contains('dlb'));if(!dl.length)return;const firstDl=kids.indexOf(dl[0]);const tail=kids.slice(firstDl);dl.sort((a,b)=>b.classList.contains('dl-in')-a.classList.contains('dl-in'));const want=kids.filter(k=>!k.classList.contains('dlb')).concat(dl);if(!p.matches('td,li,tr')&&want.some((k,i)=>kids[i]!==k))dl.forEach(b=>p.appendChild(b));dl.forEach((b,i)=>{if(b.classList.contains('dlb1')!==(i===0))b.classList.toggle('dlb1',i===0)});if(!p.classList.contains('has-dl'))p.classList.add('has-dl')})}
+/* switch counts: one round badge everywhere, hidden when the count is 0 */
+const CNTSEL='#sh-main :is([role=group],.tabs,.seg) button > :is(small,.n,.cnt)';
+function tagCnt(R){(R?under(R,CNTSEL).concat(R.filter(r=>r.matches&&r.matches(':is(small,.n,.cnt)')&&r.closest&&r.closest('#sh-main [role=group] button'))):document.querySelectorAll(CNTSEL)).forEach(el=>{const z=/^\s*0\s*$/.test(el.textContent);if(el.classList.contains('cz')!==z)el.classList.toggle('cz',z);if(!el.classList.contains('cbadge'))el.classList.add('cbadge')})}
 /* only look at what changed, not every button on every page */
 let pcQ=false,pcR=new Set(),nbAt=0;new MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes){if(n.nodeType===1)pcR.add(n);else if(n.parentElement)pcR.add(n.parentElement)}
   /* tidy straight away, before the screen paints, so nothing jumps */
   const R=[...pcR].filter(r=>r.isConnected&&!(r.closest&&r.closest('#sh-links,#nt-pop')));pcR.clear();if(!R.length)return;
-  try{tagPc(R);tagDl(R)}catch(e){}try{selectify()}catch(e){}
+  try{tagPc(R);tagDl(R)}catch(e){}try{tagCnt(R)}catch(e){}try{selectify()}catch(e){}
   if(pcQ)return;pcQ=true;requestAnimationFrame(()=>{pcQ=false;if(Date.now()-nbAt>400){nbAt=Date.now();try{applyNavBadges()}catch(e){}}})}).observe(document.body,{childList:true,subtree:true});
 let dupQ=false;const dupMo=new MutationObserver(()=>{if(dupQ)return;dupQ=true;try{markDup()}catch(e){}dupMo.takeRecords();dupQ=false});dupMo.observe(document.getElementById('sh-main')||document.body,{childList:true,subtree:true,characterData:true});
 function renderViewbar(){
@@ -6789,7 +6792,7 @@ function render(){
   if(!render.once&&isMgr()){render.once=true;view='req'}/* managers open on the requests */
   const c=cfg(),L=lines(),n=total();
   const open=Object.values(orders).filter(o=>o.status!=='completed'),done=Object.values(orders).filter(o=>o.status==='completed');
-  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-un="view" data-v="form" aria-pressed="${view==='form'}">Order form</button><button type="button" data-un="view" data-v="req" aria-pressed="${view==='req'}">Requests${open.length?` <b class="cnt">${open.length}</b>`:''}</button><button type="button" data-un="view" data-v="done" aria-pressed="${view==='done'}">Completed${done.length?` (${done.length})`:''}</button></div>`:'';
+  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-un="view" data-v="form" aria-pressed="${view==='form'}">Order form</button><button type="button" data-un="view" data-v="req" aria-pressed="${view==='req'}">Requests${open.length?` <b class="cnt">${open.length}</b>`:''}</button><button type="button" data-un="view" data-v="done" aria-pressed="${view==='done'}">Completed${done.length?` <b class="cnt">${done.length}</b>`:''}</button></div>`:'';
   const head=`<div class="head"><h1>Uniform Orders</h1>${isMgr()?'<div class="act"><button type="button" class="sh-btn" data-un="edit">Order settings</button><button type="button" class="sh-btn" data-un="pdf">Print blank order</button></div>':''}</div>`;
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
   if(isMgr()&&view!=='form'){box.innerHTML=`<div class="unx">${head}${m}${tabs}${view==='req'?reqHTML(open):doneHTML(done)}</div>`;return}
@@ -8029,7 +8032,7 @@ function statusHTML(){
   else if(sortS==='name')rows.sort((a,b)=>a.p.name.localeCompare(b.p.name));
   else rows.sort((a,b)=>{const s=x=>x.last&&x.last.outcome==='fail'?0:!x.last?1:x.due<0?2:x.last.outcome==='minor'?3:4;return s(a)-s(b)||(a.due??-9999)-(b.due??-9999)||a.p.name.localeCompare(b.p.name)});
   const cnt={never:rows.filter(x=>!x.last).length,over:rows.filter(x=>x.last&&x.due<0).length,fail:rows.filter(x=>x.last&&x.last.outcome==='fail').length,fix:rows.filter(x=>x.last&&x.last.outcome==='minor').length,ok:rows.filter(x=>x.last&&x.due>=0&&x.last.outcome==='pass').length};
-  return `<div class="tiles"><div class="tile bad"><span>Failed, do not drive</span><b>${cnt.fail}</b></div><div class="tile warn"><span>Fix needed</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none"><span>No check in 4 months</span><b>${cnt.never}</b></div><div class="tile good"><span>Up to date</span><b>${cnt.ok}</b></div></div>
+  return `<div class="tiles trow" style="--tn:5"><div class="tile bad" title="Failed, do not drive"><span>Failed</span><b>${cnt.fail}</b></div><div class="tile warn" title="Fix needed"><span>Fix</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none" title="No check in 4 months"><span>Unchecked</span><b>${cnt.never}</b></div><div class="tile good" title="Up to date"><span>Up to date</span><b>${cnt.ok}</b></div></div>
   <div class="bar vcbar"><input type="search" id="vc_q" placeholder="Search driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts"><select id="vc_sorts" aria-label="Sort">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every"><select id="vc_every" aria-label="Check every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>Every ${n} days</option>`).join('')}</select></label></div>
   <div class="tw"><table class="tb vc-drv"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
   ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
@@ -8278,7 +8281,7 @@ function personHTML(){
   return `<div class="pv"><div class="pvh"><div><h2>${esc(p.name)}</h2><span class="sub">${[p.no,p.login].filter(Boolean).map(esc).join(' · ')}</span></div>
     <label class="daysel" for="ts_per">Show<select id="ts_per">${PER.map(([k,l])=>`<option value="${k}" ${per===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <button type="button" class="sh-btn" data-ts="px">Download Excel</button><button type="button" class="sh-btn primary" data-ts="pp">Download PDF</button></div>
-    <div class="tiles"><div class="tile"><span>Days worked</span><b>${R.length}</b></div><div class="tile"><span>Total hours</span><b>${fmtH(tot)||'0h 00m'}</b></div><div class="tile"><span>Extra parcels</span><b>${xp}</b></div><div class="tile"><span>2 load days</span><b>${tl}</b></div><div class="tile ${miss?'warn':'good'}"><span>Missing a time</span><b>${miss}</b></div></div>
+    <div class="tiles trow" style="--tn:5"><div class="tile" title="Days worked"><span>Days</span><b>${R.length}</b></div><div class="tile" title="Total hours"><span>Hours</span><b>${fmtH(tot)||'0h 00m'}</b></div><div class="tile" title="Extra parcels"><span>Extra</span><b>${xp}</b></div><div class="tile" title="2 load days"><span>2 loads</span><b>${tl}</b></div><div class="tile ${miss?'warn':'good'}" title="Missing a time"><span>Missing</span><b>${miss}</b></div></div>
     ${R.length?`<section class="card day"><div class="tw"><table class="tb tsd">${THEAD('Date')}<tbody>${R.map(r=>rowHTML(r,true)).join('')}</tbody></table></div></section>`:'<div class="empty">No entries for this period.</div>'}</div>`;
 }
 function searchHTML(){
@@ -8396,7 +8399,7 @@ function render(){
    ${m}
    ${tsTab==='view'?`${checkHTML()}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
-   <div class="tiles"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}"><span>Missing a time this week</span><b>${W.miss}</b></div></div>
+   <div class="tiles trow" style="--tn:3"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}" title="Missing a time this week"><span>Missing a time</span><b>${W.miss}</b></div></div>
    <p class="hint">To change someone's times, tap Adjust and search their name.</p>`:`${searchHTML()}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    ${W.secs}
@@ -9916,8 +9919,8 @@ function mgrListHTML(){
   const yr=new Date().getFullYear()+'';const Y=L.filter(r=>(r.f&&r.f.date||'').startsWith(yr));
   return `<div class="tabs" role="group" aria-label="Show">${[['new','New'],['open','Open'],['all','All']].map(([k,l])=>`<button type="button" data-rp="tab" data-v="${k}" aria-pressed="${tab===k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
    <div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file">+ New report</button></div></div>
-   <div class="tiles"><div class="tile ${cnt('new')?'warn':''}"><span>New</span><b>${cnt('new')}</b></div><div class="tile"><span>Open</span><b>${cnt('open')}</b></div>
-   ${Object.entries(KINDS).map(([k,o])=>`<div class="tile ${o.c}"><span>${o.t}s this year</span><b>${Y.filter(r=>r.kind===k).length}</b></div>`).join('')}</div>
+   <div class="tiles trow" style="--tn:5"><div class="tile ${cnt('new')?'warn':''}"><span>New</span><b>${cnt('new')}</b></div><div class="tile"><span>Open</span><b>${cnt('open')}</b></div>
+   ${Object.entries(KINDS).map(([k,o])=>`<div class="tile ${o.c}" title="${o.t}s this year"><span>${({incident:'Incidents',vehicle:'Accidents',hazard:'Hazards'})[k]||o.t}</span><b>${Y.filter(r=>r.kind===k).length}</b></div>`).join('')}</div>
    <div class="bar onesrch">
    <input type="search" id="rp_q" placeholder="Search name, place or words" value="${esc(q)}" autocomplete="off" aria-label="Search"></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
@@ -10094,7 +10097,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010147';
+const VERSION='202611010148';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11085,6 +11088,26 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-set .pu-who li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid var(--sh-line);font-size:.92rem}
 :root:root:root:root:root:root:root body #sh-set .pu-who li:first-child{border-top:0}
 :root:root:root:root:root:root:root body #sh-set .pu-who li span{color:var(--sh-muted);text-align:right}
+/* count badges on switches */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is([role=group],.tabs,.seg) button>.cbadge{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:22px!important;height:22px!important;padding:0 7px!important;margin:0 0 0 6px!important;border-radius:11px!important;background:#5B6474!important;color:#fff!important;font-size:.78rem!important;font-weight:800!important;line-height:1!important;border:0!important;box-shadow:none!important;vertical-align:middle!important;letter-spacing:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is([role=group],.tabs,.seg) button[aria-pressed=true]>.cbadge{background:#F2782D!important;color:#fff!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is([role=group],.tabs,.seg) button>.cbadge.cz{display:none!important}
+/* number tiles: one even row, number on top, short label underneath */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .tiles.trow{display:grid!important;grid-template-columns:repeat(var(--tn,5),minmax(0,1fr))!important;gap:6px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .tiles.trow>.tile{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:10px 2px!important;min-height:0!important;min-width:0!important;gap:2px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .tiles.trow>.tile>b{order:-1!important;font-size:1.4rem!important;line-height:1.1!important;margin:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .tiles.trow>.tile>span{font-size:.68rem!important;font-weight:700!important;text-transform:none!important;letter-spacing:0!important;line-height:1.15!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;max-width:100%!important;margin:0!important}
+/* precard and locker cards on phones: postcode and suburb on one line, driver on its own line */
+@media (max-width:700px){
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards td.dn{grid-column:2/4!important;grid-row:3!important;text-align:left!important;color:var(--sh-ink)!important;font-weight:600!important;font-size:.9rem!important;white-space:normal!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards td.dt{grid-column:4!important;grid-row:3!important;text-align:right!important;white-space:nowrap!important;align-self:center}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards td.rs{grid-row:4!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards td.no{grid-row:1/span 4!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards td.sb,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.sb{grid-column:3/-1!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.dn{grid-column:2/-1!important;grid-row:4!important;text-align:left!important;color:var(--sh-ink)!important;font-weight:600!important;font-size:.9rem!important;white-space:normal!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.dn .nl{display:inline!important;margin:0 10px 0 0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.rs{grid-row:5!important}
+}
 </style>
 </body>
 </html>
