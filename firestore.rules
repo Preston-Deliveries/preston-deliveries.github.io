@@ -49,7 +49,7 @@ service cloud.firestore {
 
     // Collections every driver may read. Everything not listed here is admin only.
     function memberReadable(col) {
-      return col in ['runs', 'cover', 'notices', 'updates', 'briefs', 'briefpages', 'pushcfg'];
+      return col in ['runs', 'cover', 'notices', 'updates', 'briefs', 'briefpages', 'pushcfg', 'agreement'];
     }
 
     // Clock in and out: drivers add their own times only, for today (or catch up the last few days).
