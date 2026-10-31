@@ -6370,7 +6370,7 @@ function render(){
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
   if(!isMgr())setTimeout(()=>{if(window.ME&&window.ME.paySummary)window.ME.paySummary()},0);
-  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted invoices</button><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make an invoice</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates for drivers</button></div>`:'';
+  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make my invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Blank templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted</button><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make invoice</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates</button></div>`:'';
   if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
   if(isMgr()&&!render.once){render.once=true;ivtab='sub'}/* managers open on Submitted invoices */
   if(isMgr()&&ivtab==='mine')ivtab='make';
@@ -10084,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010125';
+const VERSION='202611010126';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
