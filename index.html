@@ -963,7 +963,7 @@ function selectify(){
     let sel=box.nextElementSibling;
     if(!sel||!sel.classList||!sel.classList.contains('pc-sel')){
       const wrap=document.createElement('label');wrap.className='pc-sel';
-      wrap.innerHTML='<span>'+(box.matches('.rt-chips,.chips.grpc')?'Role':box.matches('.scopes')?'Postcode':'Postcode')+'</span><select></select>';
+      wrap.innerHTML='<select aria-label="'+(box.matches('.rt-chips,.chips.grpc')?'Role':'Postcode')+'"></select>';
       box.after(wrap);sel=wrap;
       wrap.querySelector('select').addEventListener('change',e=>{const b=box.__btns&&box.__btns[+e.target.value];if(b)b.click()});
     }
@@ -10089,7 +10089,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010114';
+const VERSION='202611010116';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11010,6 +11010,11 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act1>.sh-btn{display:flex!important;width:100%!important}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act2{display:flex!important;gap:8px!important;width:100%!important;margin-top:8px}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act2>.sh-btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 10px!important;font-size:.86rem!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pseg2{display:flex!important;width:100%!important;gap:0!important;padding-left:4px!important;padding-right:4px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pseg2>button{flex:1 1 0!important;min-width:0!important;justify-content:center!important;text-align:center!important;padding-left:0!important;padding-right:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_perSeg.pvseg{display:flex!important;width:100%!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_perSeg.pvseg>button{flex:1 1 0!important;min-width:0!important;justify-content:center!important;text-align:center!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pc-sel>select{flex:1 1 100%!important;width:100%!important;max-width:none!important}
 </style>
 </body>
 </html>
