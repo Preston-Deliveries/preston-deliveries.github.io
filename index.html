@@ -8417,7 +8417,10 @@ const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
 async function load(){
   let w=window.__webMe;if(!w){try{if(window.parent!==window)w=window.parent.__webMe}catch(e){}}if(!w){loaded=true;fresh=true;return}me={...w};
   try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db){loaded=true;fresh=true;return}
-  if(!me.staff&&me.role==='admin'){const c=readCache();if(c&&c.staff){me.staff=c.staff;me.name=c.name||me.name}}
+  if(!me.staff&&me.role==='admin'){const c=readCache();if(c&&c.staff){
+    /* only trust the saved link if that record still exists and is this person's */
+    try{const x=await db.doc('staff/'+c.staff).get();const v=x.exists?(__D(x)||{}):null;const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());
+      if(v&&want.includes(String(v.email||'').trim().toLowerCase())){me.staff=c.staff;me.name=[v.first,v.last].filter(Boolean).join(' ')||c.name||me.name}}catch(e){me.staff=c.staff;me.name=c.name||me.name}}}
   if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const d=st.docs.find(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
   if(!me.staff){noRec=true;loaded=true;fresh=true;return}
   const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
@@ -9972,7 +9975,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010071';
+const VERSION='202611010072';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
