@@ -10108,7 +10108,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010094';
+const VERSION='202611010095';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10901,7 +10901,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 #sh-ph .sh-pactmenu[hidden]{display:none}
 #sh-ph .sh-pactmenu button{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:1rem;color:var(--sh-ink)}
 #sh-ph .sh-pactmenu button:hover{background:var(--sh-sunk,rgba(127,127,127,.1))}
-#sh-ph .ttl{display:flex;align-items:center;gap:8px}
+:root:root #sh-ph .ttl{display:flex!important;align-items:center;gap:8px;width:100%!important;flex:1 1 100%!important;min-width:0;box-sizing:border-box}:root:root #sh-ph .in{width:100%}:root:root #sh-ph .sh-pactw{margin-left:auto!important}
 /* period: one slim row */
 :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx{flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;padding:6px!important}
 :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{display:none!important}
