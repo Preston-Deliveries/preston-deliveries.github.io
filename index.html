@@ -1460,7 +1460,18 @@ function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g
   {const bare=t.replace(/^ (please )?(can you |can i |could you )?(open|go to|show me|show|take me to|bring up|i want|i need|get me|load)( the| my)? /,' ').replace(/ (page|screen|section|please) /g,' ').trim();
    const NM=Object.assign({},NAMES,role==='mgr'?{}:DNAMES);
    const names=Object.entries(NM).filter(([k])=>vis.includes(k)||k==='home'||k==='menu').map(([k,n])=>[k,String(n).toLowerCase()]).sort((a,b)=>b[1].length-a[1].length);
-   for(const[k,n]of names){const n1=n.replace(/s$/,'');if(bare===n||bare===n1||bare===n+'s'||(bare.startsWith(n+' ')&&bare.length<n.length+12))return {page:k,term:''}}}
+   /* the admin menu: hub titles, the labels under them, and the menu group names */
+   const AL=[];(HUBS[role==='mgr'?'mgr':'drv']||[]).forEach(h=>{AL.push([h.t.toLowerCase(),h.s[0][0]]);h.s.forEach(([k,l])=>AL.push([l.toLowerCase(),k]))});
+   if(role==='mgr'){AMENU.forEach(([g,,L])=>{AL.push([g.toLowerCase(),'!menu:'+g]);AL.push([g.toLowerCase()+' menu','!menu:'+g]);L.forEach(([k,l])=>AL.push([l.toLowerCase(),k]))})}
+   for(const[k,n]of names)AL.push([n,k]);
+   AL.sort((a,b)=>b[0].length-a[0].length);
+   for(const[n,k]of AL){if(k[0]!=='!'&&!vis.includes(k)&&k!=='home'&&k!=='menu')continue;const n1=n.replace(/s$/,'');if(bare===n||bare===n1||bare===n+'s'||(bare.startsWith(n+' ')&&bare.length<n.length+12)||(n.length>8&&bare.includes(n)))return {page:k,term:''}}}
+  /* buttons on the title bar */
+  if(/\b(settings|dark mode|light mode|night mode|text size|bigger text|larger text|smaller text|change (the )?language|portuguese|punjabi|english)\b/.test(t))return {page:'!click:[data-sh="settings"]',term:'Settings'};
+  if(role==='mgr'&&/\b(driver view|drivers view|see what (the )?drivers see|view as (a )?driver|preview)\b/.test(t))return {page:'!click:[data-sh="uv"]',term:'Driver view'};
+  if(role==='mgr'&&/\b(admin view|manager view|back to admin)\b/.test(t))return {page:'!click:[data-sh="mv"]',term:'Admin view'};
+  if(role==='mgr'&&/\b(back ?up|backup|download (a |the )?backup)\b/.test(t))return {page:'!click:[data-sh="backup"]',term:'Backup'};
+  if(/\b(print (this|the) page|print this|download this page)\b/.test(t))return {page:'!click:[data-sh="print"]',term:'Print'};
   for(const[rx,pg]of INTENTS){if(!rx.test(t))continue;let page=pg;
     if(page[0]==='#'){if(document.querySelector('#sh-main '+page.slice(1))||document.querySelector(page.slice(1)))return {page,term:''};continue}
     if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';
@@ -1566,6 +1577,9 @@ function vRun(alts){const R=window.RUNS||{};
     const said=String(alts[0]||'').toLowerCase();
     const streetFirst=/\b(who does|who's got|who has|whose|who delivers|gate code|code for|access for|where is|where's|which bay|what bay|whose run)\b/.test(said);
     let spot=null;
+    if(!streetFirst){const it=voiceIntent(said);if(it&&it.page[0]==='!'){const hd0=`<span class="hd">You said: “${esc(alts[0]||'')}”</span>`;
+      if(it.page.startsWith('!menu:')){const g=it.page.slice(6);if(window.APP)APP.go('menu');vFlashText('#mod-menu,#sh-main',g);hSay(hd0+`<b>Opening the ${esc(g)} menu.</b>`);return}
+      if(it.page.startsWith('!click:')){const sel=it.page.slice(7);const el=document.querySelector(sel);if(el){el.click();hSay(hd0+`<b>Opening ${esc(it.term||'that')}.</b>`)}else hSay(hd0+`<b>${esc(it.term||'That')} isn’t available here.</b>`);return}}}
     if(!streetFirst){const it=voiceIntent(said);if(it){if(it.page[0]==='#'){spot=document.querySelector(it.page.slice(1))}else{
       const dm=voiceDeep(it.page,alts[0]||'',it.term);if(dm){hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>${esc(dm)}</b>`);return}
       if(it.page!=='home'&&window.APP){APP.go(it.page);hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>Opening ${esc((role==='mgr'?NAMES:Object.assign({},NAMES,DNAMES))[it.page]||'that page')}.</b>`);return}
@@ -9669,7 +9683,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010030';
+const VERSION='202611010031';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
