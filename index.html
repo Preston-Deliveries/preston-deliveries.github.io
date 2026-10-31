@@ -820,7 +820,7 @@ function renderPageHead(){
   const BK=isTab?'':'<button type="button" class="sh-back" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>';
   const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1>${pactBtn()}</div>`;
   {const hb=hubOf(cur);if(hb){const vv=new Set(visible());const tabs=hb.s.filter(x=>vv.has(x[0]));if(tabs.length>1){const d0=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';ph.hidden=false;ph.className='sh-ph dph hub';
-    ph.innerHTML=`<div class="in sh-utin"><div class="ttl sh-utrow">${BK}<h1 class="sh-vh">${esc(hb.t)}</h1><nav class="sh-hubtabs sh-utabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav></div></div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
+    ph.innerHTML=`<div class="in sh-utin"><div class="ttl sh-uttl">${BK}<h1>${esc(hb.t)}</h1></div><div class="sh-utrow"><nav class="sh-hubtabs sh-utabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav></div></div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
   {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['updates','menu'].includes(cur);ph.className+=' dph';
@@ -10088,7 +10088,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010102';
+const VERSION='202611010103';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10956,6 +10956,12 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .rb-dl2>.sh-btn{flex:0 0 auto!important;width:auto!important;height:34px!important;min-height:34px!important;padding:0 12px!important;font-size:.88rem!important}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs,:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #v_rtabs{margin:2px 0 6px!important}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool,:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #v_tool{row-gap:6px!important;gap:6px!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-uttl{display:flex!important;align-items:center!important;gap:8px!important;margin:0 0 2px!important;border:0!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-uttl h1{font-size:1.2rem!important;line-height:1.2!important;margin:0!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-uttl .sh-back{width:32px!important;height:32px!important;min-height:32px!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs{gap:20px!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs>button,:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs button{font-size:.95rem!important;height:38px!important;min-height:38px!important;line-height:38px!important}
+:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utrow{width:100%!important;box-sizing:border-box!important;align-self:stretch!important}:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utin{display:block!important}
 </style>
 </body>
 </html>
