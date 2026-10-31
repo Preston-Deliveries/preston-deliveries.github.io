@@ -1408,7 +1408,7 @@ document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.close
   btn.classList.add('on');hSay('<b>Listening…</b> say a street, like “who does Palmer Street”');let got=false;
   rec.onresult=ev=>{got=true;const alts=[...ev.results[0]].map(x=>x.transcript);const R=window.RUNS||{};
     if(!R.vClean){hSay('<b>Streets are still loading. Try again in a moment.</b>');return}
-    let q='',ans=null;for(const a of alts){const c=R.vClean(a);const r=R.vAnswer(c);if(r){q=c;ans=r;break}if(!q)q=c}
+    let q='',ans=null;for(const a of alts){const c=R.vClean(a);const r=R.vAnswer(c);if(r){q=r.q||c;ans=r;break}if(!q)q=c}
     findQ=q;const inp=$('ah_fq');if(inp)inp.value=q;findRender();
     const heard=esc(alts[0]||'');
     if(ans&&ans.txt){hSay(`<span class="hd">You said: “${heard}”</span><b>${esc(ans.txt)}</b>`);try{const u=new SpeechSynthesisUtterance(ans.txt.replace(/\b(42)(\d)(\d)\b/g,'4 2 $2 $3'));u.lang='en-AU';speechSynthesis.speak(u)}catch(x){}}
@@ -2025,10 +2025,13 @@ function voiceClean(t){
 function voiceHits(q){if(!q)return[];const t=normName(q);return streetIndex().filter(g=>g.n===t||g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t))}
 function spokenSt(n){const back={};for(const[k,v]of Object.entries(SUF))if(!back[v])back[v]=k;const w=n.split(' ');const L=w.length-1;if(L>0&&back[w[L]])w[L]=back[w[L]];return w.join(' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
 function voiceAnswer(q){
-  const t=normName(q);let hits=voiceHits(q);if(!hits.length)return null;
+  let t=normName(q);let hits=voiceHits(q);let note='';
+  if(!hits.length){const w=t.split(' ');const sufs=new Set(Object.values(SUF));
+    if(w.length>1&&sufs.has(w[w.length-1])){const base=w.slice(0,-1).join(' ');hits=voiceHits(base);if(hits.length){note='There is no '+spokenSt(t)+'. ';t=base}}}
+  if(!hits.length)return null;
   const exact=hits.filter(g=>g.n===t);if(exact.length)hits=exact;
-  if(hits.length>3)return {many:hits.length};
-  return {txt:hits.map(g=>{const nm=spokenSt(g.name);if(g.parts.length===1&&!g.parts[0].rg)return nm+' in '+g.pc+' is '+g.parts[0].driver;
+  if(hits.length>3)return {many:hits.length,q:t};
+  return {q:t,txt:note+hits.map(g=>{const nm=spokenSt(g.name);if(g.parts.length===1&&!g.parts[0].rg)return nm+' in '+g.pc+' is '+g.parts[0].driver;
     return nm+' in '+g.pc+' is split. '+g.parts.map(p=>(p.rg?p.rg.replace(/-/g,' to ')+', ':'the rest, ')+p.driver).join('. ')}).join('. ').replace(/\. the rest/g,'. The rest')};
 }
 function streetIndex(){
@@ -9438,7 +9441,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010017';
+const VERSION='202611010018';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
