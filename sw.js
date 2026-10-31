@@ -1,7 +1,7 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
-const CACHE = 'pds-app-v8';
-/* sw 4: the app page always comes live from the internet; no saved copy of the app is kept */
+const CACHE = 'pds-app-v9';
+/* sw 5: the app page is always checked with the internet (downloaded again only when it has changed) */
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
@@ -39,7 +39,9 @@ self.addEventListener('fetch', e => {
 
   /* The app page itself: always the live version from the internet. With no signal, say so plainly. */
   if (req.mode === 'navigate' && url.origin === location.origin) {
-    e.respondWith(fetch(req, { cache: 'no-store' }).catch(() => new Response(OFFLINE, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })));
+    /* 'no-cache' still checks with the server every time (always the live version),
+       but if nothing has changed the server just says so and the phone reuses its copy: much faster. */
+    e.respondWith(fetch(req, { cache: 'no-cache' }).catch(() => new Response(OFFLINE, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })));
     return;
   }
 
