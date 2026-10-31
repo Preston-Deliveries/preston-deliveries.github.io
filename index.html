@@ -4074,7 +4074,7 @@ const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR',
 const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
-  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['insDue','Vehicle insurance expiry'],['plDue','Public liability expiry'],['visa','Work status'],['visaType','Visa type or subclass'],['visaDue','Visa expiry'],['workRights','Work rights'],['vevoAt','VEVO checked on','date you checked on VEVO'],['dob','Date of birth'],['address','Home address'],['abn','ABN'],['gst','GST registered'],['payFreq','Paid every'],['appAccess','Access level'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
+  ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['fit2work','Fit2Work status'],['visa','Work status'],['visaType','Visa type or subclass'],['visaDue','Visa expiry'],['workRights','Work rights'],['vevoAt','VEVO checked on','date you checked on VEVO'],['dob','Date of birth'],['address','Home address'],['abn','ABN'],['gst','GST registered'],['payFreq','Paid every'],['appAccess','Access level'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
 const COLS=[['login','Login'],['pw','Password'],['mobile','Mobile'],['email','Email'],['van','Van and rego'],['ec','Emergency contact']];
 let shown=new Set(['login','mobile','van']);
 try{const v=JSON.parse(localStorage.getItem('dm_cols')||'null');if(Array.isArray(v))shown=new Set(v.filter(x=>x!=='pw'))}catch(e){}
@@ -4156,7 +4156,7 @@ function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb">
   const imgs=OBI[id]||[];
   return `<section class="dm-onb"><h3>New driver welcome steps <span class="dm-onbst ${p.onboard==='done'?'ok':o&&o.status==='submitted'?'go':''}">${esc(st)}</span></h3>
    <div class="dm-onba">${p.mobile?`<a class="sh-btn wab" href="https://wa.me/${esc(waOf(p.mobile))}?text=${encodeURIComponent(msgTxt)}" target="_blank" rel="noopener">${WAI}Send the app link</a>`:''}<button type="button" class="sh-btn" data-dmp="1">See what they look like</button>${o?`<button type="button" class="sh-btn" data-dmx="onbview">${obView?'Hide their answers':'See their answers'}</button>`:''}${o&&o.status==='submitted'&&p.onboard!=='done'?`<button type="button" class="sh-btn" data-dmx="onbcopy">Copy their answers into this record</button><button type="button" class="sh-btn primary" data-dmx="onbdone">Mark checked and done</button>`:''}</div>
-   ${obView&&o?`<div class="dm-onbv"><div class="dm-onbt">${row('Name',[d.first,d.last].filter(Boolean).join(' '))}${row('Date of birth',niceD(d.dob))}${row('Mobile',d.mobile)}${row('Address',d.address)}${row('Emergency contact',[d.ecName,d.ecPhone].filter(Boolean).join(', '))}${row('ABN',d.abn)}${row('GST registered',d.gst)}${row('Bank',[d.bankName,d.bsb?'BSB '+d.bsb:'',d.acct?'Acc '+d.acct:''].filter(Boolean).join(' · '))}${row('Van',[d.van,d.rego].filter(Boolean).join(' · '))}${row('Uniform',[d.shirt?'Shirt '+d.shirt:'',d.pants?'Pants '+d.pants:''].filter(Boolean).join(', '))}${row('Work status',d.work)}${row('Visa',[d.visaType,d.visaDue?'expires '+niceD(d.visaDue):'',d.workRights].filter(Boolean).join(' · '))}${row('Passport',d.passport)}${row('Licence expiry',niceD(d.licDue))}${row('Insurance expiry',niceD(d.insDue))}${row('Public liability expiry',niceD(d.plDue))}${row('Police check date',niceD(d.polAt))}${row('Agreed to the rules',d.agree?'Yes':'')}</div>
+   ${obView&&o?`<div class="dm-onbv"><div class="dm-onbt">${row('Name',[d.first,d.last].filter(Boolean).join(' '))}${row('Date of birth',niceD(d.dob))}${row('Mobile',d.mobile)}${row('Address',d.address)}${row('Emergency contact',[d.ecName,d.ecPhone].filter(Boolean).join(', '))}${row('ABN',d.abn)}${row('GST registered',d.gst)}${row('Bank',[d.bankName,d.bsb?'BSB '+d.bsb:'',d.acct?'Acc '+d.acct:''].filter(Boolean).join(' · '))}${row('Van',[d.vanType,d.van,d.rego].filter(Boolean).join(' · '))}${row('Uniform',[d.shirt?'Shirt '+d.shirt:'',d.pants?'Pants '+d.pants:''].filter(Boolean).join(', '))}${row('Work status',d.work)}${row('Visa',[d.visaType,d.visaDue?'expires '+niceD(d.visaDue):'',d.workRights].filter(Boolean).join(' · '))}${row('Passport',d.passport)}${row('Licence expiry',niceD(d.licDue))}${row('Police check date',niceD(d.polAt))}${row('Agreed to the rules',d.agree?'Yes':'')}</div>
      <div class="dm-onbi">${imgs.length?imgs.map(x=>`<figure><img src="data:image/jpeg;base64,${x.img}" alt=""><figcaption>${esc(({lic1:'Licence front',lic2:'Licence back',ins:'Vehicle insurance',pl:'Public liability',pol:'Police check',visa:'Visa grant'})[x.key]||x.key)}</figcaption></figure>`).join(''):'<p class="hint">Loading photos…</p>'}${d.sig?`<figure><img src="${esc(d.sig)}" alt="Signature"><figcaption>Signature</figcaption></figure>`:''}</div></div>`:''}
    ${p.onboard!=='done'?`<details class="dm-onbm"><summary>Message to send them</summary><pre>${esc(msgTxt)}</pre><button type="button" class="sh-btn" data-dmx="onbcopymsg">Copy message</button></details>`:''}</section>`}
 function indHTML(p){const id=p.id;if(p.indAt)return `<section class="dm-ind"><h3>Site induction <span class="dm-onbst ok">✓ Done ${esc(niceD(p.indAt))}${p.indBy?' by '+esc(p.indBy):''}</span></h3><button type="button" class="sh-btn" data-dmx="indundo">Undo</button></section>`;
@@ -4179,7 +4179,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
   if(a==='onbcopy'){const o=OBC[id];if(!o)return;const d=o.d||{},U=v=>String(v||'').toUpperCase(),P={};
     const put=(k,v)=>{if(v!=null&&v!=='')P[k]=v};
     put('first',U(d.first));put('last',U(d.last));put('mobile',d.mobile);put('dob',d.dob);put('address',d.address);put('abn',d.abn);put('gst',d.gst);put('van',U(d.van));put('rego',U(d.rego).replace(/\s+/g,''));
-    put('ecName',d.ecName);put('ecPhone',d.ecPhone);put('licDue',d.licDue);put('insDue',d.insDue);put('plDue',d.plDue);put('visa',d.work);put('visaType',d.visaType);put('visaDue',d.visaDue);put('workRights',d.workRights);
+    put('ecName',d.ecName);put('ecPhone',d.ecPhone);put('licDue',d.licDue);put('visa',d.work);put('visaType',d.visaType);put('visaDue',d.visaDue);put('workRights',d.workRights);
     if(d.polAt&&!people[id].fit2work)P.fit2work='Pending';
     await saveExtra(id,P,'Their answers are now in this record. Check it over before you save.');return}});
 function render(){
@@ -4206,7 +4206,7 @@ function render(){
   </div>`;
 }
 function detailHTML(){
-  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',insDue:'',licDue:'',tenDue:'',fit2work:'',ecName:'',ecPhone:'',notes:''}:people[openId];
+  const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',licDue:'',tenDue:'',fit2work:'',ecName:'',ecPhone:'',notes:''}:people[openId];
   if(!p){openId=null;return render()}
   const val=k=>k==='runs'?runsOf(p).join(', '):(p[k]||'');
   const inp=([k,l,ph])=>k==='role'
@@ -4225,7 +4225,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?'Add a person':esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Driver bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><a class="sh-btn wab" href="https://wa.me/${esc(waOf(p.mobile))}" target="_blank" rel="noopener">${WAI}WhatsApp</a><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','insDue','plDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay',['payFreq'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
+      <div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay',['payFreq'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>
       ${isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew" checked> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:onbHTML(p)+indHTML(p)}
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
@@ -9502,8 +9502,8 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const vst=p=>{const v=vcBy[p.id];if(!v)return{c:'bad',t:'Never checked'};const n=30-Math.round((fromIso(T)-fromIso(v.date))/864e5);if(v.outcome==='fail')return{c:'bad',t:'Failed '+sh(v.date)};return n<0?{c:'bad',t:-n+' days overdue'}:{c:v.outcome==='minor'?'warn':'ok',t:(v.outcome==='minor'?'Fixes needed, ':'')+'due '+sh(add(v.date,30))}};
   const visa=p=>p.visa==='Visa holder'?(p.visaDue?(x=>({c:x.c,t:(p.workRights==='Limited hours'?'Limited, ':'')+x.t}))(st(p.visaDue)):{c:'bad',t:'No expiry entered'}):p.visa?{c:'ok',t:p.visa.replace('Australian citizen','Citizen').replace('Permanent resident','PR').replace('New Zealand citizen','NZ')}:{c:'none',t:'Not entered'};
   const ind=p=>p.indAt?{c:'ok',t:'Done '+sh(p.indAt)+(p.indBy?' by '+p.indBy:'')}:{c:'bad',t:'Not done'};
-  const COLS=[['lic','Licence'],['rego','Rego'],['ins','Insurance'],['pl','Public liability'],['visa','Visa'],['f2w','Fit2Work'],['ind','Site induction']];
-  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),ins:st(p.insDue),pl:st(p.plDue),visa:visa(p),ten:st(p.tenDue),f2w:f2w(p.fit2work),ind:ind(p),vc:vst(p)}));
+  const COLS=[['lic','Licence'],['rego','Rego'],['visa','Visa'],['f2w','Fit2Work'],['ind','Site induction']];
+  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),visa:visa(p),ten:st(p.tenDue),f2w:f2w(p.fit2work),ind:ind(p),vc:vst(p)}));
   const cnt=(k,c)=>rows.filter(r=>r[k].c===c).length;
   const score=r=>COLS.reduce((x,[k])=>x+(r[k].c==='bad'?100:r[k].c==='warn'?10:r[k].c==='none'?1:0),0);
   const roleOf=p=>String(p.role||'Other').toUpperCase();
@@ -9512,16 +9512,16 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const label=k=>k==='PRINCIPLE'?'Principal':/^\d{4}$/.test(k)?k:k==='XL'?'XL':tc(k);
   const tile=(k,l,word)=>{const b=cnt(k,'bad'),w=cnt(k,'warn'),n=cnt(k,'none');return `<div class="${b?'bad':w?'warn':n===rows.length?'':'ok'}"><small>${l}</small><b>${b} ${word}</b><span>${w} ${k==='f2w'?'pending':k==='vc'?'need fixes':'expiring'} · ${n} not entered</span></div>`};
   el.innerHTML=`<section class="card cp"><p class="mt-note cp-top">Expiring means in the next 30 days. F2W is Fit2Work.</p>
-   <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('ins','Insurance','expired')}${tile('visa','Visas','expired')}${tile('f2w','Fit2Work','failed')}${(()=>{const n=rows.filter(r=>r.ind.c==='bad').length;return `<div class="${n?'warn':'ok'}"><small>Site induction</small><b>${n} not done</b><span>${rows.length-n} done</span></div>`})()}</div>
+   <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('visa','Visas','expired')}${tile('f2w','Fit2Work','failed')}${(()=>{const n=rows.filter(r=>r.ind.c==='bad').length;return `<div class="${n?'warn':'ok'}"><small>Site induction</small><b>${n} not done</b><span>${rows.length-n} done</span></div>`})()}</div>
    ${(()=>{const need=r=>COLS.some(([c])=>r[c].c==='bad'||r[c].c==='warn');const nN=rows.filter(need).length;
      const short=(c,x)=>x.c==='none'?'–':c==='ind'?(x.c==='ok'?'✓':'Not done'):c==='visa'&&x.c==='ok'&&!/\d/.test(x.t)?x.t:x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':c==='visa'&&/No expiry/.test(x.t)?'No date':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
      const list=rows,lev=r=>COLS.some(([c])=>r[c].c==='bad')?'bad':COLS.some(([c])=>r[c].c==='warn')?'warn':'';
      const why=r=>{const b=COLS.filter(([c])=>r[c].c==='bad'&&c!=='ind').map(([,l])=>l),w=COLS.filter(([c])=>r[c].c==='warn').map(([,l])=>l);const parts=[];if(b.length)parts.push(b.join(', ')+' expired or missing');if(r.ind.c==='bad')parts.push('no site induction');if(w.length)parts.push(w.join(', ')+' due soon');return parts.join(' · ')};
      const gc=k=>/^\d{4}$/.test(k)?'g'+k:k==='SUPERVISOR'?'gsup':/PRINCIP|MANAGER/.test(k)?'gman':/XL|RELIEF/.test(k)?'gxl':'goth';
      return `${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
-     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Insurance','Pub. liab.','Visa','F2W','Induction'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
+     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Visa','F2W','Induction'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
      ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><i></i>${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="${lev(r)?'cp-n '+lev(r):''}"><td><b>${esc(shortName(r.p))}</b>${lev(r)?`<small>${esc(why(r))}</small>`:''}</td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
-   <p class="mt-note">Add licence, rego, insurance and visa details, the Fit2Work status and site induction in each driver's record on the Driver Management page. New drivers fill most of this in themselves through the welcome steps.</p>
+   <p class="mt-note">Add licence, rego and visa details, the Fit2Work status and site induction in each driver's record on the Driver Management page. New drivers fill most of this in themselves through the welcome steps.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
 window.MGRT={paint};
 })();
@@ -9859,7 +9859,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010061';
+const VERSION='202611010062';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10340,7 +10340,7 @@ window.ONB={
 };
 const OB={sid:'',step:0,d:{},imgs:{},busy:false,msg:null,staff:null,preview:false};
 const OB_STEPS=['Welcome','Your details','Work rights','Documents','Read and sign','All set'];
-const OB_DOCS=[['lic1','Driver licence (front)',true],['lic2','Driver licence (back)',true],['ins','Vehicle insurance certificate',true],['pl','Public liability insurance',false],['pol','Police check (Fit2Work)',false],['visa','Visa grant notice',false]];
+const OB_DOCS=[['lic1','Driver licence (front)',true],['lic2','Driver licence (back)',true],['ins','Vehicle insurance certificate',false],['pl','Public liability insurance',false],['pol','Police check (Fit2Work)',false],['visa','Visa grant notice',false]];
 const obEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function onbCheck(){
   try{
@@ -10361,9 +10361,9 @@ function obDoc(k,l,req,expKey){const im=OB.imgs[k];return `<div class="ob-doc"><
   ${im?`<img src="data:image/jpeg;base64,${im}" alt="${obEsc(l)}"><button type="button" class="ob-lnk" data-obx="rmimg" data-v="${k}">Take again</button>`:`<label class="ob-up"><input type="file" accept="image/*" capture="environment" data-obimg="${k}" hidden><span>📷 Take a photo</span></label>`}
   ${expKey?ofld(expKey,'Expiry date',{type:'date',req}):''}</div>`}
 function onbMissing(){const d=OB.d,m=[];const need=(k,t)=>{if(!String(d[k]||'').trim())m.push(t)};
-  if(OB.step===1){need('first','first name');need('last','last name');need('dob','date of birth');need('mobile','mobile');need('address','home address');need('ecName','emergency contact');need('ecPhone','emergency contact number');need('abn','ABN');need('gst','GST registered');need('rego','van rego')}
+  if(OB.step===1){need('first','first name');need('last','last name');need('dob','date of birth');need('mobile','mobile');need('address','home address');need('ecName','emergency contact');need('ecPhone','emergency contact number');need('vanType','which van you will use');if(d.vanType==='My own van')need('rego','van rego')}
   if(OB.step===2){need('work','work status');if(d.work==='Visa holder'){need('visaType','visa type');need('visaDue','visa expiry');need('workRights','work rights')}}
-  if(OB.step===3){if(!OB.imgs.lic1)m.push('licence front photo');if(!OB.imgs.lic2)m.push('licence back photo');need('licDue','licence expiry');if(!OB.imgs.ins)m.push('insurance photo');need('insDue','insurance expiry');if(d.work==='Visa holder'&&!OB.imgs.visa)m.push('visa grant notice')}
+  if(OB.step===3){if(!OB.imgs.lic1)m.push('licence front photo');if(!OB.imgs.lic2)m.push('licence back photo');need('licDue','licence expiry');if(d.work==='Visa holder'&&!OB.imgs.visa)m.push('visa grant notice')}
   if(OB.step===4){if(!d.agree)m.push('tick that you agree');if(!d.sig)m.push('your signature')}
   return m}
 function onbRender(){const w=document.getElementById('onb');if(!w)return;const s=OB.step,d=OB.d,miss=onbMissing();
@@ -10371,21 +10371,21 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
   if(s===0)body=`<h1>Welcome to Preston Delivery Service</h1>
     <p>We deliver parcels for <b>Australia Post</b> on <b>Contract 1161</b>, across the Gold Coast postcodes 4214, 4215, 4217 and 4218.</p>
     <p>Before your first day we need a few details and photos of your documents. It takes about <b>10 minutes</b>. You can stop at any time and carry on later; we keep what you have done.</p>
-    <ul class="ob-l"><li>Your details and bank account (for your invoices)</li><li>Your work rights</li><li>Photos of your licence and insurance</li><li>Read and sign our main rules</li></ul>
+    <ul class="ob-l"><li>Your details and bank account (for your invoices)</li><li>Your work rights</li><li>Photos of your licence and other documents</li><li>Read and sign our main rules</li></ul>
     <p>On your first day a supervisor will take you through a <b>site induction</b> at the depot.</p>`;
   if(s===1)body=`<h1>Your details</h1><p class="ob-h">Only the office can see these.</p>
     <div class="ob-g">${ofld('first','First name',{req:1})}${ofld('last','Last name',{req:1})}${ofld('dob','Date of birth',{type:'date',req:1})}${ofld('mobile','Mobile',{type:'tel',req:1})}</div>
     ${ofld('address','Home address',{req:1,ph:'Street, suburb, postcode'})}
     <h2>Emergency contact</h2><div class="ob-g">${ofld('ecName','Name',{req:1})}${ofld('ecPhone','Phone',{type:'tel',req:1})}</div>
-    <h2>Business and pay</h2><div class="ob-g">${ofld('abn','ABN',{req:1,im:'numeric',ph:'11 digits'})}${ofld('gst','GST registered',{sel:['Yes','No'],req:1})}${ofld('bankName','Account name')}${ofld('bsb','BSB',{im:'numeric'})}${ofld('acct','Account number',{im:'numeric'})}</div>
-    <h2>Your van</h2><div class="ob-g">${ofld('van','Year, make and model',{ph:'e.g. 2019 Toyota Hiace'})}${ofld('rego','Rego',{req:1})}</div>
+    <h2>Business and pay</h2><div class="ob-g">${ofld('abn','ABN',{im:'numeric',ph:'Leave blank if you don’t have one'})}${ofld('gst','GST registered',{sel:['Yes','No']})}${ofld('bankName','Account name')}${ofld('bsb','BSB',{im:'numeric'})}${ofld('acct','Account number',{im:'numeric'})}</div>
+    <h2>Your van</h2>${ofld('vanType','Which van will you use?',{sel:['My own van','A company van','Not sure yet'],req:1})}${d.vanType==='My own van'?`<div class="ob-g">${ofld('van','Year, make and model',{ph:'e.g. 2019 Toyota Hiace'})}${ofld('rego','Rego',{req:1})}</div>`:''}
     <h2>Uniform sizes</h2><div class="ob-g">${ofld('shirt','Shirt',{sel:['XS','S','M','L','XL','2XL','3XL','4XL','5XL']})}${ofld('pants','Shorts or pants',{ph:'e.g. 32 or M'})}</div>`;
   if(s===2)body=`<h1>Work rights</h1><p class="ob-h">Australia Post requires us to check every driver can legally work in Australia.</p>
     ${ofld('work','I am',{sel:['Australian citizen','Permanent resident','New Zealand citizen','Visa holder'],req:1})}
     ${d.work==='Visa holder'?`<div class="ob-g">${ofld('visaType','Visa type or subclass',{req:1,ph:'e.g. Student 500'})}${ofld('visaDue','Visa expiry',{type:'date',req:1})}${ofld('workRights','Work rights',{sel:['Full work rights','Limited hours'],req:1})}${ofld('passport','Passport number')}</div><p class="ob-h">You will add a photo of your visa grant notice on the next page.</p>`:''}`;
   if(s===3)body=`<h1>Documents</h1><p class="ob-h">Take a clear photo of each one. Make sure nothing is cut off and the writing is readable.</p>
-    ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${obDoc('ins','Vehicle insurance certificate',true,'insDue')}${obDoc('pl','Public liability insurance',false,'plDue')}${obDoc('pol','Police check (Fit2Work)',false,'polAt')}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}
-    <p class="ob-h">Don’t have public liability or a police check yet? Leave them for now and tell the office.</p>`;
+    ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${d.vanType==='My own van'?obDoc('ins','Vehicle insurance certificate',false):''}${obDoc('pl','Public liability insurance',false)}${obDoc('pol','Police check (Fit2Work)',false,'polAt')}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}
+    <p class="ob-h">Only the licence photos are needed. If you don’t have the others yet, leave them for now and tell the office.</p>`;
   if(s===4)body=`<h1>Read and sign</h1><p class="ob-h">These are our main rules. You can read all of them any time in the <b>Driver Guide</b>.</p>
     <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego, insurance or visa changes.</li></ul>
     <label class="ob-ck"><input type="checkbox" data-ob="agree" ${d.agree?'checked':''}> I have read these rules and the Driver Guide, and I agree to follow them.</label>
@@ -10413,7 +10413,7 @@ function obShrink(file){return new Promise(res=>{const r=new FileReader();r.onlo
 document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#onb'))return;const k=t.dataset.ob;if(!k)return;OB.d[k]=t.type==='checkbox'?t.checked:t.value;
   const n=document.querySelector('#onb [data-obx=next]');const m=onbMissing();if(n)n.disabled=!!m.length||OB.busy;const nd=document.querySelector('#onb .ob-need');if(nd)nd.textContent=m.length?'Still needed: '+m.join(', '):'';});
 document.addEventListener('change',async e=>{const t=e.target;if(!t.closest||!t.closest('#onb'))return;
-  if(t.dataset.ob==='work'||t.dataset.ob==='agree'){OB.d[t.dataset.ob]=t.type==='checkbox'?t.checked:t.value;onbRender();return}
+  if(t.dataset.ob==='work'||t.dataset.ob==='agree'||t.dataset.ob==='vanType'){OB.d[t.dataset.ob]=t.type==='checkbox'?t.checked:t.value;onbRender();return}
   const k=t.dataset.obimg;if(!k||!t.files||!t.files[0])return;OB.msg={t:'Saving photo…'};onbRender();
   const b64=await obShrink(t.files[0]);if(!b64){OB.msg={err:true,t:'That photo could not be read. Try again.'};onbRender();return}
   try{if(!OB.preview)await fs.doc('onboardimg/'+OB.sid+'_'+k).set({staff:OB.sid,key:k,img:b64,at:new Date().toISOString()});OB.imgs[k]=b64;OB.msg=null}catch(x){OB.msg={err:true,t:'Could not save the photo. Check your internet and try again.'}}
