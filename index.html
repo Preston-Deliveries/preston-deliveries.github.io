@@ -1205,8 +1205,9 @@ function adminGlance(){const el=$('ah_glance');if(!el||role!=='mgr')return;const
   if(D&&window.SCORE){const p1=v=>v==null?'–':(v>=.9995?'100':(Math.round(v*1000)/10).toFixed(1).replace(/\.0$/,''))+'%';const tg=D.tg||{etaG:98,cpG:99};const cl=(v,t)=>v==null?'':v>=.9995?'gd':Math.round(v*1000)/10>=t-1e-9?'g':'b';
     const dd=new Date(D.date+'T12:00:00');const day=dd.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});const sc=D.score;
     const st=(l,v,c)=>`<span class="rs"><b class="v-${c}">${v}</b><small>${l}</small></span>`;
-    res=`<button type="button" class="ah-res" data-gl="summary"><span class="rh"><small>Contract results · ${esc(day)} · ${D.n} driver${D.n===1?'':'s'}</small><b class="sc v-${sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b'}">${sc==null?'–':window.SCORE.fmt(sc)}</b></span><span class="rg">${st('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${st('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${st('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${st('Enquiries',String(D.enq),D.enq?'b':'gd')}</span></button>`}
-  const html=`<span class="sh-date">${esc(ds)}</span><h1 class="sh-hero-t">${g}${nm?', '+esc(nm):''}</h1>${res}<div class="gls">${chip(N.enquiries||0,'Open NCRs','ncr','enq')}${chip(N.leave||0,'Leave requests','leave','lv')}${chip(off,'Off today','leave','off')}${chip(N.reports||0,'New reports','reports','rp')}</div>`;
+    const bub=(l,v,c)=>`<button type="button" class="gl" data-gl="summary"><b class="v-${c}">${v}</b><small>${l}</small></button>`;
+    res=`<p class="ah-rl">Contract results · ${esc(day)} · ${D.n} driver${D.n===1?'':'s'}</p><div class="gls g5">${bub('Score',sc==null?'–':window.SCORE.fmt(sc),sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b')}${bub('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${bub('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${bub('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${bub('Enquiries',String(D.enq),D.enq?'b':'gd')}</div>`}
+  const html=`<span class="sh-date">${esc(ds)}</span><h1 class="sh-hero-t">${g}${nm?', '+esc(nm):''}</h1>${res}`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
@@ -8997,16 +8998,16 @@ function html(){
   if(!asked&&step!=='days'&&knownAns(sid)){ans=loadAns(sid);syncCfg();step='days'}
   const nQ=ans.pay==='p'?2:3;
   /* question 1 */
-  if(step==='gst')return h+`<div class="iw-q"><p class="iw-n">Question 1 of ${nQ}</p><h3>${me?'Are you registered for GST?':'Is '+esc(you)+' registered for GST?'}</h3><p class="sub">Not sure? Ask the office before you send it.</p>
+  if(false&&step==='gst')return h+`<div class="iw-q"><p class="iw-n">Question 1 of ${nQ}</p><h3>${me?'Are you registered for GST?':'Is '+esc(you)+' registered for GST?'}</h3><p class="sub">Not sure? Ask the office before you send it.</p>
     <div class="iw-big">${[['1','Yes, registered for GST'],['0','No, not registered']].map(([v,l])=>`<button type="button" data-im="ans" data-k="gst" data-v="${v}" aria-pressed="${ans.gst!==null&&(ans.gst?'1':'0')===v}">${l}</button>`).join('')}</div></div></section>`;
-  if(step==='pay')return h+`<div class="iw-q"><p class="iw-n">Question 2 of ${nQ}</p><p class="iw-gst">GST: <b>${ans.gst?'Registered for GST':'Not registered for GST'}</b> <button type="button" class="sh-btn sm" data-im="chg">Change</button></p><h3>${me?'How are you paid?':'How is '+esc(you)+' paid?'}</h3>
+  if(false&&step==='pay')return h+`<div class="iw-q"><p class="iw-n">Question 2 of ${nQ}</p><p class="iw-gst">GST: <b>${ans.gst?'Registered for GST':'Not registered for GST'}</b> <button type="button" class="sh-btn sm" data-im="chg">Change</button></p><h3>${me?'How are you paid?':'How is '+esc(you)+' paid?'}</h3>
     <div class="iw-big">${[['p','By parcel',money(cfg.r1)+' a parcel, '+money(cfg.r2)+' on 2 load days'],['h','By the hour','Hours come from '+your+' timesheet'],['d','By the day',money(ans.rd===''?cfg.rd:ans.rd)+' for each day worked'],['b','Parcel and hourly','Some days by parcel, some days by the hour']].map(([v,l,s])=>`<button type="button" data-im="ans" data-k="pay" data-v="${v}" aria-pressed="${ans.pay===v}">${l}<small>${esc(s)}</small></button>`).join('')}</div>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
-  if(step==='rate'&&ans.pay==='d')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your day rate?':'What is '+esc(your)+' day rate?'}</h3><p class="sub">The amount for each day worked. You can change it on any day later if that day was different.</p>
+  if(false&&step==='rate'&&ans.pay==='d')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your day rate?':'What is '+esc(your)+' day rate?'}</h3><p class="sub">The amount for each day worked. You can change it on any day later if that day was different.</p>
     <label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" id="im_rd" value="${esc(ans.rd===''?cfg.rd:ans.rd)}" placeholder="300" aria-label="Day rate in dollars"><span>a day</span></label>
     <button type="button" class="sh-btn primary iw-next" data-im="rateok" ${num(ans.rd===''?cfg.rd:ans.rd)>0?'':'disabled'}>Next</button>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
-  if(step==='rate')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your hourly rate?':'What is '+esc(your)+' hourly rate?'}</h3><p class="sub">You can change it on any day later if that day had a different rate.</p>
+  if(false&&step==='rate')return h+`<div class="iw-q"><p class="iw-n">Question 3 of 3</p><h3>${me?'What is your hourly rate?':'What is '+esc(your)+' hourly rate?'}</h3><p class="sub">You can change it on any day later if that day had a different rate.</p>
     <label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="decimal" step="0.01" min="0" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>
     <button type="button" class="sh-btn primary iw-next" data-im="rateok" ${num(ans.rh)>0?'':'disabled'}>Next</button>
     <button type="button" class="iw-back" data-im="back">‹ Back</button></div></section>`;
@@ -9075,13 +9076,21 @@ function html(){
     ${me?`<p class="sub iw-who">It goes to ${OFFICE_NAME} in the office, who checks it here in the app. No email needed.</p><button type="button" class="sh-btn" data-im="mail" ${busy||!ok?'disabled':''}>Email it to ${OFFICE_NAME} instead</button>`:''}
     <button type="button" class="sh-btn" data-im="pdf" ${busy||left.length?'disabled':''}>Download PDF</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">'+(me?'See my invoices':'See submitted invoices')+'</button>':''}</div></section>`;
   /* one step at a time, like the run sheet editor */
-  {const ST=[['dates','Dates',from?fromIso(from).getDate()+' '+MON[fromIso(from).getMonth()]:''],['days','Days',R.length?(nT===R.length?'✓':nT+'/'+R.length):'0'],['extra','Extras',(()=>{const n=extras.filter(x=>num(x.amt)>0).length;return n?String(n):''})()],['det','Details',miss.length?'!':'✓'],['send','Send',money(T.total)]];
+  {const rateOk=ans.pay==='p'||(ans.pay==='d'?num(ans.rd===''?cfg.rd:ans.rd)>0:num(ans.rh)>0);const startOk=ans.gst!==null&&!!ans.pay&&rateOk;
+   const ST=[['dates','Start',!startOk?'!':(from?fromIso(from).getDate()+' '+MON[fromIso(from).getMonth()]:'')],['days','Days',R.length?(nT===R.length?'✓':nT+'/'+R.length):'0'],['det','Details',miss.length?'!':'✓'],['send','Review and send',money(T.total)]];
    if(!ST.some(x=>x[0]===istep))istep='dates';
    const close=h.endsWith('</section>');if(close)h=h.slice(0,-10);
-   const parts=h.split(/<!--S:(dates|days|extra|det|send)-->/);const head=parts[0];const P={};for(let k=1;k<parts.length;k+=2)P[parts[k]]=(P[parts[k]]||'')+parts[k+1];
+   const parts=h.split(/<!--S:(dates|days|extra|det|send)-->/);let head=parts[0];const P={};for(let k=1;k<parts.length;k+=2)P[parts[k]]=(P[parts[k]]||'')+parts[k+1];
+   head=head.replace(/<div class="iw-ans">[\s\S]*?<\/div>\s*$/,'');P.days=(P.days||'')+(P.extra||'');
+   const q=(t,html)=>`<div class="iw-sec iw-q1"><h3>${t}</h3>${html}</div>`;
+   P.dates=q(me?'Are you registered for GST?':'Is '+esc(you)+' registered for GST?',`<div class="iw-seg iw-yn" role="group">${[['1','Yes'],['0','No']].map(([v,l])=>`<button type="button" data-im="ans" data-k="gst" data-v="${v}" aria-pressed="${ans.gst!==null&&(ans.gst?'1':'0')===v}">${l}</button>`).join('')}</div>`)
+    +q(me?'How are you paid?':'How is '+esc(you)+' paid?',`<div class="iw-seg iw-pay" role="group">${[['p','By parcel'],['h','By the hour'],['d','By the day'],['b','Parcel and hourly']].map(([v,l])=>`<button type="button" data-im="ans" data-k="pay" data-v="${v}" aria-pressed="${ans.pay===v}">${l}</button>`).join('')}</div>`
+      +(ans.pay==='d'?`<label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" id="im_rd" value="${esc(ans.rd===''?cfg.rd:ans.rd)}" placeholder="300" aria-label="Day rate in dollars"><span>a day</span></label>`
+       :ans.pay==='h'||ans.pay==='b'?`<label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>`:''))
+    +(P.dates||'');
    const ix=ST.findIndex(x=>x[0]===istep);
    const bar=`<nav class="pl-steps iw-steps" aria-label="Steps">${ST.map(([k,l,c],i)=>`<button type="button" data-im="ist" data-v="${k}" aria-pressed="${istep===k}" class="${c==='!'?'warn':''}"><i>${i+1}</i><b>${l}</b>${c?`<small>${esc(c)}</small>`:''}</button>`).join('')}</nav>`;
-   const nav=`<div class="iw-stepnav">${ix>0?`<button type="button" class="sh-btn" data-im="ist" data-v="${ST[ix-1][0]}">‹ Back</button>`:'<span></span>'}${ix<ST.length-1?`<button type="button" class="sh-btn primary" data-im="ist" data-v="${ST[ix+1][0]}">Next: ${ST[ix+1][1]} ›</button>`:''}</div>`;
+   const nav=`<div class="iw-stepnav">${ix>0?`<button type="button" class="sh-btn" data-im="ist" data-v="${ST[ix-1][0]}">‹ Back</button>`:'<span></span>'}${ix<ST.length-1?`<button type="button" class="sh-btn primary" data-im="ist" data-v="${ST[ix+1][0]}" ${istep==='dates'&&!startOk?'disabled':''}>Next: ${ST[ix+1][1]} ›</button>`:''}</div>`;
    const mh=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
    let body=(P[istep]||'').replace(mh,'');body=mh+body;if(istep==='det')body=body.replace('<details class="cfg iw-det"','<details class="cfg iw-det" open');
    h=head+bar+body+nav+(close?'</section>':'')}
@@ -9094,7 +9103,7 @@ document.addEventListener('click',e=>{const t=document.getElementById('im_toast'
 function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
   box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
-function pick(id){openFlags=null;istep='dates';sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':ans.gst!==null?'pay':'gst';addOpen=false;
+function pick(id){openFlags=null;istep='dates';sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step='days';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
 function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
@@ -9493,11 +9502,11 @@ function setView(v){view=v;if(v==='list')openFlags=null;if(window.IV_SETTAB)wind
 const inMe=el=>el&&el.closest&&el.closest('#im_root');
 function iwTop(){const n=document.querySelector('#im_root .iw');if(n){const y=n.getBoundingClientRect().top+window.scrollY-70;window.scrollTo(0,Math.max(0,y))}}
 document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]');if(!inMe(el))return;const a=el.dataset.im,v=el.dataset.v;
-  if(a==='ans'){asked=true;const k=el.dataset.k;if(k==='gst'){ans.gst=v==='1';step='pay'}else if(k==='pay'){ans.pay=v;step=v==='p'?'days':'rate'}saveAns();msg=null;paint();iwTop();return}
+  if(a==='ans'){asked=true;const k=el.dataset.k;if(k==='gst'){ans.gst=v==='1'}else if(k==='pay'){ans.pay=v;if(v==='d'&&ans.rd==='')ans.rd=num(cfg.rd)}step='days';saveAns();syncCfg();msg=null;paint();return}
   if(a==='rateok'){if(ans.pay==='d'){if(ans.rd==='')ans.rd=num(cfg.rd);if(num(ans.rd)>0){step='days';saveAns();paint();iwTop()}return}if(num(ans.rh)>0){step='days';saveAns();paint();iwTop()}return}
   if(a==='back'){step=step==='rate'?'pay':'gst';paint();return}
   if(a==='chg'){asked=true;step='gst';paint();iwTop();return}
-  if(a==='ist'){istep=v;msg=null;paint();iwTop();return}
+  if(a==='ist'){try{saveAns();syncCfg()}catch(x){}istep=v;msg=null;paint();iwTop();return}
   if(a==='per'){const[x,y]=periodF(+v);setPeriod(x,y);return}
   if(a==='dset'){const d=el.dataset.d,k=el.dataset.k;ov[d]={...(ov[d]||{}),[k]:k==='ld'?+v:v};paint();return}
   if(a==='wtick'){e.preventDefault();const L=rows().filter(r=>r.wk===+v);const all=L.every(r=>ticks[r.d]);for(const r of L){if(all)delete ticks[r.d];else ticks[r.d]=true}saveDraft();paint();return}
@@ -9550,8 +9559,8 @@ document.addEventListener('change',e=>{const t=e.target;if(!inMe(t))return;
 document.addEventListener('input',e=>{const t=e.target;if(!inMe(t))return;
   if(t.inputMode==='decimal'){const c=t.value.replace(/[^\d.]/g,'').replace(/(\..*)\./g,'$1');if(c!==t.value)t.value=c}
   if(t.id==='im_no'){invNo=t.value;saveDraft();return}
-  if(t.id==='im_rd'){ans.rd=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="rateok"]');if(b)b.disabled=!(num(ans.rd)>0);return}
-  if(t.id==='im_rh'){ans.rh=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="rateok"]');if(b)b.disabled=!(num(ans.rh)>0);return}
+  if(t.id==='im_rd'){ans.rd=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="ist"][data-v="days"].primary');if(b)b.disabled=!(num(ans.rd)>0&&ans.gst!==null);return}
+  if(t.id==='im_rh'){ans.rh=t.value===''?'':+t.value;const b=document.querySelector('#im_root [data-im="ist"][data-v="days"].primary');if(b)b.disabled=!(num(ans.rh)>0&&ans.gst!==null);return}
   if(t.dataset.imc){const k=t.dataset.imc;cfg[k]=['r1','r2','rx','rh'].includes(k)?(t.value===''?'':+t.value):t.value;if(['r1','r2','rx'].includes(k))paint();return}
   if(t.dataset.imx){const i=+t.dataset.imx,k=t.dataset.k;if(!extras[i])return;extras[i][k]=k==='amt'?(t.value===''?'':+t.value):t.value;if(k==='why'){saveDraft();return}paint();return}
   if(t.dataset.imd){const d=t.dataset.imd,k=t.dataset.k;ov[d]={...(ov[d]||{}),[k]:t.value===''?'':+t.value};paint()}});
@@ -10130,7 +10139,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010156';
+const VERSION='202611010158';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11229,6 +11238,20 @@ html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-link
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-gd{color:#FFD54F!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-g{color:#69DB9A!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-b{color:#FF8A80!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-q1 .iw-seg{display:grid!important;gap:8px!important;grid-auto-flow:row!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-q1 .iw-yn{grid-template-columns:1fr 1fr!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-q1 .iw-pay{grid-template-columns:1fr 1fr!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-q1 .iw-rate{margin-top:10px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-rl{margin:0 0 6px;font-size:.74rem;font-weight:700;color:#C9D3E3}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl b{font-size:clamp(.82rem,3.6vw,1.15rem);color:#fff;letter-spacing:-.01em;white-space:nowrap}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl{padding:9px 1px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl small{font-size:.64rem!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl .v-gd{color:#FFD54F}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl .v-g{color:#69DB9A}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl .v-b{color:#FF8A80}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .sh-hero-t{margin-bottom:10px!important}
 </style>
 </body>
 </html>
