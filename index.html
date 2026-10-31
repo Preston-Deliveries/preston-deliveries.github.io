@@ -8417,11 +8417,12 @@ const ok=()=>me&&me.staff&&(me.role==='driver'||me.role==='admin');
 async function load(){
   let w=window.__webMe;if(!w){try{if(window.parent!==window)w=window.parent.__webMe}catch(e){}}if(!w){loaded=true;fresh=true;return}me={...w};
   try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db){loaded=true;fresh=true;return}
+  if(!me.staff&&me.role==='admin'&&w.ownStaff){me.staff=w.ownStaff;me.name=w.name||me.name}
   if(!me.staff&&me.role==='admin'){const c=readCache();if(c&&c.staff){
     /* only trust the saved link if that record still exists and is this person's */
     try{const x=await db.doc('staff/'+c.staff).get();const v=x.exists?(__D(x)||{}):null;const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());
       if(v&&want.includes(String(v.email||'').trim().toLowerCase())){me.staff=c.staff;me.name=[v.first,v.last].filter(Boolean).join(' ')||c.name||me.name}}catch(e){me.staff=c.staff;me.name=c.name||me.name}}}
-  if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const d=st.docs.find(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
+  if(!me.staff&&me.role==='admin'){try{const want=(me.emails||[me.email]).map(e=>String(e).toLowerCase());const st=await db.collection('staff').get();const M=st.docs.filter(x=>{const v=__D(x)||{};return want.includes(String(v.email||'').trim().toLowerCase())});const d=M.find(x=>(__D(x)||{}).login)||M[0];if(d){const v=__D(d);me.staff=d.id;me.name=[v.first,v.last].filter(Boolean).join(' ')}}catch(e){}}
   if(!me.staff){noRec=true;loaded=true;fresh=true;return}
   const now=new Date();today=dayOf(now);yday=dayOf(new Date(now.getTime()-864e5));
   try{const back=[1,2,3,4].map(n=>dayOf(new Date(now.getTime()-n*864e5)));const [a,...bs]=await Promise.all([db.doc('clock/'+today+'_'+me.staff).get(),...back.map(d=>db.doc('clock/'+d+'_'+me.staff).get())]);T=a.exists?__D(a):null;Y=null;for(let i=0;i<bs.length;i++){if(bs[i].exists){const v=bs[i].data();if(v&&v.start&&!v.finish){Y=v;yday=back[i]}break}}
@@ -8717,7 +8718,9 @@ let ans={gst:null,pay:null,rh:'',rd:''},step='',asked=false,extras=[],addOpen=fa
 const P=()=>staff[sid]||{};
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
-async function init(r){
+let initP=null;
+function init(r){if(!initP)initP=init0(r);return initP}
+async function init0(r){
   if(ready)return;ready=true;role=r==='drv'?'drv':'mgr';
   try{db=window.__getDb?await window.__getDb():(window.claude&&window.claude.use?await window.claude.use('db'):null)}catch(e){db=null}if(!db)return;
   [from,to]=defPeriod();
@@ -8728,8 +8731,10 @@ async function init(r){
     return}
   /* a driver: only their own records */
   let me=null;try{let t=0;while(!window.CLOCK&&t<40){await new Promise(r=>setTimeout(r,150));t++}me=window.CLOCK?await window.CLOCK.whoami():null}catch(e){}
+  let wm={};try{wm=window.__webMe||(window.parent!==window&&window.parent.__webMe)||{}}catch(e){}
+  if(wm&&wm.role==='admin'&&wm.ownStaff)me=Object.assign({},me||{},{staff:wm.ownStaff});
   if(!me||!me.staff){sid='';return}
-  sid=me.staff;let wm={};try{wm=window.__webMe||(window.parent!==window&&window.parent.__webMe)||{}}catch(e){}
+  sid=me.staff;
   const p={first:me.name||wm.name||'',login:String(wm.login||'').toUpperCase(),runs:[wm.run||''],email:wm.email||''};
   if(!p.login){try{const s2=await db.doc('staff/'+sid).get();if(s2.exists){const d=__D(s2);p.login=String(d.login||'').toUpperCase();p.runs=d.runs||[];p.mobile=d.mobile||'';p.first=d.first;p.last=d.last}}catch(e){}}
   staff[sid]=p;
@@ -9975,7 +9980,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010073';
+const VERSION='202611010075';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10399,7 +10404,7 @@ async function boot(){
   /* admins who also drive: find their own driver record by email so the driver view shows their results, invoices and run */
   if(ROLE==='admin'&&window.__webMe&&!window.__webMe.login){try{const em=(window.__webMe.emails||[EMAIL]).map(e=>String(e).toLowerCase());
     const q=await fs.collection('staff').where('email','in',em.slice(0,10)).get();let best=null;
-    for(const d of q.docs){const v=DEC(d.data())||{};if(!best||(!best.v.login&&v.login))best={id:d.id,v}}
+    for(const d of q.docs){const v=DEC(d.data())||{};const sc=x=>(x.login?4:0)+((x.runs||[]).filter(Boolean).length?2:0)+(x.gst?1:0);if(!best||sc(v)>sc(best.v))best={id:d.id,v}}
     if(best){const lg=String(best.v.login||'').toUpperCase().replace(/\s+/g,'');window.__webMe.ownStaff=best.id;if(lg){window.__webMe.login=lg;window.__myLogin=lg}if(!window.__webMe.run)window.__webMe.run=(best.v.runs||[]).filter(Boolean).join(', ');if(!window.__webMe.name)window.__webMe.name=[best.v.first,best.v.last].filter(Boolean).join(' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}}catch(e){}}
   if(ROLE!=='admin'){try{idbSet('sh_results',null);idbSet('sh_survey',null);Object.keys(localStorage).filter(k=>k.startsWith('dc2:days/')).forEach(k=>localStorage.removeItem(k))}catch(e){}
     window.__MYRES=mr||{};if(mr&&mr.results)snap.results=mr.results;if(mr&&mr.survey)snap.survey=mr.survey;
