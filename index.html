@@ -4414,7 +4414,7 @@ function render(){
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
 </div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-    <div class="dm-bar"><span class="lbl">Show</span><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
+    <div class="dm-bar"><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
     ${list.length?(()=>{let n=0;const nc=4+COLS.filter(([k])=>shown.has(k)).length;return `<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([k,l])=>`<th class="h-${k}">${l}</th>`).join('')}</tr></thead><tbody>
       ${DGROUPS.map(([gk,gt])=>({gk,gt,L:list.filter(p=>dgrp(p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="${nc}" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>${L.map((p)=>{const i=n++;return `<tr class="dg-${dgrp(p.role)}" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
       <td class="c-run num">${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${bayLine(p)?`<span class="sub">${esc(bayLine(p))}</span>`:''}</td>${optCells(p)}</tr>`}).join('')}`).join('')}
@@ -10082,7 +10082,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010132';
+const VERSION='202611010133';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
