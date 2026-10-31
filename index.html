@@ -10097,7 +10097,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010148';
+const VERSION='202611010149';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11108,6 +11108,13 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.dn .nl{display:inline!important;margin:0 10px 0 0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers td.rs{grid-row:5!important}
 }
+@media (min-width:900px){
+/* run and sort sheets: a comfortable sheet width on desktop, not the full column */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs>header .wrap,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs>main#app.wrap,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs>main#app.wrap.colfree,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs>header .wrap.colfree{max-width:860px!important;width:100%!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}
+/* tabs line up with the page content instead of starting at the far left */
+:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utrow{max-width:1000px!important;margin:0 auto!important}
+}
+@media (min-width:900px){:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs>header.top{background:transparent!important;border:0!important;box-shadow:none!important}}
 </style>
 </body>
 </html>
