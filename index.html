@@ -1201,7 +1201,12 @@ function adminGlance(){const el=$('ah_glance');if(!el||role!=='mgr')return;const
   let off=null;try{const L=window.LEAVE;if(L&&L.dayMap){const p=n=>String(n).padStart(2,'0');const o=(L.dayMap()||{})[d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())];off=o?((o.names||[]).length+(o.office||[]).length):0}}catch(e){}
   const first=String((window.__webMe&&window.__webMe.name)||'').trim().split(/\s+/)[0]||'';const nm=first?first.charAt(0).toUpperCase()+first.slice(1).toLowerCase():'';
   const chip=(n,l,nav,k)=>`<button type="button" class="gl gl-${k}${n?' on':''}" data-gl="${nav}"><b>${n==null?'–':n}</b><small>${l}</small></button>`;
-  const html=`<span class="sh-date">${esc(ds)}</span><h1 class="sh-hero-t">${g}${nm?', '+esc(nm):''}</h1><div class="gls">${chip(N.enquiries||0,'Enquiries','enquiries','enq')}${chip(N.leave||0,'Leave requests','leave','lv')}${chip(off,'Off today','leave','off')}${chip(N.reports||0,'New reports','reports','rp')}</div>`;
+  const D=window.__ahDay;let res='';
+  if(D&&window.SCORE){const p1=v=>v==null?'–':(v>=.9995?'100':(Math.round(v*1000)/10).toFixed(1).replace(/\.0$/,''))+'%';const tg=D.tg||{etaG:98,cpG:99};const cl=(v,t)=>v==null?'':v>=.9995?'gd':Math.round(v*1000)/10>=t-1e-9?'g':'b';
+    const dd=new Date(D.date+'T12:00:00');const day=dd.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});const sc=D.score;
+    const st=(l,v,c)=>`<span class="rs"><b class="v-${c}">${v}</b><small>${l}</small></span>`;
+    res=`<button type="button" class="ah-res" data-gl="summary"><span class="rh"><small>Contract results · ${esc(day)} · ${D.n} driver${D.n===1?'':'s'}</small><b class="sc v-${sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b'}">${sc==null?'–':window.SCORE.fmt(sc)}</b></span><span class="rg">${st('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${st('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${st('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${st('Enquiries',String(D.enq),D.enq?'b':'gd')}</span></button>`}
+  const html=`<span class="sh-date">${esc(ds)}</span><h1 class="sh-hero-t">${g}${nm?', '+esc(nm):''}</h1>${res}<div class="gls">${chip(N.enquiries||0,'Open NCRs','ncr','enq')}${chip(N.leave||0,'Leave requests','leave','lv')}${chip(off,'Off today','leave','off')}${chip(N.reports||0,'New reports','reports','rp')}</div>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
@@ -1342,8 +1347,9 @@ window.__dayCard=function(o){const E=x=>String(x??'').replace(/[&<>"']/g,c=>({'&
 function adminDay(){const el=$('ah_day');if(!el||role!=='mgr')return;const d=FC.last;if(!d||!d.rows||!window.SCORE){if(el.__h!==''){el.__h='';el.innerHTML=''}return}
   const R=Object.values(d.rows).filter(r=>r&&typeof r==='object');if(!R.length)return;const fr=v=>{v=+v;return v>1.0001?v/100:v};
   let pc=0,ew=0,en=0,cw=0,cn=0,enq=0,enqP=0,sc=0;for(const r of R){const n=+r.pc||0;pc+=n;if(r.eta!=null&&r.eta!==''){ew+=fr(r.eta)*(n||1);en+=(n||1)}if(r.cp!=null&&r.cp!==''){cw+=fr(r.cp)*(n||1);cn+=(n||1)}enq+=+r.enq||0;enqP+=+r.enqP||0;sc+=window.SCORE.day(r).score}
-  const html=window.__dayCard({title:'Contract results',date:d.date,name:'Contract 1161',sub:R.length+' drivers worked',score:sc/R.length,pc,eta:en?ew/en:null,cp:cn?cw/cn:null,enq,enqP,tg:FC.tg,nav:'summary'});
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+  /* shown inside the Home header card now, not as its own card */
+  window.__ahDay={date:d.date,n:R.length,score:sc/R.length,pc,eta:en?ew/en:null,cp:cn?cw/cn:null,enq:Math.round(enq)+Math.round(enqP),tg:FC.tg};
+  if(el.__h!==''){el.__h='';el.innerHTML=''}try{adminGlance()}catch(e){}}
 const FC={wk:null,wkBusy:false,at:0,last:null,tg:{etaG:98,cpG:99},fu:{},fuOn:false,busy:{}};
 async function fcLoad(){if(FC.wkBusy||Date.now()-FC.at<5*60e3)return;FC.wkBusy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){FC.wkBusy=false;return}
   const D=d=>window.__D?window.__D(d):d.data();const t=new Date();const mon=new Date(t);mon.setDate(t.getDate()-((t.getDay()+6)%7)-7);const ds=[0,1,2,3,4,5].map(i=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return mcIso(d)});
@@ -10124,7 +10130,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010155';
+const VERSION='202611010156';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11211,6 +11217,18 @@ html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-link
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button:focus-visible{outline:2px solid #F2782D;outline-offset:2px}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-stepnav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-stepnav .sh-btn.primary{margin-left:auto}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res{all:unset;cursor:pointer;box-sizing:border-box;display:block;width:100%;margin:0 0 8px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res:focus-visible{outline:2px solid #F2782D;outline-offset:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rh small{font-size:.74rem;font-weight:700;color:#C9D3E3}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .sc{font-size:1.6rem;line-height:1}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rs{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rs b{font-size:1.05rem;color:#fff}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .rs small{font-size:.68rem;font-weight:700;color:#9FB3C8}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-gd{color:#FFD54F!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-g{color:#69DB9A!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ah-res .v-b{color:#FF8A80!important}
 </style>
 </body>
 </html>
