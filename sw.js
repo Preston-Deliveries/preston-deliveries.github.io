@@ -1,6 +1,6 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
-const CACHE = 'pds-app-v2';
+const CACHE = 'pds-app-v3';
 /* sw 4: the app page always comes live from the internet; no saved copy of the app is kept */
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
@@ -69,4 +69,33 @@ self.addEventListener('fetch', e => {
     })());
   }
   /* Everything else (sign in, the database, WhatsApp) goes straight to the internet as normal */
+});
+
+
+/* Phone notifications: show them even when the app is closed, and open the right page when tapped */
+self.addEventListener('push', e => {
+  let j = {};
+  try { j = e.data ? e.data.json() : {}; } catch (x) { try { j = { data: { body: e.data.text() } }; } catch (y) {} }
+  const d = j.data || j.notification || j;
+  const title = d.title || 'Preston Delivery Service';
+  e.waitUntil(self.registration.showNotification(title, {
+    body: d.body || '',
+    icon: 'icon-192.png',
+    badge: 'icon-192.png',
+    tag: d.kind ? 'pds-' + d.kind + '-' + Date.now() : undefined,
+    data: { url: d.url || '' },
+    vibrate: [200, 100, 200]
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const hash = (e.notification.data && e.notification.data.url) || '';
+  const target = new URL('./' + (hash.startsWith('#') ? hash : ''), self.registration.scope).href;
+  e.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of all) {
+      if (c.url.startsWith(self.registration.scope)) { try { await c.focus(); if (hash) c.navigate(target); } catch (x) {} return; }
+    }
+    await self.clients.openWindow(target);
+  })());
 });
