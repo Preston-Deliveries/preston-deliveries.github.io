@@ -1124,7 +1124,7 @@ function puRender(){const b=document.querySelector('#sh-set.pu-adm .pu-body');if
   const quiet=cfg.quiet!==false,qf=cfg.quietFrom??20,qt=cfg.quietTo??5;const hr=h=>(h%12||12)+(h<12?'am':'pm');
   const drv=phones.filter(p=>p.role!=='admin'),adm=phones.filter(p=>p.role==='admin');
   const people=[...new Map(drv.filter(p=>p.staff).map(p=>[p.staff,p.name||p.email])).entries()].sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
-  b.innerHTML=`<section class="pu-sec"><h3>Who has them on</h3><p><b>${new Set(drv.map(p=>p.email)).size}</b> driver${new Set(drv.map(p=>p.email)).size===1?'':'s'} · <b>${new Set(adm.map(p=>p.email)).size}</b> admin${new Set(adm.map(p=>p.email)).size===1?'':'s'} · ${phones.length} device${phones.length===1?'':'s'} in total</p><div class="pu-acts"><button type="button" class="sh-btn" data-pu="test">Check it works on my devices</button></div>${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>
+  b.innerHTML=`<section class="pu-sec"><h3>Who has them on</h3><p><b>${new Set(drv.map(p=>p.email)).size}</b> driver${new Set(drv.map(p=>p.email)).size===1?'':'s'} · <b>${new Set(adm.map(p=>p.email)).size}</b> admin${new Set(adm.map(p=>p.email)).size===1?'':'s'} · ${phones.length} device${phones.length===1?'':'s'} in total</p>${phones.length?`<ul class="pu-who">${[...phones].sort((x,y)=>String(x.name||x.email).localeCompare(String(y.name||y.email))).map(p=>`<li><b>${esc(p.name||p.email||'Unknown')}</b><span>${esc(p.device||'Device')}${p.role==='admin'?' · admin':(p.login?' · '+esc(p.login):'')}${p.at?' · since '+esc(new Date(p.at).toLocaleDateString('en-AU',{day:'numeric',month:'short'})):''}</span></li>`).join('')}</ul>`:''}<div class="pu-acts"><button type="button" class="sh-btn" data-pu="test">Check it works on my devices</button></div>${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>
    <section class="pu-sec"><h3>Automatic notifications</h3>${PU_TYPES.map(([k,l])=>`<label class="pu-ck"><input type="checkbox" data-pu="type" data-v="${k}" ${off.has(k)?'':'checked'}> ${l}</label>`).join('')}</section>
    <section class="pu-sec"><h3>Quiet hours</h3><label class="pu-ck"><input type="checkbox" data-pu="quiet" ${quiet?'checked':''}> No dings overnight (except safety alerts)</label>
      ${quiet?`<div class="pu-row2"><label class="pu-f">From<select data-pu="qf">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qf?'selected':''}>${hr(h)}</option>`).join('')}</select></label><label class="pu-f">Until<select data-pu="qt">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qt?'selected':''}>${hr(h)}</option>`).join('')}</select></label></div>`:''}</section>
@@ -10094,7 +10094,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010146';
+const VERSION='202611010147';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11081,6 +11081,10 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-set .pn .thseg>button{min-height:38px!important;height:38px!important;padding-top:0!important;padding-bottom:0!important}
 :root:root:root:root:root:root:root body #sh-set .pn .dm-out{margin-top:8px!important;padding-top:10px!important;padding-bottom:10px!important}
 :root:root:root:root:root:root:root body #sh-set p.who{word-break:normal!important;overflow-wrap:anywhere;line-height:1.5}
+:root:root:root:root:root:root:root body #sh-set .pu-who{list-style:none;margin:8px 0 0;padding:0;border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+:root:root:root:root:root:root:root body #sh-set .pu-who li{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid var(--sh-line);font-size:.92rem}
+:root:root:root:root:root:root:root body #sh-set .pu-who li:first-child{border-top:0}
+:root:root:root:root:root:root:root body #sh-set .pu-who li span{color:var(--sh-muted);text-align:right}
 </style>
 </body>
 </html>
