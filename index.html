@@ -1106,7 +1106,7 @@ function puRender(){const b=document.querySelector('#sh-set.pu-adm .pu-body');if
    <section class="pu-sec"><h3>Automatic notifications</h3>${PU_TYPES.map(([k,l])=>`<label class="pu-ck"><input type="checkbox" data-pu="type" data-v="${k}" ${off.has(k)?'':'checked'}> ${l}</label>`).join('')}</section>
    <section class="pu-sec"><h3>Quiet hours</h3><label class="pu-ck"><input type="checkbox" data-pu="quiet" ${quiet?'checked':''}> No dings overnight (except safety alerts)</label>
      ${quiet?`<div class="pu-row2"><label class="pu-f">From<select data-pu="qf">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qf?'selected':''}>${hr(h)}</option>`).join('')}</select></label><label class="pu-f">Until<select data-pu="qt">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qt?'selected':''}>${hr(h)}</option>`).join('')}</select></label></div>`:''}</section>
-   <section class="pu-sec"><h3>Recently sent</h3>${log.length?`<ul class="pu-log">${log.map(x=>`<li><b>${esc(x.title)}</b><small>${esc(new Date(x.at).toLocaleString('en-AU',{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}))} · ${esc(x.to)} · ${x.skipped?esc(x.skipped):`sent to ${x.sent} phone${x.sent===1?'':'s'}`}</small></li>`).join('')}</ul>`:'<p class="hint">Nothing sent yet.</p>'}</section>`}
+`}
 async function openPushSend(){closeSettings();const P=window.PUSH;if(!P)return;
   const w=document.createElement('div');w.id='sh-set';w.className='pu-adm pu-snd';w.setAttribute('role','dialog');w.setAttribute('aria-label','Send a Message');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Send a Message</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div><div class="pu-body"><p class="nt0">Loading…</p></div></div>`;
@@ -9797,7 +9797,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010055';
+const VERSION='202611010056';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
