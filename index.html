@@ -10147,7 +10147,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010165';
+const VERSION='202611010166';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11330,6 +11330,16 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 /* compact layout: everything on the page about 14% smaller so more fits on each screen */
 :root:root:root:root:root:root:root:root body #sh-main{zoom:.86}
 :root:root:root:root:root:root:root:root body .sh-mtop{zoom:.85}
+/* pill tabs and switches: the selected option is a filled orange pill */
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs[role=group],.pseg2,.seg[role=group],#pcs.modes,.modes[role=group]){background:var(--sh-sunk)!important;border:0!important;border-radius:999px!important;padding:4px!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs[role=group],.pseg2,.seg[role=group],#pcs.modes,.modes[role=group])>button{border-radius:999px!important;border-bottom:0!important;box-shadow:none!important;padding-left:12px!important;padding-right:12px!important;min-height:32px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs[role=group],.pseg2,.seg[role=group],#pcs.modes,.modes[role=group])>button[aria-pressed=true]{background:#F2782D!important;color:#fff!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs[role=group],.pseg2,.seg[role=group],#pcs.modes,.modes[role=group])>button[aria-pressed=true]>.cbadge{background:#fff!important;color:#C2410C!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx>.pseg2{background:var(--sh-sunk)!important}
+:root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs{gap:6px!important;align-items:center!important}
+:root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button{border-bottom:0!important;border-radius:999px!important;padding:0 14px!important;height:32px!important;min-height:32px!important;line-height:32px!important;margin:6px 0!important}
+:root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button[aria-current=page]{background:#F2782D!important;color:#fff!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(input[type=search],input.dm-q,input.q,input.lk-q,#ah_fq){border-radius:999px!important;padding-left:16px!important}
 </style>
 </body>
 </html>
