@@ -1145,11 +1145,6 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
     puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:'Not sent: '+j.skipped+'.'}:{t:'Sent to '+j.sent+' phone'+(j.sent===1?'':'s')+'.'};
     if(!j.error&&!j.skipped){const bd=document.getElementById('pu_body');if(bd)bd.value=''}
     puState.log=await P.log();puRefresh();return}});
-/* admins: a Send a notification button on Home */
-setInterval(()=>{try{const P=window.PUSH;if(!P||previewChild||role!=='mgr')return;const home=document.getElementById('mod-home');if(!home||home.hidden||home.querySelector('.pu-sendc'))return;
-  const find=home.querySelector('.ah-find');const at=find?find.closest('.dh-cards'):home.querySelector('.dh-cards');if(!at)return;
-  const c=document.createElement('div');c.className='dh-cards pu-sendw';c.innerHTML=`<button type="button" class="dh-card pu-sendc" data-pu="sendopen"><span class="ic">🔔</span><span class="tx"><b>Send a Message</b><small>Ding drivers’ phones with something urgent</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`;
-  at.parentNode.insertBefore(c,at.nextSibling)}catch(x){}},2000);
 /* a one off card on Home inviting people to turn notifications on */
 setInterval(()=>{try{const P=window.PUSH;if(!P||previewChild||P.state()!=='off')return;let no=null;try{no=localStorage.getItem('push1161no')}catch(x){}if(no)return;
   const home=document.getElementById('mod-home');if(!home||home.hidden||home.querySelector('.pu-home'))return;const at=home.querySelector('.dh-cards');if(!at)return;
@@ -1721,11 +1716,11 @@ function renderHome(){
   }
   const QA=[['updates','[data-nt="new"]','Update'],['leave','[data-lv="add"]','Leave'],['enquiries','[data-eq="new"]','Enquiry'],['results','[data-rtab="import"]','Load results']];
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
-  <section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section>
   <div class="dh-cards">
-   <section class="dh-card ah-find"><h2>Search</h2><div class="ah-frow"><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street or a page" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Search streets and pages">${(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="ah-mic" id="ah_mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>`:''}</div><div class="ah-say" id="ah_say" aria-live="polite" hidden></div><div id="ah_fres" aria-live="polite"></div></section>
-   <div id="ah_dotw"></div>
    <div id="wx_box"></div>
+   <section class="dh-card ah-find"><h2>Search</h2><div class="ah-frow"><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street or a page" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Search streets and pages">${(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="ah-mic" id="ah_mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>`:''}</div><div class="ah-say" id="ah_say" aria-live="polite" hidden></div><div id="ah_fres" aria-live="polite"></div></section>
+   ${previewChild?'':`<button type="button" class="dh-card pu-sendc" data-pu="sendopen"><span class="ic">🔔</span><span class="tx"><b>Send a Message</b><small>Ding drivers’ phones with something urgent</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`}
+   <div id="ah_dotw"></div>
    <div id="ah_focus"></div>
    <div id="ah_day"></div>
    <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
@@ -9770,7 +9765,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010040';
+const VERSION='202611010041';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
