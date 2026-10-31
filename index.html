@@ -4162,7 +4162,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 const niceD=v=>{if(!v)return '';const d=new Date(String(v).slice(0,10)+'T12:00:00');return isNaN(d)?String(v):d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})};
 const meFull=()=>{let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}const me=Object.values(people).find(x=>String(x.email||'').toLowerCase()===String(e).toLowerCase());return me&&(me.first||me.last)?title([me.first,me.last].filter(Boolean).join(' ')):''};
 const meName=()=>{let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}const me=Object.values(people).find(x=>String(x.email||'').toLowerCase()===String(e).toLowerCase());return me?title(me.first||fullName(me)):(e.split('@')[0]||'Admin')};
-function onbLoad(id){if(!window.ONB||OBC[id]!==undefined)return;OBC[id]=null;window.ONB.get(id).then(o=>{OBC[id]=o||false;if(openId===id)render()});}
+const OBT={};function onbLoad(id){if(!window.ONB||(OBC[id]!==undefined&&Date.now()-(OBT[id]||0)<30000))return;OBT[id]=Date.now();if(OBC[id]===undefined)OBC[id]=null;window.ONB.get(id).then(o=>{const was=JSON.stringify(OBC[id]);OBC[id]=o||false;if(openId===id&&was!==JSON.stringify(OBC[id]))render()});}
 function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
   onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
   const first=title(String(p.first||'').split(' ')[0]),msgTxt=`Hi${first?' '+first:''}, welcome to Preston Delivery Service! Please set up our app on your phone before your first day. It takes about 10 minutes.
@@ -4192,22 +4192,31 @@ Any problems, just message me.`;
 /* Australia Post: Declaration of Understanding, Temporary Authority */
 let apPad=false;
 const dmy=v=>{const d=new Date(v);return isNaN(d)?'':d.getDate()+'/'+(d.getMonth()+1)+'/'+String(d.getFullYear()).slice(2)};
-function apHTML(p){const o=OBC[p.id];if(!o||!o.d||!o.d.apSig)return '';const d=o.d,conv=d.apConv==='Yes';
-  let msn='';try{msn=o.msn||localStorage.getItem('pds_msn')||''}catch(x){msn=o.msn||''}
-  return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst ${o.repSig?'ok':'go'}">${o.repSig?'✓ Ready to send':'Needs your signature'}</span></h3>
-   <p class="hint">Declaration of Understanding: Temporary Authority. Signed by the driver on ${esc(niceD(d.apAt||o.submittedAt))}.${o.repSig?` Signed by ${esc(o.repName||'')} on ${esc(niceD(o.repAt))}.`:''}</p>
+function apCur(id){const o=OBC[id];if(!o)return null;const d=o.d||{};
+  const fromOnb=d.apSig?{src:'onb',conv:d.apConv,sig:d.apSig,at:d.apAt||o.submittedAt,repSig:o.repSig,repName:o.repName,repAt:o.repAt,msn:o.msn,name:[d.first,d.last].filter(Boolean).join(' ')}:null;
+  const fromDec=o.dec&&o.dec.sig?Object.assign({src:'dec'},o.dec):null;
+  if(fromDec&&(!fromOnb||String(fromDec.at)>String(fromOnb.at)))return fromDec;return fromOnb}
+function apHTML(p){const id=p.id;if(!window.ONB)return '';onbLoad(id);const o=OBC[id];if(o===null||o===undefined)return '';const c=apCur(id);
+  const req=p.decReq&&!(c&&String(c.at)>=String(p.decReq));
+  let msn='';try{msn=(c&&c.msn)||localStorage.getItem('pds_msn')||''}catch(x){msn=(c&&c.msn)||''}
+  const reqBtn=`<button type="button" class="sh-btn" data-dmx="apreq">Ask them to sign a new one</button>`;
+  if(req)return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">Waiting for them to sign</span></h3><p class="hint">You asked for a new one on ${esc(niceD(p.decReq))}. It pops up for them to sign the next time they open the app.${c?' Their last one was signed on '+esc(niceD(c.at))+'.':''}</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="apunreq">Cancel the request</button>${c&&c.repSig?`<button type="button" class="sh-btn" data-dmx="appdf">Download the last PDF</button>`:''}</div></section>`;
+  if(!c)return p.onboard==='pending'?'':`<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">None on file</span></h3><p class="hint">If management asks for a Declaration of Understanding (Temporary Authority) for this driver, ask them to sign one here. It pops up for them the next time they open the app.</p><div class="dm-onba">${reqBtn}</div></section>`;
+  const conv=c.conv==='Yes';
+  return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst ${c.repSig?'ok':'go'}">${c.repSig?'✓ Ready to send':'Needs your signature'}</span></h3>
+   <p class="hint">Declaration of Understanding: Temporary Authority. Signed by the driver on ${esc(niceD(c.at))}.${c.repSig?` Signed by ${esc(c.repName||'')} on ${esc(niceD(c.repAt))}.`:''}</p>
    <p class="${conv?'dm-apw':'hint'}">Offences or convictions: <b>${conv?'Yes. Talk to them before they start.':'No'}</b></p>
    ${apPad?`<div class="dm-appad"><label class="f" for="dm_ap_msn">Mail service number<input id="dm_ap_msn" value="${esc(msn)}" placeholder="e.g. V1161"></label>
-     <label class="f" for="dm_ap_name">Contractor's representative<input id="dm_ap_name" value="${esc(o.repName||meFull()||meName())}"></label>
+     <label class="f" for="dm_ap_name">Contractor's representative<input id="dm_ap_name" value="${esc(c.repName||meFull()||meName())}"></label>
      <b>Sign here</b><canvas id="dm_apsig" width="600" height="200"></canvas>
      <div class="dm-onba"><button type="button" class="sh-btn primary" data-dmx="apsave">Save my signature</button><button type="button" class="sh-btn" data-dmx="apclear">Clear</button><button type="button" class="sh-btn" data-dmx="apcancel">Cancel</button></div></div>`
-   :`<div class="dm-onba">${o.repSig?`<button type="button" class="sh-btn primary" data-dmx="appdf">Download PDF</button><button type="button" class="sh-btn" data-dmx="apsign">Sign again</button>`:`<button type="button" class="sh-btn primary" data-dmx="apsign">Sign as contractor's representative</button><button type="button" class="sh-btn" data-dmx="appdf">Download PDF without my signature</button>`}</div>`}</section>`}
+   :`<div class="dm-onba">${c.repSig?`<button type="button" class="sh-btn primary" data-dmx="appdf">Download PDF</button><button type="button" class="sh-btn" data-dmx="apsign">Sign again</button>`:`<button type="button" class="sh-btn primary" data-dmx="apsign">Sign as contractor's representative</button><button type="button" class="sh-btn" data-dmx="appdf">Download PDF without my signature</button>`}${reqBtn}</div>`}</section>`}
 function apPadInit(){const c=$('apsig');if(!c)return;const g=c.getContext('2d');g.lineWidth=4;g.lineCap='round';g.strokeStyle='#111';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);c.dataset.has='';
   let on=false;const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
   c.onpointerdown=e=>{on=true;c.setPointerCapture(e.pointerId);const[x,y]=pt(e);g.beginPath();g.moveTo(x,y)};
   c.onpointermove=e=>{if(!on)return;const[x,y]=pt(e);g.lineTo(x,y);g.stroke();c.dataset.has='1'};
   c.onpointerup=()=>{on=false}}
-async function apPDF(p,btn){const o=OBC[p.id];if(!o||!o.d)return;const d=o.d;
+async function apPDF(p,btn){const c=apCur(p.id);if(!c)return;const o={repSig:c.repSig,repName:c.repName,msn:c.msn,submittedAt:c.at},d={apConv:c.conv,apSig:c.sig,apAt:c.at,first:c.name||[p.first,p.last].filter(Boolean).join(' '),last:''};
   const old=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.textContent='Making PDF…'}
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')}catch(e){if(btn){btn.disabled=false;btn.textContent=old}msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
   const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'});const L=18,W=174;let y=22;
@@ -4258,13 +4267,16 @@ document.addEventListener('change',e=>{const el=e.target.closest&&e.target.close
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-dmx]');if(!el||!openId||!document.getElementById('mod-staff').contains(el))return;const a=el.dataset.dmx,id=openId;
   if(a==='indtick')return;
   if(a==='apsign'){apPad=true;render();setTimeout(apPadInit,0);return}
+  if(a==='apreq'){await saveExtra(id,{decReq:new Date().toISOString()},'Asked. It pops up for them to sign the next time they open the app.');
+    try{if(window.PUSH&&PUSH.send)PUSH.send('urgent',{staff:id,title:'PDS Alert',body:'Please open the PDS app and sign a new Australia Post declaration.',url:'#home'})}catch(x){}return}
+  if(a==='apunreq'){await saveExtra(id,{decReq:''},'Request cancelled.');return}
   if(a==='apcancel'){apPad=false;render();return}
   if(a==='apclear'){apPadInit();return}
-  if(a==='appdf'){if(!OBC[id]||!OBC[id].d)return;await apPDF(people[id],el);return}
+  if(a==='appdf'){if(!apCur(id))return;await apPDF(people[id],el);return}
   if(a==='apsave'){const c=$('apsig');if(!c||!c.dataset.has){msg={err:true,t:'Sign in the box first.'};const m2=document.querySelector('#mod-staff .foot .msg');if(m2){m2.textContent=msg.t;m2.classList.add('err')}else render();return}
     const msn=($('ap_msn')||{}).value||'',nm=($('ap_name')||{}).value||meName();try{localStorage.setItem('pds_msn',msn)}catch(x){}
     const up={repSig:c.toDataURL('image/jpeg',.6),repName:nm.trim(),repAt:new Date().toISOString(),msn:msn.trim()};
-    try{await window.ONB.saveRep(id,up);OBC[id]=Object.assign({},OBC[id],up);apPad=false;msg={t:'Signed. You can download the PDF now.'};render()}catch(e){msg={err:true,t:'Could not save just now. Check your connection and try again.'};render()}return}
+    const cur=apCur(id);try{if(cur&&cur.src==='dec'){await window.ONB.saveRep(id,{dec:up});OBC[id]=Object.assign({},OBC[id],{dec:Object.assign({},OBC[id].dec,up)})}else{await window.ONB.saveRep(id,up);OBC[id]=Object.assign({},OBC[id],up)}apPad=false;msg={t:'Signed. You can download the PDF now.'};render()}catch(e){msg={err:true,t:'Could not save just now. Check your connection and try again.'};render()}return}
   if(a==='indsign'){await saveExtra(id,{indAt:new Date(Date.now()+36e6).toISOString().slice(0,10),indBy:meName(),indItems:IND_ITEMS.slice()},'Site induction signed off.');delete indTick[id];return}
   if(a==='indundo'){await saveExtra(id,{indAt:'',indBy:'',indItems:[]},'Site induction cleared.');return}
   if(a==='onbstart'){await saveExtra(id,{onboard:'pending'},'Welcome steps turned on. Send them the app link.');return}
@@ -4319,7 +4331,7 @@ function detailHTML(){
       ${isNew&&!newFull?`<p class="dm-newh">Just add their <b>email</b>, and their <b>mobile</b> if you want to WhatsApp them the app link. They fill in everything else themselves through the welcome steps, and it goes straight into their record for you to check.</p>
       <div class="grid">${grp('New driver',['email','mobile'])}</div><input type="checkbox" id="dm_f_onbnew" checked hidden>
       <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay',['payFreq'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
-      ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':onbHTML(p)+apHTML(p))+indHTML(p)}
+      ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':(p.onboard?onbHTML(p):'')+apHTML(p))+indHTML(p)}
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -9955,7 +9967,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010067';
+const VERSION='202611010068';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10436,7 +10448,7 @@ window.ONB={
   open:()=>onbOpen(true),
   preview(){OB.preview=true;OB.sid='';OB.step=0;OB.imgs={};OB.msg=null;OB.busy=false;OB.d={first:'',last:'',mobile:'',email:''};onbOpen()}
 };
-const OB={sid:'',step:0,d:{},imgs:{},busy:false,msg:null,staff:null,preview:false};
+const OB={sid:'',step:0,d:{},imgs:{},busy:false,msg:null,staff:null,preview:false,mode:''};
 const OB_STEPS=['Welcome','Your details','Work rights','Documents','Australia Post declaration','Read and sign','All set'];
 const OB_DOCS=[['lic1','Driver licence (front)',true],['lic2','Driver licence (back)',true],['visa','Visa grant notice',false]];
 const obEsc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -10444,14 +10456,16 @@ async function onbCheck(){
   try{
     if(ROLE==='admin')return;const me=window.__webMe||{};const sid=String(me.staff||'');if(!sid)return;
     const s=await fs.doc('staff/'+sid).get();if(!s.exists)return;const st=DEC(s.data())||{};
-    if(st.onboard!=='pending')return;
+    if(st.onboard!=='pending'){
+      if(st.decReq){const o=await window.ONB.get(sid);const dn=o&&o.dec&&o.dec.at;if(!(dn&&dn>=st.decReq)){OB.sid=sid;OB.staff=st;OB.mode='dec';OB.step=4;OB.d={};onbOpen()}}
+      return}
     const o=await window.ONB.get(sid);if(o&&o.status==='submitted')return;
     OB.sid=sid;OB.staff=st;OB.d=Object.assign({first:st.first||'',last:st.last||'',mobile:st.mobile||'',email:st.email||EMAIL},o&&o.d||{});OB.step=Math.min(o&&o.step||0,OB_STEPS.length-1);
     const im=await window.ONB.imgs(sid);for(const x of im){const k=String(x.key||'');if(k)OB.imgs[k]=x.img}
     onbOpen()}catch(e){console.warn('onboarding',e)}}
 (function onbWait(n){if(window.APP&&APP.role&&APP.role!=='loading'&&window.__webMe){onbCheck();return}if(n<200)setTimeout(()=>onbWait(n+1),900)})(0);
 function onbOpen(){let w=document.getElementById('onb');if(!w){w=document.createElement('div');w.id='onb';w.setAttribute('role','dialog');w.setAttribute('aria-label','Welcome');document.body.appendChild(w)}document.body.classList.add('onb-on');onbRender()}
-function onbClose(){OB.preview=false;const w=document.getElementById('onb');if(w)w.remove();document.body.classList.remove('onb-on')}
+function onbClose(){OB.preview=false;OB.mode='';const w=document.getElementById('onb');if(w)w.remove();document.body.classList.remove('onb-on')}
 const ofld=(k,l,o)=>{o=o||{};const v=OB.d[k]??'';
   if(o.sel)return `<label class="ob-f">${l}${o.req?' <i>needed</i>':''}<select data-ob="${k}"><option value="">Choose</option>${o.sel.map(x=>`<option ${v===x?'selected':''}>${obEsc(x)}</option>`).join('')}</select></label>`;
   return `<label class="ob-f">${l}${o.req?' <i>needed</i>':''}<input data-ob="${k}" type="${o.type||'text'}" value="${obEsc(v)}" ${o.ph?`placeholder="${obEsc(o.ph)}"`:''} ${o.im?`inputmode="${o.im}"`:''} autocomplete="off"></label>`};
@@ -10484,7 +10498,25 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     ${d.work==='Visa holder'?`<div class="ob-g">${ofld('visaType','Visa type or subclass',{req:1,ph:'e.g. Student 500'})}${ofld('visaDue','Visa expiry',{type:'date',req:1})}${ofld('workRights','Work rights',{sel:['Full work rights','Limited hours'],req:1})}${ofld('passport','Passport number')}</div><p class="ob-h">You will add a photo of your visa grant notice on the next page.</p>`:''}`;
   if(s===3)body=`<h1>Documents</h1><p class="ob-h">Take a clear photo of your driver licence, front and back${d.work==='Visa holder'?', and your visa grant notice':''}. Make sure nothing is cut off and the writing is readable.</p>
     ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}`;
-  if(s===4)body=`<h1>Australia Post declaration</h1><p class="ob-h">Australia Post needs this signed before you start. It lets you start delivering while your security clearance (police check) is being done.</p>
+  if(s===4)body=obDecBody(d);
+  if(OB.mode==='dec')body=`<p class="ob-h"><b>Australia Post has asked for a new signed declaration.</b> Please read it and sign below. It only takes a minute.</p>`+obDecBody(d).replace(/^<h1>Australia Post declaration<\/h1><p class="ob-h">[^<]*<\/p>/,'<h1>Australia Post declaration</h1>');
+  if(s===5)body=`<h1>Read and sign</h1><p class="ob-h">These are our main rules. You can read all of them any time in the <b>Driver Guide</b>.</p>
+    <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego or visa changes.</li></ul>
+    <label class="ob-ck"><input type="checkbox" data-ob="agree" ${d.agree?'checked':''}> I have read these rules and the Driver Guide, and I agree to follow them.</label>
+    <div class="ob-sig"><b>Sign here</b><canvas id="ob_sig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear">Clear signature</button></div>`;
+  if(s===6)body=`<h1>All set, ${obEsc(String(d.first||'').split(' ')[0].toLowerCase().replace(/^\w/,c=>c.toUpperCase()))}!</h1>
+    <p>Two last things so the app works properly for you:</p>
+    <ol class="ob-l"><li><b>Put the app on your home screen</b> if you haven’t yet, so it opens like a normal app.<br><b>iPhone</b> (in Safari): tap the Share button <span aria-hidden="true">⬆</span>, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.<br><b>Android</b> (in Chrome): tap the 3 dots ⋮ at the top right, then <b>Add to Home screen</b> or <b>Install app</b>.</li><li><b>Turn on notifications</b> so you get messages from the office. On an iPhone this only works once the app is on your home screen.</li></ol>
+    ${window.PUSH&&PUSH.state()==='on'?'<p class="ob-ok">✓ Notifications are on.</p>':`<button type="button" class="sh-btn" data-obx="push">🔔 Turn on notifications</button>`}
+    <p>When you tap <b>Send to the office</b>, we’ll check your details. A supervisor will do your site induction on your first day.</p>`;
+  w.innerHTML=`<div class="ob-pn"><div class="ob-top"><span class="ob-brand">≡PDS</span><span class="ob-stp">${OB.mode==='dec'?'Please sign':`Step ${s+1} of ${OB_STEPS.length} · ${OB_STEPS[s]}`}</span>${OB.preview?'<button type="button" class="ob-x" data-obx="close" aria-label="Close preview">✕</button>':''}</div>${OB.preview?'<div class="ob-pv">Preview only. Nothing you type here is saved.</div>':''}
+    ${OB.mode==='dec'?'':`<div class="ob-bar"><i style="width:${Math.round((s+1)/OB_STEPS.length*100)}%"></i></div>`}
+    <div class="ob-body">${body}</div>
+    <div class="ob-ft">${OB.msg?`<p class="ob-msg ${OB.msg.err?'err':''}">${obEsc(OB.msg.t)}</p>`:''}${miss.length&&s>0?`<p class="ob-need">Still needed: ${obEsc(miss.join(', '))}</p>`:''}
+     <div class="ob-acts">${s>0&&OB.mode!=='dec'?`<button type="button" class="sh-btn" data-obx="back">‹ Back</button>`:''}<button type="button" class="sh-btn primary" data-obx="next" ${OB.busy||miss.length?'disabled':''}>${OB.busy?'Saving…':OB.mode==='dec'?'Sign and send':s===0?'Let’s start':s===OB_STEPS.length-1?'Send to the office':'Next ›'}</button></div></div></div>`;
+  {const ob1=w.querySelector('.ob-body');if(ob1&&keepY)ob1.scrollTop=keepY}
+  if(s===4)obSigInit('ob_apsig','apSig');if(s===5)obSigInit('ob_sig','sig')}
+function obDecBody(d){return `<h1>Australia Post declaration</h1><p class="ob-h">Australia Post needs this signed before you start. It lets you start delivering while your security clearance (police check) is being done.</p>
     <div class="ob-dec"><h2>Declaration of Understanding: Temporary Authority</h2>
     <p>You have requested an immediate start for Your Personnel on Your mail service to ensure that You can meet Your contract obligations.</p>
     <p>Security of mail articles is of paramount importance to Australia Post, all staff and contractors involved in the process are required to undertake a security clearance prior to commencement. Your request that Your Personnel commence without prior security clearance will be considered and a response will be provided.</p>
@@ -10496,30 +10528,14 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     ${ofld('apConv','Have you ever had any offences or convictions?',{sel:['No','Yes'],req:1})}
     ${d.apConv==='Yes'?'<p class="ob-h">Please talk to the office about this before your first day.</p>':''}
     <label class="ob-ck"><input type="checkbox" data-ob="apAgree" ${d.apAgree?'checked':''}> I understand and agree to the above.</label>
-    <div class="ob-sig"><b>Sign here</b><canvas id="ob_apsig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear" data-v="apSig">Clear signature</button></div>`;
-  if(s===5)body=`<h1>Read and sign</h1><p class="ob-h">These are our main rules. You can read all of them any time in the <b>Driver Guide</b>.</p>
-    <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego or visa changes.</li></ul>
-    <label class="ob-ck"><input type="checkbox" data-ob="agree" ${d.agree?'checked':''}> I have read these rules and the Driver Guide, and I agree to follow them.</label>
-    <div class="ob-sig"><b>Sign here</b><canvas id="ob_sig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear">Clear signature</button></div>`;
-  if(s===6)body=`<h1>All set, ${obEsc(String(d.first||'').split(' ')[0].toLowerCase().replace(/^\w/,c=>c.toUpperCase()))}!</h1>
-    <p>Two last things so the app works properly for you:</p>
-    <ol class="ob-l"><li><b>Put the app on your home screen</b> if you haven’t yet, so it opens like a normal app.<br><b>iPhone</b> (in Safari): tap the Share button <span aria-hidden="true">⬆</span>, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.<br><b>Android</b> (in Chrome): tap the 3 dots ⋮ at the top right, then <b>Add to Home screen</b> or <b>Install app</b>.</li><li><b>Turn on notifications</b> so you get messages from the office. On an iPhone this only works once the app is on your home screen.</li></ol>
-    ${window.PUSH&&PUSH.state()==='on'?'<p class="ob-ok">✓ Notifications are on.</p>':`<button type="button" class="sh-btn" data-obx="push">🔔 Turn on notifications</button>`}
-    <p>When you tap <b>Send to the office</b>, we’ll check your details. A supervisor will do your site induction on your first day.</p>`;
-  w.innerHTML=`<div class="ob-pn"><div class="ob-top"><span class="ob-brand">≡PDS</span><span class="ob-stp">Step ${s+1} of ${OB_STEPS.length} · ${OB_STEPS[s]}</span>${OB.preview?'<button type="button" class="ob-x" data-obx="close" aria-label="Close preview">✕</button>':''}</div>${OB.preview?'<div class="ob-pv">Preview only. Nothing you type here is saved.</div>':''}
-    <div class="ob-bar"><i style="width:${Math.round((s+1)/OB_STEPS.length*100)}%"></i></div>
-    <div class="ob-body">${body}</div>
-    <div class="ob-ft">${OB.msg?`<p class="ob-msg ${OB.msg.err?'err':''}">${obEsc(OB.msg.t)}</p>`:''}${miss.length&&s>0?`<p class="ob-need">Still needed: ${obEsc(miss.join(', '))}</p>`:''}
-     <div class="ob-acts">${s>0?`<button type="button" class="sh-btn" data-obx="back">‹ Back</button>`:''}<button type="button" class="sh-btn primary" data-obx="next" ${OB.busy||miss.length?'disabled':''}>${OB.busy?'Saving…':s===0?'Let’s start':s===OB_STEPS.length-1?'Send to the office':'Next ›'}</button></div></div></div>`;
-  {const ob1=w.querySelector('.ob-body');if(ob1&&keepY)ob1.scrollTop=keepY}
-  if(s===4)obSigInit('ob_apsig','apSig');if(s===5)obSigInit('ob_sig','sig')}
+    <div class="ob-sig"><b>Sign here</b><canvas id="ob_apsig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear" data-v="apSig">Clear signature</button></div>`}
 function obSigInit(cid,key){const c=document.getElementById(cid);if(!c)return;const g=c.getContext('2d');g.lineWidth=4;g.lineCap='round';g.strokeStyle='#111';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);
   if(OB.d[key]){const im=new Image();im.onload=()=>g.drawImage(im,0,0,c.width,c.height);im.src=OB.d[key]}
   let on=false;const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
   c.onpointerdown=e=>{on=true;c.setPointerCapture(e.pointerId);const[x,y]=pt(e);g.beginPath();g.moveTo(x,y)};
   c.onpointermove=e=>{if(!on)return;const[x,y]=pt(e);g.lineTo(x,y);g.stroke()};
   c.onpointerup=()=>{if(!on)return;on=false;OB.d[key]=c.toDataURL('image/jpeg',.6);if(key==='apSig')OB.d.apAt=new Date().toISOString();const n=document.querySelector('#onb [data-obx=next]');if(n&&!onbMissing().length)n.disabled=false;const nd=document.querySelector('#onb .ob-need');if(nd&&!onbMissing().length)nd.remove()}}
-async function obSave(extra){if(OB.preview)return;const o=Object.assign({staff:OB.sid,email:EMAIL,step:OB.step,status:'started',d:OB.d,updatedAt:new Date().toISOString()},extra||{});await fs.doc('onboard/'+OB.sid).set(o)}
+async function obSave(extra){if(OB.preview)return;const o=Object.assign({staff:OB.sid,email:EMAIL,step:OB.step,status:'started',d:OB.d,updatedAt:new Date().toISOString()},extra||{});await fs.doc('onboard/'+OB.sid).set(o,{merge:true})}
 function obShrink(file){return new Promise(res=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=1400;let w=im.width,h=im.height;const k=Math.min(1,M/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
   const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);let q=.75,u=c.toDataURL('image/jpeg',q);while(u.length>900000&&q>.3){q-=.1;u=c.toDataURL('image/jpeg',q)}res(u.split(',')[1])};im.onerror=()=>res(null);im.src=r.result};r.onerror=()=>res(null);r.readAsDataURL(file)})}
 document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#onb'))return;const k=t.dataset.ob;if(!k)return;OB.d[k]=t.type==='checkbox'?t.checked:t.value;
@@ -10535,6 +10551,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(a==='rmimg'){delete OB.imgs[b.dataset.v];try{if(!OB.preview)await fs.doc('onboardimg/'+OB.sid+'_'+b.dataset.v).delete()}catch(x){}onbRender();return}
   if(a==='sigclear'){OB.d[b.dataset.v||'sig']='';onbRender();return}
   if(a==='push'){try{await PUSH.enable()}catch(x){}onbRender();return}
+  if(a==='next'&&OB.mode==='dec'){if(onbMissing().length)return;OB.busy=true;OB.msg=null;onbRender();
+    try{const d=OB.d;if(!OB.preview)await fs.doc('onboard/'+OB.sid).set({staff:OB.sid,email:EMAIL,dec:{conv:d.apConv,agree:true,sig:d.apSig,at:d.apAt||new Date().toISOString(),repSig:'',repName:'',repAt:'',msn:''}},{merge:true});OB.busy=false;
+      const w=document.getElementById('onb');if(w)w.innerHTML=`<div class="ob-pn"><div class="ob-body ob-done"><h1>✓ Sent to the office</h1><p>Thanks! Your signed declaration is with the office.</p><button type="button" class="sh-btn primary" data-obx="close">Open the app</button></div></div>`}
+    catch(x){OB.busy=false;OB.msg={err:true,t:'Could not save just now. Check your internet and try again.'};onbRender()}return}
   if(a==='next'){if(onbMissing().length)return;OB.busy=true;OB.msg=null;onbRender();
     try{if(OB.step===OB_STEPS.length-1){await obSave({status:'submitted',submittedAt:new Date().toISOString()});OB.busy=false;
         const w=document.getElementById('onb');if(w)w.innerHTML=`<div class="ob-pn"><div class="ob-body ob-done"><h1>✓ Sent to the office</h1><p>Thanks! We’ll check your details and let you know if anything else is needed.</p>${OB.preview?'<p class="ob-pv">Preview finished. Nothing was saved.</p>':''}<button type="button" class="sh-btn primary" data-obx="close">${OB.preview?'Close preview':'Open the app'}</button></div></div>`;return}
