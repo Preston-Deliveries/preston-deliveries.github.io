@@ -4164,7 +4164,23 @@ const meName=()=>{let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}
 function onbLoad(id){if(!window.ONB||OBC[id]!==undefined)return;OBC[id]=null;window.ONB.get(id).then(o=>{OBC[id]=o||false;if(openId===id)render()});}
 function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
   onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
-  const first=title(String(p.first||'').split(' ')[0]),msgTxt=`Hi${first?' '+first:''}, welcome to Preston Delivery Service! Please set up our app before your first day:\n1. Open https://preston-deliveries.github.io in Chrome on your phone\n2. Create your account using this email: ${p.email||'(the email you gave us)'}\n3. Follow the welcome steps (about 10 minutes)\nAny problems, just message me.`;
+  const first=title(String(p.first||'').split(' ')[0]),msgTxt=`Hi${first?' '+first:''}, welcome to Preston Delivery Service! Please set up our app on your phone before your first day. It takes about 10 minutes.
+
+1. Open this link on your phone: https://preston-deliveries.github.io
+iPhone: open it in Safari. Android: open it in Chrome.
+
+2. Put the app on your home screen
+iPhone: tap the Share button (the square with the arrow pointing up), scroll down, tap "Add to Home Screen", then tap Add.
+Android: tap the 3 dots at the top right, tap "Add to Home screen" or "Install app", then tap Install.
+
+3. Open the app from the new PDS icon on your home screen.
+
+4. Tap "First time here? Set up your password" and use this email: ${p.email||'(the email you gave us)'}
+Then check your email and tap the link to confirm it.
+
+5. Sign in and follow the welcome steps.
+
+Any problems, just message me.`;
   const d=o&&o.d||{};const row=(l,v)=>v?`<div class="dm-onbr"><span>${l}</span><b>${esc(v)}</b></div>`:'';
   const imgs=OBI[id]||[];
   return `<section class="dm-onb"><h3>New driver welcome steps <span class="dm-onbst ${p.onboard==='done'?'ok':o&&o.status==='submitted'?'go':''}">${esc(st)}</span></h3>
@@ -9873,7 +9889,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010065';
+const VERSION='202611010066';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10406,7 +10422,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
     <div class="ob-sig"><b>Sign here</b><canvas id="ob_sig" width="600" height="200"></canvas><button type="button" class="ob-lnk" data-obx="sigclear">Clear signature</button></div>`;
   if(s===5)body=`<h1>All set, ${obEsc(String(d.first||'').split(' ')[0].toLowerCase().replace(/^\w/,c=>c.toUpperCase()))}!</h1>
     <p>Two last things so the app works properly for you:</p>
-    <ol class="ob-l"><li><b>Add the app to your home screen</b> if you haven’t yet (Chrome menu ⋮ → Add to Home screen).</li><li><b>Turn on notifications</b> so you get messages from the office.</li></ol>
+    <ol class="ob-l"><li><b>Put the app on your home screen</b> if you haven’t yet, so it opens like a normal app.<br><b>iPhone</b> (in Safari): tap the Share button <span aria-hidden="true">⬆</span>, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.<br><b>Android</b> (in Chrome): tap the 3 dots ⋮ at the top right, then <b>Add to Home screen</b> or <b>Install app</b>.</li><li><b>Turn on notifications</b> so you get messages from the office. On an iPhone this only works once the app is on your home screen.</li></ol>
     ${window.PUSH&&PUSH.state()==='on'?'<p class="ob-ok">✓ Notifications are on.</p>':`<button type="button" class="sh-btn" data-obx="push">🔔 Turn on notifications</button>`}
     <p>When you tap <b>Send to the office</b>, we’ll check your details. A supervisor will do your site induction on your first day.</p>`;
   w.innerHTML=`<div class="ob-pn"><div class="ob-top"><span class="ob-brand">≡PDS</span><span class="ob-stp">Step ${s+1} of ${OB_STEPS.length} · ${OB_STEPS[s]}</span>${OB.preview?'<button type="button" class="ob-x" data-obx="close" aria-label="Close preview">✕</button>':''}</div>${OB.preview?'<div class="ob-pv">Preview only. Nothing you type here is saved.</div>':''}
