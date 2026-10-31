@@ -6195,7 +6195,7 @@ function totTable(){
   R.sort(tsort==='name'?(a,b)=>a.name.localeCompare(b.name):(a,b)=>b.total-a.total||a.name.localeCompare(b.name));
   const sum=R.reduce((a,o)=>a+o.total,0),withLeave=R.filter(o=>o.total).length;
   if(!R.length)return `<div class="empty">No one matches “${esc(tq)}”.</div>`;
-  return `<p class="sub">${R.length} ${R.length===1?'person':'people'} shown, ${withLeave} with leave, <b>${sum} days</b> in total for ${esc(P.t.toLowerCase())}.</p>
+  return `
   <div class="tw"><table class="tot"><thead><tr><th>#</th><th>Who</th><th class="r">Taken</th><th class="r">Booked</th><th class="r">Total days</th><th>Next leave</th></tr></thead><tbody>
   ${R.map((o,i)=>{const nxd=nextOf(o.name);const open=topen===o.name;
     return `<tr data-lv="tot" data-v="${esc(o.name)}" tabindex="0" aria-expanded="${open}" class="${o.total?'':'zero'}"><td class="no">${i+1}</td><td><b>${esc(o.name)}</b>${o.office?'<span class="sub">Office</span>':o.run?`<span class="sub">${esc(o.run)}</span>`:''}</td><td class="no">${o.taken}</td><td class="no">${o.booked}</td><td class="no big">${o.total}</td><td class="dt">${nxd?esc(nice(nxd)):'<span class="sub">None booked</span>'}</td></tr>
@@ -6208,7 +6208,6 @@ function totHTML(){
   return `<div class="tbar"><label class="f srch" for="lv_tq">Search a driver<input type="search" id="lv_tq" value="${esc(tq)}" placeholder="Name or run, like D21" autocomplete="off"></label>
    <label class="f" for="lv_tper">Period<select id="lv_tper">${ps.map(x=>`<option value="${x.v}" ${x.v===tper?'selected':''}>${esc(x.t)}</option>`).join('')}</select></label>
    <label class="f" for="lv_tsort">Sort<select id="lv_tsort"><option value="days" ${tsort==='days'?'selected':''}>Most days off</option><option value="name" ${tsort==='name'?'selected':''}>Name</option></select></label></div>
-   <p class="sub">Taken is leave already had, booked is leave still to come. Weekdays only. Tap a person to see each booking. Totals only count leave saved in this calendar, so import an export from 1 January to include earlier leave.</p>
    <div id="lv_tt">${totTable()}</div>`;
 }
 function editHTML(){
@@ -10083,7 +10082,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010131';
+const VERSION='202611010132';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
