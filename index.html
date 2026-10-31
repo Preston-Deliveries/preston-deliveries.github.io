@@ -812,17 +812,7 @@ function navHTML(){const v=new Set(visible());const T=tabSecs();
   const S0=new Set((GG.find(x=>x.k==='start')||{secs:[]}).secs);
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&(g.k==='start'||!S0.has(x)));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'||!g.name?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''} ${s===cur||(hubT(s)&&hubOf(cur)===hubOf(s))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group"></div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
-/* Page actions: the less used buttons of a page live in one "⋯" menu in the header */
-window.PAGE_ACTIONS=window.PAGE_ACTIONS||{};
-
-function pactBtn(){const f=PAGE_ACTIONS[cur];if(!f)return '';let L=[];try{L=f()||[]}catch(e){}if(!L.length)return '';return `<div class="sh-pactw"><button type="button" class="sh-pact" data-pact aria-haspopup="menu" aria-expanded="false" aria-label="More options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button><div class="sh-pactmenu" role="menu" hidden></div></div>`}
-function closeHdMenus(ex){document.querySelectorAll('.sh-hubmenu:not([hidden]),.sh-pactmenu:not([hidden])').forEach(m=>{if(m===ex)return;m.hidden=true;const b=m.previousElementSibling;if(b)b.setAttribute('aria-expanded','false')})}
-document.addEventListener('click',e=>{const t=e.target;
-  const hb=t.closest&&t.closest('[data-hubdd]');if(hb){const m=hb.nextElementSibling;const open=m.hidden;closeHdMenus(m);m.hidden=!open;hb.setAttribute('aria-expanded',String(open));e.stopPropagation();return}
-  const pa=t.closest&&t.closest('[data-pact]');if(pa){const m=pa.nextElementSibling;const open=m.hidden;closeHdMenus(m);if(open){let L=[];try{L=(PAGE_ACTIONS[cur]||(()=>[]))()||[]}catch(x){}m.innerHTML=L.map(([l,sel],i)=>`<button type="button" role="menuitem" data-pai="${i}">${esc(l)}</button>`).join('');m.__L=L}m.hidden=!open;pa.setAttribute('aria-expanded',String(open));e.stopPropagation();return}
-  const pi=t.closest&&t.closest('[data-pai]');if(pi){const m=pi.closest('.sh-pactmenu');const it=(m.__L||[])[+pi.dataset.pai];closeHdMenus();if(it){if(typeof it[1]==='function')it[1]();else{const el=document.querySelector(it[1]);if(el)el.click()}setTimeout(renderPageHead,60)}return}
-  if(!(t.closest&&t.closest('.sh-hubmenu,.sh-pactmenu')))closeHdMenus()},true);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHdMenus()});
+function pactBtn(){return ''}
 function renderPageHead(){
   const ph=$('sh-ph');if(!ph)return;
   if(cur==='home'||(cur==='me'&&role!=='mgr')){ph.hidden=true;ph.innerHTML='';return}
@@ -1088,8 +1078,8 @@ function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||'
 /* the driver Menu: everything else, as big tiles */
 const AMENU=[['Performance','day',[['results','Results, survey and summary'],['enquiries','Customer enquiries and NCRs']]],
  ['On the road','road',[['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],['guide','How we do things']]],
- ['Team','team',[['leave','Who is off and cover planner'],['updates','Driver news and weekly brief'],['reports','Incidents and driver messages'],['uniform','Uniform orders']]],
- ['Office','office',[['invoices','Invoices and clock in hours'],['staff','Details, compliance and van checks']]]];
+ ['Team','team',[['leave','Who is off and cover planner'],['updates','Driver news and weekly brief'],['reports','Incidents and driver messages']]],
+ ['Office','office',[['invoices','Invoices and clock in hours'],['staff','Details, compliance and van checks'],['uniform','Uniform orders']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
 const setRows=(drv)=>`${true?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
@@ -4418,7 +4408,7 @@ function render(){
   const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   box.innerHTML=`<div class="dm">
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
-      <div class="act"><button type="button" class="sh-btn primary" data-dm="add">+ Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="logins">Print logins</button><button type="button" class="sh-btn" data-dmb="1">Blank Australia Post declaration</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
+      <div class="act"><button type="button" class="sh-btn primary" data-dm="add">+ Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="logins">Print logins</button><button type="button" class="sh-btn" data-dmb="1">Blank AP declaration</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     ${(()=>{const D=[];for(const p of Object.values(people))for(const[k,l]of EXP){const n=daysTo(p[k]);if(n!=null&&n<=RDAYS)D.push({p,k,l,n})}D.sort((a,b)=>a.n-b.n);return D.length?`<section class="card rgsoon"><h2>Expiring soon</h2>${D.map(z=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(z.p.id)}"><b>${esc(fullName(z.p))}</b><span>${esc(z.l)}${z.k==='regoDue'&&z.p.rego?' '+esc(z.p.rego):''}</span><span class="svb">${esc(expTxt(z.n,z.p[z.k]))}</span></button>`).join('')}</section>`:''})()}
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
@@ -10100,7 +10090,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010097';
+const VERSION='202611010099';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10917,6 +10907,24 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs{margin:0!important;padding:3px!important}:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #r_perSub{margin-top:0!important}
 :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs button{min-height:34px!important;height:34px!important;font-size:.88rem!important;padding:0 12px!important}
 :root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main #r_tool .rb-dl button{min-height:36px!important;height:36px!important;font-size:.88rem!important}
+
+/* one control height across the app: 40px */
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-btn:not(.sm):not(.ps-a):not(.icon):not(.pnav),:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main a.sh-btn:not(.sm){min-height:40px!important;height:40px!important;padding-top:0!important;padding-bottom:0!important;line-height:1.15!important;font-size:.95rem!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;white-space:nowrap!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main input[type=search],:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .dm-q,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main select:not(label.f select):not(.ob-f select){height:40px!important;min-height:40px!important;padding-top:0!important;padding-bottom:0!important;font-size:.95rem!important;box-sizing:border-box!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .seg,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main [role=group].seg{padding:3px!important;min-height:40px!important;box-sizing:border-box!important;align-items:stretch!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .seg>button,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main [role=group].seg>button{height:34px!important;min-height:34px!important;padding-top:0!important;padding-bottom:0!important;line-height:34px!important;font-size:.92rem!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2>button{height:34px!important;line-height:34px!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{padding:3px!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-a,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pstep .ps-c{height:40px!important;min-height:40px!important}
+:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-hubtabs>button,:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-hubtabs button{height:40px!important;min-height:40px!important;line-height:40px!important;padding:0 16px!important;font-size:.92rem!important}
+/* Driver Management buttons: a tidy row instead of tall tiles */
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-head .act{display:flex!important;flex-wrap:wrap!important;gap:8px!important;grid-template-columns:none!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-head .act>*{flex:1 1 auto!important;width:auto!important}
+
+/* switch buttons (Approved / Under review, New / Open / All...) are 40px tall overall */
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main [role=group]:has(>button[aria-pressed]):not(.persub):not(.pchs):not(.pseg2),:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .seg,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs{padding:0!important;min-height:0!important;height:auto!important;box-sizing:border-box!important;align-items:stretch!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main [role=group]:has(>button[aria-pressed]):not(.persub):not(.pchs):not(.pseg2)>button,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .seg>button,:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tabs>button{height:38px!important;min-height:38px!important;line-height:38px!important;padding-top:0!important;padding-bottom:0!important;margin-top:0!important;margin-bottom:0!important;box-sizing:border-box!important}
+:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2{padding:0!important}:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx .pseg2>button{height:38px!important;line-height:38px!important}
 </style>
 </body>
 </html>
