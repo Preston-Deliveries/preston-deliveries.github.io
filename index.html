@@ -1106,22 +1106,19 @@ function puRender(){const b=document.querySelector('#sh-set.pu-adm .pu-body');if
      ${quiet?`<div class="pu-row2"><label class="pu-f">From<select data-pu="qf">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qf?'selected':''}>${hr(h)}</option>`).join('')}</select></label><label class="pu-f">Until<select data-pu="qt">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qt?'selected':''}>${hr(h)}</option>`).join('')}</select></label></div>`:''}</section>
    <section class="pu-sec"><h3>Recently sent</h3>${log.length?`<ul class="pu-log">${log.map(x=>`<li><b>${esc(x.title)}</b><small>${esc(new Date(x.at).toLocaleString('en-AU',{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}))} · ${esc(x.to)} · ${x.skipped?esc(x.skipped):`sent to ${x.sent} phone${x.sent===1?'':'s'}`}</small></li>`).join('')}</ul>`:'<p class="hint">Nothing sent yet.</p>'}</section>`}
 async function openPushSend(){closeSettings();const P=window.PUSH;if(!P)return;
-  const w=document.createElement('div');w.id='sh-set';w.className='pu-adm pu-snd';w.setAttribute('role','dialog');w.setAttribute('aria-label','Send a notification');
-  w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Send a notification</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div><div class="pu-body"><p class="nt0">Loading…</p></div></div>`;
+  const w=document.createElement('div');w.id='sh-set';w.className='pu-adm pu-snd';w.setAttribute('role','dialog');w.setAttribute('aria-label','Send a Message');
+  w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Send a Message</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div><div class="pu-body"><p class="nt0">Loading…</p></div></div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'));
   const [cfg,phones,log]=await Promise.all([P.cfg(),P.phones(),P.log()]);puState={cfg,phones,log,msg:null,busy:false};puSendRender()}
 function puSendRender(){const b=document.querySelector('#sh-set.pu-snd .pu-body');if(!b)return;const {phones,log}=puState;
   const drv=phones.filter(p=>p.role!=='admin');const people=[...new Map(drv.filter(p=>p.staff).map(p=>[p.staff,p.name||p.email])).entries()].sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
   const nDrv=new Set(drv.map(p=>p.email)).size;
-  b.innerHTML=`<section class="pu-sec"><p class="hint">This dings drivers’ phones straight away. Only use it for things they must know now: depot problems, trucks very late, severe weather, safety alerts. For everything else, post an Update.</p>
+  b.innerHTML=`<section class="pu-sec">
      <label class="pu-f">Send to<select id="pu_to"><option value="">Everyone</option>${['4214','4215','4217','4218'].map(x=>`<option value="pc:${x}">${x} drivers</option>`).join('')}${people.map(([id,n])=>`<option value="st:${esc(id)}">${esc(n)}</option>`).join('')}</select></label>
-     <label class="pu-f">Title<input id="pu_title" maxlength="60" placeholder="e.g. Trucks running late"></label>
-     <label class="pu-f">Message<textarea id="pu_body" rows="3" maxlength="180" placeholder="Keep it short. No customer names or addresses (it shows on the lock screen)."></textarea></label>
-     <label class="pu-ck"><input type="checkbox" id="pu_safe"> Safety alert (sends even during quiet hours)</label>
-     <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Sending…':'Send now'}</button></div>
-     ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}
-     <p class="hint" style="margin-top:12px">${nDrv} driver${nDrv===1?' has':'s have'} notifications turned on so far.</p></section>
-   <section class="pu-sec"><h3>Recently sent</h3>${log.length?`<ul class="pu-log">${log.map(x=>`<li><b>${esc(x.title)}</b><small>${esc(new Date(x.at).toLocaleString('en-AU',{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}))} · ${esc(x.to)} · ${x.skipped?esc(x.skipped):`sent to ${x.sent} device${x.sent===1?'':'s'}`}</small></li>`).join('')}</ul>`:'<p class="hint">Nothing sent yet.</p>'}</section>`}
+     <label class="pu-f">Message<textarea id="pu_body" rows="4" maxlength="180" placeholder="Keep it short. No customer names or addresses (it shows on the lock screen)."></textarea></label>
+     <label class="pu-ck"><input type="checkbox" id="pu_safe"> Safety alert</label>
+     <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Sending…':'Send'}</button></div>
+     ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>`}
 const puRefresh=()=>{if(document.querySelector('#sh-set.pu-snd'))puSendRender();else puRender()};
 async function puSaveCfg(o){Object.assign(puState.cfg,o);puRender();try{await window.PUSH.setCfg(o)}catch(e){puState.msg={err:true,t:'Could not save the setting. Check your internet.'};puRender()}}
 document.addEventListener('change',e=>{const t=e.target;if(!t.closest||!t.closest('#sh-set.pu-adm'))return;const k=t.dataset.pu;
@@ -1138,20 +1135,20 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(k==='sendopen'){openPushSend();return}
   if(k==='test'){puState.msg={t:'Sending a test…'};puRefresh();const j=await P.send('test',{title:'Test notification',body:'Notifications are working. 👍',url:'#home'});
     puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:j.skipped==='Nobody has notifications turned on yet'?'Turn on notifications on this device first (Settings, the gear).':j.skipped}:{t:'Test sent to '+j.sent+' of your device'+(j.sent===1?'':'s')+'. It should arrive in a few seconds.'};puRefresh();return}
-  if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',title=(document.getElementById('pu_title')||{}).value||'',body=(document.getElementById('pu_body')||{}).value||'',safe=!!(document.getElementById('pu_safe')||{}).checked;
+  if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',body=(document.getElementById('pu_body')||{}).value||'',safe=!!(document.getElementById('pu_safe')||{}).checked,title=safe?'⚠️ Safety alert':'Message from the office';
     if(!body.trim()){puState.msg={err:true,t:'Type a message first.'};puRefresh();return}
     const sel=document.getElementById('pu_to');const label=sel&&sel.selectedOptions[0]?sel.selectedOptions[0].textContent:'Everyone';
-    if(!confirm('Send this to '+label+'?\n\n'+(title?title+'\n':'')+body))return;
+    if(!confirm('Send this to '+label+'?\n\n'+body))return;
     puState.busy=true;puState.msg=null;puRefresh();
     const o={title:title.trim(),body:body.trim(),url:'#updates',safety:safe};if(to.startsWith('pc:'))o.pc=to.slice(3);if(to.startsWith('st:')){o.staff=to.slice(3);o.staffName=label}
     const j=await P.send('urgent',o);puState.busy=false;
     puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:'Not sent: '+j.skipped+'.'}:{t:'Sent to '+j.sent+' phone'+(j.sent===1?'':'s')+'.'};
-    if(!j.error&&!j.skipped){const tl=document.getElementById('pu_title'),bd=document.getElementById('pu_body');if(tl)tl.value='';if(bd)bd.value=''}
+    if(!j.error&&!j.skipped){const bd=document.getElementById('pu_body');if(bd)bd.value=''}
     puState.log=await P.log();puRefresh();return}});
 /* admins: a Send a notification button on Home */
 setInterval(()=>{try{const P=window.PUSH;if(!P||previewChild||role!=='mgr')return;const home=document.getElementById('mod-home');if(!home||home.hidden||home.querySelector('.pu-sendc'))return;
   const find=home.querySelector('.ah-find');const at=find?find.closest('.dh-cards'):home.querySelector('.dh-cards');if(!at)return;
-  const c=document.createElement('div');c.className='dh-cards pu-sendw';c.innerHTML=`<button type="button" class="dh-card pu-sendc" data-pu="sendopen"><span class="ic">🔔</span><span class="tx"><b>Send a notification</b><small>Ding drivers’ phones with something urgent</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`;
+  const c=document.createElement('div');c.className='dh-cards pu-sendw';c.innerHTML=`<button type="button" class="dh-card pu-sendc" data-pu="sendopen"><span class="ic">🔔</span><span class="tx"><b>Send a Message</b><small>Ding drivers’ phones with something urgent</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`;
   at.parentNode.insertBefore(c,at.nextSibling)}catch(x){}},2000);
 /* a one off card on Home inviting people to turn notifications on */
 setInterval(()=>{try{const P=window.PUSH;if(!P||previewChild||P.state()!=='off')return;let no=null;try{no=localStorage.getItem('push1161no')}catch(x){}if(no)return;
@@ -9773,7 +9770,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010039';
+const VERSION='202611010040';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
