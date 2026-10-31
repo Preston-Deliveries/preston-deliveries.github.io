@@ -10148,7 +10148,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010162';
+const VERSION='202611010163';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11203,15 +11203,6 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .eres>.card.fo-partly{border-left-color:#F2782D!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .eres>.card.fo-no{border-left-color:#30A46C!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .eres>.card.fo-none{border-left-color:#F2A23A!important}
-/* bottom bar: the page you are on is orange with a short orange line on top */
-@media (max-width:899.98px){
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab{position:relative!important}
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page],html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page] *{background:transparent!important;box-shadow:none!important}
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page],html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page] .sm,html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page] .lg,html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page] svg{color:#F2782D!important}
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page] svg{stroke:#F2782D!important}
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page]::before{content:''!important;display:block!important;position:absolute!important;top:0!important;left:28%!important;right:28%!important;height:3px!important;border-radius:0 0 3px 3px!important;background:#F2782D!important;opacity:1!important;transform:none!important}
-html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-links button.tab[aria-current=page]::after{display:none!important}
-}
 /* admin Home header */
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero{display:block!important;padding:16px!important;border-radius:18px!important;background:linear-gradient(135deg,#16324F,#0E1F33)!important;color:#fff!important;border:0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .sh-date{display:block;color:#F2A65A!important;font-weight:800;letter-spacing:.08em;font-size:.75rem;text-transform:uppercase}
