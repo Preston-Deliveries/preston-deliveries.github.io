@@ -4653,7 +4653,7 @@ function render(){
    ${isMgr()?`<div class="tabs" role="group" aria-label="List"><button type="button" data-pc="tab" data-v="approved" aria-pressed="${tab==='approved'}">Approved <small>${cnt('approved')}</small></button><button type="button" data-pc="tab" data-v="review" aria-pressed="${tab==='review'}">Under review <small>${cnt('review')}</small></button></div>`:''}
    <div class="bar"><input type="search" id="pc_q" class="q" placeholder="Search address, suburb, driver or reason" value="${esc(q)}" autocomplete="off" aria-label="Search precards">
 </div>
-   <div class="pcs pcb" role="group" aria-label="Postcode">${['all','4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.status||'approved')===tab&&(k==='all'||String(p.postcode).trim()===k)).length;return `<button type="button" data-pc="pcf" data-v="${k}" aria-pressed="${k===pcf}" class="${k==='all'?'':'pr-'+k}">${k==='all'?'All':k}<small>${n}</small></button>`}).join('')}</div>
+   
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
@@ -4801,7 +4801,7 @@ function render(){
    <div class="tabs lk2" role="group" aria-label="Locker type">${Object.entries({building:'Building',auspost:'Australia Post'}).map(([k,v])=>`<button type="button" data-lk="tab" data-v="${k}" aria-pressed="${tab===k}">${v} <small>${cnt(k)}</small></button>`).join('')}</div>
    <div class="bar"><input type="search" id="lk_q" class="q" placeholder="Search name, address, suburb or driver" value="${esc(q)}" autocomplete="off" aria-label="Search lockers">
 </div>
-   <div class="pcs pcb" role="group" aria-label="Postcode">${['all','4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.type||'building')===tab&&(k==='all'||String(p.postcode).trim()===k)).length;return `<button type="button" data-lk="pcf" data-v="${k}" aria-pressed="${k===pcf}" class="${k==='all'?'':'pr-'+k}">${k==='all'?'All':k}<small>${n}</small></button>`}).join('')}</div>
+   
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Locker</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.name)}</b></td><td class="aa">${esc(p.address)}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
@@ -10084,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010123';
+const VERSION='202611010124';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
