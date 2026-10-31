@@ -1438,6 +1438,11 @@ const INTENTS=[
  [/\b(phone numbers?|contacts?|call|ring|text|whatsapp|number for|contact for|email for|supervisor'?s? number|office number)\b/,'directory'],
  [/\b(my (profile|details|email|address|phone)|bank details|change my|update my|emergency contact|profile)\b/,'me'],
  [/\b(notifications?|alerts?)\b/,'alerts'],
+ [/\b(go home|home page|back home|main page|start page)\b/,'home'],
+ [/\b(menu|all pages|everything|all sections|main menu)\b/,'menu'],
+ [/\b(load|import|upload) (the )?(new )?results\b/,'results'],
+ [/\b(leave requests?|leave totals?|leave settings?)\b/,'leave'],
+ [/\b(submitted invoices|invoice templates?|invoices to check)\b/,'invoices'],
  [/\b(ncrs?|non ?conformance)\b/,'ncr'],
  [/\b(performance review|review|warnings?)\b/,'review']];
 /* single words that point to a page, for when the phrase doesn't match exactly */
@@ -1452,6 +1457,10 @@ const VKEYS={invoices:'money earn earned earning earnings paid pay payment payme
 function voiceKey(t,vis){const ws=t.trim().split(' ');for(const[pg,list]of Object.entries(VKEYS)){const L=list.split(' ');if(ws.some(w=>L.includes(w.replace(/'s$/,'')))){let page=pg;if(page[0]==='#')return page;if(page==='@res')page=(/\b(my|i|me|i'm)\b/.test(t)||role!=='mgr')&&vis.includes('me')?'me':'results';if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';if(vis.includes(page)&&NAMES[page])return page}}return null}
 function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';
   const vis=visible();
+  {const bare=t.replace(/^ (please )?(can you |can i |could you )?(open|go to|show me|show|take me to|bring up|i want|i need|get me|load)( the| my)? /,' ').replace(/ (page|screen|section|please) /g,' ').trim();
+   const NM=Object.assign({},NAMES,role==='mgr'?{}:DNAMES);
+   const names=Object.entries(NM).filter(([k])=>vis.includes(k)||k==='home'||k==='menu').map(([k,n])=>[k,String(n).toLowerCase()]).sort((a,b)=>b[1].length-a[1].length);
+   for(const[k,n]of names){const n1=n.replace(/s$/,'');if(bare===n||bare===n1||bare===n+'s'||(bare.startsWith(n+' ')&&bare.length<n.length+12))return {page:k,term:''}}}
   for(const[rx,pg]of INTENTS){if(!rx.test(t))continue;let page=pg;
     if(page[0]==='#'){if(document.querySelector('#sh-main '+page.slice(1))||document.querySelector(page.slice(1)))return {page,term:''};continue}
     if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';
@@ -1479,14 +1488,18 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='reports'){const k=/\b(crash|accident|van|car|ute|truck|hit|reversing|reversed|collision|bumped|panel)\b/.test(t)?'vehicle':/\b(hazard|unsafe|slip|trip|broken|leak|lighting|dangerous|forklift)\b/.test(t)?'hazard':/\b(dog|bit|bitten|abuse|abused|threat|assault|injur|hurt|fell|damage|theft|stolen|customer|police|near miss)/.test(t)?'incident':null;
     if(k){go();vClick('[data-rp="kind"][data-v="'+k+'"]');return {vehicle:'Opening a vehicle accident report.',hazard:'Opening a safety hazard report.',incident:'Opening an incident report.'}[k]}return null}
   if(page==='leave'){if(/\b(book|request|ask|apply|need|want|take|sick|can'?t come|day off|days off|time off)\b/.test(t)){go();vClick(role==='mgr'?'[data-lv="add"]':'[data-lv="rqopen"]');return role==='mgr'?'Opening Add leave.':'Opening Ask for days off.'}return null}
+  if(page==='leave'&&role==='mgr'){const v=/\brequests?\b/.test(t)?'req':/\b(totals?|how many days|balance)\b/.test(t)?'tot':/\b(list|upcoming)\b/.test(t)?'list':/\bsettings?\b/.test(t)?'set':null;if(v){go();vClick('[data-lv="view"][data-v="'+v+'"]');return 'Opening '+{req:'leave requests',tot:'leave totals',list:'the leave list',set:'leave settings'}[v]+'.'}}
+  if(page==='invoices'&&role==='mgr'){const v=/\b(submitted|sent in|to check|review|received)\b/.test(t)?'sub':/\btemplates?\b/.test(t)?'tpl':null;if(v){go();vClick('[data-iv="tab"][data-v="'+v+'"]');return v==='sub'?'Opening submitted invoices.':'Opening invoice templates.'}}
+  if(page==='results'&&role==='mgr'&&/\b(load|import|upload|add|new) (the )?(new )?results\b/.test(t)){go();vClick('[data-rtab="import"]');return 'Opening Load new results.'}
   if(page==='invoices'){if(/\b(make|send|create|new|do|submit|write)\b.{0,15}\binvoice/.test(t)){go();vClick('[data-iv="tab"][data-v="make"]');return 'Opening Make my invoice.'}
     if(/\b(my invoices|paid|earn|earned|money|owed|pay)\b/.test(t)){go();vClick('[data-iv="tab"][data-v="mine"]');return 'Opening My invoices.'}return null}
   if(page==='vchecks'&&role==='mgr'&&/\b(new|do|start|add)\b/.test(t)){go();vClick('[data-vc="new"]');return 'Opening a new van check.'}
   if(page==='briefs'&&role==='mgr'&&/\b(new|add|create)\b/.test(t)){go();vClick('[data-tb="new"]');return 'Opening New team brief.'}
   if(page==='results'&&/\b(rank|where (do|am) i|find me|my results|how (am|did) i)\b/.test(t)){go();vClick('[data-rt="find"]');return 'Opening your results.'}
   if(page==='me'){const per=/\b(month|monthly|this cycle|cycle|so far)\b/.test(t)?'cycle':/\b(week|weekly|this week|last week)\b/.test(t)?'week':/\b(today|yesterday|day)\b/.test(t)?'day':null;
-    go();if(per){vClick('[data-per="'+per+'"]');
-      if(per==='day'&&/\byesterday\b/.test(t)){const y=new Date(Date.now()-864e5);const iso=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');setTimeout(()=>vClick('[data-pd="'+iso+'"]'),400)}}
+    if(per){try{localStorage.setItem('me1161_per',per)}catch(x){}}
+    go();if(per){vWait('[data-per="'+per+'"]',el=>{if(el.getAttribute('aria-pressed')!=='true')el.click()},9000);
+      if(per==='day'&&/\byesterday\b/.test(t)){const y=new Date(Date.now()-864e5);const iso=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');setTimeout(()=>vWait('[data-pd="'+iso+'"]',el=>el.click(),9000),500)}}
     return 'Opening your results'+(per==='cycle'?' for the month':per==='week'?' for the week':per==='day'?(/\byesterday\b/.test(t)?' for yesterday':' for the day'):'')+'.'}
   if(page==='uniform'){const m=t.match(/\b(boots?|hi ?vis|vests?|shirts?|polos?|shorts|pants|trousers|hats?|caps?|jackets?|jumpers?)\b/);if(m){go();vFlashText('#mod-uniform',m[1].replace(/s$/,'').replace('hi vis','hi'));return 'Opening Uniform at '+m[1]+'.'}return null}
   const fills={directory:'#dy_q',precards:'#pc_q',lockers:'#lk_q',staff:'#dm_q'};
@@ -1528,6 +1541,7 @@ document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.close
     let spot=null;
     if(!streetFirst){const it=voiceIntent(said);if(it){if(it.page[0]==='#'){spot=document.querySelector(it.page.slice(1))}else{
       const dm=voiceDeep(it.page,alts[0]||'',it.term);if(dm){hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>${esc(dm)}</b>`);return}
+      if(it.page!=='home'&&window.APP){APP.go(it.page);hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>Opening ${esc((role==='mgr'?NAMES:Object.assign({},NAMES,DNAMES))[it.page]||'that page')}.</b>`);return}
       findPin=it.page;ans=null;q=it.term||'';pages=[it.page]}}}
     if(spot){findQ='';const inp0=$('ah_fq');if(inp0)inp0.value='';findRender();
       const card=spot.closest('.dh-card')||spot;const txt=(card.innerText||'').replace(/\s+/g,' ').trim().slice(0,160);
@@ -9590,7 +9604,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010026';
+const VERSION='202611010027';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
