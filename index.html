@@ -1079,7 +1079,7 @@ function openSettings(){closeSettings();const drv=role!=='mgr',can=previewChild|
   const w=document.createElement('div');w.id='sh-set';w.setAttribute('role','dialog');w.setAttribute('aria-label','Settings');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Settings</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div>
    ${can?`<div class="dm-row" data-notr><h3>View</h3><div class="thseg" role="group" aria-label="View"><button type="button" ${previewChild?'data-sh="mv"':'data-sh="setclose"'} aria-pressed="${!previewChild}">Admin</button><button type="button" ${previewChild?'data-sh="setclose"':'data-sh="uv"'} aria-pressed="${!!previewChild}">👁 Driver view</button></div></div>`:''}
-   ${setRows(drv)}${previewChild?'':pushRow()}<button type="button" class="dm-out" data-sh="signout">Sign out</button>${(()=>{let w=null;try{w=(window.__whoAmI||window.parent.__whoAmI)()}catch(e){}return w&&w.email?`<p class="who" data-notr>Signed in as ${esc(w.email)} · ${w.role==='admin'?'Admin':'Driver'} · Version ${esc(String(window.__webVersion||'').slice(-4))}</p>`:''})()}</div>`;
+   ${setRows(drv)}${previewChild?'':pushRow()}<button type="button" class="dm-out" data-sh="signout">Sign out</button>${(()=>{let w=null;try{w=(window.__whoAmI||window.parent.__whoAmI)()}catch(e){}return w&&w.email?`<p class="who" data-notr>Signed in as ${esc(w.email)} · ${w.role==='admin'?'Admin':'Driver'} · Version ${esc(String(window.__webVersion||'').slice(-4))}${window.__swVersion?' · Alerts '+esc(String(window.__swVersion).replace('pds-app-','')):' · Alerts not ready'}</p>`:''})()}</div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
 function closeSettings(){const w=document.getElementById('sh-set');if(w)w.remove()}
 /* ---------- Phone notifications: on/off for this phone, and the admin controls ---------- */
@@ -9757,7 +9757,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010035';
+const VERSION='202611010036';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -9776,7 +9776,11 @@ const getFast=(ref,ms)=>Promise.race([ref.get(),new Promise((_,no)=>setTimeout((
 /* always ask the server for the live info first (the name is kept so nothing else needs changing) */
 const cacheFirst=(ref,ms)=>getFast(ref,ms||10000);
 /* Keep a copy of the app on the phone so it opens without signal */
-if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
+if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{try{r.update()}catch(e){}
+  /* ask the background part which version it is (shown in Settings) */
+  const ask=()=>{const w=r.active||navigator.serviceWorker.controller;if(!w)return;const ch=new MessageChannel();ch.port1.onmessage=e=>{window.__swVersion=e.data&&e.data.v||''};try{w.postMessage({type:'ver'},[ch.port2])}catch(e){}};
+  ask();setTimeout(ask,4000);navigator.serviceWorker.addEventListener('controllerchange',()=>setTimeout(ask,500))}).catch(()=>{})});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')navigator.serviceWorker.getRegistration().then(r=>{try{r&&r.update()}catch(e){}})})}
 /* A small bar while the phone has no internet */
 (function(){const bar=document.createElement('div');bar.id='web-off';bar.setAttribute('role','status');bar.dataset.web='1';
   bar.textContent='No signal. Showing what was saved on this phone; changes send when you are back online.';
