@@ -1376,7 +1376,7 @@ function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=w
   const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 /* Home: one box to find a street (whose it is) or a page of the app */
-let findQ='',findT=null;
+let findQ='',findT=null,findPin=null;
 const PAGE_WORDS={leave:'calendar time off holiday days off away',invoices:'pay earnings money invoice',timesheets:'hours clock times start finish',clock:'start finish shift times hours',directory:'phone numbers call contacts',runs:'run sheet streets gate codes notes',sort:'missort streets street sort',results:'scores performance eta scans',survey:'nps customer ranking',staff:'drivers details people',updates:'news messages notices',uniform:'shirts clothes order',vchecks:'van check vehicle',reports:'incident accident hazard safety',feedback:'message manager idea',cover:'floaters roster cover off',briefs:'toolbox talk sign brief',guide:'rules policy how to',precards:'card carded addresses',lockers:'parcel locker',me:'profile my details',summary:'contract postcode report',enquiries:'customer case enquiry',boss:'monthly report boss',compliance:'daily start finish forms',review:'review driver'};
 function findPages(q){const ws=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean);if(!ws.length)return [];
   const d=DESC[role==='mgr'?'mgr':'drv']||{};
@@ -1384,8 +1384,8 @@ function findPages(q){const ws=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(
     if(!ws.every(w=>hay.some(h=>h.startsWith(w))))return null;return{x,score:nm.startsWith(ws[0])?0:nm.split(' ').some(h=>h.startsWith(ws[0]))?1:2}}).filter(Boolean).sort((a,b)=>a.score-b.score).slice(0,4).map(o=>o.x)}
 function hl(name,q){const t=String(q||'').trim().toUpperCase().replace(/[^A-Z0-9 ]/g,'');if(!t)return esc(name);const i=String(name).toUpperCase().indexOf(t);if(i<0)return esc(name);return esc(name.slice(0,i))+'<mark>'+esc(name.slice(i,i+t.length))+'</mark>'+esc(name.slice(i+t.length))}
 function findRender(){const el=$('ah_fres');if(!el)return;clearTimeout(findT);findT=null;const q=findQ.trim();
-  if(!q){el.innerHTML='';return}
-  const P=findPages(q);
+  if(!q&&!findPin){el.innerHTML='';return}
+  const P=findPin?[findPin,...findPages(q).filter(x=>x!==findPin)].slice(0,4):findPages(q);
   const pg=P.length?`<h3 class="ah-fh">Pages</h3><div class="sh-list ah-fpages">${P.map(tile).join('')}</div>`:'';
   const D=role==='mgr'&&window.SUMMARY&&SUMMARY.find?SUMMARY.find(q):[];
   if(D==null&&role==='mgr'&&q.length>=2&&!findT)findT=setTimeout(()=>{findT=null;findRender()},900);
@@ -1396,26 +1396,67 @@ function findRender(){const el=$('ah_fres');if(!el)return;clearTimeout(findT);fi
   const shown=R.slice(0,8);
   el.innerHTML=dv+pg+(shown.length?`${P.length||(D&&D.length)?'<h3 class="ah-fh">Streets</h3>':''}<div class="ah-flist">${shown.map(g=>`<div class="ah-fst"><div class="ah-ftop"><b>${hl(g.name,q)}</b><span class="ah-fpc">${esc(g.pc)}</span></div>${g.parts.map(x=>`<button type="button" class="ah-fp" data-fid="${esc(x.id)}"><i style="background:${x.col||'#999'}"></i><span class="ah-fwho"><b>${esc(x.driver||'Unassigned')}</b><small>${[x.login,x.bay?'Trolley bay '+x.bay:'',x.rg].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`).join('')}</div>${R.length>8?`<p class="ah-fnote">${R.length-8} more streets. Keep typing to narrow it down.</p>`:''}`:'');
 }
-document.addEventListener('input',e=>{if(e.target&&e.target.id==='ah_fq'){findQ=e.target.value;findRender()}});
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='ah_fq'){findQ=e.target.value;findPin=null;hSay('');findRender()}});
 /* Home: tap Ask, say "who does Palmer St", see and hear whose street it is */
 const HVSR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+/* things people might say, and the page that answers them */
+const INTENTS=[
+ [/\b(who('?s| is)? (on |off )?(leave|holiday)|who('?s| is) off|days? off|time off|book (some )?leave|leave calendar|holidays?|annual leave|sick (day|leave))\b/,'leave'],
+ [/\b(who('?s| is)? covering|cover planner|floaters?|roster|who('?s| is) filling in)\b/,'cover'],
+ [/\b(who (hasn'?t|has not|didn'?t) clock(ed)?|not clocked|missing (clock|times)|timesheets?|hours (this|last) week|my hours|how many hours)\b/,'@times'],
+ [/\b(clock (me )?(in|on|out|off)|start (my |the )?shift|finish (my |the )?shift|end (my |the )?shift|i forgot to clock)\b/,'clock'],
+ [/\b(my pay|pay ?day|when (do|will) i get paid|how much (did|have) i (earn|made|make)|earnings|invoices?|send (my )?invoice)\b/,'invoices'],
+ [/\b(how am i (going|doing)|my (results|scores|stats|numbers|eta)|results|eta|scan(s|ning)? (rate|compliance)|nc scans?|performance)\b/,'results'],
+ [/\b(survey|nps|customer (score|feedback)|rankings?)\b/,'survey'],
+ [/\b(accident|crash|incident|hazard|near miss|injur(y|ed)|report (a|an|something)|dog (bit|attack|rushed))\b/,'reports'],
+ [/\b(van checks?|check (my|the) van|prestart|vehicle check|tyres?|service due)\b/,'vchecks'],
+ [/\b(uniform|shirts?|shorts|pants|hats?|jackets?|hi ?vis|polo)\b/,'uniform'],
+ [/\b(toolbox|team brief|briefs?|choose safer|safety talk|sign (the )?brief)\b/,'briefs'],
+ [/\b(how do i|how to|rules?|polic(y|ies)|guide|what('?s| is) the rule)\b/,'guide'],
+ [/\b(precards?|carded|card (an|the) address|what (addresses|houses) (are|get) carded)\b/,'precards'],
+ [/\b(parcel lockers?|lockers?|casino)\b/,'lockers'],
+ [/\b(news|updates?|announcements?|anything new|what('?s| is) new)\b/,'updates'],
+ [/\b(run ?sheets?|my run|handover)\b/,'runs'],
+ [/\b(missort|sort ?sheets?|street sort)\b/,'sort'],
+ [/\b(message (the )?(manager|office)|feedback|ideas?|suggestion|complain to)\b/,'feedback'],
+ [/\b(enquir(y|ies)|customer cases?|complaints?)\b/,'enquiries'],
+ [/\b(monthly report|report for (the )?boss)\b/,'boss'],
+ [/\b(compliance|daily start|daily finish|start (check|form)|finish (check|form))\b/,'compliance'],
+ [/\b(contract (summary|results)|summary|how('?s| is) the contract (going|doing))\b/,'summary'],
+ [/\b(driver (details|management)|add a driver|new driver|licence expir)\b/,'staff'],
+ [/\b(phone numbers?|contacts?|call|ring|number for|contact for)\b/,'directory'],
+ [/\b(my (profile|details)|bank details|change my (address|phone|email)|profile)\b/,'me'],
+ [/\b(notifications?|alerts?)\b/,'alerts'],
+ [/\b(ncrs?|non ?conformance)\b/,'ncr'],
+ [/\b(performance review|review)\b/,'review']];
+function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';
+  const vis=visible();
+  for(const[rx,pg]of INTENTS){if(!rx.test(t))continue;let page=pg;
+    if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';
+    if(!vis.includes(page)||!NAMES[page])continue;
+    let term='';if(page==='directory'){const m=t.match(/\b(?:for|of|call|ring)\s+([a-z' ]+?)\s*$/);if(m)term=m[1].replace(/\b(the|a|please)\b/g,'').trim()}
+    return {page,term}}
+  return null}
 let hVoice=null;
 function pickVoice(){try{const V=speechSynthesis.getVoices()||[];const rank=v=>{const l=(v.lang||'').replace('_','-').toLowerCase();let r=l==='en-au'?0:l==='en-gb'?2:l.startsWith('en')?4:9;if(!v.localService)r-=1;if(/natural|neural|wavenet|premium|enhanced|online/i.test(v.name))r-=1;return r};
   hVoice=V.filter(v=>/^en/i.test(v.lang||'')).sort((a,b)=>rank(a)-rank(b))[0]||null}catch(x){}}
 try{pickVoice();speechSynthesis.addEventListener('voiceschanged',pickVoice)}catch(x){}
-function hSpeak(t){if(!t)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/\b(42)(\d)(\d)\b/g,'4 2 $2 $3').replace(/\bD(\d+)\b/g,'D $1'));if(!hVoice)pickVoice();if(hVoice){u.voice=hVoice;u.lang=hVoice.lang}else u.lang='en-AU';u.rate=1.02;u.pitch=1.05;speechSynthesis.speak(u)}catch(x){}}
+function hSpeak(t){}
 function hSay(h){const b=$('ah_say');if(!b)return;b.hidden=!h;b.innerHTML=h||''}
 document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.closest('#ah_mic');if(!btn)return;
   if(!HVSR){hSay('<b>Voice is not available on this phone.</b>');return}
   if(window.__vRec){try{window.__vRec.abort()}catch(x){}window.__vRec=null;btn.classList.remove('on');hSay('');return}
   try{speechSynthesis.cancel()}catch(x){}
   const rec=new HVSR();window.__vRec=rec;rec.lang='en-AU';rec.interimResults=false;rec.maxAlternatives=5;
-  btn.classList.add('on');hSay('<b>Listening…</b> say a street, like “who does Palmer Street”');let got=false;
+  btn.classList.add('on');const EX=['who does Palmer Drive','gate code for Hooker Boulevard','who’s on leave','my results','report an accident','order a shirt','phone number for Josh','who’s covering','team brief','parcel lockers'];const ex=EX.sort(()=>Math.random()-.5).slice(0,3).map(x=>'“'+x+'”').join(' · ');hSay('<b>Listening…</b><span class="hd" style="margin-top:4px">Try: '+ex+'</span>');let got=false;
   rec.onresult=ev=>{got=true;const alts=[...ev.results[0]].map(x=>x.transcript);const R=window.RUNS||{};
     if(!R.vClean){hSay('<b>Streets are still loading. Try again in a moment.</b>');return}
     let q='',ans=null;for(const a of alts){const c=R.vClean(a);const r=R.vAnswer(c);if(r){q=r.q||c;ans=r;break}if(!q)q=c}
-    let pages=[],drv=[];
-    if(!ans){for(const a of alts){const raw=a.replace(/^(open|go to|show me|show|take me to|find)\s+/i,'').replace(/\b(page|please)\b/ig,'').trim();pages=findPages(raw);
+    let pages=[],drv=[];findPin=null;
+    const said=String(alts[0]||'').toLowerCase();
+    const streetFirst=/\b(who does|who's got|who has|whose|who delivers|gate code|code for|access for|where is|where's)\b/.test(said);
+    if(!streetFirst){const it=voiceIntent(said);if(it){findPin=it.page;ans=null;q=it.term||'';pages=[it.page]}}
+    if(!ans&&!findPin){for(const a of alts){const raw=a.replace(/^(open|go to|show me|show|take me to|find)\s+/i,'').replace(/\b(page|please)\b/ig,'').trim();pages=findPages(raw);
       try{drv=role==='mgr'&&window.SUMMARY&&SUMMARY.find?(SUMMARY.find(raw)||[]):[]}catch(x){drv=[]}
       if(pages.length||drv.length){q=raw;break}}}
     findQ=q;const inp=$('ah_fq');if(inp)inp.value=q;findRender();
@@ -1423,6 +1464,7 @@ document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.close
     let say='';
     if(ans&&ans.txt){say=ans.txt;hSay(hd+`<b>${esc(say)}</b>`)}
     else if(ans&&ans.many){say=`I found ${ans.many} streets. Pick one below.`;hSay(hd+`<b>${esc(say)}</b>`)}
+    else if(findPin){say=`Here's ${NAMES[findPin]}.`;hSay(hd+`<b>${esc(say)} Tap it below.</b>`)}
     else if(pages.length===1&&!drv.length){say=`Here's ${NAMES[pages[0]]||'that page'}.`;hSay(hd+`<b>${esc(say)} Tap it below.</b>`)}
     else if(pages.length||drv.length){say=`Here's what I found.`;hSay(hd+`<b>${esc(say)}</b>`)}
     else{say=`Sorry, I couldn't find that. Try again, or type it.`;hSay(hd+`<b>${esc(say)}</b>`)}
@@ -2028,7 +2070,7 @@ function colourMap(){
 /* ---------- voice: tap Ask, say "who does Palmer St", hear and see the answer ---------- */
 const VSR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
 const SUF={STREET:'ST',ROAD:'RD',AVENUE:'AVE',DRIVE:'DR',COURT:'CT',PLACE:'PL',PARADE:'PDE',TERRACE:'TCE',BOULEVARD:'BLVD',BOULEVARDE:'BLVD',CRESCENT:'CRES',CLOSE:'CL',LANE:'LANE',CIRCUIT:'CCT',HIGHWAY:'HWY',ESPLANADE:'ESP',GROVE:'GR',SQUARE:'SQ',PROMENADE:'PROM',PARKWAY:'PKWY',CIRCLE:'CIR',RISE:'RISE',WAY:'WAY',ROW:'ROW'};
-const FILL=/^(HEY |OK |OKAY )?(WHO|WHOS|WHOSE|WHAT|WHICH|WHERE)?( DRIVER)?( IS| DOES| HAS| GOT| DELIVERS| DELIVER| DO| DID| TAKES| TAKE| RUNS)*( ON| TO| FOR| THE| IN)*\s*/;
+const FILL=/^(HEY |OK |OKAY )?(WHO|WHOS|WHOSE|WHAT|WHATS|WHICH|WHERE|WHERES)?( DRIVER)?( IS| DOES| HAS| GOT| DELIVERS| DELIVER| DO| DID| TAKES| TAKE| RUNS)*( THE)?( GATE CODE| CODE| ACCESS| NOTES?| STREET| ROAD)?( ON| TO| FOR| THE| IN| AT| OF)*\s*/;
 function voiceClean(t){
   let q=String(t||'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
   q=q.replace(FILL,'').replace(/\b(PLEASE|THANKS|THANK YOU|MATE)\b/g,'').replace(/\s+/g,' ').trim();
@@ -9458,7 +9500,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010019';
+const VERSION='202611010020';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
