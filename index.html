@@ -1084,11 +1084,11 @@ function openSettings(){closeSettings();const drv=role!=='mgr',can=previewChild|
 function closeSettings(){const w=document.getElementById('sh-set');if(w)w.remove()}
 /* ---------- Phone notifications: on/off for this phone, and the admin controls ---------- */
 function pushRow(){const P=window.PUSH;if(!P)return '';const st=P.state();
-  const body=st==='on'?`<p class="pu-st on">✓ On for this phone</p><button type="button" class="sh-btn" data-pu="off">Turn off</button>`
-   :st==='blocked'?`<p class="pu-st">Blocked on this phone. To allow: open your phone’s <b>Settings → Apps → Chrome → Notifications</b> and allow them, then come back here.</p>`
-   :st==='unsupported'?`<p class="pu-st">This phone can’t get notifications from the app yet. Open the app from its home screen icon and try again.</p>`
-   :`<p class="pu-st">Get a ding on your phone for important things only.</p><button type="button" class="sh-btn primary" data-pu="on">Turn on notifications</button>`;
-  return `<div class="dm-row pu-row"><h3>Phone notifications</h3>${body}${P.role&&P.role()==='admin'?`<button type="button" class="sh-btn" data-pu="admin">Notification settings</button>`:''}<p class="pu-msg" id="pu_msg" role="status"></p></div>`}
+  const body=st==='on'?`<p class="pu-st on">✓ On for this ${window.PUSH&&/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'phone':'computer'}</p><button type="button" class="sh-btn" data-pu="off">Turn off</button>`
+   :st==='blocked'?`<p class="pu-st">${/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'Blocked on this phone. To allow: open your phone’s <b>Settings → Apps → Chrome → Notifications</b> and allow them, then come back here.':'Blocked in this browser. Click the <b>padlock</b> (or settings icon) left of the web address, set <b>Notifications</b> to <b>Allow</b>, then reload.'}</p>`
+   :st==='unsupported'?`<p class="pu-st">This ${/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'phone can’t get notifications from the app yet. Open the app from its home screen icon and try again.':'browser can’t get notifications. Try Chrome or Edge.'}</p>`
+   :`<p class="pu-st">Get a ding on this device for important things only.</p><button type="button" class="sh-btn primary" data-pu="on">Turn on notifications</button>`;
+  return `<div class="dm-row pu-row"><h3>Notifications</h3>${body}${P.role&&P.role()==='admin'?`<button type="button" class="sh-btn" data-pu="admin">Notification settings</button>`:''}<p class="pu-msg" id="pu_msg" role="status"></p></div>`}
 const PU_TYPES=[['cover','Put on someone’s run (to that driver)'],['leave','Leave approved or declined (to that driver)'],['report','Serious reports and vehicle accidents (to admins)'],['absence','Short notice absences (to admins)']];
 let puState={cfg:null,phones:null,log:null,msg:null,busy:false};
 async function openPushAdmin(){closeSettings();const P=window.PUSH;if(!P)return;
@@ -1107,7 +1107,7 @@ function puRender(){const b=document.querySelector('#sh-set.pu-adm .pu-body');if
      <label class="pu-ck"><input type="checkbox" id="pu_safe"> Safety alert (sends even during quiet hours)</label>
      <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Sending…':'Send now'}</button><button type="button" class="sh-btn" data-pu="test">Send a test to my phone</button></div>
      ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>
-   <section class="pu-sec"><h3>Who has them on</h3><p><b>${drv.length}</b> driver phone${drv.length===1?'':'s'} · <b>${adm.length}</b> admin phone${adm.length===1?'':'s'}</p><p class="hint">Drivers turn them on in Settings (the gear), or from the card on their Home page.</p></section>
+   <section class="pu-sec"><h3>Who has them on</h3><p><b>${new Set(drv.map(p=>p.uid||p.email)).size}</b> driver${new Set(drv.map(p=>p.uid||p.email)).size===1?'':'s'} · <b>${new Set(adm.map(p=>p.uid||p.email)).size}</b> admin${new Set(adm.map(p=>p.uid||p.email)).size===1?'':'s'} · ${phones.length} device${phones.length===1?'':'s'} in total</p><p class="hint">Drivers turn them on in Settings (the gear), or from the card on their Home page.</p></section>
    <section class="pu-sec"><h3>Automatic notifications</h3>${PU_TYPES.map(([k,l])=>`<label class="pu-ck"><input type="checkbox" data-pu="type" data-v="${k}" ${off.has(k)?'':'checked'}> ${l}</label>`).join('')}</section>
    <section class="pu-sec"><h3>Quiet hours</h3><label class="pu-ck"><input type="checkbox" data-pu="quiet" ${quiet?'checked':''}> No dings overnight (except safety alerts)</label>
      ${quiet?`<div class="pu-row2"><label class="pu-f">From<select data-pu="qf">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qf?'selected':''}>${hr(h)}</option>`).join('')}</select></label><label class="pu-f">Until<select data-pu="qt">${[...Array(24).keys()].map(h=>`<option value="${h}" ${h===qt?'selected':''}>${hr(h)}</option>`).join('')}</select></label></div>`:''}</section>
@@ -1124,8 +1124,8 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
     if(st==='on'){closeSettings();openSettings();say('✓ Notifications are on for this phone.');try{const c=document.querySelector('.pu-home');if(c)c.remove()}catch(x){}}else if(st==='blocked'){closeSettings();openSettings()}else{say('Not turned on. Tap again and choose Allow.');b.disabled=false}return}
   if(k==='off'){b.disabled=true;await P.disable();closeSettings();openSettings();return}
   if(k==='admin'){openPushAdmin();return}
-  if(k==='test'){puState.msg={t:'Sending a test…'};puRender();const j=await P.send('test',{title:'Test notification',body:'Notifications are working on this phone. 👍',url:'#home'});
-    puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:j.skipped==='Nobody has notifications turned on yet'?'Turn on notifications on this phone first (Settings, the gear).':j.skipped}:{t:'Test sent. It should arrive in a few seconds.'};puRender();return}
+  if(k==='test'){puState.msg={t:'Sending a test…'};puRender();const j=await P.send('test',{title:'Test notification',body:'Notifications are working. 👍',url:'#home'});
+    puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:j.skipped==='Nobody has notifications turned on yet'?'Turn on notifications on this device first (Settings, the gear).':j.skipped}:{t:'Test sent to '+j.sent+' of your device'+(j.sent===1?'':'s')+'. It should arrive in a few seconds.'};puRender();return}
   if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',title=(document.getElementById('pu_title')||{}).value||'',body=(document.getElementById('pu_body')||{}).value||'',safe=!!(document.getElementById('pu_safe')||{}).checked;
     if(!body.trim()){puState.msg={err:true,t:'Type a message first.'};puRender();return}
     const sel=document.getElementById('pu_to');const label=sel&&sel.selectedOptions[0]?sel.selectedOptions[0].textContent:'Everyone';
@@ -9757,7 +9757,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010036';
+const VERSION='202611010037';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10205,14 +10205,18 @@ const NOTIFY='https://pds-notify.jozza21.workers.dev';
 const pushJs=()=>new Promise((ok,no)=>{if(window.firebase&&firebase.messaging){ok();return}const e=document.createElement('script');e.src='https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js';e.onload=ok;e.onerror=()=>no(new Error('Could not load'));document.head.appendChild(e)});
 async function pushToken(){await pushJs();const reg=await navigator.serviceWorker.ready;return firebase.messaging().getToken({vapidKey:VAPID,serviceWorkerRegistration:reg})}
 function pushPcs(){try{const me=window.__webMe||{};const L=(window.RUNS&&RUNS.list&&RUNS.list())||[];const lg=String(me.login||'').toUpperCase();return [...new Set(L.filter(x=>lg&&x.login===lg).map(x=>x.postcode).filter(Boolean))]}catch(e){return []}}
+function pushDev(){let d='';try{d=localStorage.getItem('pushdev1161')||''}catch(e){}if(!/^[a-z0-9]{8,30}$/.test(d)){d=Math.random().toString(36).slice(2,10)+Date.now().toString(36);try{localStorage.setItem('pushdev1161',d)}catch(e){}}return d}
+const pushId=()=>UID+'_'+pushDev();
+const pushKind=()=>/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'Phone':'Computer';
 async function pushSave(){const tok=await pushToken();if(!tok)throw new Error('No token');const me=window.__webMe||{};
-  await fs.doc('push/'+UID).set({token:tok,email:EMAIL,role:ROLE==='admin'?'admin':'driver',staff:String(me.staff||''),name:String(NAME||me.name||''),pcs:pushPcs(),at:new Date().toISOString()});
+  await fs.doc('push/'+pushId()).set({token:tok,uid:UID,email:EMAIL,role:ROLE==='admin'?'admin':'driver',staff:String(me.staff||''),name:String(NAME||me.name||''),pcs:pushPcs(),device:pushKind(),at:new Date().toISOString()});
+  fs.doc('push/'+UID).delete().catch(()=>{});
   try{localStorage.setItem('push1161','1')}catch(e){}}
 window.PUSH={
   supported:()=>('Notification' in window)&&('serviceWorker' in navigator)&&('PushManager' in window),
   state(){if(!this.supported())return 'unsupported';if(Notification.permission==='denied')return 'blocked';let on=false;try{on=localStorage.getItem('push1161')==='1'}catch(e){}return Notification.permission==='granted'&&on?'on':'off'},
   async enable(){if(!this.supported())return 'unsupported';const p=await Notification.requestPermission();if(p!=='granted')return p==='denied'?'blocked':'off';await pushSave();return 'on'},
-  async disable(){try{await pushJs();await firebase.messaging().deleteToken()}catch(e){}try{await fs.doc('push/'+UID).delete()}catch(e){}try{localStorage.removeItem('push1161')}catch(e){}return 'off'},
+  async disable(){try{await pushJs();await firebase.messaging().deleteToken()}catch(e){}try{await fs.doc('push/'+pushId()).delete()}catch(e){}try{localStorage.removeItem('push1161')}catch(e){}return 'off'},
   async send(kind,o){try{const t=await auth.currentUser.getIdToken();const r=await fetch(NOTIFY,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify(Object.assign({kind},o||{}))});const j=await r.json().catch(()=>({}));
       if(ROLE==='admin'&&j.dead&&j.dead.length)for(const id of j.dead)fs.doc('push/'+id).delete().catch(()=>{});
       if(ROLE==='admin'&&kind!=='test'&&j.ok)fs.collection('pushlog').add({kind,title:String((o&&o.title)||kind),body:String((o&&o.body)||''),to:(o&&(o.pc||o.staffName||o.staff))?String(o.pc||o.staffName||o.staff):'Everyone',sent:j.sent||0,of:j.of||0,skipped:j.skipped||'',by:EMAIL,at:new Date().toISOString()}).catch(()=>{});

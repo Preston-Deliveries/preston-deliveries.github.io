@@ -225,16 +225,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Phones that have notifications turned on. Each person can only save their own phone.
+    // Phones and computers that have notifications turned on (one per device). Each person can only save their own.
     // Admins see all; drivers can see which phones belong to admins (so a serious report can ding the office).
     // A phone's address on its own can't send anything; only the notification sender (with its private key) can.
-    match /push/{uid} {
-      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid) || (isMember() && resource.data.role == 'admin');
-      allow create, update: if isMember() && request.auth.uid == uid
+    match /push/{id} {
+      allow read: if isAdmin() || (signedIn() && id.matches(request.auth.uid + '(_.*)?')) || (isMember() && resource.data.role == 'admin');
+      allow create, update: if isMember() && id.matches(request.auth.uid + '_[a-z0-9]{8,30}')
+        && request.resource.data.uid == request.auth.uid
         && request.resource.data.email == myEmail()
         && request.resource.data.role == (isAdmin() ? 'admin' : 'driver')
         && (isAdmin() || request.resource.data.staff == myStaff());
-      allow delete: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow delete: if isAdmin() || (signedIn() && id.matches(request.auth.uid + '(_.*)?'));
     }
 
     // Each driver's own results and survey, made by the app when an admin sends results to drivers
