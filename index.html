@@ -8843,7 +8843,7 @@ let act={};/* weekly Driver Activity Summary from Australia Post: onboard items 
 let tlc={};let db=null,ready=false,staff={},days={},clock={},ts={},logs={},cfgs={},mes={},role='mgr',drvKey='';
 const RATEK=['gst','hourly','r1','r2','rx','rh','rd','daily'],MEK=['abn','address','phone','email','acct','bsb','acctNo'];
 let sid='',from='',to='',invNo='',invDate=TODAY,ov={},cfg=null,showCfg=false,msg=null,busy=false,ticks={};
-let ans={gst:null,pay:null,rh:'',rd:''},step='',asked=false,extras=[],addOpen=false;
+let ans={gst:null,pay:null,rh:'',rd:''},step='',asked=false,extras=[],addOpen=false,istep='dates';
 const P=()=>staff[sid]||{};
 const nameOf=p=>tc([p.first,p.last].filter(Boolean).join(' '));
 
@@ -9008,11 +9008,11 @@ function html(){
   const R=rows(),T=totals(R),last=lastLog(),off=offDays();const[cs,ce]=periodF(0);
   const PAYL={p:'By parcel',h:'By the hour',b:'Parcel and hourly',d:'By the day'};
   h+=`<div class="iw-ans"><span>GST: <b>${ans.gst?'Registered':'Not registered'}</b></span><span>Paid: <b>${PAYL[ans.pay]||'By parcel'}</b></span>${ans.pay==='d'?`<span>Rate: <b>${money(ans.rd===''?cfg.rd:ans.rd)} a day</b></span>`:ans.pay!=='p'?`<span>Rate: <b>${money(ans.rh)} an hour</b></span>`:''}<button type="button" class="sh-btn sm" data-im="chg">Change answers</button></div>
-   <div class="iw-sec"><h3>Which dates?</h3><div class="iw-per one">${[[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))} · paid ${FREQL[freqOf()]}</small>${logs[logId(sid,a)]?'<i class="iw-tag">✓ Sent</i>':''}</button>`).join('')}</div>
+   <!--S:dates--><div class="iw-sec"><h3>Which dates?</h3><div class="iw-per one">${[[0,'This pay period',cs,ce]].map(([k,l,a,b])=>`<button type="button" data-im="per" data-v="${k}" aria-pressed="${from===a&&to===b}">${l}<small>${esc(short(a))} to ${esc(short(b))} · paid ${FREQL[freqOf()]}</small>${logs[logId(sid,a)]?'<i class="iw-tag">✓ Sent</i>':''}</button>`).join('')}</div>
     <details class="iw-other" ${from===cs&&to===ce?'':'open'}><summary>Other dates</summary><div class="row"><label class="f"><span>From</span><input type="date" id="im_from" value="${esc(from)}"></label><label class="f"><span>To</span><input type="date" id="im_to" value="${esc(to)}"></label></div></details>
     ${me&&logs[logId(sid,from)]&&(logs[logId(sid,from)].status||'submitted')!=='submitted'?`<p class="iw-left">The office has already ${logs[logId(sid,from)].status==='paid'?'paid':'checked'} your invoice for these dates. Call the office if something needs changing.</p>`:''}
     ${from&&to&&(fromIso(to)-fromIso(from))/864e5>27?'<p class="warn">An invoice holds 4 weeks. Pick 4 weeks or less.</p>':''}</div>`;
-  const nT=R.filter(r=>ticks[r.d]).length;
+  const nT=R.filter(r=>ticks[r.d]).length;h+='<!--S:days-->';
   if(openFlags&&(openFlags.top.length||Object.keys(openFlags.days).length)){const nd=Object.keys(openFlags.days).length;h+=`<div class="iw-flagbox"><b>⚠ ${nd?`Check the yellow ${nd===1?'day':'days'} below`:'Check this invoice'}</b>${nd?`<span>${nd} day${nd===1?' does':'s do'} not match the records. Each one says what is different.</span>`:''}${openFlags.top.map(t=>`<span>${esc(t.charAt(0).toUpperCase()+t.slice(1))}.</span>`).join('')}</div>`}
   h+=`<div class="iw-sec"><h3>Check each day</h3><p class="sub">${me?'We filled in what we know. Fix anything that is wrong, then tick':'Fix anything that is wrong, then tick'} <b>This day is right</b> on every day.</p>
    <p class="iw-prog ${R.length&&nT===R.length?'ok':''}"><b>${nT} of ${R.length}</b> days ticked</p>`;
@@ -9037,11 +9037,13 @@ function html(){
   h+=`<div class="iw-add">${addOpen?`<label class="f"><span>Which day?</span><input type="date" id="im_addd" min="${esc(from)}" max="${esc(to)}"></label><button type="button" class="lk" data-im="addx">Cancel</button>`:`<button type="button" class="sh-btn" data-im="addday">+ Add a day ${me?'I':'they'} worked</button>`}</div>
    ${off.length?`<p class="sub">Taken off this invoice: ${off.map(d=>`${esc(short(d))} <button type="button" class="lk il" data-im="back1" data-v="${d}">Put back</button>`).join(', ')}</p>`:''}</div>`;
   /* extra work */
+  h+='<!--S:extra-->';
   h+=`<div class="iw-sec"><h3>Extra work</h3><p class="sub">Only if the boss asked ${me?'you':esc(you)} to do extra work for a set amount, like $300 for the day. Say what it was for.</p>
    ${extras.map((x,i)=>{const bad=num(x.amt)>0&&!String(x.why||'').trim();return `<div class="iw-x ${bad?'bad':''}"><div class="iw-g"><label class="iw-f"><span>Day</span><input type="date" data-imx="${i}" data-k="d" value="${esc(x.d||'')}"></label><label class="iw-f"><span>Amount, $</span><input type="text" inputmode="decimal" autocomplete="off" inputmode="decimal" min="0" step="0.01" data-imx="${i}" data-k="amt" value="${esc(x.amt)}"></label></div>
      <label class="iw-f"><span>What was it for?</span><input data-imx="${i}" data-k="why" value="${esc(x.why||'')}" placeholder="e.g. Helped at the depot all day"></label>${bad?'<small class="iw-bad">Say what it was for.</small>':''}<button type="button" class="lk" data-im="xrm" data-v="${i}">Remove</button></div>`}).join('')}
    <button type="button" class="sh-btn" data-im="xadd">+ Add extra work</button></div>`;
   /* details on the invoice */
+  h+='<!--S:det-->';
   const miss=['abn','bsb','acctNo'].filter(k=>!String(cfg[k]||'').trim());
   h+=`<details class="cfg iw-det" ${showCfg||miss.length||!String(invNo||'').trim()?'open':''}><summary>${me?'Your details on the invoice':esc(your)+' details on the invoice'} <small>${miss.length?'<b class="iw-bad">Missing: '+miss.map(k=>({abn:'ABN',bsb:'BSB',acctNo:'account number'})[k]).join(', ')+'</b>':'ABN '+esc(cfg.abn)+' · Invoice no. '+esc(invNo)}</small></summary>
    <div class="grid"><label class="f"><span>Invoice number</span><input id="im_no" value="${esc(invNo)}"></label><label class="f"><span>Invoice date</span><input type="date" id="im_date" value="${esc(invDate)}"></label>
@@ -9050,6 +9052,7 @@ function html(){
    </div><p class="sub">${last?`Last invoice${last.no?' number '+esc(last.no):''}: ${esc(nice(last.from))}${last.to?' to '+esc(nice(last.to)):''}, ${money(last.T?last.T.total:last.total)}.`:(me?'This is your first invoice in the app.':'No invoices made in the app for this driver yet.')}</p>
    <div class="acts"><button type="button" class="sh-btn" data-im="savecfg">Save details for next time</button></div></details>`;
   /* totals */
+  h+='<!--S:send-->';
   const line=(l,q,r,amt)=>amt?`<div><span>${l}${q!==''?` <small>${q} × ${money(r)}</small>`:''}</span><b>${money(amt)}</b></div>`:'';
   const hrs={};for(const r of R)if(r.v.t==='h'&&num(r.v.hr)){const k=num(r.v.rh).toFixed(2);hrs[k]=(hrs[k]||0)+num(r.v.hr)}
   h+=`<div class="iw-sum">${line('Parcels, 1 load',T.l1,lr(1),T.l1*lr(1))}${line('Parcels, 2 loads',T.l2,lr(2),T.l2*lr(2))}${line('Extra parcels, on top',T.xp,num(cfg.rx),T.xp*num(cfg.rx))}
@@ -9065,6 +9068,17 @@ function html(){
     <button type="button" class="sh-btn primary" data-im="submit" ${busy||!ok?'disabled':''}>${prev?'Send it again in the app':me?'Send it to the office in the app':'Submit invoice'}</button>
     ${me?`<p class="sub iw-who">It goes to ${OFFICE_NAME} in the office, who checks it here in the app. No email needed.</p><button type="button" class="sh-btn" data-im="mail" ${busy||!ok?'disabled':''}>Email it to ${OFFICE_NAME} instead</button>`:''}
     <button type="button" class="sh-btn" data-im="pdf" ${busy||left.length?'disabled':''}>Download PDF</button>${msg&&msg.done?'<button type="button" class="sh-btn" data-im="golist">'+(me?'See my invoices':'See submitted invoices')+'</button>':''}</div></section>`;
+  /* one step at a time, like the run sheet editor */
+  {const ST=[['dates','Dates',from?fromIso(from).getDate()+' '+MON[fromIso(from).getMonth()]:''],['days','Days',R.length?(nT===R.length?'✓':nT+'/'+R.length):'0'],['extra','Extras',(()=>{const n=extras.filter(x=>num(x.amt)>0).length;return n?String(n):''})()],['det','Details',miss.length?'!':'✓'],['send','Send',money(T.total)]];
+   if(!ST.some(x=>x[0]===istep))istep='dates';
+   const close=h.endsWith('</section>');if(close)h=h.slice(0,-10);
+   const parts=h.split(/<!--S:(dates|days|extra|det|send)-->/);const head=parts[0];const P={};for(let k=1;k<parts.length;k+=2)P[parts[k]]=(P[parts[k]]||'')+parts[k+1];
+   const ix=ST.findIndex(x=>x[0]===istep);
+   const bar=`<nav class="pl-steps iw-steps" aria-label="Steps">${ST.map(([k,l,c],i)=>`<button type="button" data-im="ist" data-v="${k}" aria-pressed="${istep===k}" class="${c==='!'?'warn':''}"><i>${i+1}</i><b>${l}</b>${c?`<small>${esc(c)}</small>`:''}</button>`).join('')}</nav>`;
+   const nav=`<div class="iw-stepnav">${ix>0?`<button type="button" class="sh-btn" data-im="ist" data-v="${ST[ix-1][0]}">‹ Back</button>`:'<span></span>'}${ix<ST.length-1?`<button type="button" class="sh-btn primary" data-im="ist" data-v="${ST[ix+1][0]}">Next: ${ST[ix+1][1]} ›</button>`:''}</div>`;
+   const mh=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
+   let body=(P[istep]||'').replace(mh,'');body=mh+body;if(istep==='det')body=body.replace('<details class="cfg iw-det"','<details class="cfg iw-det" open');
+   h=head+bar+body+nav+(close?'</section>':'')}
   return h;
 }
 let lastToast=null;
@@ -9074,7 +9088,7 @@ document.addEventListener('click',e=>{const t=document.getElementById('im_toast'
 function paint(){toast();const box=document.getElementById('im_root');if(!box)return;if(view!=='list')saveDraft();const a=document.activeElement;const key=a&&(a.dataset&&(a.dataset.imd?'d:'+a.dataset.imd+':'+a.dataset.k:a.dataset.imx?'x:'+a.dataset.imx+':'+a.dataset.k:a.dataset.imc?'c:'+a.dataset.imc:'')||a.id);let pos=null;try{pos=a&&a.selectionStart}catch(e){}const raw=a&&a.tagName==='INPUT'?a.value:null;
   box.innerHTML=view==='list'?(role==='drv'?myListHTML():listHTML()):html();if(!key)return;let n=null;if(key.startsWith('d:')){const[,d,k]=key.split(':');n=box.querySelector(`[data-imd="${d}"][data-k="${k}"]`)}else if(key.startsWith('x:')){const[,i,k]=key.split(':');n=box.querySelector(`[data-imx="${i}"][data-k="${k}"]`)}else if(key.startsWith('c:'))n=box.querySelector(`[data-imc="${key.slice(2)}"]`);else n=document.getElementById(key);if(n){if(raw!=null&&n.tagName==='INPUT'&&n.type!=='checkbox'&&n.type!=='date')n.value=raw;n.focus();try{if(pos!=null)n.setSelectionRange(pos,pos)}catch(e){}}}
 let pickedFor='';
-function pick(id){openFlags=null;sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':ans.gst!==null?'pay':'gst';addOpen=false;
+function pick(id){openFlags=null;istep='dates';sid=id;pickedFor=id;msg=null;[from,to]=periodF(0,id);cfg=mergeCfg(id);ans=loadAns(id);syncCfg();asked=false;step=knownAns(id)?'days':ans.gst!==null?'pay':'gst';addOpen=false;
   invNo=(logs[logId(id,from)]&&logs[logId(id,from)].no)||nextNo();loadDraft();showCfg=false;need();paint()}
 function setPeriod(a,b){from=a;to=b;msg=null;addOpen=false;invNo=(logs[logId(sid,from)]&&logs[logId(sid,from)].no)||nextNo();loadDraft();need();paint()}
 
@@ -9463,7 +9477,7 @@ function flagsFor(x){const F={days:{},top:[]};if(!x||!x.rows)return F;
 let kEdit=false;
 function openLog(id){const x=logs[id];if(!x)return;kEdit=role!=='drv';openFlags=role==='mgr'?flagsFor(x):null;sid=x.sid;from=x.from;to=x.to;invNo=x.no||'';invDate=x.date||TODAY;cfg=mergeCfg(sid);
   for(const k of MEK)if(x.cfg&&x.cfg[k]!==undefined)cfg[k]=x.cfg[k];
-  const xc=x.cfg||{};ans={gst:!!xc.gst,pay:xc.pay||(xc.hourly?'h':'p'),rh:+xc.rh>0?+xc.rh:'',rd:+xc.rd>0?+xc.rd:''};syncCfg();asked=true;step='days';addOpen=false;
+  const xc=x.cfg||{};ans={gst:!!xc.gst,pay:xc.pay||(xc.hourly?'h':'p'),rh:+xc.rh>0?+xc.rh:'',rd:+xc.rd>0?+xc.rd:''};syncCfg();asked=true;step='days';istep='days';addOpen=false;
   ov={};ticks={};for(const r of x.rows||[]){if(x.v===2)ov[r.d]={add:true,t:r.t,pc:r.t!=='p'?'':r.pc,ld:r.ld||1,xp:r.t!=='p'?'':(r.xp||''),hr:r.t==='h'?r.hr:'',rh:r.t==='h'?r.rh:(ans.rh||''),rd:r.t==='d'?r.rd:''};
     else{const H=num(r.hr)>0;ov[r.d]={add:true,t:H?'h':'p',pc:H?'':(num(r.l1)||num(r.l2)),ld:num(r.l2)?2:1,xp:r.xp||'',hr:H?r.hr:'',rh:H?num(xc.rh):''}}ticks[r.d]=true}
   extras=(x.extras||[]).map(e=>({...e}));showCfg=false;msg={t:role==='drv'?'Opened the sent invoice. Change anything, then send it again to replace it.':'Editing '+(x.name||'')+'’s invoice. Change anything, then tap Submit to save it.'};need();setView('make')}
@@ -9477,6 +9491,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='rateok'){if(ans.pay==='d'){if(ans.rd==='')ans.rd=num(cfg.rd);if(num(ans.rd)>0){step='days';saveAns();paint();iwTop()}return}if(num(ans.rh)>0){step='days';saveAns();paint();iwTop()}return}
   if(a==='back'){step=step==='rate'?'pay':'gst';paint();return}
   if(a==='chg'){asked=true;step='gst';paint();iwTop();return}
+  if(a==='ist'){istep=v;msg=null;paint();iwTop();return}
   if(a==='per'){const[x,y]=periodF(+v);setPeriod(x,y);return}
   if(a==='dset'){const d=el.dataset.d,k=el.dataset.k;ov[d]={...(ov[d]||{}),[k]:k==='ld'?+v:v};paint();return}
   if(a==='wtick'){e.preventDefault();const L=rows().filter(r=>r.wk===+v);const all=L.every(r=>ticks[r.d]);for(const r of L){if(all)delete ticks[r.d];else ticks[r.d]=true}saveDraft();paint();return}
@@ -10109,7 +10124,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010154';
+const VERSION='202611010155';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11184,6 +11199,18 @@ html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-link
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gl.on b{color:#FFB37A}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gl.gl-off.on b{color:#B9F6CA}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gl small{font-size:.7rem;font-weight:700;color:#C9D3E3;line-height:1.15;margin-top:2px}
+/* invoice step bar */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important;margin:4px 0 14px!important;padding:0!important;background:none!important;border:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);text-align:center;min-width:0}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button i{font-style:normal;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.8rem;background:var(--sh-sunk,rgba(127,127,127,.15));color:var(--sh-muted)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button b{font-size:.78rem;color:var(--sh-ink)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button small{font-size:.68rem;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button[aria-pressed=true]{border-color:#F2782D;background:rgba(242,120,45,.10)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button[aria-pressed=true] i{background:#F2782D;color:#fff}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button.warn small{color:#E5484D;font-weight:800}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-steps>button:focus-visible{outline:2px solid #F2782D;outline-offset:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-stepnav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .iw-stepnav .sh-btn.primary{margin-left:auto}
 </style>
 </body>
 </html>
