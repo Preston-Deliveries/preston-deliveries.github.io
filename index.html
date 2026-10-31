@@ -9821,8 +9821,8 @@ const Q=(n,t,body,req)=>`<section class="q"><h3><span class="qn">${n}</span>${t}
 
 /* ---------- driver: choose and fill a report ---------- */
 function chooseHTML(){
-  return `${mode==='mgr'?'<button type="button" class="sh-btn back" data-rp="unfile">‹ All reports</button>':''}<div class="sos"><b>Emergency? Call 000 first.</b> Then call your supervisor. Fill this in once everyone is safe.<a class="sh-btn danger" href="tel:000">Call 000</a></div>
-  <p class="lead">Pick the report that fits. Only managers can read it. Photos help a lot.</p>
+  return `${mode==='mgr'?'<button type="button" class="sh-btn back" data-rp="unfile">‹ All reports</button>':''}<div class="sos"><span><b>Emergency? Call 000 first.</b><small>Then call your supervisor.</small></span><a class="sh-btn danger" href="tel:000">Call 000</a></div>
+
   <div class="kinds">${Object.entries(KINDS).map(([k,o])=>`<button type="button" class="kind ${o.c}" data-rp="kind" data-v="${k}"><b>${o.long}</b><span>${o.d}</span></button>`).join('')}</div>`;
 }
 function vehChecklist(){return `<details class="steps" open><summary>At the scene: what to do</summary><ol>
@@ -10099,7 +10099,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010152';
+const VERSION='202611010153';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11124,6 +11124,10 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 }
 /* the tab bar sits above the page below it, so its bottom line runs the full width */
 :root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs{position:relative!important;z-index:3!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sos{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:10px 12px!important;margin:0!important;font-size:.92rem!important;line-height:1.3!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sos>span{display:flex;flex-direction:column;min-width:0}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sos>span>small{font-size:.82rem;opacity:.85;margin-top:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sos>a.sh-btn{flex:none!important;height:36px!important;min-height:36px!important;padding:0 14px!important;margin:0!important;text-decoration:none!important}
 </style>
 </body>
 </html>
