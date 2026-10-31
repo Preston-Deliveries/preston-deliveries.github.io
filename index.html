@@ -6615,10 +6615,8 @@ function render(){
   const latest=rest[0]||null,G=groups(rest.slice(1));
   box.innerHTML=`<div class="ntx">
    ${isMgr()?'<button type="button" class="sh-btn primary nt-add" data-nt="new">+ New update</button>':''}
-   <p class="lead">${isMgr()?'Post notices for the team. Drivers see them here as soon as you post.':'Notices from the office. Newest first.'}</p>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa&&isMgr()?window.__waBtn(msg.wa):''}`:''}
-   <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div>
-   <button type="button" class="chip imp" data-nt="imp" aria-pressed="${impOnly}">Important only</button></div>
+   <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div></div>
    ${pins.length?`<section class="grp pin"><h2>Pinned <span>${pins.length}</span></h2><div class="list">${pins.map(cardHTML).join('')}</div></section>`:''}
    ${latest?`<section class="grp"><h2>Latest</h2><div class="list">${cardHTML(latest)}</div></section>`:''}
    ${G.length?'<h2 class="nt-older">Older updates</h2>':''}
@@ -10090,7 +10088,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010099';
+const VERSION='202611010100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
