@@ -1206,8 +1206,12 @@ function adminGlance(){const el=$('ah_glance');if(!el||role!=='mgr')return;const
     const dd=new Date(D.date+'T12:00:00');const day=dd.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'});const sc=D.score;
     const st=(l,v,c)=>`<span class="rs"><b class="v-${c}">${v}</b><small>${l}</small></span>`;
     const bub=(l,v,c)=>`<button type="button" class="gl" data-gl="summary"><b class="v-${c}">${v}</b><small>${l}</small></button>`;
-    res=`<p class="ah-rl">Contract results · ${esc(day)} · ${D.n} driver${D.n===1?'':'s'}</p><div class="gls g5">${bub('Score',sc==null?'–':window.SCORE.fmt(sc),sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b')}${bub('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${bub('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${bub('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${bub('Enquiries',String(D.enq),D.enq?'b':'gd')}</div>`}
-  const html=`<span class="sh-date">${esc(ds)}</span><h1 class="sh-hero-t">${g}${nm?', '+esc(nm):''}</h1>${res}`;
+    const box=(l,v,c)=>`<button type="button" class="hb" data-gl="summary"><small>${l}</small><b class="v-${c}">${v}</b></button>`;
+    res=`<div class="hg">${box('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${box('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${box('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${box('Enquiries',String(D.enq),D.enq?'b':'gd')}</div>`;
+    window.__ahTop={sc:sc==null?'–':window.SCORE.fmt(sc),c:sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b',sub:'Results '+day.replace(',','')+' · '+D.n+' driver'+(D.n===1?'':'s')};
+    if(0)res=`<div class="gls g5">${bub('Score',sc==null?'–':window.SCORE.fmt(sc),sc==null?'':sc>=99.995?'gd':sc>=96-1e-9?'g':'b')}${bub('Parcels',D.pc==null?'–':Math.round(+D.pc).toLocaleString('en-AU'),'n')}${bub('2 hr ETA',p1(D.eta),cl(D.eta,tg.etaG))}${bub('Scan',p1(D.cp),cl(D.cp,tg.cpG))}${bub('Enquiries',String(D.enq),D.enq?'b':'gd')}</div>`}
+  const TP=D&&window.__ahTop;
+  const html=`<div class="ht"><span class="tx"><b>${g}${nm?', '+esc(nm):''}</b><small>${esc(TP?TP.sub:ds)}</small></span>${TP?`<button type="button" class="hs v-${TP.c}" data-gl="summary" aria-label="Contract score ${esc(TP.sc)}">${esc(TP.sc)}</button>`:''}</div>${res}`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
@@ -10144,7 +10148,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010161';
+const VERSION='202611010162';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11316,6 +11320,23 @@ html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-link
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>summary .nn{order:0;font-size:1.2rem!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>summary h3{font-size:.9rem!important;color:var(--sh-ink)!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>:not(summary){padding:0 12px 12px!important}
+/* admin Home header in the same style as the results cards */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero{background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;color:var(--sh-ink)!important;border-radius:18px!important;padding:14px!important;box-shadow:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero::before,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero::after{display:none!important;content:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ht{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ht .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ht .tx b{font-size:1.25rem;color:var(--sh-ink);line-height:1.2}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .ht .tx small{font-size:.9rem;color:var(--sh-muted);font-weight:600;margin-top:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .hs{all:unset;cursor:pointer;flex:none;font-size:2.1rem;font-weight:800;line-height:1}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .hg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .hb{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px;border-radius:12px;background:var(--sh-sunk,rgba(127,127,127,.12));min-width:0;text-align:center}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .hb small{font-size:.78rem;font-weight:700;color:var(--sh-muted);white-space:nowrap}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .hb b{font-size:1.05rem;font-weight:800;color:var(--sh-ink);white-space:nowrap}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero :is(.hb,.hs):focus-visible{outline:2px solid #F2782D;outline-offset:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .v-gd{color:#E3A008!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .v-g{color:#30A46C!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .v-b{color:#E5484D!important}
+html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) body #sh-home .ah-hero .v-g{color:#4CC38A!important}
 </style>
 </body>
 </html>
