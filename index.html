@@ -1527,6 +1527,11 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='reports'){const k=/\b(crash|accident|van|car|ute|truck|hit|reversing|reversed|collision|bumped|panel)\b/.test(t)?'vehicle':/\b(hazard|unsafe|slip|trip|broken|leak|lighting|dangerous|forklift)\b/.test(t)?'hazard':/\b(dog|bit|bitten|abuse|abused|threat|assault|injur|hurt|fell|damage|theft|stolen|customer|police|near miss)/.test(t)?'incident':null;
     if(k){go();vClick('[data-rp="kind"][data-v="'+k+'"]');return {vehicle:'Opening a vehicle accident report.',hazard:'Opening a safety hazard report.',incident:'Opening an incident report.'}[k]}return null}
   if(page==='leave'){if(/\b(book|request|ask|apply|need|want|take|sick|can'?t come|day off|days off|time off)\b/.test(t)){go();vClick(role==='mgr'?'[data-lv="add"]':'[data-lv="rqopen"]');return role==='mgr'?'Opening Add leave.':'Opening Ask for days off.'}return null}
+  if(page==='summary'||(page==='results'&&role==='mgr'&&/\b42(14|15|17|18)\b/.test(t)&&/\bsummary|postcode|contract\b/.test(t))){const pc=(t.match(/\b(42(?:14|15|17|18))\b/)||[])[1];const w=voiceWhen(t);
+    const yr=/\b(this|last|financial|the) year\b|\byearly\b/.test(t);const per=yr?'year':w?(w.per==='cycle'?'month':w.per):null;
+    let anc=w?w.iso:null;if(yr&&/\blast year\b/.test(t)){const d=new Date();d.setFullYear(d.getFullYear()-1);anc=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+    if(pc||per){if(window.APP)APP.go('summary');vWait('#sm_root .pf-scope, #sm_root [data-sm="per"]',()=>{if(window.__smGo)window.__smGo({scope:pc?{t:'pc',v:pc}:{t:'all'},period:per||undefined,anchor:anc||undefined})},9000);
+      return 'Opening the contract summary'+(pc?' for '+pc:'')+(yr?(/last year/.test(t)?' for last financial year':' for this financial year'):w?' for '+w.label:'')+'.'}}
   if(page==='leave'&&role==='mgr'){const v=/\brequests?\b/.test(t)?'req':/\b(totals?|how many days|balance)\b/.test(t)?'tot':/\b(list|upcoming)\b/.test(t)?'list':/\bsettings?\b/.test(t)?'set':null;if(v){go();vClick('[data-lv="view"][data-v="'+v+'"]');return 'Opening '+{req:'leave requests',tot:'leave totals',list:'the leave list',set:'leave settings'}[v]+'.'}}
   if(page==='invoices'&&role==='mgr'){const v=/\b(submitted|sent in|to check|review|received)\b/.test(t)?'sub':/\btemplates?\b/.test(t)?'tpl':null;if(v){go();vClick('[data-iv="tab"][data-v="'+v+'"]');return v==='sub'?'Opening submitted invoices.':'Opening invoice templates.'}}
   if(page==='results'&&role==='mgr'&&/\b(load|import|upload|add|new) (the )?(new )?results\b/.test(t)){go();vClick('[data-rtab="import"]');return 'Opening Load new results.'}
@@ -7096,6 +7101,7 @@ const normName=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
 let mode='wait',db=null,S={days:{},weeks:{},staff:{},runs:{},leave:{},enqlog:{},precards:{},lockers:{},settings:{},compliance:{},vchecks:{},timesheets:{},clock:{},uniorders:{}};
 let period=(()=>{try{return localStorage.getItem('sm_period')||'week'}catch(e){return 'week'}})();
 let anchor=null,scope={t:'all'},back=null,q='',sortBy='name',msg=null,pending=false;
+window.__smGo=o=>{if(o.scope)scope=o.scope;if(o.period){period=o.period;try{localStorage.setItem('sm_period',period)}catch(e){}}if(o.anchor){anchor=o.anchor;window.__smAuto=false}back=null;try{render()}catch(e){}};
 
 /* ---------- people ---------- */
 function people(){
@@ -9683,7 +9689,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010031';
+const VERSION='202611010032';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
