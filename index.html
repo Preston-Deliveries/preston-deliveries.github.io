@@ -2139,7 +2139,7 @@ function sheetHTML(r){
 }
 function sheetViewHTML(r){
   return `<div class="sheet-tools">
-    ${canWrite?`<p class="hint">This is what a fill in driver sees. Send them the link to this page with <b>#${esc(S.cur)}</b> on the end to open ${esc(r.driver)}'s sheet straight away.</p>`:`<p class="hint">Deliver in the order shown, top to bottom. Tap Download to print a copy.</p>`}
+    ${canWrite?'':`<p class="hint">Deliver in the order shown, top to bottom. Tap Download to print a copy.</p>`}
     ${(downloads=window.__UVDL||downloads||window.__DLSHIM)?`<button type="button" class="btn primary" data-act="download">Download to print</button>`:''}
   </div>${sheetHTML(r)}`;
 }
@@ -3980,7 +3980,7 @@ function copy(text){
 }
 function showHome(){
   $("topic").value="home";document.title="1161 Driver Guide";
-  view.innerHTML=`<div class="gd-home"><p class="gd-intro">${T.length} topics. Each one covers one rule: what it means, what to do and what not to do. Tap a topic to read it, or search at the top.</p>`+
+  view.innerHTML=`<div class="gd-home">`+
   CAT_ORDER.map(c=>{const list=T.filter(t=>t.cat===c);if(!list.length)return "";return `<section class="gd-cat gc-${c}"><h2>${esc(CATS[c].name)}<span>${list.length}</span></h2><div class="gd-rows">${list.map(t=>`<button class="gd-row" data-go="${t.id}"><span class="gd-num">${t.n}</span><span class="gd-tx"><b>${esc(t.title)}</b>${t.lead?`<small>${esc(t.lead)}</small>`:""}</span><svg class="gd-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join("")}</div></section>`}).join("")+`</div>`;
   window.scrollTo(0,0);
 }
@@ -5028,7 +5028,7 @@ function render(){
   if(openId){const a=document.activeElement;if(pad.strokes.length&&document.getElementById('tb_pad')&&!pad.busy&&!pad.err&&!pad._force)return;box.innerHTML=briefHTML(briefs[openId]);hydrate(box);wirePad();return}
   const v=visible();
   box.innerHTML=`<div class="tbx">
-    <div class="head"><h1>Team briefs</h1><span class="cnt">${v.length} brief${v.length===1?'':'s'}</span>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-tb="new">+ New team brief</button></div>`:''}</div>
+    <div class="head"><h1>Team briefs</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-tb="new">+ New team brief</button></div>`:''}</div>
     <p class="lead">${isMgr()?'Add the brief the facility manager sends each week. Drivers see it as soon as it is shown to them.':'The weekly team brief from the facility, with its toolbox talks and safety focus. Read each one when it comes out.'}</p>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
     ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>`<div class="row"><button type="button" class="item" data-tb="open" data-v="${esc(b.id)}">
@@ -6070,8 +6070,7 @@ function render(){
 }
 function calHTML(){const L=config().limit||3;
   return `${isMgr()?'<button type="button" class="sh-btn primary lvbig" data-lv="add">+ Add leave for a driver</button>':rqOpen?'':'<button type="button" class="sh-btn primary lvbig" data-lv="rqopen">Ask for days off</button>'}
-`+monthHTML()+
-   `<p class="lvlim">Up to <b>${L}</b> driver${L===1?'':'s'} can be off on the same day.</p>`;
+`+monthHTML();
 }
 function lvNav(kind,title,isNow){const w=kind==='w';return `<div class="lvnav"><button type="button" class="nb" data-lv="${w?'wprev':'prev'}" aria-label="Previous ${w?'week':'month'}">‹</button><div class="t"><b>${title}</b>${isNow?`<small>${w?'This week':'This month'}</small>`:`<button type="button" class="tl" data-lv="today">Back to ${w?'this week':'this month'}</button>`}</div><button type="button" class="nb" data-lv="${w?'wnext':'next'}" aria-label="Next ${w?'week':'month'}">›</button></div>`}
 function legendHTML(){return `<div class="lvkey"><span class="open">Room</span><span class="one">1 spot left</span><span class="full">Full</span><span class="bo">No leave</span></div>`}
@@ -7125,7 +7124,7 @@ function tracker(){const from=addD(today(),-365),by={};for(const n of ncrs()){if
   return Object.values(by).map(d=>{const top=Object.entries(d.iss).sort((a,b)=>b[1]-a[1])[0];return{...d,max:top[1],issue:top[0],total:Object.values(d.iss).reduce((a,b)=>a+b,0)}}).sort((a,b)=>b.max-a.max||a.name.localeCompare(b.name))}
 const waiting=n=>[!n.spokeAt&&'driver spoken to',!n.signAt&&'driver to sign',!n.respAt&&'your response'].filter(Boolean);
 const dots=k=>`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=k?'on':''}"></i>`).join('')}</span>`;
-function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim().toLowerCase(),a=nqA.trim().toLowerCase();const F=L.filter(n=>(!nqP||pcOf(n)===nqP)&&(!d||[n.driver,n.login,dno(n.login)].join(' ').toLowerCase().includes(d))&&(!a||String(n.address||'').toLowerCase().includes(a)));
+function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim().toLowerCase();const F=L.filter(n=>!d||[n.driver,n.login,dno(n.login),n.address,pcOf(n),n.caseNo].join(' ').toLowerCase().includes(d));
   return `<span class="sub">${F.length} of ${L.length} NCR${L.length===1?'':'s'}</span>${F.length?F.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
      <small>${pcTag(pcOf(n))} ${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
      ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
@@ -7133,9 +7132,7 @@ function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim()
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
   return `${perBar('ncr',L.map(n=>n.issued))}<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>inPer(n.issued,'ncr')).length}</b><small>${esc(perLab('ncr'))}</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
 
-   <div class="srch"><label class="f" for="eq_nqd">Driver<input type="search" id="eq_nqd" value="${esc(nqD)}" placeholder="Name or login" autocomplete="off"></label>
-    <label class="f" for="eq_nqa">Address<input type="search" id="eq_nqa" value="${esc(nqA)}" placeholder="Street or suburb" autocomplete="off"></label>
-    <label class="f" for="eq_nqp">Postcode<select id="eq_nqp"><option value="">All postcodes</option>${['4214','4215','4217','4218'].map(pc=>`<option ${nqP===pc?'selected':''}>${pc}</option>`).join('')}</select></label></div>
+   <div class="srch one"><input type="search" id="eq_nqd" value="${esc(nqD)}" placeholder="Search driver, address or case" aria-label="Search NCRs" autocomplete="off"></div>
    <div id="eq_nres" class="eres">${ncrCards()}</div>`}
 function ncrFormHTML(){const n=nDraft,isNew=!n.id;const lastBy=(ncrs()[0]||{}).by||'';
   return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="ncancel">‹ NCRs</button>
@@ -7221,8 +7218,8 @@ async function importOld(files){const done=[],skip=[],need=[];msg={t:'Reading '+
 async function patchN(id,patch,t){const n=recs[id];if(!n)return;const doc={...n,...patch,updatedAt:new Date().toISOString()};delete doc.id;recs[id]={id,...doc};msg=t?{t}:null;render();try{await db.doc('enqlog/'+id).set(doc)}catch(e){msg={err:true,t:'Could not save just now.'};render()}}
 /* ---------- list ---------- */
 function filtered(){
-  const d=qDriver.trim().toLowerCase(),a=qAddr.trim().toLowerCase();
-  return enqs().filter(r=>inPer(r.date,'enq')&&(!qPc||pcOf(r)===qPc)&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login].join(' ').toLowerCase().includes(d))&&(!a||String(r.address||'').toLowerCase().includes(a)))
+  const d=qDriver.trim().toLowerCase();
+  return enqs().filter(r=>inPer(r.date,'enq')&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)))
     .sort((x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt)));
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
@@ -7250,9 +7247,7 @@ function render(){
   :`<button type="button" class="sh-btn up rimp" data-eq="plopen">Paste a list of enquiries</button>`}
   ${perBar('enq',enqs().map(x=>x.date))}
   ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
-  <div class="srch"><label class="f" for="eq_qd">Driver<input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Name or login" list="eq_dl" autocomplete="off"></label>
-   <label class="f" for="eq_qa">Address<input type="search" id="eq_qa" value="${esc(qAddr)}" placeholder="Street or suburb" autocomplete="off"></label>
-   <label class="f" for="eq_qp">Postcode<select id="eq_qp"><option value="">All postcodes</option>${['4214','4215','4217','4218'].map(pc=>`<option ${qPc===pc?'selected':''}>${pc}</option>`).join('')}</select></label>
+  <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Search driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off">
    <label class="tog"><input type="checkbox" id="eq_of" ${onlyFault?'checked':''}> At fault only</label></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
   <div id="eq_res" class="eres">${resHTML(L)}</div>
@@ -7307,7 +7302,7 @@ async function printList(){
   const L=filtered();msg={t:'Making the PDF…'};render();
   try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
     const plain=s=>String(s||'').replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[^\x0A\x20-\x7E]/g,'');
-    const title=['Enquiries',qDriver.trim()?'driver: '+qDriver.trim():'',qAddr.trim()?'address: '+qAddr.trim():'',onlyFault?'at fault only':''].filter(Boolean).join('  |  ');
+    const title=['Enquiries',qDriver.trim()?'search: '+qDriver.trim():'',qAddr.trim()?'address: '+qAddr.trim():'',onlyFault?'at fault only':''].filter(Boolean).join('  |  ');
     const nf=L.filter(r=>r.fault==='yes').length;let fs=10,d;
     for(;;){d=new window.jspdf.jsPDF({unit:'mm',format:'a4'});d.setFillColor(11,107,92);d.rect(0,0,210,20,'F');d.setTextColor(255);d.setFont('helvetica','bold');d.setFontSize(15);d.text(plain(title).toUpperCase(),12,12);d.setFontSize(9);d.setFont('helvetica','normal');d.text(`Preston Delivery Service  |  Contract 1161  |  ${L.length} enquiries, ${nf} at fault  |  Printed ${nice(today())}`,12,17);
       d.autoTable({startY:25,margin:{left:10,right:10},theme:'grid',head:[['Date','Case','Driver','Address','Outcome','Supervisor']],body:L.map(r=>[r.date?r.date.split('-').reverse().join('/'):'',plain(r.caseNo),plain(r.driver||r.login),plain(r.address),r.fault==='yes'?'At fault':r.fault==='partly'?'Partly at fault':r.fault==='no'?'Not at fault':'',plain(r.supervisor)]),styles:{fontSize:fs,cellPadding:fs/5},headStyles:{fillColor:[20,32,29]},columnStyles:{0:{cellWidth:20},1:{cellWidth:20},4:{cellWidth:22}},
@@ -10089,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010118';
+const VERSION='202611010120';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11010,11 +11005,17 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act1>.sh-btn{display:flex!important;width:100%!important}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act2{display:flex!important;gap:8px!important;width:100%!important;margin-top:8px}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dm-act2>.sh-btn{flex:1 1 auto!important;min-width:0!important;width:auto!important;padding:0 10px!important;font-size:.86rem!important}
-:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pseg2{display:flex!important;width:100%!important;gap:0!important;padding-left:4px!important;padding-right:4px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pseg2{display:flex!important;flex:1 1 auto!important;min-width:0!important;gap:0!important;padding-left:4px!important;padding-right:4px!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pseg2>button{flex:1 1 0!important;min-width:0!important;justify-content:center!important;text-align:center!important;padding-left:0!important;padding-right:0!important}
-:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_perSeg.pvseg{display:flex!important;width:100%!important}
-:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_perSeg.pvseg>button{flex:1 1 0!important;min-width:0!important;justify-content:center!important;text-align:center!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pc-sel>select{flex:1 1 100%!important;width:100%!important;max-width:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one{display:flex!important;align-items:center!important;gap:12px!important;padding:0!important;background:none!important;border:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one>input{flex:1 1 auto!important;min-width:0!important;width:auto!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one>.tog{flex:none!important;white-space:nowrap!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-guide .bar-in{max-width:none!important;width:100%!important;box-sizing:border-box!important;padding-left:16px!important;padding-right:16px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-guide .bar-in>*{flex:1 1 100%!important;width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one>input{height:44px!important;padding:0 14px!important;border:1px solid var(--sh-line)!important;border-radius:10px!important;background:var(--sh-surface)!important;color:var(--sh-ink)!important;font:500 1rem var(--sh-body)!important;box-sizing:border-box!important;outline-offset:2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one{flex-wrap:wrap!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-enquiries .srch.one>input{flex:1 1 100%!important}
 </style>
 </body>
 </html>
