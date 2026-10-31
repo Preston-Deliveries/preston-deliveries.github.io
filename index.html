@@ -9975,7 +9975,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010072';
+const VERSION='202611010073';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10396,6 +10396,11 @@ async function boot(){
   if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await getFast(fs.doc('meta/imported'));if(!m.exists&&!m.metadata.fromCache){importScreen();return}}catch(e){}}
   loading();
   const [snap,mr]=await Promise.all([loadShared(),loadMyRes()]);
+  /* admins who also drive: find their own driver record by email so the driver view shows their results, invoices and run */
+  if(ROLE==='admin'&&window.__webMe&&!window.__webMe.login){try{const em=(window.__webMe.emails||[EMAIL]).map(e=>String(e).toLowerCase());
+    const q=await fs.collection('staff').where('email','in',em.slice(0,10)).get();let best=null;
+    for(const d of q.docs){const v=DEC(d.data())||{};if(!best||(!best.v.login&&v.login))best={id:d.id,v}}
+    if(best){const lg=String(best.v.login||'').toUpperCase().replace(/\s+/g,'');window.__webMe.ownStaff=best.id;if(lg){window.__webMe.login=lg;window.__myLogin=lg}if(!window.__webMe.run)window.__webMe.run=(best.v.runs||[]).filter(Boolean).join(', ');if(!window.__webMe.name)window.__webMe.name=[best.v.first,best.v.last].filter(Boolean).join(' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}}catch(e){}}
   if(ROLE!=='admin'){try{idbSet('sh_results',null);idbSet('sh_survey',null);Object.keys(localStorage).filter(k=>k.startsWith('dc2:days/')).forEach(k=>localStorage.removeItem(k))}catch(e){}
     window.__MYRES=mr||{};if(mr&&mr.results)snap.results=mr.results;if(mr&&mr.survey)snap.survey=mr.survey;
     if(mr&&mr.updatedAt){snap.at=Object.assign({},snap.at);if(mr.results)snap.at.results=snap.at.results||mr.updatedAt;if(mr.survey)snap.at.survey=snap.at.survey||mr.updatedAt}}
