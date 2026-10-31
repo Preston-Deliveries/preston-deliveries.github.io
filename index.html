@@ -4297,17 +4297,17 @@ function agrPanelHTML(){agrLoad();if(AGM===null||AGM===undefined)return '';const
      <p class="hint">Uploading a new version asks every driver to sign again.</p>`
    :`<p class="hint">When you have the agreement, upload it here as a PDF. Every driver will then be asked to read, acknowledge and sign it in the app, and you can download each signed copy from their record.</p><div class="dm-onba"><label class="sh-btn primary dm-up">Upload the agreement (PDF)<input type="file" accept="application/pdf" data-dmag="file" hidden></label></div>`}
    ${agBusy&&agBusy!=='rm'?`<p class="hint">${esc(agBusy)}</p>`:''}</details>`}
-function agrRecHTML(p){agrLoad();if(!AGM)return '';const o=OBC[p.id]||{};const ag=(o&&o.agree&&o.agree.sig)?o.agree:(AGS&&AGS[p.id])||null;const cur=ag&&ag.version===AGM.version;
-  return `<section class="dm-ap"><h3>Sub-contractor agreement <span class="dm-onbst ${cur?'ok':ag?'go':''}">${cur?'✓ Signed '+esc(niceD(ag.at)):ag?'Signed an older version':'Not signed yet'}</span></h3>
-   <p class="hint">${cur?'They have read, acknowledged and signed the current agreement.':'It pops up for them to sign the next time they open the app.'}</p>
-   ${ag?`<div class="dm-onba"><button type="button" class="sh-btn primary" data-dmx="agcopy">Download signed copy</button></div>`:''}</section>`}
-document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('#mod-staff [data-dmag]');if(!b||b.tagName==='INPUT')return;const a=b.dataset.dmag;
-  if(a==='open'){window.AGR&&window.AGR.open();return}
-  if(a==='pv'){window.ONB&&window.ONB.previewAgr();return}
-  if(a==='rm'){if(agBusy!=='rm'){agBusy='rm';render();setTimeout(()=>{if(agBusy==='rm'){agBusy='';render()}},3500);return}agBusy='Removing…';render();try{await window.AGR.remove()}catch(x){}agBusy='';agrLoad(true);return}});
-document.addEventListener('change',async e=>{const t=e.target;if(!t.matches||!t.matches('#mod-staff input[data-dmag="file"]')||!t.files||!t.files[0])return;const f=t.files[0];
+function agrRecHTML(p){const f=p.agFile&&p.agFile.parts?p.agFile:null;
+  return `<section class="dm-ap dm-agrr"><h3>Sub-contractor agreement <span class="dm-onbst ${p.agSigned?'ok':''}">${p.agSigned?'✓ Signed':'Not signed'}</span></h3>
+   <label class="dm-onbck"><input type="checkbox" data-dmx="agtick" ${p.agSigned?'checked':''}> They have signed their sub-contractor agreement${p.agSigned&&p.agSignedAt?` <span class="hint">(ticked ${esc(niceD(p.agSignedAt))}${p.agSignedBy?' by '+esc(p.agSignedBy):''})</span>`:''}</label>
+   ${f?`<p class="hint">📄 ${esc(f.name)} · uploaded ${esc(niceD(f.at))}</p><div class="dm-onba"><button type="button" class="sh-btn primary" data-dmx="agfopen">Open it</button><label class="sh-btn dm-up">Replace<input type="file" accept="application/pdf" data-dmagf="1" hidden></label><button type="button" class="sh-btn danger" data-dmx="agfdel">${agBusy==='del:'+p.id?'Tap again to remove':'Remove file'}</button></div>`
+     :`<div class="dm-onba"><label class="sh-btn dm-up">Upload their signed agreement (PDF)<input type="file" accept="application/pdf" data-dmagf="1" hidden></label></div>`}
+   ${agBusy&&agBusy.indexOf('del:')!==0?`<p class="hint">${esc(agBusy)}</p>`:''}</section>`}
+document.addEventListener('change',async e=>{const t=e.target;if(!t.matches||!t.matches('#mod-staff input[data-dmagf]')||!t.files||!t.files[0]||!openId)return;const f=t.files[0],id=openId;
   if(!/pdf$/i.test(f.type)&&!/\.pdf$/i.test(f.name)){agBusy='Please choose a PDF file.';render();return}if(f.size>8e6){agBusy='That file is too big. Please keep it under 8 MB.';render();return}
-  agBusy='Uploading…';render();try{await window.AGR.upload(f,meFull()||meName());agBusy=''}catch(x){agBusy='Could not upload just now. Check your connection and try again.'}agrLoad(true)});
+  agBusy='Uploading…';render();try{const old=people[id].agFile;const m=await window.AGRF.put(id,f);agBusy='';
+    await saveExtra(id,{agFile:m,agSigned:true,agSignedAt:people[id].agSigned&&people[id].agSignedAt?people[id].agSignedAt:new Date().toISOString(),agSignedBy:people[id].agSigned&&people[id].agSignedBy?people[id].agSignedBy:(meFull()||meName())},'Agreement uploaded and ticked as signed.')}
+  catch(x){agBusy='Could not upload just now. Check your connection and try again.';render()}});
 function indHTML(p){const id=p.id;if(window.ONB)onbLoad(id);const o=OBC[id]||{},rec=o&&o.ind&&o.ind.drvSig?o.ind:null;
   const blank=`<button type="button" class="sh-btn" data-dmx="indblank">Blank form</button>`;
   if(p.indAt)return `<section class="dm-ind"><h3>Site induction <span class="dm-onbst ok">✓ Done ${esc(niceD(p.indAt))}${p.indBy?' by '+esc(p.indBy):''}</span></h3><p class="hint">Australia Post Contractor Induction Checklist.${rec?' Signed by the driver and '+esc(rec.repName||p.indBy||'')+'.':''}</p><div class="dm-onba">${rec?`<button type="button" class="sh-btn primary" data-dmx="indpdf">Download PDF</button>`:''}${blank}<button type="button" class="sh-btn" data-dmx="indundo">Undo</button></div></section>`;
@@ -4379,6 +4379,9 @@ document.addEventListener('change',e=>{const el=e.target.closest&&e.target.close
   const sg=document.querySelector('#mod-staff .dm-indsig');if(sg){const was=sg.hidden;sg.hidden=T.size!==IND_ITEMS.length;if(was&&!sg.hidden){indPadInit(openId);sg.scrollIntoView({block:'nearest',behavior:'smooth'})}}});
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-dmx]');if(!el||!openId||!document.getElementById('mod-staff').contains(el))return;const a=el.dataset.dmx,id=openId;
   if(a==='indtick')return;
+  if(a==='agtick'){const on=el.checked;await saveExtra(id,on?{agSigned:true,agSignedAt:new Date().toISOString(),agSignedBy:meFull()||meName()}:{agSigned:false,agSignedAt:'',agSignedBy:''},on?'Ticked as signed.':'Unticked.');return}
+  if(a==='agfopen'){const f=people[id].agFile;if(f&&window.AGRF){const ok=await window.AGRF.open(id,f);if(!ok){msg={err:true,t:'Could not open the file. Check your connection.'};render()}}return}
+  if(a==='agfdel'){if(agBusy!=='del:'+id){agBusy='del:'+id;render();setTimeout(()=>{if(agBusy==='del:'+id){agBusy='';render()}},3500);return}agBusy='';try{await window.AGRF.del(id,people[id].agFile)}catch(x){}await saveExtra(id,{agFile:null},'File removed. The signed tick stays as it was.');return}
   if(a==='agcopy'){const o=OBC[id]||{};const ag=(o.agree&&o.agree.sig)?o.agree:(AGS&&AGS[id]);if(ag&&window.AGR)await window.AGR.signedCopy(fullName(people[id]),ag,el);return}
   if(a==='fdpdf'){if(window.ONB&&window.ONB.firstDay)window.ONB.firstDay(fullName(people[id]).replace(/^New driver.*$/,''),el);return}
   if(a==='apsign'){apPad=true;render();setTimeout(apPadInit,0);return}
@@ -4416,7 +4419,6 @@ function render(){
   box.innerHTML=`<div class="dm">
     <div class="dm-head"><h1>Drivers</h1><span class="cnt">${Object.keys(people).length} people${list.length!==Object.keys(people).length?`, showing ${list.length}`:''}</span>
       <div class="act"><button type="button" class="sh-btn primary" data-dm="add">+ Add a person</button><button type="button" class="sh-btn" data-dm="pdf">Download PDF</button><button type="button" class="sh-btn" data-dm="logins">Print logins</button><button type="button" class="sh-btn" data-dmb="1">Blank Australia Post declaration</button><button type="button" class="sh-btn" data-dm="export">Download Excel</button></div></div>
-    ${agrPanelHTML()}
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     ${(()=>{const D=[];for(const p of Object.values(people))for(const[k,l]of EXP){const n=daysTo(p[k]);if(n!=null&&n<=RDAYS)D.push({p,k,l,n})}D.sort((a,b)=>a.n-b.n);return D.length?`<section class="card rgsoon"><h2>Expiring soon</h2>${D.map(z=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(z.p.id)}"><b>${esc(fullName(z.p))}</b><span>${esc(z.l)}${z.k==='regoDue'&&z.p.rego?' '+esc(z.p.rego):''}</span><span class="svb">${esc(expTxt(z.n,z.p[z.k]))}</span></button>`).join('')}</section>`:''})()}
     <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Search name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
@@ -4453,7 +4455,7 @@ function detailHTML(){
       ${isNew&&!newFull?`<p class="dm-newh">Just add their <b>email</b>, and their <b>mobile</b> if you want to WhatsApp them the app link. They fill in everything else themselves through the welcome steps, and it goes straight into their record for you to check.</p>
       <div class="grid">${grp('New driver',['email','mobile'])}</div><input type="checkbox" id="dm_f_onbnew" checked hidden>
       <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay and bank',['payFreq','bankName','bsb','acct'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
-      ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':(p.onboard?onbHTML(p):'')+apHTML(p)+agrRecHTML(p))+indHTML(p)}
+      ${isNew&&!newFull?'':isNew?`<label class="dm-onbck"><input type="checkbox" id="dm_f_onbnew"> Send them the new driver welcome steps (they fill in their details, work rights and documents themselves)</label><button type="button" class="sh-btn" data-dmp="1">See what they look like</button>`:(p.onboard==='pending'?'':(p.onboard?onbHTML(p):'')+apHTML(p))+indHTML(p)+agrRecHTML(p)}
       <div class="foot"><button type="button" class="sh-btn primary" data-dm="save">${isNew?'Add person':'Save changes'}</button><button type="button" class="sh-btn" data-dm="back">Cancel</button>
         ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}<span class="sp"></span>
         ${isNew?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-dm="del">${armDel?'Tap again to delete':'Delete person'}</button>`}</div>
@@ -9741,8 +9743,8 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   const vst=p=>{const v=vcBy[p.id];if(!v)return{c:'bad',t:'Never checked'};const n=30-Math.round((fromIso(T)-fromIso(v.date))/864e5);if(v.outcome==='fail')return{c:'bad',t:'Failed '+sh(v.date)};return n<0?{c:'bad',t:-n+' days overdue'}:{c:v.outcome==='minor'?'warn':'ok',t:(v.outcome==='minor'?'Fixes needed, ':'')+'due '+sh(add(v.date,30))}};
   const visa=p=>p.visa==='Visa holder'?(p.visaDue?(x=>({c:x.c,t:(p.workRights==='Limited hours'?'Limited, ':'')+x.t}))(st(p.visaDue)):{c:'bad',t:'No expiry entered'}):p.visa?{c:'ok',t:p.visa.replace('Australian citizen','Citizen').replace('Permanent resident','PR').replace('New Zealand citizen','NZ')}:{c:'none',t:'Not entered'};
   const ind=p=>p.indAt?{c:'ok',t:'Done '+sh(p.indAt)+(p.indBy?' by '+p.indBy:'')}:{c:'bad',t:'Not done'};
-  const COLS=[['lic','Licence'],['rego','Rego'],['visa','Visa'],['f2w','Fit2Work'],['ind','Site induction']];
-  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),visa:visa(p),ten:st(p.tenDue),f2w:f2w(p.fit2work),ind:ind(p),vc:vst(p)}));
+  const COLS=[['lic','Licence'],['rego','Rego'],['visa','Visa'],['agr','Agreement'],['f2w','Fit2Work'],['ind','Site induction']];
+  const rows=L.map(p=>({p,lic:st(p.licDue),rego:st(p.regoDue),visa:visa(p),agr:p.agSigned?{c:'ok',t:'Signed'}:{c:'none',t:'Not ticked'},ten:st(p.tenDue),f2w:f2w(p.fit2work),ind:ind(p),vc:vst(p)}));
   const cnt=(k,c)=>rows.filter(r=>r[k].c===c).length;
   const score=r=>COLS.reduce((x,[k])=>x+(r[k].c==='bad'?100:r[k].c==='warn'?10:r[k].c==='none'?1:0),0);
   const roleOf=p=>String(p.role||'Other').toUpperCase();
@@ -9753,12 +9755,12 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
   el.innerHTML=`<section class="card cp"><p class="mt-note cp-top">Expiring means in the next 30 days. F2W is Fit2Work.</p>
    <div class="rv-tiles cp-t">${tile('lic','Licences','expired')}${tile('rego','Rego','expired')}${tile('visa','Visas','expired')}${tile('f2w','Fit2Work','failed')}${(()=>{const n=rows.filter(r=>r.ind.c==='bad').length;return `<div class="${n?'warn':'ok'}"><small>Site induction</small><b>${n} not done</b><span>${rows.length-n} done</span></div>`})()}</div>
    ${(()=>{const need=r=>COLS.some(([c])=>r[c].c==='bad'||r[c].c==='warn');const nN=rows.filter(need).length;
-     const short=(c,x)=>x.c==='none'?'–':c==='ind'?(x.c==='ok'?'✓':'Not done'):c==='visa'&&x.c==='ok'&&!/\d/.test(x.t)?x.t:x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':c==='visa'&&/No expiry/.test(x.t)?'No date':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
+     const short=(c,x)=>c==='agr'?(x.c==='ok'?'✓':'–'):x.c==='none'?'–':c==='ind'?(x.c==='ok'?'✓':'Not done'):c==='visa'&&x.c==='ok'&&!/\d/.test(x.t)?x.t:x.c==='bad'?(c==='f2w'?x.t:c==='vc'?'Overdue':c==='visa'&&/No expiry/.test(x.t)?'No date':'Expired'):c==='f2w'?x.t:c==='vc'?(x.c==='warn'?'Fixes':'OK'):(x.t.split(' (')[0].replace(/ \d{4}$/,''));
      const list=rows,lev=r=>COLS.some(([c])=>r[c].c==='bad')?'bad':COLS.some(([c])=>r[c].c==='warn')?'warn':'';
      const why=r=>{const b=COLS.filter(([c])=>r[c].c==='bad'&&c!=='ind').map(([,l])=>l),w=COLS.filter(([c])=>r[c].c==='warn').map(([,l])=>l);const parts=[];if(b.length)parts.push(b.join(', ')+' expired or missing');if(r.ind.c==='bad')parts.push('no site induction');if(w.length)parts.push(w.join(', ')+' due soon');return parts.join(' · ')};
      const gc=k=>/^\d{4}$/.test(k)?'g'+k:k==='SUPERVISOR'?'gsup':/PRINCIP|MANAGER/.test(k)?'gman':/XL|RELIEF/.test(k)?'gxl':'goth';
      return `${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
-     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Visa','F2W','Induction'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
+     ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Licence','Rego','Visa','Agreement','F2W','Induction'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
      ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><i></i>${esc(label(k))} <span>${g.length}</span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="${lev(r)?'cp-n '+lev(r):''}"><td><b>${esc(shortName(r.p))}</b>${lev(r)?`<small>${esc(why(r))}</small>`:''}</td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
    <p class="mt-note">Add licence, rego and visa details, the Fit2Work status and site induction in each driver's record on the Driver Management page. New drivers fill most of this in themselves through the welcome steps.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
@@ -10098,7 +10100,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010087';
+const VERSION='202611010088';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10724,7 +10726,16 @@ window.AGR={
     catch(e){if(btn)btn.textContent='Could not make it. Try again.';setTimeout(()=>{if(btn){btn.disabled=false;btn.textContent=old}},2500);return}
     if(btn){btn.disabled=false;btn.textContent=old}}
 };
-async function agrCheck(){try{if(ROLE==='admin'||document.getElementById('onb'))return;const me=window.__webMe||{};const sid=String(me.staff||'');if(!sid)return;
+window.AGRF={
+  async put(sid,file){const u=new Uint8Array(await file.arrayBuffer());const b64=u8ToB64(u);const n=Math.ceil(b64.length/AGR_PART);
+    for(let i=0;i<n;i++)await fs.doc('agrfile/'+sid+'_'+i).set({staff:sid,b:b64.slice(i*AGR_PART,(i+1)*AGR_PART)});
+    for(let i=n;i<n+20;i++){try{const d=await fs.doc('agrfile/'+sid+'_'+i).get();if(!d.exists)break;await fs.doc('agrfile/'+sid+'_'+i).delete()}catch(e){break}}
+    return {name:file.name,parts:n,size:u.length,at:new Date().toISOString()}},
+  async open(sid,meta){const w=window.open('','_blank');try{const P=await Promise.all(Array.from({length:meta.parts},(_,i)=>fs.doc('agrfile/'+sid+'_'+i).get()));const u=b64ToU8(P.map(d=>d.exists?(d.data().b||''):'').join(''));
+      const url=URL.createObjectURL(new Blob([u],{type:'application/pdf'}));if(w)w.location.href=url;else{const a=document.createElement('a');a.href=url;a.download=meta.name||'Sub-contractor Agreement.pdf';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),500)}return true}catch(e){if(w)w.close();return false}},
+  async del(sid,meta){for(let i=0;i<(meta&&meta.parts||0);i++){try{await fs.doc('agrfile/'+sid+'_'+i).delete()}catch(e){}}}
+};
+async function agrCheck(){return;try{if(ROLE==='admin'||document.getElementById('onb'))return;const me=window.__webMe||{};const sid=String(me.staff||'');if(!sid)return;
   const m=await window.AGR.meta(true);if(!m||!m.version)return;const o=await window.ONB.get(sid);if(o&&o.agree&&o.agree.version===m.version)return;
   if(o&&o.status!=='submitted'){const s=await fs.doc('staff/'+sid).get();const st=s.exists?(DEC(s.data())||{}):{};if(st.onboard==='pending')return}
   if(document.getElementById('onb'))return;OB.sid=sid;OB.mode='agr';OB.step=9;OB.d={};OB.agr=m;onbOpen()}catch(e){}}
