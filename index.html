@@ -4185,8 +4185,11 @@ async function onbAuto(){if(onbAutoBusy||!window.ONB||!window.ONB.submitted||!db
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mod-staff [data-dmn]');if(!b)return;
   const keep={email:($('f_email')||{}).value||'',mobile:($('f_mobile')||{}).value||''};newFull=true;render();for(const k in keep)if($('f_'+k))$('f_'+k).value=keep[k]});
 const niceD=v=>{if(!v)return '';const d=new Date(String(v).slice(0,10)+'T12:00:00');return isNaN(d)?String(v):d.toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'})};
-const meFull=()=>{let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}const me=Object.values(people).find(x=>String(x.email||'').toLowerCase()===String(e).toLowerCase());return me&&(me.first||me.last)?title([me.first,me.last].filter(Boolean).join(' ')):''};
-const meName=()=>{let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}const me=Object.values(people).find(x=>String(x.email||'').toLowerCase()===String(e).toLowerCase());return me?title(me.first||fullName(me)):(e.split('@')[0]||'Admin')};
+const myRec=()=>{let w={};try{w=window.__webMe||{}}catch(x){}if(w.ownStaff&&people[w.ownStaff])return people[w.ownStaff];
+  let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}const em=new Set([e,...(w.emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean));
+  const L=Object.values(people).filter(x=>em.has(String(x.email||'').trim().toLowerCase())&&(x.first||x.last));return L.find(x=>x.login)||L[0]||null};
+const meFull=()=>{const me=myRec();if(me)return title([me.first,me.last].filter(Boolean).join(' '));let w={};try{w=window.__webMe||{}}catch(x){}return w.name?title(w.name):''};
+const meName=()=>{const me=myRec();if(me)return title(me.first||[me.first,me.last].filter(Boolean).join(' '));let e='';try{e=(window.__whoAmI&&window.__whoAmI().email)||''}catch(x){}return e.split('@')[0]||'Admin'};
 const OBT={};function onbLoad(id){if(!window.ONB||(OBC[id]!==undefined&&Date.now()-(OBT[id]||0)<30000))return;OBT[id]=Date.now();if(OBC[id]===undefined)OBC[id]=null;window.ONB.get(id).then(o=>{const was=JSON.stringify(OBC[id]);OBC[id]=o||false;if(openId===id&&was!==JSON.stringify(OBC[id]))render()});}
 function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
   onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
@@ -10067,7 +10070,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010082';
+const VERSION='202611010083';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
