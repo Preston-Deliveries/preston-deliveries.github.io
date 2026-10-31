@@ -1417,7 +1417,7 @@ const INTENTS=[
  [/\b(who (hasn'?t|has not|didn'?t) clock(ed)?|not clocked|missing (clock|times)|timesheets?|hours (this|last) week|my hours|how many hours|when did i (start|finish)|what time did i (start|finish)|my (start|finish) times?|fix my times?)\b/,'@times'],
  [/\b(clock (me )?(in|on|out|off)|start (my |the )?(shift|day|work)|finish (my |the )?(shift|day|work)|end (my |the )?(shift|day)|i forgot to clock|i('?m| am) (here|starting|finishing|done))\b/,'clock'],
  [/\b(my pay|pay ?day|pay ?slip|when (do|will) i get paid|how much\b.{0,25}\b(earn|earned|made|make|paid|owed|owe|get)|earnings|invoices?|send (my )?invoice|my rate|gst|abn)\b/,'invoices'],
- [/\b(how (am i|did i) (go|going|doing|do)|my (results?|scores?|stats|numbers|eta|scans)|results?|(results?|how (did )?i (go|went)) (for|on|from|in|last|this|yesterday|today)|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'@res'],
+ [/\b(how (am i|did i) (go|going|doing|do)|my (results?|scores?|stats|numbers|eta|scans)|how (did|is|was) [a-z]+ (go|do|doing|going|went)|[a-z]+'?s (results?|scores?|numbers)|results?|(results?|how (did )?i (go|went)) (for|on|from|in|last|this|yesterday|today)|eta|(2|two) hour|scan(s|ning)? (rate|compliance)|nc scans?|first time|ftd|attempts?|where do i rank|my rank(ing)?|performance)\b/,'@res'],
  [/\b(survey|nps|customer (score|feedback|rating)|ratings?|rankings?|promoters?|detractors?)\b/,'survey'],
  [/\b(accident|crash(ed)?|incident|hazard|near miss|injur(y|ed)|hurt myself|report (a|an|something|it)|dog (bit|bite|attack|rushed|chased)|bitten|slipped|tripped|fell (over|down)|abused|threatened|aggressive (customer|person)|unsafe|damaged (a|the|their) (car|fence|gate|letterbox|property))\b/,'reports'],
  [/\b(van checks?|check (my|the) van|prestart|vehicle check|tyres?|flat tyre|oil|warning light|windscreen|brakes?|van (broke|broken|won'?t start|service)|break ?down|broke down|service due)\b/,'vchecks'],
@@ -1524,6 +1524,12 @@ function voiceDeep(page,said,term){const t=' '+String(said||'').toLowerCase().re
   if(page==='vchecks'&&role==='mgr'&&/\b(new|do|start|add)\b/.test(t)){go();vClick('[data-vc="new"]');return 'Opening a new van check.'}
   if(page==='briefs'&&role==='mgr'&&/\b(new|add|create)\b/.test(t)){go();vClick('[data-tb="new"]');return 'Opening New team brief.'}
   if(page==='results'&&/\b(rank|where (do|am) i|find me|my results|how (am|did) i)\b/.test(t)){go();vClick('[data-rt="find"]');return 'Opening your results.'}
+  if((page==='results'||page==='me')&&role==='mgr'&&!/\b(my|me|i)\b/.test(t.replace(/\b(give|show|tell|get|bring) me\b|\bcan i (see|get|have)\b|\bi (want|need|would like)( to (see|know))?\b|\bfor me\b/g,' '))&&window.__mePickName!==undefined){
+    const who=t.replace(/\b(results?|scores?|stats|numbers|how|did|does|is|was|going|go|doing|went|give|show|me|the|for|of|please|can|you|i|see|what|are|were|driver|drivers|this|last|week|month|day|today|yesterday|ago|days?|weeks?|months?|on|in|at|a|an|to|get|pull|up|bring|know|want)\b/g,' ').replace(/'s\b/g,' ').replace(/\s+/g,' ').trim();
+    if(who&&window.RUNS&&RUNS.list){const L=RUNS.list();const ws=who.split(' ');const hit=L.some(x=>{const n=String(x.driver||'').toLowerCase().split(' ');return ws.some(w=>n.includes(w)||(w.length>3&&n[0]&&RUNS.lev&&RUNS.lev(RUNS.sKey(w),RUNS.sKey(n[0]))<=1))})||/\b(driver|d) ?\d/.test(t);
+      if(hit){const w=voiceWhen(t);if(window.APP)APP.go('me');
+        vWait('#me_box',async()=>{if(w&&window.__mePeriod)window.__mePeriod(w.per,w.iso);const nm=await window.__mePickName(t);if(!nm)hSay('<b>Could not find that driver. Pick them from the list at the top.</b>')},9000);
+        return 'Opening results for '+who.replace(/\b\w/g,c=>c.toUpperCase())+(w?' ('+w.label+')':'')+'.'}}}
   if(page==='me'){const w=voiceWhen(t);go();
     if(w){vWait('#me_box [data-per]',()=>{if(window.__mePeriod)window.__mePeriod(w.per,w.iso)},9000)}
     return 'Opening your results'+(w?' for '+w.label:'')+'.'}
@@ -5198,6 +5204,16 @@ function subRowHTML(P){
 function hoursFor(dates){const set=new Set(dates);let m=0,n=0;for(const c of (data&&data.clock)||[]){if(!set.has(c.date)||!c.start)continue;n++;if(c.finish)m+=Math.max(0,toMin(c.finish)-toMin(c.start)-(+c.brk||0))}return{m,n}}
 let PER=(()=>{try{return localStorage.getItem('me1161_per')||'week'}catch(e){return 'week'}})();
 /* voice search: jump straight to a day, week or month */
+window.__mePickName=async function(said){if(!isAdminView())return null;const L=await staffList();if(!L||!L.length)return null;
+  const ws=String(said||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>1);
+  const lev=(a,b)=>{const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]};
+  const num=(said.match(/\b(?:driver|d|number|no)\s*(\d{1,3})\b/i)||[])[1];
+  let best=null,bs=0;
+  for(const p of L){const parts=String(p.name||'').toLowerCase().split(' ').filter(Boolean);let sc=0;
+    if(num&&String(p.login||'').toUpperCase().replace(/\s+/g,'')==='D'+num)sc=10;
+    for(const w of ws){if(parts[0]===w)sc+=4;else if(parts.includes(w))sc+=3;else if(w.length>3&&parts.some(x=>x.length>3&&lev(w,x)<=1))sc+=2}
+    if(sc>bs){bs=sc;best=p}}
+  if(!best||bs<2)return null;await setPick(best.staff);return best.name};
 window.__mePeriod=function(per,iso){PER=per;try{localStorage.setItem('me1161_per',PER)}catch(e){}
   const today=dayOf(new Date());if(iso&&iso>today)iso=today;ANC=iso&&iso<today?iso:null;PDAY=per==='day'?(iso||today):null;
   let cs=null;try{cs=periods().cs}catch(e){}
@@ -9653,7 +9669,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010029';
+const VERSION='202611010030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
