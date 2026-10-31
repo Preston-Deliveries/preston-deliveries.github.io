@@ -8368,7 +8368,7 @@ function checkHTML(){
     ${box('warn','Not clocked out',n('noOut'),no,r=>day?'in '+nice12(r.noOut[0].t)+(r.noOut[0].now?', still on':''):days(r.noOut),'No open shifts.',false)}
    </div>
    <div class="ckwa"><button type="button" class="sh-btn ckgo" data-ts="ckwa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm5.3 13.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>Share on WhatsApp</button><button type="button" class="sh-btn" data-ts="ckcopy">Copy message</button><span class="ok" id="ts_ckok" role="status"></span></div>
-   <p class="ckn">Shares everyone who hasn’t clocked in or out for ${esc(day?'this day':ckPer==='week'?'this week':'this month')}. Expected each weekday: drivers with a run on the Drivers page, plus anyone in that day’s results, unless they are on leave. Tap a name to fix their times.</p></section>`;
+   </section>`;
 }
 let tsPending=false;window.addEventListener('sh:go',e=>{if(e.detail==='timesheets'&&tsPending){tsPending=false;render()}});
 function render(){
@@ -10084,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010126';
+const VERSION='202611010127';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
