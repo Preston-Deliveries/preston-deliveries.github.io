@@ -9859,7 +9859,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010062';
+const VERSION='202611010063';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10371,7 +10371,7 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
   if(s===0)body=`<h1>Welcome to Preston Delivery Service</h1>
     <p>We deliver parcels for <b>Australia Post</b> on <b>Contract 1161</b>, across the Gold Coast postcodes 4214, 4215, 4217 and 4218.</p>
     <p>Before your first day we need a few details and photos of your documents. It takes about <b>10 minutes</b>. You can stop at any time and carry on later; we keep what you have done.</p>
-    <ul class="ob-l"><li>Your details and bank account (for your invoices)</li><li>Your work rights</li><li>Photos of your licence and other documents</li><li>Read and sign our main rules</li></ul>
+    <ul class="ob-l"><li>Your details and bank account (for your invoices)</li><li>Your work rights</li><li>Photos of your driver licence</li><li>Read and sign our main rules</li></ul>
     <p>On your first day a supervisor will take you through a <b>site induction</b> at the depot.</p>`;
   if(s===1)body=`<h1>Your details</h1><p class="ob-h">Only the office can see these.</p>
     <div class="ob-g">${ofld('first','First name',{req:1})}${ofld('last','Last name',{req:1})}${ofld('dob','Date of birth',{type:'date',req:1})}${ofld('mobile','Mobile',{type:'tel',req:1})}</div>
@@ -10383,9 +10383,8 @@ function onbRender(){const w=document.getElementById('onb');if(!w)return;const s
   if(s===2)body=`<h1>Work rights</h1><p class="ob-h">Australia Post requires us to check every driver can legally work in Australia.</p>
     ${ofld('work','I am',{sel:['Australian citizen','Permanent resident','New Zealand citizen','Visa holder'],req:1})}
     ${d.work==='Visa holder'?`<div class="ob-g">${ofld('visaType','Visa type or subclass',{req:1,ph:'e.g. Student 500'})}${ofld('visaDue','Visa expiry',{type:'date',req:1})}${ofld('workRights','Work rights',{sel:['Full work rights','Limited hours'],req:1})}${ofld('passport','Passport number')}</div><p class="ob-h">You will add a photo of your visa grant notice on the next page.</p>`:''}`;
-  if(s===3)body=`<h1>Documents</h1><p class="ob-h">Take a clear photo of each one. Make sure nothing is cut off and the writing is readable.</p>
-    ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${d.vanType==='My own van'?obDoc('ins','Vehicle insurance certificate',false):''}${obDoc('pl','Public liability insurance',false)}${obDoc('pol','Police check (Fit2Work)',false,'polAt')}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}
-    <p class="ob-h">Only the licence photos are needed. If you don’t have the others yet, leave them for now and tell the office.</p>`;
+  if(s===3)body=`<h1>Documents</h1><p class="ob-h">Take a clear photo of your driver licence, front and back${d.work==='Visa holder'?', and your visa grant notice':''}. Make sure nothing is cut off and the writing is readable.</p>
+    ${obDoc('lic1','Driver licence (front)',true,'licDue')}${obDoc('lic2','Driver licence (back)',true)}${d.work==='Visa holder'?obDoc('visa','Visa grant notice',true):''}`;
   if(s===4)body=`<h1>Read and sign</h1><p class="ob-h">These are our main rules. You can read all of them any time in the <b>Driver Guide</b>.</p>
     <ul class="ob-l"><li><b>Safety first.</b> Report every accident, injury and hazard in the app. Call 000 in an emergency.</li><li><b>No phone in your hand while driving.</b> Pull over first.</li><li><b>Privacy.</b> Customer names, addresses and codes stay in the app and scanner. Never share, post or keep them.</li><li><b>Deliver properly.</b> Knock, scan, follow safe drop rules, and take clear photos.</li><li><b>Clock in and out</b> in the app every day.</li><li><b>Keep your documents current.</b> Tell the office when your licence, rego, insurance or visa changes.</li></ul>
     <label class="ob-ck"><input type="checkbox" data-ob="agree" ${d.agree?'checked':''}> I have read these rules and the Driver Guide, and I agree to follow them.</label>
