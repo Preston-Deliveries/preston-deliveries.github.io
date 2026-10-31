@@ -1714,7 +1714,7 @@ function renderHome(){
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
   }
-  const QA=[['updates','[data-nt="new"]','Update'],['leave','[data-lv="add"]','Leave'],['enquiries','[data-eq="new"]','Enquiry']];
+  const QA=[['enquiries','[data-eq="new"]','Enquiry'],['updates','[data-nt="new"]','Update'],['leave','[data-lv="add"]','Leave']];
   box.innerHTML=`${window.__backup&&!previewChild?'<div id="sh-bkwarn" class="sh-bkwarn" role="status" hidden></div>':''}
   <div class="dh-cards">
    <div id="wx_box"></div>
@@ -1722,7 +1722,7 @@ function renderHome(){
    <div id="ah_dotw"></div>
    <div id="ah_focus"></div>
    <div id="ah_day"></div>
-   <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}${previewChild?'':`<button type="button" class="qa t-updates" data-pu="sendopen"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><b>Message</b></button>`}</div></section>
+   <section class="dh-card ah-qa"><h2>Quick add</h2><div class="qa-grid">${previewChild?'':`<button type="button" class="qa t-updates" data-pu="sendopen"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></span><b>Alert</b></button>`}${QA.map(([sec,act,t])=>`<button type="button" class="qa t-${sec}" data-qa="${sec}" data-act="${esc(act)}"><span class="ic">${ICONS[sec]}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
    <div id="ah_off"></div>
    <div id="ah_todo"></div>
    <div id="ah_fu"></div>
@@ -9764,7 +9764,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010043';
+const VERSION='202611010044';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
