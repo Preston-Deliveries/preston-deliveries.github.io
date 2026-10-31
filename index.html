@@ -1405,7 +1405,7 @@ const INTENTS=[
  [/\b(who('?s| is)? covering|cover planner|floaters?|roster|who('?s| is) filling in)\b/,'cover'],
  [/\b(who (hasn'?t|has not|didn'?t) clock(ed)?|not clocked|missing (clock|times)|timesheets?|hours (this|last) week|my hours|how many hours)\b/,'@times'],
  [/\b(clock (me )?(in|on|out|off)|start (my |the )?shift|finish (my |the )?shift|end (my |the )?shift|i forgot to clock)\b/,'clock'],
- [/\b(my pay|pay ?day|when (do|will) i get paid|how much (did|have) i (earn|made|make)|earnings|invoices?|send (my )?invoice)\b/,'invoices'],
+ [/\b(my pay|pay ?day|when (do|will) i get paid|how much\b.{0,25}\b(earn|earned|made|make|paid|owed|owe)|earnings|invoices?|send (my )?invoice)\b/,'invoices'],
  [/\b(how am i (going|doing)|my (results|scores|stats|numbers|eta)|results|eta|scan(s|ning)? (rate|compliance)|nc scans?|performance)\b/,'results'],
  [/\b(survey|nps|customer (score|feedback)|rankings?)\b/,'survey'],
  [/\b(accident|crash|incident|hazard|near miss|injur(y|ed)|report (a|an|something)|dog (bit|attack|rushed))\b/,'reports'],
@@ -1429,6 +1429,15 @@ const INTENTS=[
  [/\b(notifications?|alerts?)\b/,'alerts'],
  [/\b(ncrs?|non ?conformance)\b/,'ncr'],
  [/\b(performance review|review)\b/,'review']];
+/* single words that point to a page, for when the phrase doesn't match exactly */
+const VKEYS={invoices:'money earn earned earning earnings paid pay payment payments invoice invoices wage wages income owed owe owing',
+ leave:'leave holiday holidays vacation',results:'results result score scores stats statistics performance eta scans scanning',survey:'survey nps ranking rankings',
+ reports:'accident crash crashed incident hazard injury injured hurt bitten bite',vchecks:'tyre tyres brakes prestart inspection',uniform:'uniform shirt shirts shorts pants trousers hat jacket vest polo boots',
+ briefs:'toolbox brief briefs',guide:'rule rules policy policies guide procedure procedures',precards:'precard precards carded',lockers:'locker lockers',
+ updates:'news update updates announcement announcements',cover:'cover covering floater floaters roster',directory:'phone contact contacts number numbers',
+ feedback:'feedback suggestion suggestions idea ideas',enquiries:'enquiry enquiries complaint complaints',me:'profile bank',
+ '@times':'clock clocked clocking hours timesheet timesheets shift shifts started finished'};
+function voiceKey(t,vis){const ws=t.trim().split(' ');for(const[pg,list]of Object.entries(VKEYS)){const L=list.split(' ');if(ws.some(w=>L.includes(w.replace(/'s$/,'')))){let page=pg;if(page==='@times')page=role==='mgr'&&vis.includes('timesheets')?'timesheets':'clock';if(vis.includes(page)&&NAMES[page])return page}}return null}
 function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ')+' ';
   const vis=visible();
   for(const[rx,pg]of INTENTS){if(!rx.test(t))continue;let page=pg;
@@ -1436,6 +1445,7 @@ function voiceIntent(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9' ]/g
     if(!vis.includes(page)||!NAMES[page])continue;
     let term='';if(page==='directory'){const m=t.match(/\b(?:for|of|call|ring)\s+([a-z' ]+?)\s*$/);if(m)term=m[1].replace(/\b(the|a|please)\b/g,'').trim()}
     return {page,term}}
+  const kp=voiceKey(t,vis);if(kp)return {page:kp,term:''};
   return null}
 let hVoice=null;
 function pickVoice(){try{const V=speechSynthesis.getVoices()||[];const rank=v=>{const l=(v.lang||'').replace('_','-').toLowerCase();let r=l==='en-au'?0:l==='en-gb'?2:l.startsWith('en')?4:9;if(!v.localService)r-=1;if(/natural|neural|wavenet|premium|enhanced|online/i.test(v.name))r-=1;return r};
@@ -9513,7 +9523,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010021';
+const VERSION='202611010022';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
