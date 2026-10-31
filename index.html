@@ -2490,7 +2490,7 @@ function renderResults(){
   const t=normName(S.q), idx=streetIndex(), cnt=document.getElementById('lkCount');
   if(!t){
     const rows=idx.filter(g=>g.pc===S.pc);
-    cnt.textContent=`${rows.length} streets in ${S.pc}. Start typing a street or driver to search.`;
+    cnt.textContent='';
     let last='',h='';
     for(const g of rows){
       const L=g.n[0]||'#'; if(L!==last){h+=(last?'</section>':'')+`<section class="lt"><h3>${esc(L)}</h3>`;last=L}
@@ -10084,7 +10084,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010121';
+const VERSION='202611010122';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11023,6 +11023,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx>.pstep{flex:none!important;align-self:stretch!important;display:flex!important;justify-content:space-between!important;align-items:center!important;background:var(--pb)!important;border:1px solid var(--pbl)!important;border-radius:12px!important;padding:0 6px!important;min-height:42px!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pkx>.pstep>.ps-c{flex:1 1 auto!important;justify-content:center!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pf-scope>.pkx,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pf-scope .pkx{padding:0!important;border:0!important;background:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #lkCount:empty{display:none!important}
 </style>
 </body>
 </html>
