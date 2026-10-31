@@ -1451,7 +1451,7 @@ document.addEventListener('click',e=>{const btn=e.target.closest&&e.target.close
   btn.classList.add('on');const EX=['who does Palmer Drive','gate code for Hooker Boulevard','who’s on leave','my results','report an accident','order a shirt','phone number for Josh','who’s covering','team brief','parcel lockers'];const ex=EX.sort(()=>Math.random()-.5).slice(0,3).map(x=>'“'+x+'”').join(' · ');hSay('<b>Listening…</b><span class="hd" style="margin-top:4px">Try: '+ex+'</span>');let got=false;
   rec.onresult=ev=>{got=true;const alts=[...ev.results[0]].map(x=>x.transcript);const R=window.RUNS||{};
     if(!R.vClean){hSay('<b>Streets are still loading. Try again in a moment.</b>');return}
-    let q='',ans=null;for(const a of alts){const c=R.vClean(a);const r=R.vAnswer(c);if(r){q=r.q||c;ans=r;break}if(!q)q=c}
+    let q='',ans=null;for(const fz of [true,false]){for(const a of alts){const c=R.vClean(a);const r=R.vAnswer(c,fz);if(r){q=r.q||c;ans=r;break}if(!q)q=c}if(ans)break}
     let pages=[],drv=[];findPin=null;
     const said=String(alts[0]||'').toLowerCase();
     const streetFirst=/\b(who does|who's got|who has|whose|who delivers|gate code|code for|access for|where is|where's)\b/.test(said);
@@ -2079,10 +2079,22 @@ function voiceClean(t){
 }
 function voiceHits(q){if(!q)return[];const t=normName(q);return streetIndex().filter(g=>g.n===t||g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t))}
 function spokenSt(n){const back={};for(const[k,v]of Object.entries(SUF))if(!back[v])back[v]=k;const w=n.split(' ');const L=w.length-1;if(L>0&&back[w[L]])w[L]=back[w[L]];return w.join(' ').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}
-function voiceAnswer(q){
+/* closest sounding street when the phone mishears (Palma Dr -> Palmer Dr) */
+function sKey(w){w=String(w||'').toUpperCase().replace(/[^A-Z ]/g,'');
+  return w.split(' ').map(x=>x.replace(/PH/g,'F').replace(/CK/g,'K').replace(/Q/g,'K').replace(/Z/g,'S').replace(/X/g,'KS').replace(/(ER|AR|OR|RE|AH|UR)$/,'A').replace(/Y$/,'I').replace(/IE$/,'I').replace(/([A-Z])\1+/g,'$1').replace(/(.)H/g,'$1').replace(/(.)[AEIOU]+/g,(m,a)=>a+'A')).join(' ')}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=[...Array(n+1).keys()];for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function voiceFuzzy(t){const sufs=new Set(Object.values(SUF));const w=t.split(' ');const suf=w.length>1&&sufs.has(w[w.length-1])?w.pop():'';const base=w.join(' ');if(base.length<3)return[];
+  const kq=sKey(base),scored=[];
+  for(const g of streetIndex()){const gw=g.n.split(' ');const gs=gw.length>1&&sufs.has(gw[gw.length-1])?gw.pop():'';const gb=gw.join(' ');
+    const ks=[sKey(gb),...gw.map(sKey)];let d=Math.min(...ks.map(k=>lev(kq,k)/Math.max(kq.length,k.length,1)),lev(base,gb)/Math.max(base.length,gb.length));
+    if(suf&&gs&&suf!==gs)d+=.08;if(d<=.34)scored.push([d,g])}
+  scored.sort((a,b)=>a[0]-b[0]);if(!scored.length)return[];const best=scored[0][0];
+  return scored.filter(x=>x[0]<=best+.05).slice(0,3).map(x=>x[1])}
+function voiceAnswer(q,noFuzzy){
   let t=normName(q);let hits=voiceHits(q);let note='';
   if(!hits.length){const w=t.split(' ');const sufs=new Set(Object.values(SUF));
     if(w.length>1&&sufs.has(w[w.length-1])){const base=w.slice(0,-1).join(' ');hits=voiceHits(base);if(hits.length){note='1';t=base}}}
+  if(!hits.length&&!noFuzzy){const fz=voiceFuzzy(t);if(fz.length){hits=fz;note='';t=fz[0].n;var guess=true}}
   if(!hits.length)return null;
   const exact=hits.filter(g=>g.n===t);if(exact.length)hits=exact;
   if(hits.length>3)return {many:hits.length,q:t};
@@ -2090,6 +2102,7 @@ function voiceAnswer(q){
   const one=g=>{const nm=spokenSt(g.name);if(g.parts.length===1&&!g.parts[0].rg)return `${nm} is ${g.parts[0].driver}'s, in ${g.pc}`;
     return `${nm} is split. `+g.parts.map((p,i)=>p.rg?`${p.rg.replace(/-/g,' to ')} is ${first(p.driver)}`:`the rest is ${first(p.driver)}`).join(', ')};
   let txt=hits.map(one).join('. ')+'.';
+  if(typeof guess!=='undefined'&&guess)txt='Did you mean: '+txt;
   if(note)txt=`I couldn't find ${spokenSt(normName(q))}, but `+txt;
   return {q:t,txt}
 }
@@ -9500,7 +9513,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010020';
+const VERSION='202611010021';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
