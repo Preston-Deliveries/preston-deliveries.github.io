@@ -8738,7 +8738,7 @@ function mgrHTML(){
   const show=L.filter(r=>(filt==='all'||(filt==='new'?r.status==='new':filt==='call'?r.followUp&&r.status!=='done':r.status!=='done'))&&(tf==='all'||r.topic===tf)&&(!t||[person(r).name,r.text,TOPIC[r.topic]].join(' ').toLowerCase().includes(t)));
   const F=[['new','New',nNew],['open','Not done',L.filter(r=>r.status!=='done').length],['call','Wants a call',L.filter(r=>r.followUp&&r.status!=='done').length],['all','All',L.length]];
   return `<div class="tabs" role="group" aria-label="Show">${F.map(([k,l,n])=>`<button type="button" data-fb="filt" data-v="${k}" aria-pressed="${filt===k}">${l}<span class="n">${n}</span></button>`).join('')}</div>
-   <div class="bar"><label class="mini" for="fb_tf">Topic<select id="fb_tf"><option value="all">All topics</option>${TOPICS.map(([k,l])=>`<option value="${k}" ${tf===k?'selected':''}>${l}</option>`).join('')}</select></label>
+   <div class="bar"><label class="mini" for="fb_tf"><select id="fb_tf" aria-label="Topic"><option value="all">All topics</option>${TOPICS.map(([k,l])=>`<option value="${k}" ${tf===k?'selected':''}>${l}</option>`).join('')}</select></label>
    <input type="search" id="fb_q" placeholder="Search name or words" value="${esc(q)}" autocomplete="off" aria-label="Search"></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    ${show.length?show.map(itemHTML).join(''):`<div class="empty">${L.length?'Nothing here. Try another tab or topic.':'No feedback yet. When drivers send a message it shows up here, and only managers can see it.'}</div>`}
@@ -10089,7 +10089,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010117';
+const VERSION='202611010118';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
