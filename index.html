@@ -3889,6 +3889,8 @@ const scene=k=>`<svg viewBox="0 0 160 100" aria-hidden="true">${(SC[k]||SC.plant
 
 /* ---------- topics: kept in the guide-data block above ---------- */
 const T=JSON.parse(JSON.stringify((window.APP&&APP.SNAP&&APP.SNAP.guide)||[]));
+/* built in topic, added until the guide is saved with its own copy */
+if(!T.some(t=>t.id==='privacy'))T.push({"id": "privacy", "cat": "conduct", "icon": "lock", "title": "Privacy and customer details", "lead": "Customer names, addresses, phone numbers and parcel details are private. You only use them to deliver.", "remember": "Customer details stay in the app and on the scanner. Never share them, post them or keep them.", "do": ["Keep your phone locked with a PIN, fingerprint or face unlock", "Keep printed run sheets with you or out of sight in the van", "Shred or hand back printed run sheets at the end of the day", "Tell the office straight away if you lose a run sheet, your phone or the scanner", "Only talk about a delivery with the customer or the office"], "dont": ["Screenshot or photograph run sheets, gate codes or customer details to share", "Post photos of parcels, labels, addresses or customers on social media", "Share gate, door or locker codes with anyone outside the team", "Keep customer details on your own phone after your shift", "Look up a customer for personal reasons"], "tip": "Australia has privacy laws, and Australia Post has strict rules about customer information. A privacy breach can cost us the contract, so treat every customer’s details like your own.", "kw": "privacy private customer details address phone number screenshot photo social media facebook gate code share data information"});
 T.sort((a,b)=>CAT_ORDER.indexOf(a.cat)-CAT_ORDER.indexOf(b.cat));T.forEach((t,i)=>t.n=i+1);
 
 /* ---------- rendering ---------- */
@@ -9797,7 +9799,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010057';
+const VERSION='202611010058';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
