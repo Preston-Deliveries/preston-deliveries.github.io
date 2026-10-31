@@ -10089,7 +10089,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010110';
+const VERSION='202611010111';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11001,6 +11001,11 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cp-tb2 .cp-gr th{position:sticky;left:0}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cp-tb2 td.cp-nm b{font-size:.95rem}
 :root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cp-tb2 .cp-gr .cp-gl{position:sticky;left:12px;display:inline-flex;align-items:center;gap:6px}:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cp-tb2 .cp-gr th{position:static!important}
+/* welcome steps: slim, even boxes */
+:root:root:root:root:root:root body #onb#onb#onb#onb .ob-f{display:block;margin:0 0 12px!important}
+:root:root:root:root:root:root body #onb#onb#onb#onb .ob-f input,:root:root:root:root:root:root body #onb#onb#onb#onb .ob-f select{display:block;width:100%;box-sizing:border-box!important;height:44px!important;min-height:44px!important;padding:0 12px!important;margin-top:5px!important;font-size:1rem!important;line-height:44px!important;border-radius:10px!important}
+:root:root:root:root:root:root body #onb#onb#onb#onb .ob-f input[type=date]{line-height:normal!important}
+:root:root:root:root:root:root body #onb#onb#onb#onb .ob-f i{margin-left:6px}
 </style>
 </body>
 </html>
