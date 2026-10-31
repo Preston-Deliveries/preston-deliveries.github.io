@@ -9142,56 +9142,35 @@ function formHTML(){
   const K=KINDS[kind];let n=0;const N=()=>++n;
   let h=`<button type="button" class="sh-btn back" data-rp="back">‹ Back</button><section class="card form ${K.c}"><h2>${K.long}</h2>
    <div class="sos sm"><b>Emergency? Call 000 first.</b><a class="sh-btn danger sm" href="tel:000">Call 000</a></div>`;
-  if(kind==='vehicle')h+=vehChecklist();
+  if(kind==='vehicle')h+=vehChecklist().replace('<details class="steps" open>','<details class="steps">');
   if(mode==='mgr'){const L=Object.entries(staff).map(([id,p])=>({id,n:tc([p.first,p.last].filter(Boolean).join(' ')),no:(p.runs||[]).filter(Boolean).join(', ')})).filter(x=>x.n).sort((a,b)=>a.n.localeCompare(b.n));
-    h+=Q(N(),'Which driver is this about?',`<label class="f"><span>Driver</span><select id="rp_about"><option value="">Choose a driver</option>${L.map(x=>`<option value="${esc(x.id)}" ${f.about===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label><p class="hint">The report is saved under this driver, with a note that you entered it.</p>`,true)}
-  h+=Q(N(),'When did it happen?',`<div class="row2">${inp('date','Date',f.date,'','date',`max="${isoD(new Date())}"`)}${inp('time','Time',f.time,'','time')}</div>`,true);
-  if(kind==='incident'){
-    h+=Q(N(),'What happened?',chips('type',INC_TYPES,f.type),true);
-    h+=Q(N(),'Where?',chips('whereType',INC_WHERE,f.whereType)+inp('where','Address or place',f.where,'e.g. 12 Smith St Southport'),true);
-    h+=hurtBlock(N());
-    h+=Q(N(),'Person involved (if you know)',`<div class="row2">${inp('person.name','Name',f.person.name)}${inp('person.phone','Phone',f.person.phone,'','tel')}</div>${inp('person.address','Address',f.person.address)}`);
-    h+=Q(N(),'Were the police called?',yn('police',f.police)+(f.police?inp('policeRef','Police event number (if you have it)',f.policeRef,'e.g. QP2610…'):''),true);
-  }
+    h+=Q(N(),'Which driver?',`<label class="f"><span>Driver</span><select id="rp_about"><option value="">Choose a driver</option>${L.map(x=>`<option value="${esc(x.id)}" ${f.about===x.id?'selected':''}>${esc(x.n)}${x.no?' ('+esc(x.no)+')':''}</option>`).join('')}</select></label>`,true)}
+  h+=Q(N(),kind==='hazard'?'What is the hazard?':'What happened?',chips('type',kind==='incident'?INC_TYPES:kind==='vehicle'?VEH_TYPES:HAZ_TYPES,f.type),true);
+  h+=Q(N(),'Where?',inp('where','Address or place',f.where,kind==='hazard'?'e.g. Dock 3, or 8 Hill St Ashmore':'e.g. 12 Smith St Southport'),true);
+  if(kind!=='hazard'){
+    h+=Q(N(),'Was anyone hurt?',yn('hurt',f.hurt)+(f.hurt?`<div class="sub"><span class="lb">Who?</span>${chips('who',WHO_HURT,f.who)}<span class="lb">Treatment</span>${chips('treat',TREAT,f.treat)}
+      ${['Doctor or medical centre','Hospital or ambulance'].includes(f.treat)?'<p class="warnbox">Call the manager now. Serious injuries must be reported to WorkSafe Queensland straight away.</p>':''}</div>`:''),true)}
   if(kind==='vehicle'){
-    h+=Q(N(),'What happened?',chips('type',VEH_TYPES,f.type),true);
-    h+=Q(N(),'Where?',inp('where','Street and suburb',f.where,'e.g. Corner of Ferry Rd and Bundall Rd, Southport'),true);
-    h+=Q(N(),'Your van',`<div class="row2">${inp('rego','Rego',f.rego)}${inp('odo','Odometer (km)',f.odo,'','number','inputmode="numeric"')}</div>
-      <span class="lb">Can the van still be driven?</span>${yn('drivable',f.drivable)}<span class="lb">Was any vehicle towed?</span>${yn('towed',f.towed)}`,true);
-    h+=hurtBlock(N());
-    h+=Q(N(),'Other driver and vehicle',`<p class="hint">Leave empty if no one else was involved.</p><div class="row2">${inp('other.name','Driver’s name',f.other.name)}${inp('other.phone','Phone',f.other.phone,'','tel')}</div>
-      ${inp('other.address','Driver’s address',f.other.address)}
-      <div class="row2">${inp('other.rego','Rego',f.other.rego)}${inp('other.make','Make and model',f.other.make)}</div>
-      <div class="row2">${inp('other.licence','Licence number and state',f.other.licence)}${inp('other.insurer','Insurer',f.other.insurer)}</div>
-      ${inp('other.owner','Owner’s name and address (if not the driver)',f.other.owner)}`);
-    h+=Q(N(),'Damage',`${area('ourDamage','Damage to our van',f.ourDamage,'e.g. dent in back left door',2)}${area('theirDamage','Damage to the other vehicle or property',f.theirDamage,'',2)}`);
-    h+=Q(N(),'Road and weather',chips('cond',COND,f.cond,true));
-    h+=Q(N(),'Police',`<span class="lb">Did police attend, or did you report it?</span>${yn('police',f.police)}${f.police?inp('policeRef','Police event number',f.policeRef):''}${f.towed&&f.police===false?'<p class="warnbox">A vehicle was towed, so the crash must be reported to police. Report it online or call 131 444, then add the number here.</p>':''}`,true);
+    h+=Q(N(),'Your van',`<span class="lb">Can it still be driven?</span>${yn('drivable',f.drivable)}<span class="lb">Was any vehicle towed?</span>${yn('towed',f.towed)}
+      ${f.towed?`<p class="warnbox">A vehicle was towed, so it must be reported to police (online or 131 444).</p>${inp('policeRef','Police event number (add it when you have it)',f.policeRef)}`:''}`,true);
+    h+=Q(N(),'Other vehicle (if any)',`<p class="hint">Quickest: take a photo of their licence and number plate below.</p><div class="row2">${inp('other.rego','Their rego',f.other.rego)}${inp('other.phone','Their phone',f.other.phone,'','tel')}</div>${inp('other.name','Their name',f.other.name)}`);
   }
-  if(kind==='hazard'){
-    h+=Q(N(),'What is the hazard?',chips('type',HAZ_TYPES,f.type),true);
-    h+=Q(N(),'Where is it?',chips('whereType',HAZ_WHERE,f.whereType)+inp('where','Exact spot',f.where,kind==='hazard'?'e.g. Dock 3 roller door, or 8 Hill St Ashmore':''),true);
-    h+=Q(N(),'How serious is it?',chips('risk',RISK,f.risk),true);
-    h+=Q(N(),'Is it still there?',chips('still',STILL,f.still),true);
-    h+=Q(N(),'How could it be fixed?',area('fix','Your idea',f.fix,'',2));
-  }
-  h+=Q(N(),kind==='hazard'?'Describe the hazard':'Tell us what happened',area('desc','In your own words',f.desc,'What happened, step by step',5),true);
-  h+=Q(N(),'What did you do after?',area('action','For example first aid, made the area safe, moved the van',f.action,'',2));
-  if(kind!=='hazard')h+=Q(N(),'Witnesses',area('witness','Names and phone numbers of anyone who saw it',f.witness,'',2));
-  h+=Q(N(),'Who have you told?',chips('told',TOLD,f.told,true));
-  h+=Q(N(),'Photos',`<p class="hint">${kind==='vehicle'?'Both vehicles, number plates, the scene, and the other driver’s licence.':kind==='hazard'?'The hazard and where it is.':'Injuries, damage, the place, or the dog.'} Up to ${MAXPH}.</p>
-    <div class="phs">${photos.map((p,i)=>`<div class="ph"><img src="${p}" alt="Photo ${i+1}"><button type="button" class="x" data-rp="rmph" data-v="${i}" aria-label="Remove photo ${i+1}">×</button></div>`).join('')}
+  if(kind==='hazard')h+=Q(N(),'How serious is it?',chips('risk',RISK,f.risk),true);
+  h+=Q(N(),'Photos',`<div class="phs">${photos.map((p,i)=>`<div class="ph"><img src="${p}" alt="Photo ${i+1}"><button type="button" class="x" data-rp="rmph" data-v="${i}" aria-label="Remove photo ${i+1}">×</button></div>`).join('')}
     ${photos.length<MAXPH?`<label class="addph"><input type="file" accept="image/*" multiple id="rp_file" hidden><span>+ Add photo</span></label>`:''}</div>`);
+  const other=f.type==='Something else';
+  h+=Q(N(),other?'Tell us what happened':'Anything else? (optional)',area('desc',other?'A few words':'Only if it helps',f.desc,'',2),other);
+  h+=`<details class="when" ontoggle="this.dataset.o=this.open"${(f.date!==isoD(new Date()))?' open':''}><summary>Happened earlier? Change the date or time</summary><div class="row2">${inp('date','Date',f.date,'','date',`max="${isoD(new Date())}"`)}${inp('time','Time',f.time,'','time')}</div></details>`;
   const miss=missing();
   h+=`${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
    <button type="button" class="sh-btn primary big" data-rp="send" ${miss.length||busy?'disabled':''}>${busy?'Sending…':'Send report'}</button>
    ${miss.length?`<p class="hint">Still needed: ${esc(miss.join(', '))}.</p>`:''}</section>`;
   return h;
 }
-function missing(){const m=[];if(mode==='mgr'&&!f.about)m.push('which driver');if(!f.date)m.push('date');if(!f.type)m.push('what happened');if(!f.where&&!f.whereType)m.push('where');
-  if(kind!=='hazard'&&f.hurt===null)m.push('was anyone hurt');if(f.hurt&&!f.treat)m.push('treatment');
-  if(kind==='incident'&&f.police===null)m.push('police');if(kind==='vehicle'&&!String(f.rego||'').trim())m.push('van rego');if(kind==='vehicle'&&(f.drivable===null||f.towed===null||f.police===null))m.push('van and police questions');
-  if(kind==='hazard'&&(!f.risk||!f.still))m.push('how serious and is it still there');if(f.desc.trim().length<5)m.push('description');return m}
+function missing(){const m=[];if(mode==='mgr'&&!f.about)m.push('which driver');if(!f.date)m.push('date');if(!f.type)m.push('what happened');if(!String(f.where||'').trim())m.push('where');
+  if(kind!=='hazard'&&f.hurt===null)m.push('was anyone hurt');if(f.hurt&&(!f.who||!f.treat))m.push('who was hurt and treatment');
+  if(kind==='vehicle'&&(f.drivable===null||f.towed===null))m.push('van questions');
+  if(kind==='hazard'&&!f.risk)m.push('how serious');if(f.type==='Something else'&&f.desc.trim().length<3)m.push('what happened');return m}
 function sentHTML(){return `<section class="card sent"><h2>${mode==='mgr'?'Report saved.':'Report sent'+(sent.first?', thanks '+esc(sent.first):'')+'.'}</h2><p>${mode==='mgr'?'It is in the reports list under the driver you chose.':'The managers have it. Keep a copy for yourself if you like, for example for insurance.'}</p>
   <div class="acts"><button type="button" class="sh-btn" data-rp="mycopy">Download my copy (PDF)</button><button type="button" class="sh-btn primary" data-rp="again">Done</button></div>
   ${sent.serious?'<p class="warnbox">Someone needed a doctor or hospital. Call the manager now if you have not already.</p>':''}</section>`}
@@ -9201,12 +9180,11 @@ function driverHTML(){
   if(!me&&mode!=='mgr')return '<div class="empty">Your sign in is not linked to a driver on the team list yet, so reports cannot be sent. Ask the manager to check your email on the Drivers page.</div>';
   return kind?formHTML():chooseHTML();
 }
-function clean(){const o=JSON.parse(JSON.stringify(f));delete o.about;
-  if(!o.hurt){o.who='';o.inj='';o.part='';o.treat=''}if(!o.police)o.policeRef='';
-  const keep={incident:['person'],vehicle:['other','rego','odo','drivable','towed','cond','ourDamage','theirDamage'],hazard:['risk','still','fix']};
-  for(const k of ['person','other','rego','odo','drivable','towed','cond','ourDamage','theirDamage','risk','still','fix'])if(!keep[kind].includes(k))delete o[k];
-  if(kind==='hazard'){delete o.hurt;delete o.who;delete o.inj;delete o.part;delete o.treat;delete o.police;delete o.policeRef;delete o.witness}
-  delete o.kind;return o}
+function clean(){const F=f,o={date:F.date,time:F.time,type:F.type,where:F.where,desc:F.desc};
+  if(kind!=='hazard'){o.hurt=F.hurt;if(F.hurt){o.who=F.who;o.treat=F.treat}}
+  if(kind==='vehicle'){o.rego=F.rego;o.drivable=F.drivable;o.towed=F.towed;if(F.towed&&F.policeRef){o.police=true;o.policeRef=F.policeRef}o.other={name:F.other.name,phone:F.other.phone,rego:F.other.rego}}
+  if(kind==='hazard')o.risk=F.risk;
+  return o}
 async function send(){
   if(busy||!db||(!me&&mode!=='mgr')||missing().length)return;busy=true;msg=null;render();
   const forId=mode==='mgr'?f.about:me.staff,sp=staff[forId]||{};
@@ -9231,7 +9209,7 @@ function list(){return Object.entries(items).map(([id,r])=>({id,...r,_t:(r.f&&r.
 function flags(r){const out=[];const F=r.f||{};
   if(r.serious)out.push(['bad','Serious injury: WorkSafe QLD']);
   if(r.kind==='vehicle'&&F.towed&&!F.policeRef)out.push(['warn','Towed: police report needed']);
-  if(r.kind==='hazard'&&F.risk==='high'&&F.still==='Still there')out.push(['bad','High risk, still there']);
+  if(r.kind==='hazard'&&F.risk==='high'&&F.still!=='It is gone now'&&F.still!=='I made it safe')out.push(['bad','High risk hazard']);
   if(F.hurt)out.push(['warn','Someone hurt']);return out}
 function mgrListHTML(){
   const L=list();const t=q.trim().toLowerCase();
@@ -9418,7 +9396,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010014';
+const VERSION='202611010015';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
