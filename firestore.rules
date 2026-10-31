@@ -238,6 +238,17 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && id.matches(request.auth.uid + '(_.*)?'));
     }
 
+    // New driver onboarding: each driver fills in their own form and uploads their own documents.
+    // Only that driver and admins can see them. Site induction sign off lives on the driver record (admins only).
+    match /onboard/{id} {
+      allow read, write: if isAdmin() || (hasAccess() && id == myStaff());
+    }
+    match /onboardimg/{id} {
+      allow read: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
+      allow create, update: if isAdmin() || (hasAccess() && request.resource.data.staff == myStaff() && id.matches(myStaff() + '_.*'));
+      allow delete: if isAdmin() || (hasAccess() && resource.data.staff == myStaff());
+    }
+
     // Each driver's own results and survey, made by the app when an admin sends results to drivers
     match /myres/{id} {
       allow read: if isAdmin() || (hasAccess() && id == myStaff());
