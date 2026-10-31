@@ -4200,8 +4200,8 @@ function apHTML(p){const id=p.id;if(!window.ONB)return '';onbLoad(id);const o=OB
   const req=p.decReq&&!(c&&String(c.at)>=String(p.decReq));
   let msn='';try{msn=(c&&c.msn)||localStorage.getItem('pds_msn')||''}catch(x){msn=(c&&c.msn)||''}
   const reqBtn=`<button type="button" class="sh-btn" data-dmx="apreq">Ask them to sign a new one</button>`;
-  if(req)return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">Waiting for them to sign</span></h3><p class="hint">You asked for a new one on ${esc(niceD(p.decReq))}. It pops up for them to sign the next time they open the app.${c?' Their last one was signed on '+esc(niceD(c.at))+'.':''}</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="apunreq">Cancel the request</button>${c&&c.repSig?`<button type="button" class="sh-btn" data-dmx="appdf">Download the last PDF</button>`:''}</div></section>`;
-  if(!c)return p.onboard==='pending'?'':`<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">None on file</span></h3><p class="hint">If management asks for a Declaration of Understanding (Temporary Authority) for this driver, ask them to sign one here. It pops up for them the next time they open the app.</p><div class="dm-onba">${reqBtn}</div></section>`;
+  if(req)return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">Waiting for them to sign</span></h3><p class="hint">You asked for a new one on ${esc(niceD(p.decReq))}. It pops up for them to sign the next time they open the app.${c?' Their last one was signed on '+esc(niceD(c.at))+'.':''}</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="apunreq">Cancel the request</button><button type="button" class="sh-btn" data-dmpd="1">See what they see</button>${c&&c.repSig?`<button type="button" class="sh-btn" data-dmx="appdf">Download the last PDF</button>`:''}</div></section>`;
+  if(!c)return p.onboard==='pending'?'':`<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst">None on file</span></h3><p class="hint">If management asks for a Declaration of Understanding (Temporary Authority) for this driver, ask them to sign one here. It pops up for them the next time they open the app.</p><div class="dm-onba">${reqBtn}<button type="button" class="sh-btn" data-dmpd="1">See what they see</button></div></section>`;
   const conv=c.conv==='Yes';
   return `<section class="dm-ap"><h3>Australia Post declaration <span class="dm-onbst ${c.repSig?'ok':'go'}">${c.repSig?'✓ Ready to send':'Needs your signature'}</span></h3>
    <p class="hint">Declaration of Understanding: Temporary Authority. Signed by the driver on ${esc(niceD(c.at))}.${c.repSig?` Signed by ${esc(c.repName||'')} on ${esc(niceD(c.repAt))}.`:''}</p>
@@ -4210,7 +4210,7 @@ function apHTML(p){const id=p.id;if(!window.ONB)return '';onbLoad(id);const o=OB
      <label class="f" for="dm_ap_name">Contractor's representative<input id="dm_ap_name" value="${esc(c.repName||meFull()||meName())}"></label>
      <b>Sign here</b><canvas id="dm_apsig" width="600" height="200"></canvas>
      <div class="dm-onba"><button type="button" class="sh-btn primary" data-dmx="apsave">Save my signature</button><button type="button" class="sh-btn" data-dmx="apclear">Clear</button><button type="button" class="sh-btn" data-dmx="apcancel">Cancel</button></div></div>`
-   :`<div class="dm-onba">${c.repSig?`<button type="button" class="sh-btn primary" data-dmx="appdf">Download PDF</button><button type="button" class="sh-btn" data-dmx="apsign">Sign again</button>`:`<button type="button" class="sh-btn primary" data-dmx="apsign">Sign as contractor's representative</button><button type="button" class="sh-btn" data-dmx="appdf">Download PDF without my signature</button>`}${reqBtn}</div>`}</section>`}
+   :`<div class="dm-onba">${c.repSig?`<button type="button" class="sh-btn primary" data-dmx="appdf">Download PDF</button><button type="button" class="sh-btn" data-dmx="apsign">Sign again</button>`:`<button type="button" class="sh-btn primary" data-dmx="apsign">Sign as contractor's representative</button><button type="button" class="sh-btn" data-dmx="appdf">Download PDF without my signature</button>`}${reqBtn}<button type="button" class="sh-btn" data-dmpd="1">See what they see</button></div>`}</section>`}
 function apPadInit(){const c=$('apsig');if(!c)return;const g=c.getContext('2d');g.lineWidth=4;g.lineCap='round';g.strokeStyle='#111';g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);c.dataset.has='';
   let on=false;const pt=e=>{const r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]};
   c.onpointerdown=e=>{on=true;c.setPointerCapture(e.pointerId);const[x,y]=pt(e);g.beginPath();g.moveTo(x,y)};
@@ -4261,7 +4261,7 @@ function indHTML(p){const id=p.id;if(p.indAt)return `<section class="dm-ind"><h3
    <button type="button" class="sh-btn primary" data-dmx="indsign" ${T.size===IND_ITEMS.length?'':'disabled'}>Sign off site induction</button> <small class="hint">${T.size}/${IND_ITEMS.length} done</small></section>`}
 async function saveExtra(id,patch,okMsg){const p=Object.assign({},people[id],patch);const o=Object.assign({},p);delete o.id;o.updatedAt=new Date().toISOString();
   try{await db.doc('staff/'+id).set(o);people[id]=Object.assign({id},o);msg={t:okMsg};render()}catch(e){msg={err:true,t:'Could not save just now. Check your connection and try again.'};render()}}
-document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#mod-staff [data-dmp]')&&window.ONB)window.ONB.preview()});
+document.addEventListener('click',e=>{if(!e.target.closest||!window.ONB)return;if(e.target.closest('#mod-staff [data-dmp]'))window.ONB.preview();else if(e.target.closest('#mod-staff [data-dmpd]'))window.ONB.previewDec()});
 document.addEventListener('change',e=>{const el=e.target.closest&&e.target.closest('[data-dmx="indtick"]');if(!el||!openId)return;const T=indTick[openId]||(indTick[openId]=new Set());el.checked?T.add(+el.dataset.v):T.delete(+el.dataset.v);
   const b=document.querySelector('#mod-staff [data-dmx="indsign"]');if(b)b.disabled=T.size!==IND_ITEMS.length;const h=b&&b.nextElementSibling;if(h)h.textContent=T.size+'/'+IND_ITEMS.length+' done'});
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-dmx]');if(!el||!openId||!document.getElementById('mod-staff').contains(el))return;const a=el.dataset.dmx,id=openId;
@@ -9967,7 +9967,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010068';
+const VERSION='202611010069';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10446,7 +10446,8 @@ window.ONB={
   async submitted(){try{const q=await fs.collection('onboard').where('status','==','submitted').get();return q.docs.map(d=>DEC(d.data())).filter(Boolean)}catch(e){return []}},
   async saveRep(sid,o){await fs.doc('onboard/'+sid).set(o,{merge:true})},
   open:()=>onbOpen(true),
-  preview(){OB.preview=true;OB.sid='';OB.step=0;OB.imgs={};OB.msg=null;OB.busy=false;OB.d={first:'',last:'',mobile:'',email:''};onbOpen()}
+  previewDec(){OB.preview=true;OB.mode='dec';OB.step=4;OB.sid='';OB.imgs={};OB.msg=null;OB.busy=false;OB.d={};onbOpen()},
+  preview(){OB.preview=true;OB.mode='';OB.sid='';OB.step=0;OB.imgs={};OB.msg=null;OB.busy=false;OB.d={first:'',last:'',mobile:'',email:''};onbOpen()}
 };
 const OB={sid:'',step:0,d:{},imgs:{},busy:false,msg:null,staff:null,preview:false,mode:''};
 const OB_STEPS=['Welcome','Your details','Work rights','Documents','Australia Post declaration','Read and sign','All set'];
@@ -10553,7 +10554,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(a==='push'){try{await PUSH.enable()}catch(x){}onbRender();return}
   if(a==='next'&&OB.mode==='dec'){if(onbMissing().length)return;OB.busy=true;OB.msg=null;onbRender();
     try{const d=OB.d;if(!OB.preview)await fs.doc('onboard/'+OB.sid).set({staff:OB.sid,email:EMAIL,dec:{conv:d.apConv,agree:true,sig:d.apSig,at:d.apAt||new Date().toISOString(),repSig:'',repName:'',repAt:'',msn:''}},{merge:true});OB.busy=false;
-      const w=document.getElementById('onb');if(w)w.innerHTML=`<div class="ob-pn"><div class="ob-body ob-done"><h1>✓ Sent to the office</h1><p>Thanks! Your signed declaration is with the office.</p><button type="button" class="sh-btn primary" data-obx="close">Open the app</button></div></div>`}
+      const w=document.getElementById('onb');if(w)w.innerHTML=`<div class="ob-pn"><div class="ob-body ob-done"><h1>✓ Sent to the office</h1><p>Thanks! Your signed declaration is with the office.</p>${OB.preview?'<p class="ob-pv">Preview finished. Nothing was saved.</p>':''}<button type="button" class="sh-btn primary" data-obx="close">${OB.preview?'Close preview':'Open the app'}</button></div></div>`}
     catch(x){OB.busy=false;OB.msg={err:true,t:'Could not save just now. Check your internet and try again.'};onbRender()}return}
   if(a==='next'){if(onbMissing().length)return;OB.busy=true;OB.msg=null;onbRender();
     try{if(OB.step===OB_STEPS.length-1){await obSave({status:'submitted',submittedAt:new Date().toISOString()});OB.busy=false;
