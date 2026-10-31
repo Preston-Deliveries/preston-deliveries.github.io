@@ -813,14 +813,15 @@ function navHTML(){const v=new Set(visible());const T=tabSecs();
   return GG.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&(g.k==='start'||!S0.has(x)));if(!ss.length)return '';return `<div class="sh-grp g-${g.k}" role="group" aria-label="${esc(g.name)}">${g.k==='start'||!g.name?'':`<span class="sh-gl">${esc(g.name)}</span>`}${ss.map(s=>`<button type="button" data-nav="${s}"${T.includes(s)?' class="tab"':''} ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''} ${s===cur||(hubT(s)&&hubOf(cur)===hubOf(s))?'aria-current="page"':''}>${ICONS[s]}<span class="lg">${esc(hubT(s)||NAMES[s])}</span><span class="sm">${s==='alerts'&&window.__alertN?`<span class="bdg">${window.__alertN>9?'9+':window.__alertN}</span>`:''}${esc({menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',clock:'Clock',sort:'Sort',runs:'Runs',results:'Results',survey:'Survey',guide:'Guide',staff:'Driver Data',precards:'Precards',lockers:'Lockers',briefs:'Brief',leave:'Leave',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',summary:'Summary',vchecks:'Vans',timesheets:'Hours'}[s])}</span></button>`).join('')}</div>`}).join('')+`<div class="sh-grp g-start" role="group"></div>`}
 const PRINT_BTN={sort:'[data-act=printSort]',runs:'[data-act=download]',precards:'[data-pc=pdf]',lockers:'[data-lk=pdf]',leave:'[data-lv=pdf]'};
 function pactBtn(){return ''}
+function tabStrip(html){const ph=$('sh-ph');if(!ph)return null;let t=document.getElementById('sh-tabs');if(!html){if(t)t.remove();return null}if(!t){t=document.createElement('div');t.id='sh-tabs';t.className='sh-tabs'}if(t.previousElementSibling!==ph)ph.after(t);if(t.__h!==html){t.__h=html;t.innerHTML=html}return t}
 function renderPageHead(){
-  const ph=$('sh-ph');if(!ph)return;
+  const ph=$('sh-ph');if(!ph)return;tabStrip('');
   if(cur==='home'||(cur==='me'&&role!=='mgr')){ph.hidden=true;ph.innerHTML='';return}
   const hb0=hubOf(cur),T0=role==='mgr'?['home','menu']:tabSecs(),isTab=T0.includes(cur)||(hb0&&hb0.s.some(x=>T0.includes(x[0])));
   const BK=isTab?'':'<button type="button" class="sh-back" data-sh="back" aria-label="Back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg></button>';
   const H1=t=>`<div class="ttl">${BK}<h1>${esc(t)}</h1>${pactBtn()}</div>`;
   {const hb=hubOf(cur);if(hb){const vv=new Set(visible());const tabs=hb.s.filter(x=>vv.has(x[0]));if(tabs.length>1){const d0=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';ph.hidden=false;ph.className='sh-ph dph hub';
-    ph.innerHTML=`<div class="in sh-utin"><div class="ttl sh-uttl">${BK}<h1>${esc(hb.t)}</h1></div><div class="sh-utrow"><nav class="sh-hubtabs sh-utabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav></div></div>`;{const nv=ph.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
+    ph.innerHTML=`<div class="in">${H1(hb.t)}</div>`;const tsx=tabStrip(`<div class="sh-utrow"><nav class="sh-hubtabs sh-utabs" aria-label="${esc(hb.t)}">${tabs.map(([x,l])=>`<button type="button" data-nav="${x}" ${x===cur?'aria-current="page"':''}>${esc(l)}</button>`).join('')}</nav></div>`);{const nv=tsx&&tsx.querySelector('.sh-hubtabs'),a=nv&&nv.querySelector('[aria-current]');if(a)nv.scrollLeft=Math.max(0,a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2)}markDup();return}}}
   const g=GROUPS.find(x=>x.k===GROUP_OF[cur]);const d=(role==='mgr'?DESC.mgr:DESC.drv)[cur]||'';
   ph.hidden=false;ph.className='sh-ph g-'+(g?g.k:'start');
   {const tab=role==='mgr'?['summary','updates','menu'].includes(cur):['updates','menu'].includes(cur);ph.className+=' dph';
@@ -10088,7 +10089,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010103';
+const VERSION='202611010104';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10962,6 +10963,15 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs{gap:20px!important}
 :root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs>button,:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utabs button{font-size:.95rem!important;height:38px!important;min-height:38px!important;line-height:38px!important}
 :root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utrow{width:100%!important;box-sizing:border-box!important;align-self:stretch!important}:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph.sh-ph .sh-utin{display:block!important}
+/* tabs strip under the banner */
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs{display:block;padding:4px 16px 0;margin:0 0 6px;background:transparent}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utrow{display:flex!important;border-bottom:1px solid var(--sh-line,rgba(127,127,127,.25));width:100%;box-sizing:border-box}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs{display:flex!important;gap:16px!important;margin:0!important;padding:0!important;overflow-x:auto!important;flex-wrap:nowrap!important;scrollbar-width:none;background:none!important;min-width:0}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs::-webkit-scrollbar{display:none}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button{all:unset;cursor:pointer;flex:0 0 auto!important;height:42px!important;min-height:42px!important;line-height:42px!important;padding:0 1px!important;font-weight:700!important;font-size:.96rem!important;color:var(--sh-muted,#8A96A8)!important;background:none!important;border-radius:0!important;border-bottom:3px solid transparent!important;box-sizing:border-box!important;white-space:nowrap;position:relative}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button[aria-current=page]{color:var(--sh-ink)!important;border-bottom-color:var(--pds-orange,#F2782D)!important}
+:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs .bdg{position:static!important;margin-left:5px;vertical-align:2px}
+@media (min-width:900px){:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs{padding:4px 0 0}}
 </style>
 </body>
 </html>
