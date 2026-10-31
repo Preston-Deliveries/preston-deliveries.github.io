@@ -4683,7 +4683,7 @@ function render(){
 </div>
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-   ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
+   ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
    </tbody></table></div>`:`<div class="tw"><div class="empty">${all.length?(tab==='review'?'Nothing under review right now. Add an address and set it to Under review while you check it.':'No address matches that search.'):(isMgr()?'No precards yet.':'The precard list has not been shared yet.')}</div></div>`}
@@ -4831,7 +4831,7 @@ function render(){
 </div>
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-   ${l.length?`<div class="tw"><table><thead><tr><th class="no">#</th><th>Locker</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
+   ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Locker</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.name)}</b></td><td class="aa">${esc(p.address)}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}</td><td class="dn">${dnames(p).map(n=>`<span class="nl">${esc(n)}</span>`).join('')}</td><td class="rs">${p.description?desc(p.description):'<span class="sub">No details yet</span>'}</td></tr>`).join('')}
    </tbody></table></div>${add}`:`${add}<div class="tw"><div class="empty">${all.length?'No locker matches that search.':(isMgr()?'No lockers yet.':'The locker list has not been shared yet.')}</div></div>`}
@@ -5059,10 +5059,8 @@ function render(){
     <div class="head"><h1>Team briefs</h1>${isMgr()?`<div class="act"><button type="button" class="sh-btn primary" data-tb="new">+ New team brief</button></div>`:''}</div>
     <p class="lead">${isMgr()?'Add the brief the facility manager sends each week. Drivers see it as soon as it is shown to them.':'The weekly team brief from the facility, with its toolbox talks and safety focus. Read each one when it comes out.'}</p>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
-    ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>`<div class="row"><button type="button" class="item" data-tb="open" data-v="${esc(b.id)}">
-      <span class="date"><b>${esc(fmtShort(b.date))}</b><small>${esc(String(b.date||'').slice(0,4))}</small></span>
-      <span class="body"><span class="t">${esc(b.title||'Team brief')}${i===0?' <span class="new">Latest</span>':''}${!isMgr()&&me?(mySig(b.id)?' <span class="sgd">Signed ✓</span>':' <span class="tosign">Please sign</span>'):''}${isMgr()?` <span class="cntsig">${sigsFor(b.id).length} signed</span>`:''}</span><span class="sub">${esc((b.topics||[]).slice(0,4).join(' · '))}${(b.topics||[]).length>4?' · more':''}</span>
-      <span class="sub">${(b.files||[]).length} attachment${(b.files||[]).length===1?'':'s'}${isMgr()?` · ${b.shown?'Shown to drivers':'Hidden from drivers'}`:''}</span></span></button>${isMgr()?`${b.shown?window.__waBtn({sec:'briefs',title:b.title||'Team brief'}).replace('class="sh-btn wa-share"','class="sh-btn wa-share bw"'):''}<button type="button" class="sh-btn sheetbtn" data-tb="sheet" data-v="${esc(b.id)}">Print sign off sheet</button><button type="button" class="sh-btn danger ldel ${armL===b.id?'arm':''}" data-tb="ldel" data-v="${esc(b.id)}">${armL===b.id?'Tap again to delete':'Delete this brief'}</button>`:''}</div>`).join('')}</div></details>`).join('')
+    ${v.length?months(v).map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(monOpen[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${g.items.length} brief${g.items.length===1?'':'s'}</span></summary><div class="list">${g.items.map(({b,i})=>{const dd=new Date(String(b.date||'').slice(0,10)+'T12:00:00');const ok=!isNaN(dd);const need=!isMgr()&&me&&!mySig(b.id);
+      return `<button type="button" class="ntr ${need?'imp':''} ${isMgr()&&!b.shown?'draft':''}" data-tb="open" data-v="${esc(b.id)}"><span class="dt">${ok?`<small>${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dd.getMonth()]}</small><b>${dd.getDate()}</b>`:''}</span><span class="tx"><b>${esc(b.title||'Team brief')}</b><small>${esc((b.topics||[]).join(' · ')||((b.files||[]).length+' attachment'+((b.files||[]).length===1?'':'s')))}</small></span>${!isMgr()&&me?(mySig(b.id)?'<em class="bd ok">Signed ✓</em>':'<em class="bd imp">Please sign</em>'):isMgr()?(b.shown?`<em class="bd ${sigsFor(b.id).length?'ok':'dr'}">${sigsFor(b.id).length} signed</em>`:'<em class="bd dr">Hidden</em>'):i===0?'<em class="bd ok">Latest</em>':''}</button>`}).join('')}</div></details>`).join('')
       :`<div class="empty">${isMgr()?'No team briefs yet. Add the first one with the button above.':'No team brief has been posted yet.'}</div>`}
     ${olderBtn()}
   </div>`;
@@ -6188,9 +6186,9 @@ function dayDetail(d,o){
 function listHTML(){
   const L=Object.values(blocks).filter(b=>(b.days||[]).some(d=>d>=today)).sort((a,b)=>String(a.from).localeCompare(String(b.from)));
   if(!L.length)return '<div class="empty">No upcoming leave.</div>';
-  return `<div class="tw"><table><thead><tr><th>#</th><th>Who</th><th>From</th><th>To</th><th>Days</th><th>Note</th></tr></thead><tbody>
-   ${L.map((b,i)=>`<tr data-lv="edit" data-v="${esc(b.id)}" tabindex="0"><td class="no">${i+1}</td><td><b>${esc(b.name)}</b>${OFFICE.includes(roleOf(b.name))?'<span class="sub">Office</span>':''}</td><td class="dt">${esc(nice(b.from))}</td><td class="dt">${esc(nice(b.to))}</td><td class="no">${(b.days||[]).length}</td><td class="nt">${esc(b.note||'')}</td></tr>`).join('')}
-   </tbody></table></div>`;
+  const sd=x=>{const d=fromIso(x);return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]};
+  const ini=n=>String(n||'').trim().split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  return `<div class="lvl">${L.map(b=>{const n=(b.days||[]).length;return `<button type="button" class="lvr" data-lv="edit" data-v="${esc(b.id)}"><span class="av" aria-hidden="true">${esc(ini(b.name))}</span><span class="tx"><b>${esc(b.name)}</b><small>${esc(b.from===b.to?sd(b.from):sd(b.from)+' to '+sd(b.to))}${OFFICE.includes(roleOf(b.name))?' · Office':''}${b.note?' · '+esc(b.note):''}</small></span><em>${n} day${n===1?'':'s'}</em></button>`}).join('')}</div>`;
 }
 function setHTML(){
   return `<section class="card"><h2>Limit</h2><label class="f" for="lv_lim">Most drivers off on the same day<input type="number" id="lv_lim" min="1" max="20" value="${cfg.limit||3}"></label>
@@ -6625,14 +6623,21 @@ function bodyHTML(t){
     out.push(`<p>${esc(L)}</p>`)});
   return out.map(x=>Array.isArray(x)?`<ul>${x.map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`:x).join('');
 }
+/* list view: one tidy row per update; tap it to open the full update */
+const openN=new Set();
+const ntPlain=t=>String(t||'').replace(/<[^>]*>/g,' ').replace(/[*_#>`\[\]]/g,'').replace(/\s+/g,' ').trim();
 function cardHTML(n){
+  if(!openN.has(n.id)){const dd=n.date?fromIso(n.date):new Date(String(n.postedAt||'').slice(0,10)+'T12:00:00');const ok=dd&&!isNaN(dd);
+    return `<button type="button" class="ntr ${n.important?'imp':''} ${n.live?'':'draft'} ${isPast(n)?'done':''}" data-nt="row" data-v="${esc(n.id)}" id="nt_n_${esc(n.id)}"><span class="dt">${ok?`<small>${MON[dd.getMonth()].slice(0,3)}</small><b>${dd.getDate()}</b>`:''}</span><span class="tx"><b>${esc(n.title)}</b><small>${esc(ntPlain(n.body))}</small></span>${n.important?'<em class="bd imp">Important</em>':isMgr()&&!n.live?'<em class="bd dr">Draft</em>':''}</button>`}
+  return fullCardHTML(n)}
+function fullCardHTML(n){
   const d=n.date?fromIso(n.date):null;
   return `<article class="nt ${n.important?'imp':''} ${n.live?'':'draft'} ${isPast(n)?'done':''}" id="nt_n_${esc(n.id)}">
    ${d?`<div class="cal" aria-hidden="true"><span>${MON[d.getMonth()].slice(0,3)}</span><b>${d.getDate()}</b><span>${DOW[d.getDay()].slice(0,3)}</span></div>`:''}
    <div class="bd"><div class="tags">${n.important?'<span class="tag imp">Important</span>':''}${n.pinned?'<span class="tag">Pinned</span>':''}${isMgr()&&!n.live?'<span class="tag dr">Draft, drivers can’t see</span>':''}${isPast(n)?'<span class="tag">Finished</span>':''}</div>
    <h2>${esc(n.title)}${n.date?`<span class="dt"> ${esc(longDate(n.date))}</span>`:''}</h2>
    <div class="txt">${bodyHTML(n.body)}</div>
-   <p class="meta">${n.live?'Posted':'Saved'} ${esc(postedText(n.postedAt))}${n.edited?' · updated '+esc(postedText(n.edited)):''}</p>
+   <p class="meta">${n.live?'Posted':'Saved'} ${esc(postedText(n.postedAt))}${n.edited?' · updated '+esc(postedText(n.edited)):''} <button type="button" class="ntc" data-nt="row" data-v="${esc(n.id)}">Close ▲</button></p>
    ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button>${n.live?window.__waBtn({sec:'updates',title:n.title}).replace('class="sh-btn wa-share"','class="sh-btn wa-share sm"'):''}</div>`:''}</div></article>`;
 }
 function render(){
@@ -6700,7 +6705,7 @@ async function save(){
 }
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-nt]');if(!el||!document.getElementById('mod-updates').contains(el))return;
-  const a=el.dataset.nt,v=el.dataset.v;if(a!=='del')armDel=false;
+  const a=el.dataset.nt,v=el.dataset.v;if(a==='row'){if(openN.has(v))openN.delete(v);else openN.add(v);render();return}if(a!=='del')armDel=false;
   if(a==='new'){editing='new';msg=null;render();window.scrollTo(0,0);setTimeout(()=>$('title')?.focus(),0);return}
   if(a==='edit'){editing=v;msg=null;render();window.scrollTo(0,0);return}
   if(a==='cancel'){editing=null;msg=null;render();return}
@@ -8054,7 +8059,7 @@ function statusHTML(){
   return `<div class="tiles trow" style="--tn:5"><div class="tile bad" title="Failed, do not drive"><span>Failed</span><b>${cnt.fail}</b></div><div class="tile warn" title="Fix needed"><span>Fix</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none" title="No check in 4 months"><span>Unchecked</span><b>${cnt.never}</b></div><div class="tile good" title="Up to date"><span>Up to date</span><b>${cnt.ok}</b></div></div>
   <div class="bar vcbar"><input type="search" id="vc_q" placeholder="Search driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts"><select id="vc_sorts" aria-label="Sort">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every"><select id="vc_every" aria-label="Check every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>Every ${n} days</option>`).join('')}</select></label></div>
   <div class="tw"><table class="tb vc-drv"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
-  ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
+  ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk} ${!last||due<0||last.outcome==='fail'?'st-bad':last.outcome==='minor'||due<=7?'st-warn':'st-ok'}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
    <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
   </tbody></table></div><p class="hint">Tap a driver to see their checks or add a new one. Office and supervisor roles are left out of this list.</p>`;
 }
@@ -10139,7 +10144,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010159';
+const VERSION='202611010161';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11252,6 +11257,65 @@ html:root:root:root:root:root:root:root body .sh-links.sh-links.sh-links.sh-link
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl .v-g{color:#69DB9A}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .gls.g5 .gl .v-b{color:#FF8A80}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-hero .sh-hero-t{margin-bottom:10px!important}
+/* tidy rows for updates and team briefs */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-updates,#mod-briefs) .list{border:1px solid var(--sh-line);border-radius:16px;overflow:hidden;background:var(--sh-surface);display:block!important;gap:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-updates,#mod-briefs) .list>*+*{border-top:1px solid var(--sh-line)!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-updates,#mod-briefs) .list>article{border-radius:0!important;border-left:0!important;border-right:0!important;border-bottom:0!important;margin:0!important;box-shadow:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border-left:4px solid transparent}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr.imp{border-left-color:#E5484D}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr.done{opacity:.6}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr:focus-visible{outline:2px solid #F2782D;outline-offset:-2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .dt{flex:none;width:44px;text-align:center;border-radius:10px;background:var(--sh-sunk,rgba(127,127,127,.15));padding:4px 0;line-height:1.1}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .dt small{display:block;font-size:.64rem;font-weight:800;text-transform:uppercase;color:var(--sh-muted)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr.imp .dt small{color:#E5484D}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .dt b{font-size:1.15rem;color:var(--sh-ink)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .tx b{color:var(--sh-ink);font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .tx small{color:var(--sh-muted);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .bd{flex:none;align-self:flex-start;font-style:normal;font-weight:800;font-size:.72rem;border-radius:999px;padding:2px 8px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .bd.imp{background:rgba(229,72,77,.15);color:#E5484D}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .bd.dr{background:var(--sh-sunk,rgba(127,127,127,.15));color:var(--sh-muted)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntr .bd.ok{background:rgba(48,164,108,.15);color:#30A46C}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ntc{all:unset;cursor:pointer;float:right;font-weight:700;color:var(--sh-muted);font-size:.85rem}
+/* upcoming leave: one line per booking */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvl{border:1px solid var(--sh-line);border-radius:16px;overflow:hidden;background:var(--sh-surface)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr+.lvr{border-top:1px solid var(--sh-line)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr:focus-visible{outline:2px solid #F2782D;outline-offset:-2px}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr .av{width:38px;height:38px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:.85rem;background:var(--sh-sunk,rgba(127,127,127,.15));color:var(--sh-ink)}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr .tx b{color:var(--sh-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr .tx small{color:var(--sh-muted);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave .lvr em{flex:none;font-style:normal;font-weight:800;font-size:.8rem;border-radius:999px;padding:3px 10px;background:rgba(48,164,108,.15);color:#30A46C}
+/* van checks: coloured edge shows each driver's status */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-vchecks table.vc-drv tbody tr.st-bad{box-shadow:inset 5px 0 0 #E5484D!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-vchecks table.vc-drv tbody tr.st-warn{box-shadow:inset 5px 0 0 #F2A23A!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-vchecks table.vc-drv tbody tr.st-ok{box-shadow:inset 5px 0 0 #30A46C!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-vchecks table.vc-drv .due.bad{display:inline-block;background:rgba(229,72,77,.15);color:#E5484D!important;font-weight:800;border-radius:999px;padding:3px 10px;font-size:.8rem}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-vchecks table.vc-drv .due.warn{display:inline-block;background:rgba(242,162,58,.16);color:#D9861C!important;font-weight:800;border-radius:999px;padding:3px 10px;font-size:.8rem}
+/* precards and lockers (office view): just the address, postcode and driver number in the list; the rest is in each record */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards table.slim :is(th,td):is(:nth-child(3),:nth-child(6),:nth-child(8)),:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers table.slim :is(th,td):is(:nth-child(4),:nth-child(7),:nth-child(8)){display:none!important}
+@media (max-width:700px){
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards table.slim td.pcd{grid-column:2!important;grid-row:2!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards table.slim td.dt{grid-column:3/-1!important;grid-row:2!important;text-align:right!important;align-self:center}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-precards table.slim td.no{grid-row:1/span 2!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers table.slim td.pcd{grid-column:2!important;grid-row:3!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers table.slim td.no{grid-row:1/span 3!important}
+}
+/* clock in check: one row of four bubbles; tap one to list the names underneath */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckg{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;align-items:stretch!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc{margin:0!important;padding:0!important;border-radius:12px!important;min-width:0!important;border:1px solid transparent!important;background:var(--sh-sunk,rgba(127,127,127,.12))!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:10px 2px!important;gap:2px!important;list-style:none!important;cursor:pointer}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary::-webkit-details-marker{display:none}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary::after,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary::before{content:none!important;display:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary .nn{order:-1;font-size:1.5rem!important;font-weight:800;line-height:1.1}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary h3{font-size:.68rem!important;font-weight:700!important;margin:0!important;line-height:1.15!important;color:var(--sh-muted)!important;text-transform:none!important;letter-spacing:0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary .np{display:none!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]{grid-column:1/-1!important;order:5;border-color:var(--sh-line)!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>summary{flex-direction:row!important;gap:8px!important;justify-content:flex-start!important;padding:10px 12px!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>summary .nn{order:0;font-size:1.2rem!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>summary h3{font-size:.9rem!important;color:var(--sh-ink)!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc[open]>:not(summary){padding:0 12px 12px!important}
 </style>
 </body>
 </html>
