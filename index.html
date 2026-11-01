@@ -3807,6 +3807,10 @@ function svRowHTML(r){
 }
 function svBody(box){
   const rows=box.__rows||[],F=svFilt(rows);
+  {const G=SV.grp!=="all"?rows.filter(r=>r.grp===SV.grp):rows,all=G.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,M=N-P-X,sc=N?window.NPS(all):0;
+   const cap=box.querySelector(".rt-cap");if(cap)cap.textContent=SV.grp==="all"?"Contract 1161":/^42\d\d$/.test(SV.grp)?"Postcode "+SV.grp:(GRPN[SV.grp]||SV.grp);
+   const sm=box.querySelector(".rt-sum");if(sm)sm.innerHTML=`<div><small>Surveys</small><b>${N}</b></div><div><small>Team NPS</small><b class="${N?(sc>=100?"svgd":sc>=70?"svg":"svb"):""}">${N?sc:"–"}</b></div><div class="sv-g"><small>9 or 10</small><b>${P}</b></div><div class="sv-r"><small>0 to 6</small><b>${X}</b></div>`;
+   const mx=box.querySelector(".sv-mix");if(mx)mx.innerHTML=`<span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span>`}
   box.querySelector("tbody").innerHTML=F.length?F.map(svRowHTML).join(""):`<tr><td colspan="4" class="none">No drivers match.</td></tr>`;
   const busy=SV.q||SV.grp!=="all";
   box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-sv="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-sv="find">Find me</button>':""}`;
@@ -10209,7 +10213,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010175';
+const VERSION='202611010176';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11461,7 +11465,13 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 (()=>{
  const PCS=['4214','4215','4217','4218'];const ST={r:{pc:'all'},v:{pc:'all',drv:''}};
  const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const pcOf=()=>{const m={};try{((window.RUNS&&RUNS.list&&RUNS.list())||[]).forEach(r=>{if(r.login&&r.postcode)m[String(r.login).toUpperCase()]=String(r.postcode)})}catch(e){}return m};
+ let PCM=null,pcBusy=false;
+ const pcLoad=async()=>{if(pcBusy)return;pcBusy=true;try{const db=window.__getDb?await window.__getDb():null;if(!db){pcBusy=false;setTimeout(pcLoad,3000);return}
+   const [st,ru]=await Promise.all([db.collection('staff').get(),db.collection('runs').get()]);const U=v=>String(v||'').trim().toUpperCase(),rp={},m={};
+   ru.docs.forEach(d=>{const r=d.data()||{};if(r.login&&r.postcode)rp[U(r.login)]=String(r.postcode)});Object.assign(m,rp);
+   st.docs.forEach(d=>{const p=d.data()||{};const role=U(p.role),nos=(p.runs||[]).map(U).filter(Boolean),lg=U(p.login);let pc=/^42\d\d$/.test(role)?role:'';if(!pc)for(const n of nos)if(rp[n]){pc=rp[n];break}if(pc){if(lg)m[lg]=pc;nos.forEach(n=>{if(!m[n])m[n]=pc})}});
+   PCM=m;run()}catch(e){pcBusy=false;setTimeout(pcLoad,10000)}};
+ const pcOf=()=>{if(!PCM){pcLoad();const m={};try{((window.RUNS&&RUNS.list&&RUNS.list())||[]).forEach(r=>{if(r.login&&r.postcode)m[String(r.login).toUpperCase()]=String(r.postcode)})}catch(e){}return m}return PCM};
  const chipsH=(k,on)=>`<div class="pf-chips sc-chips" role="group" aria-label="Show"><button type="button" data-scx="${k}" data-v="all" aria-pressed="${on==='all'}">All</button>${PCS.map(p=>`<button type="button" data-scx="${k}" data-v="${p}" aria-pressed="${on===p}" class="pcz pcz-${p}">${p}</button>`).join('')}</div>`;
  const selH=(k,L,cur)=>{const g={};L.forEach(d=>{(g[d.pc||'Other']=g[d.pc||'Other']||[]).push(d)});
    return `<label class="pf-sel sc-sel"><select data-scd="${k}" aria-label="One driver"><option value="">Choose a driver</option>${Object.keys(g).sort().map(p=>`<optgroup label="${E(p)}">${g[p].sort((a,b)=>a.n.localeCompare(b.n)).map(d=>`<option value="${E(d.k)}"${d.k===cur?' selected':''}>${E(d.n)} · ${E(d.k)}</option>`).join('')}</optgroup>`).join('')}</select></label>`};
