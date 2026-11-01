@@ -9093,12 +9093,12 @@ function officeRates(id){const ic=cfgs[id]||{};const o={};for(const k of['r1','r
 const myDays=()=>{const o=(window.__MYRES&&window.__MYRES.days)||{};for(const[k,v]of Object.entries(o))if(v&&v.rows)days[v.date||k]=v};
 async function loadDrv(){if(role!=='drv'||!sid||!from||!to||to<from)return;const key=from+to;if(drvKey===key)return;drvKey=key;
   if(window.__MYRES)myDays();else try{const c=db.collection('days');const q=c.range?await c.range(from,add(to,1)):await c.get();for(const d of q.docs){const v=__D(d);if(v&&v.rows)days[v.date||d.id]=v}}catch(e){}
-  const ds=[];for(let d=from;d<=to;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
+  const ds=[];const T0=window.__qISO();/* days that haven't happened yet have nothing to read */for(let d=from;d<=to&&d<=T0;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
   await Promise.all(ds.map(async d=>{try{const x=await db.doc('clock/'+d+'_'+sid).get();if(x.exists)clock[d+'_'+sid]=__D(x)}catch(e){}try{const x=await db.doc('timesheets/'+d+'_'+sid).get();if(x.exists)ts[d+'_'+sid]=__D(x)}catch(e){}}));paint()}
 const loaded=new Set();
 async function loadRange(a,b,id){id=id||sid;const key=a+b+id;if(loaded.has(key))return;loaded.add(key);
   if(role==='drv'&&window.__MYRES)myDays();else try{const c=db.collection('days');const q=c.range?await c.range(a,add(b,1)):await c.get();for(const d of q.docs){const v=__D(d);if(v&&v.rows)days[v.date||d.id]=v}}catch(e){}
-  const ds=[];for(let d=a;d<=b;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
+  const ds=[];const T0=window.__qISO();for(let d=a;d<=b&&d<=T0;d=add(d,1))if(fromIso(d).getDay()!==0)ds.push(d);
   await Promise.all(ds.map(async d=>{const k=d+'_'+id;if(!clock[k])try{const x=await db.doc('clock/'+k).get();if(x.exists)clock[k]=__D(x)}catch(e){}if(!ts[k])try{const x=await db.doc('timesheets/'+k).get();if(x.exists)ts[k]=__D(x)}catch(e){}}))}
 /* approximate earnings for one person over some dates, for the Profile page */
 async function payFor(id,a,b){await init(window.APP&&APP.role==='mgr'?'mgr':'drv');if(!db||!id||!a||!b)return null;if(role==='drv'&&id!==sid)return null;
@@ -10367,7 +10367,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611020840';
+const VERSION='202611020900';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10426,22 +10426,48 @@ function cleanDay(d){if(d&&d.rows&&typeof d.rows==='object')for(const k in d.row
 const docSnap=s=>({id:s.id,exists:s.exists,data:()=>s.exists?(s.ref&&s.ref.parent&&s.ref.parent.id==='days'?cleanDay(DEC(s.data())):DEC(s.data())):undefined});
 const qSnap=q=>{const docs=q.docs.map(docSnap);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}};
 const subs=new Set();
+/* ---------- fewer database reads (keeps the app inside the free daily allowance) ----------
+   1. Past days of clock ins, timesheets and results hardly ever change, so once fetched they are read from
+      the copy saved on this device for a while instead of the internet (drivers 12 hours, admins 2 hours).
+   2. A whole list asked for several times in a row (like the staff list) is fetched once and shared for 30 seconds.
+   3. Drivers' run sheets come from the saved copy, refreshed every 2 hours or when they open Run Sheet. */
+const HC=(()=>{try{return JSON.parse(localStorage.getItem('pds_hc')||'{}')||{}}catch(e){return {}}})();
+const hcSave=()=>{clearTimeout(hcSave.t);hcSave.t=setTimeout(()=>{try{const lim=Date.now()-2*864e5;for(const k in HC)if(HC[k]<lim)delete HC[k];localStorage.setItem('pds_hc',JSON.stringify(HC))}catch(e){}},800)};
+function hcTTL(p){const m=String(p).match(/^(clock|timesheets|days)\/(\d{4}-\d{2}-\d{2})/);if(!m)return 0;
+  const age=(Date.now()-Date.parse(m[2]+'T12:00:00+10:00'))/864e5;if(!(age>=(m[1]==='days'?7:3)))return 0;return ROLE==='admin'?2*3600e3:12*3600e3}
+/* safety net: if Google's free daily allowance is ever used up, keep showing what is saved on this device and say so */
+const isQuota=e=>!!e&&(e.code==='resource-exhausted'||/quota|resource.exhausted/i.test(String(e.message||'')));
+function quotaHit(e){if(!isQuota(e)||document.getElementById('pds-quota'))return;try{const b=document.createElement('div');b.id='pds-quota';b.setAttribute('role','status');
+  b.textContent='Showing the info saved on this device. Live updates are paused until about 6pm because the app reached today\u2019s free limit.';
+  b.style.cssText='margin:10px 16px 0;border-radius:12px;background:#7a4a00;color:#fff;font:600 14px/1.4 system-ui,sans-serif;padding:10px 14px;text-align:center';
+  const put=()=>{const at=document.getElementById('sh-ph')||document.querySelector('#sh-main .sh-sec');if(at&&at.parentNode)at.parentNode.insertBefore(b,at);else setTimeout(put,500)};put()}catch(x){}}
+const withCache=async(live,cached)=>{try{return await live()}catch(e){if(isQuota(e)){quotaHit(e);return cached()}throw e}};
+const DG={};const CG={};const cgDrop=p=>{const c=String(p).split('/')[0];delete CG[c]};
+function slowListen(c,p,cb,err,ttl){let live=true;const key='pds_sl_'+p;const last=()=>{try{return +localStorage.getItem(key)||0}catch(e){return 0}};
+  const pull=async force=>{if(!force&&Date.now()-last()<ttl){try{const q=await c.get({source:'cache'});if(q.size){if(live)cb(qSnap(q));return}}catch(e){}}
+    try{const q=await c.get();if(live)cb(qSnap(q));try{localStorage.setItem(key,String(Date.now()))}catch(e){}}catch(e){if(err)err(e)}};
+  pull(false);const onGo=e=>{if((e.detail==='runs'||e.detail==='sort')&&Date.now()-last()>10*60e3)pull(true)};window.addEventListener('sh:go',onGo);
+  const off=()=>{live=false;window.removeEventListener('sh:go',onGo)};subs.add(off);return off}
 const db={
   serverTime(){return firebase.firestore.FieldValue.serverTimestamp()},
   doc(p){const r=fs.doc(p);return{
     id:r.id,path:p,
-    async get(){return docSnap(await r.get())},
-    async set(d){await r.set(ENC(cloneKeep(d)))},
-    async update(d){const e=ENC(cloneKeep(d));try{await r.update(e)}catch(x){if(x&&x.code==='not-found')await r.set(e);else throw x}},
-    async delete(){await r.delete()},
-    onSnapshot(cb,err){const u=r.onSnapshot(s=>cb(docSnap(s)),e=>{if(err)err(e)});subs.add(u);return u}
+    async get(){const t=hcTTL(p);if(t&&HC[p]&&Date.now()-HC[p]<t){try{return docSnap(await r.get({source:'cache'}))}catch(e){}}
+      /* the same record asked for by several parts of the app at once is fetched once */
+      const g=DG[p];if(g&&Date.now()-g.t<15e3)return g.pr;
+      const pr=withCache(()=>r.get(),()=>r.get({source:'cache'})).then(s=>{if(t){HC[p]=Date.now();hcSave()}return docSnap(s)});DG[p]={t:Date.now(),pr};pr.catch(()=>{delete DG[p]});return pr},
+    async set(d){delete HC[p];delete DG[p];cgDrop(p);await r.set(ENC(cloneKeep(d)))},
+    async update(d){delete HC[p];delete DG[p];cgDrop(p);const e=ENC(cloneKeep(d));try{await r.update(e)}catch(x){if(x&&x.code==='not-found')await r.set(e);else throw x}},
+    async delete(){delete HC[p];delete DG[p];cgDrop(p);await r.delete()},
+    onSnapshot(cb,err){const u=r.onSnapshot(s=>cb(docSnap(s)),e=>{quotaHit(e);if(err)err(e)});subs.add(u);return u}
   }},
   collection(p){const c=fs.collection(p);return{
     path:p,
-    async get(){if(WIN[p]){const h=hist(p);const q=await winQ(p,h.since).get();const docs=q.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}}return qSnap(await c.get())},
-    where(f,op,v){const q=c.where(f,op,v);return{get:async()=>qSnap(await q.get()),onSnapshot(cb,err){const u=q.onSnapshot(x=>cb(qSnap(x)),e=>{if(err)err(e)});subs.add(u);return u}}},
+    async get(){if(WIN[p]){const h=hist(p);const wq=winQ(p,h.since);const q=await withCache(()=>wq.get(),()=>wq.get({source:'cache'}));const docs=q.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);return{docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)}}
+      const g=CG[p];if(g&&Date.now()-g.t<30e3)return g.pr;const pr=withCache(()=>c.get(),()=>c.get({source:'cache'})).then(qSnap);CG[p]={t:Date.now(),pr};pr.catch(()=>{delete CG[p]});return pr},
+    where(f,op,v){const q=c.where(f,op,v);return{get:async()=>qSnap(await withCache(()=>q.get(),()=>q.get({source:'cache'}))),onSnapshot(cb,err){const u=q.onSnapshot(x=>cb(qSnap(x)),e=>{quotaHit(e);if(err)err(e)});subs.add(u);return u}}},
     async range(lo,hi){const f=firebase.firestore.FieldPath.documentId();let q=c;if(lo)q=q.where(f,'>=',lo);if(hi)q=q.where(f,'<',hi);return qSnap(await q.get())},
-    onSnapshot(cb,err){if(WIN[p])return winListen(p,cb,err);const u=c.onSnapshot(q=>cb(qSnap(q)),e=>{if(err)err(e)});subs.add(u);return u},
+    onSnapshot(cb,err){if(WIN[p])return winListen(p,cb,err);if(p==='runs'&&ROLE!=='admin')return slowListen(c,p,cb,err,2*3600e3);const u=c.onSnapshot(q=>cb(qSnap(q)),e=>{quotaHit(e);if(err)err(e)});subs.add(u);return u},
     doc(id){return db.doc(p+'/'+id)}
   }}
 };
@@ -10450,14 +10476,14 @@ const db={
    Records that pile up over the years (clock ins, timesheets, signatures...) are loaded for the last few
    weeks or months only. This keeps every open of the app small, so we stay well inside Google's free
    daily allowance however many years of records we keep. */
-const WIN={clock:{d:14},timesheets:{d:14},days:{d:14},weeks:{d:120},briefs:{d:60},briefsigs:{d:60},enqlog:{d:400},vchecks:{d:120},leave:{d:35,f:'to'},tlcheck:{d:70},activity:{d:70},invlog:{d:120,f:'from'}};
+const WIN={clock:{d:14},timesheets:{d:14},days:{d:14},weeks:{d:120},briefs:{d:60},briefsigs:{d:60},enqlog:{d:120},vchecks:{d:120},leave:{d:35,f:'to'},tlcheck:{d:70},activity:{d:70},invlog:{d:120,f:'from'}};
 const isoAgo=n=>{const d=new Date(Date.now()-n*864e5);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const HIST={};
 function hist(c){if(!HIST[c]){const s=isoAgo(WIN[c].d);HIST[c]={since:s,from:s,extra:new Map(),ls:new Set(),busy:null}}return HIST[c]}
 function winQ(c,lo,hi){const f=WIN[c].f?WIN[c].f:firebase.firestore.FieldPath.documentId();let q=fs.collection(c);if(lo)q=q.where(f,'>=',lo);if(hi)q=q.where(f,'<',hi);return q}
 function winEmit(c,L){if(!L.last)return;const h=hist(c);const docs=L.last.docs.map(docSnap);const have=new Set(docs.map(d=>d.id));for(const[id,d]of h.extra)if(!have.has(id))docs.push(d);L.cb({docs,size:docs.length,empty:!docs.length,forEach:f=>docs.forEach(f)})}
 function winListen(c,cb,err){const h=hist(c);const L={cb,last:null};h.ls.add(L);
-  const u=winQ(c,h.since).onSnapshot(q=>{L.last=q;winEmit(c,L)},e=>{if(err)err(e)});
+  const u=winQ(c,h.since).onSnapshot(q=>{L.last=q;winEmit(c,L)},e=>{quotaHit(e);if(err)err(e)});
   const off=()=>{u();h.ls.delete(L)};subs.add(off);return off}
 /* from: 'YYYY-MM-DD' to load back to that date, or '' for everything. cols: which record types (default all). */
 window.__history=function(from,cols){
@@ -10468,6 +10494,8 @@ window.__history=function(from,cols){
     h.busy=(h.busy||Promise.resolve()).then(run).catch(e=>console.warn('history',c,e));jobs.push(h.busy)}
   return Promise.all(jobs)};
 window.__historyFrom=c=>WIN[c]?hist(c).from:'';
+/* Enquiries keep the last 4 months loaded; the full year of older cases loads when the Enquiries page is opened */
+window.addEventListener('sh:go',e=>{if(e.detail==='enquiries'||e.detail==='ncr'){try{window.__history(isoAgo(400),['enqlog'])}catch(x){}}});
 /* ---------- backup: all the setup data, plus records added since the last backup ---------- */
 const BK_ALL=['staff','tlcheck','followup','leavereq','cover','access','runs','precards','lockers','leave','leavecfg','dircfg','notices','ntdrafts','updates','briefs','enquiries','enqcfg','enqpending','compliance','settings','uniorders','meta','shared','feedback','reports','invcfg','invlog','invme'];
 const BK_NEW=['clock','timesheets','days','weeks','briefsigs','enqlog','vchecks','reportimg'];
