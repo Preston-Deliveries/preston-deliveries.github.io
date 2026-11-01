@@ -6024,7 +6024,7 @@ function dotw(){if(MR()){const w=MR().dotw;if(!w||!w.mine||w.avg==null)return nu
     if(Q.length){const top=Q.filter(q=>r1(q[1])===r1(Q[0][1]));const K=myKeys();const nm=k=>(K.has(k)&&me&&me.name&&nameFor(k)===k)?tc(me.name):nameFor(k);const names=top.map(q=>nm(q[0]));const mine=top.some(q=>K.has(q[0]));return{k:top[0][0],name:names.length>1?names.slice(0,-1).join(', ')+' and '+names[names.length-1]:names[0],avg:Q[0][1],from:st,to:addD(st,25),live,mine,sh}}}
   return null}
 async function dotwLoad(){try{await ensureDays(addD(cycNow(),-28))}catch(e){}}
-function dotwHTML(w){if(!w||w.live)return '';return `<section class="dh-card dotw${w.mine?' me':''}"><span class="tr" aria-hidden="true">🏆</span><span class="tx"><small>${w.live?'Leading the month so far':'Driver of the month'} · ${esc(w.sh(w.from))} to ${esc(w.sh(w.to))}</small><b>${esc(w.name)}</b><span>Contract Score <em>${window.SCORE.fmt(w.avg)}</em>${w.mine?(w.live?'. That is you. Keep it up!':'. That is you. Great work!'):''}</span></span></section>`}
+function dotwHTML(w){/* driver of the month is no longer shown to anyone */return '';if(!w||w.live)return '';return `<section class="dh-card dotw${w.mine?' me':''}"><span class="tr" aria-hidden="true">🏆</span><span class="tx"><small>${w.live?'Leading the month so far':'Driver of the month'} · ${esc(w.sh(w.from))} to ${esc(w.sh(w.to))}</small><b>${esc(w.name)}</b><span>Contract Score <em>${window.SCORE.fmt(w.avg)}</em>${w.mine?(w.live?'. That is you. Keep it up!':'. That is you. Great work!'):''}</span></span></section>`}
 /* Personal bests: the driver's own records since the app started. */
 let bestBusy=null;
 async function bestLoad(){if(bestBusy)return bestBusy;bestBusy=(async()=>{let s=addD(cycNow(),-28),n=0;while(s>=CYC0&&n<13){try{await ensureDays(s)}catch(e){}s=addD(s,-28);n++}})();return bestBusy}
@@ -10367,7 +10367,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611020835';
+const VERSION='202611020840';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
