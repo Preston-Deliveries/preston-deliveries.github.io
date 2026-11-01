@@ -2074,7 +2074,7 @@ function filterTray(){
   const none=document.getElementById('trayNone');if(none)none.hidden=!(q&&shown===0);
 }
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800)}
-function setStatus(m){const el=document.getElementById('status');if(!el)return;if(m==='All changes saved')m='';el.textContent=m;el.hidden=!m}
+function setStatus(m){const el=document.getElementById('status');if(!el)return;if(m==='All changes saved'||m==='View only')m='';el.textContent=m;el.hidden=!m}
 
 /* ---------- saving ---------- */
 function markDirty(id){
@@ -2109,11 +2109,13 @@ function renderTop(){
   document.querySelectorAll('#pcs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.pc)));
   {const md=document.getElementById('modes');const off=!canWrite||(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})()||window.__webMe&&window.__webMe.role!=='admin'||S.view!=='runs';md.hidden=off;if(off)md.style.setProperty('display','none','important');else md.style.removeProperty('display')}
   document.getElementById('drivers').hidden=S.view!=='runs';
-  document.getElementById('drivers').innerHTML=ids().map(id=>{
-    const r=S.runs[id], tot=r.streets.length, p=placedOf(r).length, pct=tot?Math.round(p/tot*100):0;
-    return `<button type="button" class="chip" data-act="driver" data-v="${esc(id)}" aria-current="${id===S.cur}">
-      <b title="${esc(r.driver)}">${esc(r.driver==='Unassigned'?'Unassigned':shortDrv(r.driver))}</b><small>${esc(r.login)} · Bay ${esc(r.bay)}</small>${canWrite?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</button>`}).join('');
+  {const nav=document.getElementById('drivers');if(!nav.querySelector('#rs_q')){nav.innerHTML=`<div class="rs-find"><input type="search" id="rs_q" placeholder="Search a name, driver number or bay" autocomplete="off" aria-label="Search drivers"><div class="rs-res" id="rs_res"></div></div>`}rsList()}
 }
+function rsList(){const box=document.getElementById('rs_res'),q0=document.getElementById('rs_q');if(!box||!q0)return;const q=q0.value.trim().toLowerCase();
+  if(!q){if(box.innerHTML)box.innerHTML='';return}
+  const L=allIds().filter(id=>{const r=S.runs[id];return [r.driver,r.login,'bay '+r.bay,r.bay,r.postcode].join(' ').toLowerCase().includes(q)}).slice(0,10);
+  box.innerHTML=L.length?L.map(id=>{const r=S.runs[id];return `<button type="button" class="rs-hit" data-act="driver" data-v="${esc(id)}" data-pc="${esc(r.postcode)}" aria-current="${id===S.cur}"><b>${esc(r.driver||'Unassigned')}</b><small>${esc(r.login)} · Bay ${esc(r.bay)} · ${esc(r.postcode)}</small></button>`}).join(''):'<p class="rs-none">No driver found</p>'}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='rs_q')rsList()});
 
 /* ---------- editor ---------- */
 function field(label,bind,val,opts={}){
@@ -2202,9 +2204,7 @@ function sheetHTML(r){
   const alertChips=Object.entries(cnt).map(([k,v])=>{const t=TYPES[k]||TYPES.note;return `<span class="tag ${t.tone}">${v} × ${t.label}</span>`}).join('');
   return `<article class="sheet">
     <header class="sh-head"><div><div class="sh-eyebrow">Run sheet · Postcode ${esc(r.postcode)}</div><h1>${esc(r.driver)}</h1></div>
-      <dl class="sh-meta"><div><dt>Driver no.</dt><dd>${esc(r.login)}</dd></div><div><dt>Driver bay</dt><dd>${esc(r.bay)}</dd></div>
-      <div><dt>Sections</dt><dd>${r.sections.filter(x=>inSec(r,x.id).length).length}</dd></div><div><dt>Streets</dt><dd>${placed.length}</dd></div>
-      ${r.van?`<div><dt>Van</dt><dd>${esc(r.van)}</dd></div>`:''}${r.start?`<div><dt>Start</dt><dd>${esc(r.start)}</dd></div>`:''}</dl></header>
+      ${(()=>{const ns=r.sections.filter(x=>inSec(r,x.id).length).length,nst=placed.length;return `<p class="sh-mini"><span><b>${esc(r.login)}</b></span><span>Bay <b>${esc(r.bay)}</b></span><span><b>${ns}</b> section${ns===1?'':'s'}</span><span><b>${nst}</b> street${nst===1?'':'s'}</span>${r.van?`<span>Van <b>${esc(r.van)}</b></span>`:''}${r.start?`<span>Start <b>${esc(r.start)}</b></span>`:''}</p>`})()}</header>
     ${alertChips?`<div class="sh-alerts"><span class="lbl">On this run:</span>${alertChips}</div>`:''}
     ${before.length?`<div class="sh-before">${before.map(b=>`<div><h3>${b[0]}</h3><p>${esc(b[1])}</p></div>`).join('')}</div>`:''}
     <div class="sh-key"><span><span class="sw"></span>Yellow = high volume street</span><span>Deliver in the order shown, top to bottom.</span></div>
@@ -2375,7 +2375,7 @@ async function act(a,el){
   if(a==='shareRuns'){el.disabled=true;toast('Sending to drivers…');try{await shareRuns();toast('Done. Drivers now see the latest. Reloading.')}catch(e){el.disabled=false;toast(e&&e.code==='conflict'?'Changed elsewhere at the same time. Try again after it reloads.':'Could not send to drivers just now.')}return}
   if(a==='clearQ'){S.q='';render();focusQ();return}
   if(a==='printSort'){if(!downloads)return;el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(sortPrintDoc(S.pc),{margin:9});await downloads.save({filename:`${S.pc} Missort Sheet.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
-  if(a==='driver'){S.cur=d.v;S.open.clear();S.trayEdit=null;S.traySearch='';S.confirm=null;S.sheetSt=null;S.into=null;S.showAll=false;render();window.scrollTo(0,0);return}
+  if(a==='driver'){if(d.pc&&S.runs[d.v])S.pc=String(d.pc);{const q=document.getElementById('rs_q');if(q){q.value='';q.blur()}}S.cur=d.v;S.open.clear();S.trayEdit=null;S.traySearch='';S.confirm=null;S.sheetSt=null;S.into=null;S.showAll=false;render();window.scrollTo(0,0);return}
   if(a==='step'){S.step=d.v;S.sheetSt=null;render();document.querySelector('#mod-runs .pl-steps')?.scrollIntoView({block:'start'});window.scrollBy(0,-70);return}
   if(a==='into'){S.into=d.v;S.traySearch='';render();return}
   if(a==='showAll'){S.showAll=true;render();return}
@@ -10241,7 +10241,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010187';
+const VERSION='202611010189';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11528,6 +11528,26 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs>button{flex:1 1 auto!important;font-size:.9rem!important;padding-left:4px!important;padding-right:4px!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw-me .iw-sec{border-top:0!important;padding-top:0!important;margin-top:10px!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw-me .iw-stepl{border-bottom:0!important;padding-bottom:0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs nav#drivers{display:block!important;grid-template-columns:none!important;padding:0!important;border:0!important;background:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs nav#drivers[hidden]{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-find{display:flex;flex-direction:column;gap:6px;width:100%}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs #rs_q{width:100%;box-sizing:border-box;min-height:46px;font:inherit;font-size:1rem;padding:10px 14px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-res:empty{display:none}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-res{display:flex;flex-direction:column;border:1px solid var(--sh-line);border-radius:14px;background:var(--sh-surface);overflow:hidden}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-hit{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-top:1px solid var(--sh-line)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-hit:first-child{border-top:0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-hit b{font-weight:800}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-hit small{color:var(--sh-muted)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-none{margin:0;padding:12px 14px;color:var(--sh-muted)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-head{padding-top:4px!important;padding-bottom:8px!important;gap:8px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-head h1{font-size:1.45rem!important;line-height:1.15!important;margin:2px 0 0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-eyebrow{font-size:.7rem!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-meta{display:flex!important;flex-wrap:wrap!important;gap:6px 16px!important;margin:6px 0 0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-meta>div{display:flex!important;align-items:baseline!important;gap:6px!important;min-width:0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-meta dt{font-size:.68rem!important;margin:0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-meta dd{font-size:1.05rem!important;margin:0!important;line-height:1.2!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-head{display:block!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-mini{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0;font-size:.95rem;color:var(--sh-muted)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-mini b{color:var(--sh-ink);font-weight:800}
 </style>
 <script>
 /* Results and Survey: the same top box as Summary (Download PDF, postcode, one driver, period) */
