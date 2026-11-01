@@ -206,17 +206,24 @@ async function runTasks(token, rep) {
       const over = send.find(m => m.k === 'over');
       const title = clip(t.title, 100);
       if (ding && t.who) {
-        const phones = await findPhones(eq('email', String(t.who).toLowerCase()), token);
+        const phones = await findPhones(emailIs(t.who), token);
         rep.phones += phones.length;
         await fcmAll(phones, 'Task: ' + title, 'Due ' + (t.whenTxt || '') + '. Tap to see it.', token);
+        await fsPatch('tasks/' + t.id, { lastDing: new Date().toISOString(), lastPhones: phones.length }, token, ['lastDing', 'lastPhones']);
       }
       if (over && t.by) {
-        const phones = await findPhones(eq('email', String(t.by).toLowerCase()), token);
+        const phones = await findPhones(emailIs(t.by), token);
         rep.phones += phones.length;
         await fcmAll(phones, 'Task not done yet', title + ' (' + clip(t.whoName || t.who, 40) + ')', token, '#tasks');
       }
     } catch (e) { rep.errors.push('task: ' + String(e && e.message || e).slice(0, 200)); }
   }
+}
+/* the owner signs in with either of two emails, so a task for one reaches the phones signed in with the other too */
+function emailIs(e) {
+  e = String(e || '').toLowerCase();
+  if (OWNERS.includes(e)) return { fieldFilter: { field: { fieldPath: 'email' }, op: 'IN', value: { arrayValue: { values: OWNERS.map(x => ({ stringValue: x })) } } } };
+  return eq('email', e);
 }
 async function fcmAll(phones, title, body, token, url = '#home') {
   await Promise.all(phones.map(p => fetch(`https://fcm.googleapis.com/v1/projects/${PROJECT}/messages:send`, {

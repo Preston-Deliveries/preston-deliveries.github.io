@@ -10360,7 +10360,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012140';
+const VERSION='202611012145';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11903,7 +11903,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root #sh-main #mod-tasks .tk-f label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:.95rem}
 :root:root #sh-main #mod-tasks .tk-f :is(input,select,textarea){font:inherit;font-weight:500;padding:11px 12px;border-radius:10px;border:1px solid var(--sh-line);background:var(--sh-bg,transparent);color:var(--sh-ink);min-height:46px;box-sizing:border-box;width:100%}
 :root:root #sh-main #mod-tasks .tk-f textarea{min-height:80px;resize:vertical}
-:root:root #sh-main #mod-tasks .tk-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+:root:root #sh-main #mod-tasks .tk-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}:root:root #sh-main #mod-tasks .tk-f :is(input,select){min-width:0;max-width:100%}:root:root #sh-main #mod-tasks .tk-2 label{min-width:0}
 :root:root #sh-main #mod-tasks .tk-h{font-weight:700;font-size:.95rem;margin:2px 0 -4px}
 :root:root #sh-main #mod-tasks .tk-chips{display:flex;flex-wrap:wrap;gap:8px}
 :root:root #sh-main #mod-tasks .tk-chips button{all:unset;cursor:pointer;padding:9px 14px;border-radius:999px;border:1px solid var(--sh-line);font-weight:700;font-size:.92rem;color:var(--sh-ink)}
@@ -11924,7 +11924,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root #sh-main #mod-tasks .tk-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:800;letter-spacing:.3px;margin-right:6px;background:var(--sh-line);color:var(--sh-ink)}
 :root:root #sh-main #mod-tasks .tk-tag.red{background:#C8352B;color:#fff}
 :root:root #sh-main #mod-tasks .tk-tag.grn{background:#1E8A4C;color:#fff}
-:root:root #sh-main #mod-tasks .tk-empty{padding:30px 10px;text-align:center;color:var(--sh-muted)}
+:root:root #sh-main #mod-tasks .tk-dg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) 36px;gap:6px;align-items:center}:root:root #sh-main #mod-tasks .tk-f .tk-dg input{padding:10px 6px 10px 8px;font-size:.95rem}:root:root #sh-main #mod-tasks .tk-f .tk-2 input{padding:10px 6px 10px 8px}:root:root #sh-main #mod-tasks .tk-dx{all:unset;cursor:pointer;width:36px;height:44px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--sh-line);color:var(--sh-muted)}:root:root #sh-main #mod-tasks .tk-empty{padding:30px 10px;text-align:center;color:var(--sh-muted)}
 .tk-card{padding:12px 14px!important;border-left:4px solid #2F6FDB!important;display:flex;flex-direction:column;gap:8px}
 .tk-card .tk-ch{display:flex;align-items:center;justify-content:space-between}
 .tk-card .tk-ch small{color:var(--sh-muted);font-weight:600}
@@ -11958,7 +11958,7 @@ const isMgr=()=>!!(window.APP&&APP.role==='mgr');
 const isOver=t=>t.status!=='done'&&(t.due<today()||(t.due===today()&&t.time&&Date.now()>Date.parse(utcOf(t.due,t.time))));
 /* reminder times for a task, in UTC, only the ones still in the future */
 function rems(t){const out=[];const add=(k,iso,hm)=>{const at=utcOf(iso,hm);if(Date.parse(at)>Date.now()+30e3)out.push({k,at})};
-  for(const k of t.remind||[]){if(k==='3d')add(k,addD(t.due,-3),'07:00');if(k==='1d')add(k,addD(t.due,-1),'07:00');if(k==='am')add(k,t.due,'07:00');if(k==='at'&&t.time)add(k,t.due,t.time)}
+  for(const g of t.dings||[]){if(g&&g.d&&g.t)add('ding',g.d,g.t)}
   /* nudge whoever made it if it's still not done */
   if(t.time){const[h,m]=t.time.split(':').map(Number);const x=Math.min(h*60+m+60,23*60+30);add('over',t.due,String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'))}else add('over',t.due,'17:00');
   out.sort((a,b)=>a.at.localeCompare(b.at));return out}
@@ -11970,7 +11970,7 @@ const db=async()=>{try{return window.__getDb?await window.__getDb():null}catch(e
 
 /* ---------- live data ---------- */
 async function watchMine(){if(TK.unM||!myEmail())return;const d=await db();if(!d||TK.unM)return;
-  TK.unM=d.collection('tasks').where('who','==',myEmail()).onSnapshot(q=>{const o={};q.docs.forEach(x=>o[x.id]=Object.assign({id:x.id},x.data()));TK.mine=o;homePaint()},()=>{TK.unM=null;setTimeout(watchMine,30000)})}
+  const em=[...new Set([myEmail(),...(me().emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean))];TK.unM=(em.length>1?d.collection('tasks').where('who','in',em):d.collection('tasks').where('who','==',myEmail())).onSnapshot(q=>{const o={};q.docs.forEach(x=>o[x.id]=Object.assign({id:x.id},x.data()));TK.mine=o;homePaint()},()=>{TK.unM=null;setTimeout(watchMine,30000)})}
 async function watchAll(){if(TK.unA||!isMgr())return;const d=await db();if(!d||TK.unA)return;
   TK.unA=d.collection('tasks').onSnapshot(q=>{const o={};q.docs.forEach(x=>o[x.id]=Object.assign({id:x.id},x.data()));TK.all=o;if(!TK.form)render()},()=>{TK.unA=null})}
 async function loadPeople(){if(TK.people)return;const d=await db();const L=[];const seen=new Set();
@@ -11987,7 +11987,7 @@ async function markDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d
 
 /* ---------- Home card: your tasks for the next 7 days ---------- */
 function homeHtml(){const T=today(),lim=addD(T,7);const L=Object.values(TK.mine).filter(t=>t.status!=='done'&&t.due<=lim).sort((a,b)=>(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));if(!L.length)return '';
-  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length} to do</small></div>${L.map(t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}${t.repeat?' · repeats':''}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`}).join('')}</section>`}
+  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length} to do</small></div>${L.map(t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`}).join('')}</section>`}
 function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
@@ -11995,20 +11995,18 @@ function homePaint(){const home=document.getElementById('sh-home');if(!home)retu
   if(w.__h!==h){w.__h=h;w.innerHTML=h}}
 
 /* ---------- admin page ---------- */
-const blank=()=>({title:'',note:'',who:myEmail(),due:addD(today(),1),time:'',remind:['1d','am'],repeat:''});
+const blank=()=>({title:'',note:'',who:myEmail(),due:addD(today(),1),time:'',dings:[{d:addD(today(),1),t:'07:00'}],repeat:''});
 function formHtml(){const f=TK.form;const P=TK.people||[];
   return `<div class="tk-f"><div class="tk-h">${f.id?'Edit task':'New task'}</div>
   <label>What needs doing<input id="tk_title" value="${esc(f.title)}" placeholder="e.g. Sign the van lease" maxlength="120"></label>
   <label>Note (optional)<textarea id="tk_note" placeholder="Any details they need" maxlength="600">${esc(f.note)}</textarea></label>
   <label>Who it's for<select id="tk_who">${P.length?P.map(p=>`<option value="${esc(p.email)}" ${p.email===f.who?'selected':''}>${esc(p.name)}</option>`).join(''):`<option value="${esc(f.who)}">Loading…</option>`}</select></label>
   <div class="tk-2"><label>Due date<input type="date" id="tk_due" value="${esc(f.due)}"></label><label>Time (optional)<input type="time" id="tk_time" value="${esc(f.time)}"></label></div>
-  <div class="tk-h">Ding their phone</div>
-  <div class="tk-chips">${REM.map(([k,l])=>`<button type="button" data-tk="rem" data-v="${k}" aria-pressed="${f.remind.includes(k)}">${l}</button>`).join('')}</div>
-  <small style="color:var(--sh-muted)">Morning dings go at 7am. "At the time" needs a time set.</small>
-  <div class="tk-h">Repeat</div>
-  <div class="tk-chips">${REP.map(([k,l])=>`<button type="button" data-tk="rep" data-v="${k}" aria-pressed="${f.repeat===k}">${l}</button>`).join('')}</div>
+  <div class="tk-h">Ding their phone at</div>
+  ${f.dings.map((g,i)=>`<div class="tk-dg"><input type="date" data-dk="${i}" data-f="d" value="${esc(g.d)}" aria-label="Ding date"><input type="time" data-dk="${i}" data-f="t" value="${esc(g.t)}" aria-label="Ding time"><button type="button" class="tk-dx" data-tk="dx" data-v="${i}" aria-label="Remove this ding">✕</button></div>`).join('')}
+  <div><button type="button" class="sh-btn" data-tk="dadd">+ Add a ding</button></div>
   <div class="tk-foot"><button type="button" class="sh-btn primary" data-tk="save" ${TK.busy?'disabled':''}>${f.id?'Save changes':'Add task'}</button><button type="button" class="sh-btn" data-tk="cancel">Cancel</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}</div></div>`}
-function readForm(){const f=TK.form;const v=id=>(document.getElementById(id)||{}).value;f.title=(v('tk_title')||'').trim();f.note=(v('tk_note')||'').trim();f.who=v('tk_who')||f.who;f.due=v('tk_due')||f.due;f.time=v('tk_time')||''}
+function readForm(){const f=TK.form;const v=id=>(document.getElementById(id)||{}).value;document.querySelectorAll('#tk_root [data-dk]').forEach(x=>{const g=f.dings[+x.dataset.dk];if(g)g[x.dataset.f]=x.value});f.title=(v('tk_title')||'').trim();f.note=(v('tk_note')||'').trim();f.who=v('tk_who')||f.who;f.due=v('tk_due')||f.due;f.time=v('tk_time')||''}
 function listHtml(){const T=today();let L=Object.values(TK.all);
   if(TK.who)L=L.filter(t=>t.who===TK.who);
   const cnt={open:L.filter(t=>t.status!=='done'&&!isOver(t)).length,over:L.filter(isOver).length,done:L.filter(t=>t.status==='done').length};
@@ -12018,8 +12016,8 @@ function listHtml(){const T=today();let L=Object.values(TK.all);
   return `<div class="tk-bar"><div class="tk-chips">${[['open','To do'],['over','Overdue'],['done','Done']].map(([k,l])=>`<button type="button" data-tk="view" data-v="${k}" aria-pressed="${TK.view===k}">${l} ${cnt[k]}</button>`).join('')}</div>
     ${whoOpts.length>1?`<select id="tk_fwho" aria-label="Who"><option value="">Everyone</option>${whoOpts.map(e=>`<option value="${esc(e)}" ${TK.who===e?'selected':''}>${esc(nameOf(e))}</option>`).join('')}</select>`:''}</div>
   <div class="tk-list">${L.length?L.map(t=>{const o=isOver(t);return `<div class="tk-i ${o?'over':''} ${t.status==='done'?'done':''}">
-    <div>${o?'<span class="tk-tag red">OVERDUE</span>':''}${t.status==='done'?'<span class="tk-tag grn">DONE</span>':''}${t.repeat?`<span class="tk-tag">${esc((REP.find(r=>r[0]===t.repeat)||[])[1]||'')}</span>`:''}</div>
-    <b>${esc(t.title)}</b><small>For ${esc(nameOf(t.who))} · due ${esc(whenTxt(t))}${t.status==='done'?' · done '+esc(dayTxt(window.__qISO(new Date(t.doneAt))))+' at '+esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16))):''}${t.lastDone&&t.status!=='done'?' · last done '+esc(dayTxt(window.__qISO(new Date(t.lastDone)))):''}</small>
+    <div>${o?'<span class="tk-tag red">OVERDUE</span>':''}${t.status==='done'?'<span class="tk-tag grn">DONE</span>':''}</div>
+    <b>${esc(t.title)}</b><small>For ${esc(nameOf(t.who))} · due ${esc(whenTxt(t))}${t.status==='done'?' · done '+esc(dayTxt(window.__qISO(new Date(t.doneAt))))+' at '+esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16))):''}${t.lastDone&&t.status!=='done'?' · last done '+esc(dayTxt(window.__qISO(new Date(t.lastDone)))):''}</small>${t.lastDing?`<small>Last ding ${esc(dayTxt(window.__qISO(new Date(t.lastDing))))} at ${esc(t12(new Date(Date.parse(t.lastDing)+QLD).toISOString().slice(11,16)))}: ${t.lastPhones?'went to '+t.lastPhones+' phone'+(t.lastPhones>1?'s':''):'no phone has notifications on for this person'}</small>`:(t.dings||[]).length&&t.status!=='done'?`<small>Dings: ${esc(t.dings.map(g=>dayTxt(g.d)+' '+t12(g.t)).join(', '))}</small>`:''}
     ${t.note?`<p>${esc(t.note)}</p>`:''}
     <div class="tk-foot">${t.status!=='done'?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button><button type="button" class="sh-btn" data-tk="edit" data-v="${esc(t.id)}">Edit</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===t.id?'arm':''}" data-tk="del" data-v="${esc(t.id)}">${TK.arm===t.id?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
 function render(){const el=document.getElementById('tk_root');if(!el)return;if(!isMgr()){el.innerHTML='';return}
@@ -12029,9 +12027,10 @@ function render(){const el=document.getElementById('tk_root');if(!el)return;if(!
 async function save(){readForm();const f=TK.form;
   if(!f.title){TK.msg={err:true,t:'Type what needs doing.'};render();return}
   if(!f.due){TK.msg={err:true,t:'Pick a due date.'};render();return}
-  if(f.remind.includes('at')&&!f.time){TK.msg={err:true,t:'Set a time, or untick "At the time".'};render();return}
+  f.dings=f.dings.filter(g=>g.d||g.t);if(f.dings.some(g=>!g.d||!g.t)){TK.msg={err:true,t:'Each ding needs a date and a time.'};render();return}
+  if(f.dings.some(g=>Date.parse(utcOf(g.d,g.t))<Date.now())){TK.msg={err:true,t:'One of the ding times has already passed.'};render();return}
   const d=await db();if(!d)return;TK.busy=true;render();
-  const t={title:f.title,note:f.note,who:f.who,whoName:nameOf(f.who),due:f.due,time:f.time,remind:f.remind.slice(),repeat:f.repeat,status:'open'};
+  const t={title:f.title,note:f.note,who:f.who,whoName:nameOf(f.who),due:f.due,time:f.time,dings:f.dings.map(g=>({d:g.d,t:g.t})),repeat:'',status:'open'};
   const r=rems(t);Object.assign(t,{rems:r,next:nextOf(r),whenTxt:whenTxt(t)});
   try{if(f.id)await d.doc('tasks/'+f.id).update(t);
     else{const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);await d.doc('tasks/'+id).set(Object.assign(t,{by:myEmail(),byName:me().name||'',created:new Date().toISOString()}))}
@@ -12045,16 +12044,18 @@ document.addEventListener('click',async e=>{
   const a=b.dataset.tk,v=b.dataset.v;if(a!=='del')TK.arm=null;
   if(a==='new'){TK.form=blank();TK.msg=null;loadPeople();render();window.scrollTo(0,0);setTimeout(()=>document.getElementById('tk_title')?.focus(),0);return}
   if(a==='cancel'){TK.form=null;TK.msg=null;render();return}
-  if(a==='rem'){readForm();const r=TK.form.remind;const i=r.indexOf(v);if(i>=0)r.splice(i,1);else r.push(v);render();return}
-  if(a==='rep'){readForm();TK.form.repeat=v;render();return}
+  if(a==='dadd'){readForm();const L=TK.form.dings;const last=L[L.length-1];L.push({d:last?last.d:(TK.form.due||today()),t:last?last.t:'07:00'});render();return}
+  if(a==='dx'){readForm();TK.form.dings.splice(+v,1);render();return}
   if(a==='save'){save();return}
   if(a==='view'){TK.view=v;TK.msg=null;render();return}
-  if(a==='edit'){const t=TK.all[v];if(!t)return;TK.form={id:t.id,title:t.title||'',note:t.note||'',who:t.who,due:t.due,time:t.time||'',remind:(t.remind||[]).slice(),repeat:t.repeat||''};TK.msg=null;loadPeople();render();window.scrollTo(0,0);return}
+  if(a==='edit'){const t=TK.all[v];if(!t)return;TK.form={id:t.id,title:t.title||'',note:t.note||'',who:t.who,due:t.due,time:t.time||'',dings:(t.dings||[]).map(g=>({d:g.d,t:g.t})),repeat:''};TK.msg=null;loadPeople();render();window.scrollTo(0,0);return}
   if(a==='done'){const t=TK.all[v];if(t){await markDone(t,b);TK.msg={t:t.repeat?'Done. The next one is set.':'Marked done.'};render()}return}
   if(a==='del'){if(TK.arm!==v){TK.arm=v;render();setTimeout(()=>{if(TK.arm===v){TK.arm=null;render()}},3500);return}
     TK.arm=null;try{const d=await db();await d.doc('tasks/'+v).delete();TK.msg={t:'Task deleted.'}}catch(x){TK.msg={err:true,t:'Could not delete just now.'}}render();return}
 });
-document.addEventListener('change',e=>{if(e.target&&e.target.id==='tk_fwho'){TK.who=e.target.value;render()}});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='tk_fwho'){TK.who=e.target.value;render()}
+  /* moving the due date moves a ding that was on the old due date */
+  if(e.target&&e.target.id==='tk_due'&&TK.form){const old=TK.form.due;readForm();const nw=TK.form.due;if(old&&nw&&old!==nw){let ch=false;TK.form.dings.forEach(g=>{if(g.d===old)g.d=nw});document.querySelectorAll('#tk_root [data-dk][data-f=d]').forEach(x=>{if(x.value===old)x.value=nw})}}});
 
 window.addEventListener('sh:go',e=>{if(e.detail==='tasks'){watchAll();loadPeople();render()}});
 (()=>{const go=()=>{const home=document.getElementById('sh-home');if(!home||!myEmail()){setTimeout(go,500);return}new MutationObserver(()=>homePaint()).observe(home,{childList:true});watchMine();homePaint()};go()})();
