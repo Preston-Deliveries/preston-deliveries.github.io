@@ -8550,20 +8550,23 @@ function openEarlier(today){
 }
 const nice12=t=>{const m=toMin(t);if(m==null)return t||'';let h=Math.floor(m/60);const mm=m%60,ap=h<12?'am':'pm';h=h%12||12;return h+(mm?':'+pad(mm):'')+ap};
 function checkStat(){if(!window.APP||!APP.stat)return;const T=nowDay(),c=checkData(T);const parts=[];if(c.not.length)parts.push(c.not.length+' not clocked in');if(c.on.length)parts.push(c.on.length+' still on shift');const o=openEarlier(T).length;if(o)parts.push(o+' didn’t clock out');APP.stat('timesheets',parts.length?'Today: '+parts.join(', '):(c.done.length?'Today: everyone has clocked out':''))}
-let ckPer='day';
+let ckPer='day',ckOpen=null,ckAll=null;
+function rangeTot(from,to){let tot=0,miss=0;const seen=new Set(),T=nowDay();for(let d=from;d<=to;d=add(d,1))for(const r of rowsFor(d)){const e=eff(r);if(e.hrs!=null)tot+=e.hrs;else if(d<T)miss++;seen.add(r.key)}return{tot,miss,n:seen.size}}
 const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const dshort=s=>{const d=fromIso(s);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
 /* Sunday is not a work day: Day view shows the Saturday before */
+/* pay periods are 4 weeks, counted from Monday 5 Oct 2026 */
+const ckCyc=d=>add('2026-10-05',28*Math.floor(Math.round((fromIso(d)-fromIso('2026-10-05'))/864e5)/28));
 const ckBase=T=>ckPer==='day'&&fromIso(T).getDay()===0?add(T,-1):T;
 function ckRange(){
   const T=nowDay(),b=ckDay||ckBase(T);
   if(ckPer==='week'){const m=monday(b),e=add(m,6);return{from:m,to:e>T?T:e,label:'Week of '+short(m)+' to '+short(e),cur:m<=T&&T<=e}}
-  if(ckPer==='month'){const f=b.slice(0,8)+'01',d=fromIso(f);d.setMonth(d.getMonth()+1);d.setDate(0);const e=iso(d);return{from:f,to:e>T?T:e,label:MONL[fromIso(f).getMonth()]+' '+f.slice(0,4),cur:f<=T&&T<=e}}
+  if(ckPer==='month'){const f=ckCyc(b),e=add(f,27);return{from:f,to:e>T?T:e,label:'Pay period '+short(f)+' to '+short(add(f,25)),cur:f<=T&&T<=e}}
   return{from:b,to:b,label:(b===T?'Today, ':'')+dshort(b),cur:b===T};
 }
 function ckStep(n){
   const T=nowDay(),b=ckDay||ckBase(T);let x;
-  if(ckPer==='week')x=add(b,28*n);else if(ckPer==='month'){const d=fromIso(b.slice(0,8)+'01');d.setMonth(d.getMonth()+n);x=iso(d)}else x=add(b,7*n);
+  if(ckPer==='week'||ckPer==='month')x=add(b,28*n);else x=add(b,7*n);
   ckDay=x>=T?null:x;
 }
 function ckPick(){
@@ -8571,8 +8574,8 @@ function ckPick(){
   let c='';
   if(ckPer==='day'){const m=monday(b);c=[0,1,2,3,4,5].map(i=>{const d=add(m,i),x=fromIso(d);return chip(d,d===b,DOW[x.getDay()].slice(0,3),x.getDate()+' '+MON[x.getMonth()].slice(0,3),d>T)}).join('')}
   else if(ckPer==='week'){const k=Math.floor(Math.round((fromIso(monday(b))-fromIso('2026-10-05'))/864e5)/28),cs=add('2026-10-05',28*k);c=[0,1,2,3].map(i=>{const f=add(cs,7*i),x=fromIso(f);return chip(f,f===monday(b),'Week '+(i+1),x.getDate()+' '+MON[x.getMonth()].slice(0,3),f>T)}).join('')}
-  else{const d=fromIso(b.slice(0,8)+'01');c=[-3,-2,-1,0].map(k=>{const x=new Date(d.getFullYear(),d.getMonth()+k,1);const f=iso(x);return chip(f,k===0,MONL[x.getMonth()].slice(0,3),String(x.getFullYear()),false)}).join('')}
-  return `<div class="pkx"><div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['month','Month']].map(([k,l])=>`<button type="button" data-ts="ckper" data-v="${k}" aria-pressed="${k===ckPer}">${l}</button>`).join('')}</div>
+  else{const cs=ckCyc(b);c=[-3,-2,-1,0].map(k=>{const f=add(cs,28*k),x=fromIso(f);return chip(f,k===0,MON[x.getMonth()].slice(0,3),x.getDate()+' '+MON[x.getMonth()].slice(0,3),f>T)}).join('')}
+  return `<div class="pkx"><div class="pseg2" role="group" aria-label="Period">${[['day','Day'],['week','Week'],['month','Pay period']].map(([k,l])=>`<button type="button" data-ts="ckper" data-v="${k}" aria-pressed="${k===ckPer}">${l}</button>`).join('')}</div>
    <div class="pchips"><button type="button" class="pnav" data-ts="ckprev" aria-label="Earlier">\u2039</button><div class="pchs">${c}</div><button type="button" class="pnav" data-ts="cknext" aria-label="Later">\u203a</button></div></div>`;
 }
 function ckAgg(from,to){
@@ -8603,17 +8606,19 @@ function checkHTML(){
   const n=k=>A.reduce((s,r)=>s+r[k].length,0);
   const chip=(r,extra)=>`<button type="button" class="ckp" data-ts="pick" data-v="${esc(r.p.id)}"><b>${esc(r.p.name)}</b>${r.p.no?`<small>${esc(r.p.no)}</small>`:''}${extra?`<em>${esc(extra)}</em>`:''}</button>`;
   const days=L=>L.map(x=>dshort(x.d)).join(', ');
-  const box=(cls,title,count,people,extra,empty,open)=>`<details class="ckc ${cls}" ${open?'open':''}><summary><h3>${title}</h3><span class="nn">${count}</span><small class="np">${count===1?'person':'people'}</small></summary>${people.length?`<div class="ckl">${people.map(r=>chip(r,extra(r))).join('')}</div>`:`<p class="none">${empty}</p>`}</details>`;
+  const CAP=12;
+  const box=(cls,title,count,people,extra,empty)=>{const all=ckAll===cls||people.length<=CAP+2,L=all?people:people.slice(0,CAP);return `<details class="ckc ${cls}" data-ck="${cls}" ${ckOpen===cls?'open':''}><summary><h3>${title}</h3><span class="nn">${count}</span><small class="np">${count===1?'person':'people'}</small></summary>${people.length?`<div class="ckl">${L.map(r=>chip(r,extra(r))).join('')}</div>${all?'':`<button type="button" class="sh-btn sm ckmore" data-ts="ckall" data-v="${cls}">Show all ${people.length}</button>`}`:`<p class="none">${empty}</p>`}</details>`};
   const unit=day?'':' shifts';
   return `<section class="card ckk"><div class="ckh"><h2>Clock in check</h2>
 </div>
-   ${ckPick()}<p class="ckdl">${esc(R.label)}</p>
+   ${ckPick()}
    <div class="ckg">
-    ${box('in','Clocked in',ins.length,ins,r=>day?'in '+nice12(r.ins[0].t):r.ins.length+' day'+(r.ins.length===1?'':'s'),'No one has clocked in.',false)}
-    ${box('out','Clocked out',outs.length,outs,r=>day?'out '+nice12(r.outs[0].t):r.outs.length+' day'+(r.outs.length===1?'':'s'),'No one has clocked out.',false)}
-    ${box('bad','Not clocked in',ni.length,ni,r=>day?'':days(r.noIn),'Everyone expected clocked in.',false)}
-    ${box('warn','Not clocked out',n('noOut'),no,r=>day?'in '+nice12(r.noOut[0].t)+(r.noOut[0].now?', still on':''):days(r.noOut),'No open shifts.',false)}
+    ${box('in','Clocked in',ins.length,ins,r=>day?'in '+nice12(r.ins[0].t):r.ins.length+' day'+(r.ins.length===1?'':'s'),'No one has clocked in.')}
+    ${box('out','Clocked out',outs.length,outs,r=>day?'out '+nice12(r.outs[0].t):r.outs.length+' day'+(r.outs.length===1?'':'s'),'No one has clocked out.')}
+    ${box('bad','Not clocked in',ni.length,ni,r=>day?'':days(r.noIn),'Everyone expected clocked in.')}
+    ${box('warn','Not clocked out',n('noOut'),no,r=>day?'in '+nice12(r.noOut[0].t)+(r.noOut[0].now?', still on':''):days(r.noOut),'No open shifts.')}
    </div>
+   ${(()=>{const H=rangeTot(R.from,R.to);return `<div class="tiles trow ckt" style="--tn:3"><div class="tile"><span>Drivers worked</span><b>${H.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(H.tot/60)}</b></div><div class="tile ${H.miss?'warn':'good'}" title="Shifts missing a start or finish time"><span>Missing a time</span><b>${H.miss}</b></div></div>`})()}
    <div class="ckwa"><button type="button" class="sh-btn ckgo" data-ts="ckwa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.3A9.5 9.5 0 1 0 12 2.5zm5.3 13.3c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>Share on WhatsApp</button><button type="button" class="sh-btn" data-ts="ckcopy">Copy message</button><span class="ok" id="ts_ckok" role="status"></span></div>
    </section>`;
 }
@@ -8629,12 +8634,10 @@ function render(){
   const SEG=`<div class="seg tstabs" role="group" aria-label="View or adjust"><button type="button" data-ts="tab" data-v="view" aria-pressed="${tsTab==='view'&&!person}">View</button><button type="button" data-ts="tab" data-v="adjust" aria-pressed="${tsTab==='adjust'||!!person}">Adjust</button></div>`;
   if(person){box.innerHTML=`<div class="tsx">${SEG}${searchHTML()}${m}${personHTML()}<p class="hint">Edit any time or answer here the same as on the daily view.</p></div>`;return}
   const W=weekHTML();checkStat();
-  box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">Download this week</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
+  box.innerHTML=`<div class="tsx"><div class="head"><h1>Timesheets</h1><div class="act"><button type="button" class="sh-btn" data-ts="xw">${tsTab==='view'?'Download this period':'Download this week'}</button><button type="button" class="sh-btn primary" data-ts="xy">Download financial year</button></div></div>
    ${SEG}
    ${m}
    ${tsTab==='view'?`${checkHTML()}
-   <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
-   <div class="tiles trow" style="--tn:3"><div class="tile"><span>Drivers</span><b>${W.n}</b></div><div class="tile"><span>Total hours</span><b>${Math.round(W.tot/60)}</b></div><div class="tile ${W.miss?'warn':'good'}" title="Missing a time this week"><span>Missing a time</span><b>${W.miss}</b></div></div>
    <p class="hint">To change someone's times, tap Adjust and search their name.</p>`:`${searchHTML()}
    <div class="nav"><button type="button" class="sh-btn" data-ts="prev" aria-label="Previous week">‹</button><h2>${esc(W.label)}</h2><button type="button" class="sh-btn" data-ts="next" aria-label="Next week">›</button><button type="button" class="sh-btn" data-ts="latest">Latest</button></div>
    ${W.secs}
@@ -8696,7 +8699,7 @@ document.addEventListener('click',e=>{
   if(a==='pp'){personPdf(el);return}
   if(a==='ckprev'){ckStep(-1);render();return}
   if(a==='cknext'){ckStep(1);render();return}
-  if(a==='ckper'){ckPer=el.dataset.v;ckDay=null;if(window.needHist)window.needHist(ckRange().from,TSC);render();return}
+  if(a==='ckper'){ckPer=el.dataset.v;ckDay=null;ckAll=null;if(window.needHist)window.needHist(ckRange().from,TSC);render();return}
   if(a==='ckwa'){window.open('https://wa.me/?text='+encodeURIComponent(ckMsg()),'_blank','noopener');return}
   if(a==='ckcopy'){const t=ckMsg(),ok=$('ckok');(async()=>{try{await navigator.clipboard.writeText(t);if(ok)ok.textContent='Copied. Paste it in the WhatsApp group.'}catch(x){if(ok)ok.textContent='Could not copy on this phone. Use Share on WhatsApp.'}})();return}
   if(a==='cktoday'){ckDay=null;render();return}
@@ -8704,6 +8707,8 @@ document.addEventListener('click',e=>{
   if(a==='prev'||a==='next'){wk=add(monday(wk),a==='prev'?-7:7);dsel=null;dselUser=false;render();return}
   if(a==='latest'){wk=latest();dsel=null;dselUser=false;render();return}
   if(a==='tab'){tsTab=el.dataset.v;person=null;sq='';window.scrollTo(0,0);render();return}
+  if(a==='xw'&&tsTab==='view'){const R=ckRange();exportRange(R.from,R.to,'1161 Timesheets '+R.from+' to '+R.to+'.xlsx');return}
+  if(a==='ckall'){ckAll=el.dataset.v;render();return}
   if(a==='xw'){const f=monday(wk);exportRange(f,add(f,6),'1161 Timesheets week '+f+'.xlsx');return}
   if(a==='xy'){const d=fromIso(wk),y=d.getMonth()>=6?d.getFullYear():d.getFullYear()-1;exportRange(y+'-07-01',(y+1)+'-06-30','1161 Timesheets FY'+y+'-'+String(y+1).slice(2)+'.xlsx');return}
   if(a==='copy'){const id=el.dataset.v,cur=cfg.starts[id];const mon=typeof cur==='string'?cur:(cur&&cur[1])||'';if(!mon){msg={err:true,t:'Fill in Monday first, then tap Same all week.'};render();return}cfg.starts={...cfg.starts,[id]:Object.fromEntries(WD.map(([n])=>[n,mon]))};saveCfg();render();return}
@@ -8717,7 +8722,7 @@ document.addEventListener('click',e=>{
   if(a==='addno'){addFor=null;render();return}
   if(a==='addok'){const d=el.dataset.v,pid=($('addsel')||{}).value;if(!pid)return;const p=Object.values(people()).find(x=>x.id===pid);const id=d+'_'+pid;ts[id]={...(ts[id]||{}),extra:true,removed:false,name:p?p.name:pid};db.doc('timesheets/'+id).set(ts[id]).catch(()=>{});addFor=null;render();return}
 });
-document.addEventListener('toggle',e=>{const x=e.target;if(!x.closest||!x.closest('#mod-timesheets'))return;if(x.classList.contains('set'))showSet=x.open;if(x.dataset&&x.dataset.day){const f=monday(x.dataset.day);(openWk[f]=openWk[f]||new Set())[x.open?'add':'delete'](x.dataset.day)}},true);
+document.addEventListener('toggle',e=>{const x=e.target;if(!x.closest||!x.closest('#mod-timesheets'))return;if(x.classList.contains('set'))showSet=x.open;if(x.dataset&&x.dataset.ck){if(x.open){ckOpen=x.dataset.ck;x.parentNode.querySelectorAll('details[data-ck][open]').forEach(o=>{if(o!==x)o.open=false})}else if(ckOpen===x.dataset.ck)ckOpen=null}if(x.dataset&&x.dataset.day){const f=monday(x.dataset.day);(openWk[f]=openWk[f]||new Set())[x.open?'add':'delete'](x.dataset.day)}},true);
 document.addEventListener('change',e=>{
   const t=e.target;if(!t.closest||!t.closest('#mod-timesheets'))return;
   if(t.dataset.start!=null){const id=t.dataset.start,cur=cfg.starts[id];const o=typeof cur==='string'?Object.fromEntries(WD.map(([n])=>[n,cur])):{...(cur||{})};o[t.dataset.dow]=t.value;cfg.starts={...cfg.starts,[id]:o};saveCfg();render();return}
@@ -10400,7 +10405,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021110';
+const VERSION='202611021130';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11584,6 +11589,8 @@ setTimeout(askNewer,800);
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-lockers table.slim td.no{grid-row:1/span 3!important}
 }
 /* clock in check: one row of four bubbles; tap one to list the names underneath */
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckt{margin:8px 0 0!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckmore{margin:10px 0 0!important;width:100%;justify-content:center}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckg{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;align-items:stretch!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc{margin:0!important;padding:0!important;border-radius:12px!important;min-width:0!important;border:1px solid transparent!important;background:var(--sh-sunk,rgba(127,127,127,.12))!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-timesheets .ckc>summary{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:10px 2px!important;gap:2px!important;list-style:none!important;cursor:pointer}
