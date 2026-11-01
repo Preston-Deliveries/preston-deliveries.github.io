@@ -10365,7 +10365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012250';
+const VERSION='202611012255';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11960,7 +11960,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 .tk-card .tk-r .tx small.red{color:#C8352B;font-weight:700}
 .tk-card .tk-r .tx span{font-size:.9rem;white-space:pre-wrap}
 .tk-card .tk-ok{all:unset;cursor:pointer;flex:none;padding:8px 14px;border-radius:10px;background:#1E8A4C;color:#fff;font-weight:800;font-size:.92rem}
-.tk-card .tk-ok:disabled{opacity:.6}
+.tk-card .tk-ok:disabled{opacity:.6}.tk-card .tk-dn .tx b{text-decoration:line-through;opacity:.6}.tk-card .tk-dn .tx small{color:#1E8A4C;font-weight:700}.tk-card .tk-un{all:unset;cursor:pointer;flex:none;padding:8px 14px;border-radius:10px;border:1px solid var(--sh-line);font-weight:800;font-size:.92rem;color:var(--sh-ink)}
 </style>
 <script>
 /* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
@@ -12006,10 +12006,16 @@ async function markDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d
   try{if(t.repeat){const due=advance(t);const n=Object.assign({},t,{due});const r=rems(n);await d.doc('tasks/'+t.id).update({due,rems:r,next:nextOf(r),whenTxt:whenTxt(n),lastDone:now,status:'open'})}
     else await d.doc('tasks/'+t.id).update({status:'done',doneAt:now,next:''})}
   catch(e){if(btn)btn.disabled=false;TK.msg={err:true,t:'Could not save just now.'};render()}}
+/* tapped Done by mistake: open it again and put back any dings that haven't happened yet */
+async function undoDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d)return;const r=rems(t);
+  try{await d.doc('tasks/'+t.id).update({status:'open',doneAt:'',rems:r,next:nextOf(r)})}
+  catch(e){if(btn)btn.disabled=false;TK.msg={err:true,t:'Could not undo just now.'};render()}}
+const doneToday=t=>t.status==='done'&&t.doneAt&&window.__qISO(new Date(t.doneAt))===today();
 
 /* ---------- Home card: your tasks for the next 7 days ---------- */
-function homeHtml(){const T=today(),lim=addD(T,7);const L=Object.values(TK.mine).filter(t=>t.status!=='done'&&t.due<=lim).sort((a,b)=>(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));if(!L.length)return '';
-  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length} to do</small></div>${L.map(t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`}).join('')}</section>`}
+function homeHtml(){const T=today(),lim=addD(T,7);const L=Object.values(TK.mine).filter(t=>t.status!=='done'&&t.due<=lim).sort((a,b)=>(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));
+  const DT=Object.values(TK.mine).filter(doneToday).sort((a,b)=>String(b.doneAt).localeCompare(String(a.doneAt)));if(!L.length&&!DT.length)return '';
+  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length?L.length+' to do':'All done'}</small></div>${L.map(t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`}).join('')}${DT.map(t=>`<div class="tk-r tk-dn"><div class="tx"><b>${esc(t.title)}</b><small>✓ Done ${esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16)))}</small></div><button type="button" class="tk-un" data-tk-undo="${esc(t.id)}">Undo</button></div>`).join('')}</section>`}
 function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
@@ -12048,7 +12054,7 @@ function listHtml(){let all=Object.values(TK.all);
     ${one?'':`<small><b>${g.L.length-g.open.length} of ${g.L.length} done</b>${g.open.length&&g.open.length<=12?' · not yet: '+esc(g.open.map(x=>String(x.whoName||nameOf(x.who)).split(' ')[0]).join(', ')):''}</small>`}
     ${ld?`<small>Last ding ${tm(ld)}: ${ph?'went to '+ph+' phone'+(ph>1?'s':''):'no phone has notifications on'}</small>`:(t.dings||[]).length&&!g.done?`<small>Dings: ${esc(t.dings.map(d=>dayTxt(d.d)+' '+t12(d.t)).join(', '))}</small>`:''}
     ${t.note?`<p>${esc(t.note)}</p>`:''}
-    <div class="tk-foot">${one&&!g.done?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===g.k?'arm':''}" data-tk="del" data-v="${esc(g.k)}">${TK.arm===g.k?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
+    <div class="tk-foot">${one&&!g.done?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button>`:''}${one&&g.done?`<button type="button" class="sh-btn" data-tk-undo="${esc(t.id)}">Undo done</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===g.k?'arm':''}" data-tk="del" data-v="${esc(g.k)}">${TK.arm===g.k?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
 function render(){const el=document.getElementById('tk_root');if(!el)return;if(!isMgr()){el.innerHTML='';return}
   if(TK.form){if(document.activeElement&&el.contains(document.activeElement)&&document.getElementById('tk_title'))readForm();}
   el.innerHTML=`<div class="tk">${TK.form?formHtml():`<p class="lead">Tasks stay on that person's Home until they tap Done. Once they do, no more dings go out for it.</p><button type="button" class="sh-btn primary" data-tk="new">+ New task</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}${listHtml()}`}</div>`}
@@ -12121,6 +12127,8 @@ document.addEventListener('change',e=>{if(!e.target.closest||!e.target.closest('
   if(e.target.id==='pt_ding'){window.__puRender();return}
   if(e.target.id==='pt_due'&&window.__puS().t){const old=window.__puS().t.due;tkRead();const nw=window.__puS().t.due;if(old&&nw&&old!==nw){window.__puS().t.dings.forEach(g=>{if(g.d===old)g.d=nw});document.querySelectorAll('#sh-set [data-pdk][data-f=d]').forEach(x=>{if(x.value===old)x.value=nw})}}});
 document.addEventListener('click',async e=>{
+  const hu=e.target.closest&&e.target.closest('[data-tk-undo]');
+  if(hu){const t=TK.mine[hu.dataset.tkUndo]||TK.all[hu.dataset.tkUndo];if(t){await undoDone(t,hu);if(document.getElementById('tk_root')&&document.getElementById('tk_root').contains(hu)){TK.msg={t:'Opened again. Any dings still to come are back on.'};render()}}return}
   const hd=e.target.closest&&e.target.closest('[data-tk-done]');
   if(hd){const t=TK.mine[hd.dataset.tkDone]||TK.all[hd.dataset.tkDone];if(t)markDone(t,hd);return}
   const b=e.target.closest&&e.target.closest('[data-tk]');if(!b||!document.getElementById('tk_root')||!document.getElementById('tk_root').contains(b))return;
