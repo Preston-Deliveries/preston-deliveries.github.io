@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover")}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>/* Net Promoter Score, the way Australia Post works it out: 9 or 10 = promoter, 7 or 8 = passive, 0 to 6 = detractor. NPS = (promoters - detractors) / customers x 100, halves rounded up. */window.NPS=function(a){var v=(a||[]).map(function(x){return typeof x==='object'&&x?+x.s:+x}).filter(function(x){return !isNaN(x)});if(!v.length)return null;var p=0,d=0;v.forEach(function(x){if(x>=9)p++;else if(x<=6)d++});return Math.floor((p-d)/v.length*100+0.5)};</script><script>try{if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover")}}catch(e){}</script>
 <title>Contract 1161</title>
 <meta name="description" content="Preston Delivery Service, Contract 1161">
 <meta name="theme-color" content="#0F1A2A">
@@ -3085,7 +3085,7 @@ function liveRows(){const R=addRanks(tblRows(ranked(scoreSort(view==="cycle"?wee
   R.forEach(x=>{x.sv=sv[x.key]?sv[x.key].n:null;x.svN=sv[x.key]?sv[x.key].c:0;if(x.prev&&pv)x.prev.sv=pv[x.key]?pv[x.key].n:null});
   R.prevAll=P?Object.values(P):null;R.svT=svTeam(weekId,view);R.svTp=view==="day"?null:svTeam(iso(addDays(fromIso(weekId),view==="cycle"?-28:-7)),view);return R}
 function svTeam(id,v){const C=svCycles(),ci=cycleInfo(id),cy=C[iso(ci.start)]||{},a=[];for(const n of(v==="cycle"?[1,2,3,4]:[ci.no]))for(const arr of Object.values(cy[n]||cy[String(n)]||{}))for(const x of arr||[])if(!isNaN(+x.s))a.push(+x.s);
-  if(!a.length)return null;return{n:Math.round(a.reduce((p,q)=>p+q,0)/a.length*100)/10,c:a.length}}
+  if(!a.length)return null;return{n:window.NPS(a),c:a.length}}
 /* customer survey: score per driver for the same week (or the 4 weeks of the pay period) */
 let SVC=null,svAsked=false;
 function svCycles(){if(SVC)return SVC;
@@ -3094,7 +3094,7 @@ function svCycles(){if(SVC)return SVC;
 function svFor(id,v){const C=svCycles(),ci=cycleInfo(id),cs=iso(ci.start),cy=C[cs]||{};const by={};
   const wks=v==="cycle"?[1,2,3,4]:[ci.no];
   for(const n of wks)for(const[l,arr]of Object.entries(cy[n]||cy[String(n)]||{}))for(const x of arr||[]){const k=String(l).toUpperCase().replace(/\s+/g,"");(by[k]=by[k]||[]).push(+x.s)}
-  const out={};for(const[k,a]of Object.entries(by)){const v=a.filter(x=>!isNaN(x));if(!v.length)continue;out[k]={n:Math.round(v.reduce((p,q)=>p+q,0)/v.length*100)/10,c:v.length}}return out}
+  const out={};for(const[k,a]of Object.entries(by)){const v=a.filter(x=>!isNaN(x));if(!v.length)continue;out[k]={n:window.NPS(v),c:v.length}}return out}
 /* the period before, so each number can show if it went up or down */
 const PW={};
 function pwGet(id){if(id===weekId)return week;if(cycleWeeks&&cycleWeeks[id])return cycleWeeks[id];if(PW[id]&&PW[id]!=="l")return PW[id];
@@ -3485,9 +3485,10 @@ $("tip1").value=store.get("tip1")??DEFAULT_TIPS[0];
 $("tip2").value=store.get("tip2")??DEFAULT_TIPS[1];
 
 function rank(drivers){
-  const rows=Object.entries(drivers).filter(([,r])=>r.length).map(([id,r])=>({id,r,pts:r.reduce((s,x)=>s+SPTS(x.s),0),avg:r.reduce((s,x)=>s+x.s,0)/r.length}));
-  rows.sort((a,b)=>b.pts-a.pts||b.avg-a.avg||a.id.localeCompare(b.id));
-  rows.forEach((r,i)=>{const p=rows[i-1];r.rank=(p&&p.pts===r.pts&&Math.abs(p.avg-r.avg)<1e-9)?p.rank:i+1});
+  const rows=Object.entries(drivers).filter(([,r])=>r.length).map(([id,r])=>({id,r,pts:window.NPS(r),avg:window.NPS(r)/10}));
+  /* ranked by NPS; on the same NPS, more customers ranks higher */
+  rows.sort((a,b)=>b.pts-a.pts||b.r.length-a.r.length||a.id.localeCompare(b.id));
+  rows.forEach((r,i)=>{const p=rows[i-1];r.rank=(p&&p.pts===r.pts&&p.r.length===r.r.length)?p.rank:i+1});
   return rows;
 }
 const rk=n=>`<span class="rk${n<=3?" r"+n:""}">${n}</span>`;
@@ -3495,11 +3496,11 @@ const boxes=r=>r.map(x=>`<span class="b ${kind(x.s)}">${x.s}</span>`).join("");
 function summary(all){
   const N=all.length||1,P=all.filter(x=>x.s>=9).length,M=all.filter(x=>x.s>=7&&x.s<9).length,X=all.filter(x=>x.s<7).length;
   const pct=n=>(100*n/N).toFixed(2)+"%";
-  return `<div class="sum">${(sc=>`<div class="big ${sc>=100?"svgd":sc>=70?"svg":"svb"}">${sc}</div>`)(Math.round(all.reduce((a,x)=>a+(+x.s||0),0)/N*100)/10)}<div><div class="l">Team score<small>${P} of ${all.length} customers gave us 9 or 10</small></div>
+  return `<div class="sum">${(sc=>`<div class="big ${sc>=100?"svgd":sc>=70?"svg":"svb"}">${sc}</div>`)(window.NPS(all)??0)}<div><div class="l">Team NPS<small>${P} promoters, ${X} detractors from ${all.length} customers</small></div>
    <div class="mix"><span style="width:${pct(P)};background:#1f8a4c"></span><span style="width:${pct(M)};background:#c27a00"></span><span style="width:${pct(X)};background:#c23b2e"></span></div>
    <div class="key"><span><i style="background:#1f8a4c"></i>9 or 10: ${P}</span><span><i style="background:#c27a00"></i>7 or 8: ${M}</span><span><i style="background:#c23b2e"></i>0 to 6: ${X}</span></div></div></div>`;
 }
-const HOW=`<div class="how"><div class="h">How points work</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = <b>+1</b></span><span><span class="b sm m">7</span>7 or 8 = <b>0</b></span><span><span class="b sm d">0</span>0 to 6 = <b>−1</b></span></div><div>Same points? Higher average score ranks first.</div></div>`;
+const HOW=`<div class="how"><div class="h">How the score works</div><div class="ln"><span><span class="b sm p">10</span>9 or 10 = promoter</span><span><span class="b sm m">7</span>7 or 8 = passive</span><span><span class="b sm d">0</span>0 to 6 = detractor</span></div><div><b>NPS = (promoters − detractors) ÷ customers × 100.</b> Same as the Australia Post card. Same NPS? More customers ranks first.</div></div>`;
 const head=(t,s)=>`<div class="band"><div class="t">${t}</div><div class="s">${s}</div></div><div class="stripe"></div>`;
 
 // Weekly board
@@ -3536,7 +3537,7 @@ function renderWeek(){
   const comments=r=>{const c=r.filter(x=>x.c);return c.length?c.map(x=>`<p class="c ${kind(x.s)}"><span class="b sm ${kind(x.s)}">${x.s}</span><span class="tx">“${esc(x.c)}”</span></p>`).join(""):'<span class="nc">Score only, no comment</span>'};
   const tips=[$("tip1").value.trim(),$("tip2").value.trim()].filter(Boolean);
   $("board").innerHTML=head("Customer Survey Ranking",`Contract 1161 · Pay week ${sel.week} · ${esc(weekRange(sel.cycleStart,sel.week))}`)+summary(Object.values(D).flat())+`
-  <table><tr><th>Rank</th><th>Driver</th><th>Customer scores</th><th>Points</th><th>What customers said</th></tr>
+  <table><tr><th>Rank</th><th>Driver</th><th>Customer scores</th><th>NPS</th><th>What customers said</th></tr>
   ${rows.map(r=>`<tr class="${r.rank<=3?"top":""}"><td>${rk(r.rank)}</td><td><span class="id">${esc(r.id)}</span></td><td><div class="bx">${boxes(r.r)}</div></td><td class="pt">${r.pts}</td><td class="cm">${comments(r.r)}</td></tr>`).join("")}
   </table>${HOW}
   ${tips.length?`<div class="tips"><div class="h">Tips this week</div>${tips.map((t,i)=>`<div class="tip"><span class="n">${i+1}</span><div>${esc(t)}</div></div>`).join("")}</div>`:""}
@@ -3574,7 +3575,7 @@ function renderCycle(){
   mountSV($("tblC"),agg,"No surveys for this month yet.");
   const rows=rank(agg), weeksIn=[...new Set(wks.map(w=>w.week))].sort();
   $("board4").innerHTML=head("Monthly Survey Ranking",`Contract 1161 · ${esc(monthName(key))} · ${esc(cycleLabel(key))}`)+summary(Object.values(agg).flat())+`
-  <table><tr><th>Rank</th><th>Driver</th><th>Customer scores</th><th>Points</th></tr>
+  <table><tr><th>Rank</th><th>Driver</th><th>Customer scores</th><th>NPS</th></tr>
   ${rows.map(r=>`<tr class="${r.rank<=3?"top":""}"><td>${rk(r.rank)}</td><td><span class="id">${esc(r.id)}</span></td><td><div class="bx">${boxes(r.r)}</div></td><td class="pt">${r.pts}</td></tr>`).join("")}
   </table>${HOW}
   <div class="foot">${weeksIn.length<4?`Includes pay weeks ${weeksIn.join(", ")} of 4.`:"Includes all 4 pay weeks."}</div>`;
@@ -3767,7 +3768,7 @@ function svRowHTML(r){
   return `<tr class="${r.me?"me":""}" data-k="${esc(r.key)}">
    <td class="dr"><b>${esc(r.name||r.id)}${r.me?' <em class="you">You</em>':""}</b><small>${r.grp?`<span class="gp dg-${esc(r.grp)}">${esc(GRPN[r.grp]||r.grp)}</span>`:""}</small></td>
    <td class="m-sc"><div class="sv-bx">${r.r.map(x=>`<span class="sv-b ${kind(x.s)}">${x.s}</span>`).join("")}</div></td>
-   <td class="num m-av" data-l="Score">${(v=>`<span class="${v>=100?"svgd":v>=70?"svg":"svb"}">${String(v)}</span>`)(Math.round(r.avg*100)/10)}</td>
+   <td class="num m-av" data-l="Score">${(v=>`<span class="${v>=100?"svgd":v>=70?"svg":"svb"}">${String(v)}</span>`)(window.NPS(r.r))}</td>
    <td class="cm">${said.length?said.map(x=>`<p class="sv-c ${kind(x.s)}"><span class="sv-b sm ${kind(x.s)}">${x.s}</span><span>“${esc(x.c)}”</span></p>`).join(""):'<span class="mu">No comment</span>'}</td></tr>`;
 }
 function svBody(box){
@@ -3787,18 +3788,26 @@ function mountSV(box,drivers,emptyTxt){
   const th=(k,l,c)=>`<th class="${c||""}" scope="col"><button type="button" data-ss="${k}">${l}<i aria-hidden="true"></i></button></th>`;
   box.innerHTML=`<p class="rt-cap">Contract 1161</p><div class="rt-sum">
      <div><small>Surveys</small><b>${N}</b></div>
-     <div><small>Score</small>${(sc=>`<b class="${N?(sc>=100?"svgd":sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?Math.round(all.reduce((a,x)=>a+(+x.s||0),0)/N*100)/10:0)}</div>
+     <div><small>Team NPS</small>${(sc=>`<b class="${N?(sc>=100?"svgd":sc>=70?"svg":"svb"):""}">${sc}</b>`)(N?window.NPS(all):0)}</div>
      <div class="sv-g"><small>9 or 10</small><b>${P}</b></div>
      <div class="sv-r"><small>0 to 6</small><b>${X}</b></div></div>
    <div class="sv-mix" aria-hidden="true"><span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span></div>
+   <details class="sc-how sv-how"><summary>How the survey score (NPS) works</summary>
+    <p>Each customer rates their delivery from 0 to 10. The app works out the score the same way as the Australia Post Driver Network Complaints card.</p>
+    <ul class="sv-hk"><li><span class="sv-b sm p">9</span><b>Promoter</b> (9 or 10): counts for you</li><li><span class="sv-b sm m">7</span><b>Passive</b> (7 or 8): counts as a customer, but does not add anything</li><li><span class="sv-b sm d">5</span><b>Detractor</b> (0 to 6): counts against you</li></ul>
+    <p class="sv-f"><b>NPS = (promoters − detractors) ÷ customers × 100</b>, rounded to a whole number. It goes from −100 to +100.</p>
+    <p><b>Example:</b> scores of 10, 10, 9, 8, 4 are 3 promoters, 1 passive and 1 detractor. (3 − 1) ÷ 5 × 100 = <b>40</b>.</p>
+    <p><b>Good to know</b></p>
+    <ul><li>Only a 9 or 10 helps. An 8 is not bad, but it pulls the score down because it counts as a customer without adding anything.</li><li>A 6 hurts as much as a 0.</li><li>With only a few customers one score swings it a lot: one 0 from one customer is −100.</li><li>No score at all means no customers answered, which is different from 0.</li><li>Same NPS? The driver with more customers ranks higher.</li></ul>
+   </details>
    <div class="rt-f">
      <div class="rt-row"><label class="rt-q"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" data-sv="q" placeholder="Search name or number" aria-label="Search drivers" value="${esc(SV.q)}"></label>
        <label class="rt-so"><span>Filter</span><select data-sv="pc" aria-label="Filter by postcode"><option value="all">All postcodes</option>${gs.map(g=>`<option value="${esc(g)}">${esc(GRPN[g]||g)}</option>`).join("")}</select></label></div>
    </div>
    <p class="rt-n" role="status"></p>
    <p class="rt-swipe">Swipe the table sideways to see every column. Tap a heading to sort.</p>
-   <div class="rt-tw"><table class="rt-t sv-t nork"><thead><tr>${th("name","Driver","dr")}${th("n","Customer scores")}${th("avg","Score","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
-   <p class="rt-key"><span class="sv-b sm p">9</span> 9 or 10 <span class="sv-b sm m">7</span> 7 or 8 <span class="sv-b sm d">5</span> 0 to 6</p>`;
+   <div class="rt-tw"><table class="rt-t sv-t nork"><thead><tr>${th("name","Driver","dr")}${th("n","Customer scores")}${th("avg","NPS","num")}<th scope="col"><span class="thx">What customers said</span></th></tr></thead><tbody></tbody></table></div>
+`;
   svBody(box);
   if(box.__wired)return;box.__wired=true;
   box.addEventListener("input",e=>{if(e.target.dataset.sv==="q"){SV.q=e.target.value;svBody(box)}});
@@ -5590,7 +5599,7 @@ function trendHTML(own){
   const W=[3,2,1,0].map(i=>addD(lmon,-7*i));const t=targets();const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()]};
   const st=W.map(m=>statsFor([0,1,2,3,4,5].map(i=>addD(m,i))));
   const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
-  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,D]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(D||{}).find(x=>keys.includes(dkey(x)));const r=k?D[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
+  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,D]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(D||{}).find(x=>keys.includes(dkey(x)));const r=k?D[k]:null;if(r&&r.length)return window.NPS(r)}return null});
   const lines=[
     ['Contract Score','Green is 96 or more',st.map(x=>x&&x.sc?x.sc.score:null),v=>v>=96-1e-9,v=>window.SCORE.fmt(v),v=>Math.max(6,Math.min(100,(v-50)*2))],
     ['Enquiries per 1k','Target 1 or less',st.map(x=>x?x.enqK:null),v=>v<=1+1e-9,v=>epkTxt(v),v=>v<=0?8:Math.max(14,Math.min(100,v*25))],
@@ -5900,7 +5909,7 @@ function pfWeeks(n){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow
   const last=all[all.length-1],lmon=addD(last,-((fromIso(last).getDay()+6)%7));const W=[];for(let i=n-1;i>=0;i--)W.push(addD(lmon,-7*i));
   const sh=x=>{const d=fromIso(x);return d.getDate()+' '+MON[d.getMonth()]};const st=W.map(m=>statsFor([0,1,2,3,4,5].map(i=>addD(m,i))));
   const C=(S().survey&&S().survey.cycles)||{},keys=[...myKeys(),dkey(me.name)].filter(Boolean);
-  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,Dd]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(Dd||{}).find(x=>keys.includes(dkey(x)));const r=k?Dd[k]:null;if(r&&r.length)return Math.round(r.reduce((a,x)=>a+(+x.s||0),0)/r.length*100)/10}return null});
+  const sv=W.map(m=>{for(const[cs,wk]of Object.entries(C))for(const[n,Dd]of Object.entries(wk||{})){if(addD(cs,(+n-1)*7)!==m)continue;const k=Object.keys(Dd||{}).find(x=>keys.includes(dkey(x)));const r=k?Dd[k]:null;if(r&&r.length)return window.NPS(r)}return null});
   return{weeks:W.map(sh),sc:st.map(x=>x&&x.sc?x.sc.score:null),pc:st.map(x=>x?x.pc:null),eta:st.map(x=>x&&x.eta!=null?x.eta*100:null),cp:st.map(x=>x&&x.cp!=null?x.cp*100:null),enq:st.map(x=>x?(x.enq||0)+(x.enqP||0):null),sv}}
 function pfCur(x){if(!x)return null;const L=window.SCORE.lost;return{ftd:x.ftd==null?null:x.ftd*100,pc:x.pc,days:x.days,eta:x.eta==null?null:x.eta*100,cp:x.cp==null?null:x.cp*100,enqK:x.enqK,enqN:x.enq,enqP:x.enqP,score:x.sc?x.sc.score:null,lost:x.sc?{enq:L(x.sc.enq),eta:L(x.sc.eta),scan:L(x.sc.scan)}:null}}
 function driverHTML(){
@@ -7597,7 +7606,7 @@ function addRow(a,date,r){a.days++;a.wdates.add(date);const pc=+r.pc||0;a.pc+=pc
   if(r.cp!=null&&r.cp!==''){a.cpW+=r.cp*(pc||1);a.cpN+=(pc||1)}
   a.nc+=+(r.nc||0);a.enq+=+(r.enq||0);a.enqP+=+(r.enqP||0);const SD=window.SCORE.day(r);a.sc+=SD.score;a.le+=SD.enq;a.lt+=SD.eta;a.ls+=SD.scan;const p=SD.score;a.pts+=p;a.max+=100;a.list.push({date,...r,p})}
 const FTDG=92,fc=v=>v==null?'':v>=.9995?'svgd':(Math.round(v*1000)/10>=FTDG?'svg':'svb'),fsp=v=>`<span class="${fc(v)}">${fmtPct(v)}</span>`;
-function nps(sc){const v=sc.map(x=>+x.s).filter(x=>!isNaN(x));if(!v.length)return null;return Math.round(v.reduce((a,b)=>a+b,0)/v.length*100)/10}
+function nps(sc){return window.NPS(sc)}
 function compute(R0){
   const P=people(),R=R0||range(),per={};
   const get=k=>per[k]||(per[k]=blank());
@@ -10166,7 +10175,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010168';
+const VERSION='202611010170';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10386,9 +10395,9 @@ async function writeMyRes(res,sv){
     for(let i=0;i<ids.length;i+=400){const b=fs.batch();for(const id of ids.slice(i,i+400)){const v=ENC(out[id]);b.set(fs.doc('myres/'+id),v,{mergeFields:Object.keys(v)})}await b.commit()}
   }catch(e){console.warn('myres',e)}
 }
-/* place in the customer survey, the same way the survey page ranks it (points, then average) */
-function svRank(D,K){const P=x=>x>=9?1:x>=7?0:-1;const L=Object.entries(D).filter(([,r])=>r&&r.length).map(([id,r])=>({id,pts:r.reduce((a,x)=>a+P(+x.s),0),avg:r.reduce((a,x)=>a+(+x.s||0),0)/r.length})).sort((a,b)=>b.pts-a.pts||b.avg-a.avg);
-  L.forEach((x,i)=>{const p=L[i-1];x.rank=p&&p.pts===x.pts&&Math.abs(p.avg-x.avg)<1e-9?p.rank:i+1});const r=L.find(x=>K.has(dk(x.id)));return r?{rank:r.rank,of:L.length}:null}
+/* place in the customer survey, the same way the survey page ranks it (NPS, then number of customers) */
+function svRank(D,K){const L=Object.entries(D).filter(([,r])=>r&&r.length).map(([id,r])=>({id,pts:window.NPS(r),avg:r.length})).sort((a,b)=>b.pts-a.pts||b.avg-a.avg);
+  L.forEach((x,i)=>{const p=L[i-1];x.rank=p&&p.pts===x.pts&&p.avg===x.avg?p.rank:i+1});const r=L.find(x=>K.has(dk(x.id)));return r?{rank:r.rank,of:L.length}:null}
 /* a driver loads only their own doc */
 async function loadMyRes(){const sid=window.__webMe&&window.__webMe.staff;if(ROLE==='admin'||!sid)return null;try{const s=await cacheFirst(fs.doc('myres/'+sid),8000);return s.exists?DEC(s.data()):null}catch(e){return null}}
 window.__myRes=loadMyRes;
@@ -11385,6 +11394,13 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx small{color:var(--sh-muted);font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum em{font-style:normal;font-weight:800;font-size:.75rem;border-radius:999px;padding:2px 9px;background:#E5484D;color:#fff}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum i{font-style:normal;color:var(--sh-muted);font-size:1.1rem;width:14px;text-align:center}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how{margin:10px 0 12px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how p,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how li{font-size:.92rem;line-height:1.45;color:var(--sh-ink)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul{margin:6px 0 10px;padding-left:18px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul.sv-hk{list-style:none;padding:0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul.sv-hk li{display:block;margin:6px 0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul.sv-hk li .sv-b{display:inline-grid!important;margin-right:6px;vertical-align:middle}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how .sv-f{background:var(--sh-sunk);border-radius:10px;padding:8px 10px}
 </style>
 </body>
 </html>
