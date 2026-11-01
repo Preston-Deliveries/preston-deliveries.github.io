@@ -1175,6 +1175,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
 const puCard=()=>{try{const P=window.PUSH;if(!P||previewChild)return;const st=P.state();const home0=document.getElementById('mod-home');const old0=home0&&home0.querySelector('.pu-home');if(st==='on'||st==='unsupported'){if(old0&&!old0.dataset.done)old0.remove();return}if(old0&&old0.dataset.st!==st)old0.remove();const isAdm=P.role&&P.role()==='admin';let no=null;try{no=localStorage.getItem('push1161no')}catch(x){}if(no&&isAdm)return;
   const home=document.getElementById('mod-home');if(!home||home.hidden||home.querySelector('.pu-home'))return;const at=home.querySelector('.dh-cards');if(!at)return;
   const c=document.createElement('section');c.className='dh-card pu-home';c.dataset.st=st;
+  if(isAdm){c.classList.add('pu-strip');c.innerHTML=`<span>🔔 Notifications are ${st==='blocked'?'blocked':'off'}</span>${st==='blocked'?'<button type="button" class="sh-btn sm" data-sh="settings">Fix</button>':'<button type="button" class="sh-btn sm" data-pu="on">Turn on</button>'}<p class="pu-msg" id="pu_msg" role="status"></p>`;const qa=home.querySelector('.ah-qa');if(qa){qa.after(c)}else at.parentNode.insertBefore(c,at);return}
   c.innerHTML=st==='blocked'?`<b>🔔 Notifications are blocked</b><p>You need these for messages from the office. Open your phone’s <b>Settings → Apps → Chrome → Notifications</b> and allow them (on a computer: click the padlock next to the web address, set Notifications to Allow), then come back to the app.</p>`
    :`<b>🔔 Turn on notifications</b><p>The office uses these for important messages, new updates and enquiries. Please turn them on.</p><div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="on">Turn on</button>${isAdm?'<button type="button" class="sh-btn" data-pu="later">Not now</button>':''}</div><p class="pu-msg" id="pu_msg" role="status"></p>`;
   at.parentNode.insertBefore(c,at)}catch(x){}};
@@ -1214,6 +1215,23 @@ function adminGlance(){const el=$('ah_glance');if(!el||role!=='mgr')return;const
   const html=`<div class="ht"><span class="tx"><b>${g}${nm?', '+esc(nm):''}</b><small>${esc(TP?TP.sub:ds)}</small></span>${TP?`<button type="button" class="hs v-${TP.c}" data-gl="summary" aria-label="Contract score ${esc(TP.sc)}">${esc(TP.sc)}</button>`:''}</div>${res}`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
+/* admin Home: one short list of what needs attention; tap a line to open the full card under it */
+const sumOpen=new Set();
+function adminSum(){const el=$('ah_sum');if(!el||role!=='mgr')return;
+  const td=$('ah_todo'),mn=$('ah_morn');
+  const todo=td?[...td.querySelectorAll('.dh-do b')].map(b=>b.textContent.trim()):[];
+  let offT='Nobody off this week';try{const L=window.LEAVE;if(L&&L.dayMap){const m=L.dayMap()||{};const p=n=>String(n).padStart(2,'0');const iso=d=>d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());const n=d=>{const o=m[iso(d)];return o?((o.names||[]).length+(o.office||[]).length):0};
+    const t=new Date();const parts=[];const tn=n(t);parts.push(tn?tn+' off today':'Nobody today');
+    const DW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];for(let i=1;i<=6;i++){const d=new Date(t);d.setDate(t.getDate()+i);if(d.getDay()===0||d.getDay()===6)continue;const k=n(d);if(k)parts.push(k+' on '+DW[d.getDay()])}
+    offT=parts.join(' · ')}}catch(e){}
+  let mt='';if(mn){const rb=[...mn.querySelectorAll('b')].map(b=>b.textContent.trim()).filter(Boolean);const ok=mn.querySelector('.mc-ok,.ok,.dh-ok');mt=rb.length&&!/^(Sunday|Saturday|Monday|Tuesday|Wednesday|Thursday|Friday)$/.test(rb[0])?rb[0]:(mn.innerText||'').replace(/^MORNING CHECK\s*/i,'').split('\n').map(x=>x.trim()).filter(Boolean).slice(-1)[0]||'Nothing needs you'}
+  const IC={todo:['📋','rgba(229,72,77,.14)'],off:['📅','rgba(91,141,239,.16)'],morn:['✅','rgba(48,164,108,.16)']};
+  const row=(k,t,sub,n)=>`<button type="button" class="sr-row" data-sum="${k}" aria-expanded="${sumOpen.has(k)}"><span class="ic" style="background:${IC[k][1]}">${IC[k][0]}</span><span class="tx"><b>${esc(t)}</b><small>${esc(sub)}</small></span>${n?`<em>${n}</em>`:''}<i aria-hidden="true">${sumOpen.has(k)?'▾':'›'}</i></button>`;
+  const html=row('todo',todo.length?todo[0]+(todo.length>1?' and '+(todo.length-1)+' more':''):'All caught up',todo.length?'Needs you':'Nothing waiting on you',todo.length)
+    +row('off','Who’s off',offT,0)+row('morn','Morning check',mt.replace(/^✓\s*/,''),0);
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}
+  const home=$('sh-home');if(home)['todo','off','morn'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ah_sum [data-sum]');if(!b)return;const k=b.dataset.sum;if(sumOpen.has(k))sumOpen.delete(k);else sumOpen.add(k);adminSum()});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home'){adminOff();adminGlance()}};
 let aoSel=null;
@@ -1235,7 +1253,7 @@ function adminOff(){try{adminGlance()}catch(e){}const el=$('ah_off');if(!el||rol
    ${tile(lab,sd)}
    <div class="ao-wk">${wk.map(d=>{const n=who(d).length,k=iso(d);return `<button type="button" data-aod="${k}" aria-pressed="${k===iso(sd)}" class="${n?'off':'in'}${k===iso(t0)?' now':''}"><small>${DN[d.getDay()]} ${d.getDate()}</small><b>${n}</b></button>`}).join('')}</div>
    <button type="button" class="ao-cv" data-nav="cover">Plan who covers ›</button></section>`;
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Morning check: who is clocked on, enquiries without a fault decision, invoices not in yet, papers expiring */
 const MC={st:false,staff:{},clock:{},enq:{},inv:{},leave:{},worked:null,prev:null,scBusy:{}};
 function mcIso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -1285,7 +1303,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Last day before they go. Get their scanner back today.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
    ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
 const TL={day:null,tab:'all',clock:{},chk:{},subs:[],busy:{}};
@@ -1516,7 +1534,7 @@ window.WX=(()=>{
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
   const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
   const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act,k])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}" data-k="${k||''}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Home: one box to find a street (whose it is) or a page of the app */
 let findQ='',findT=null,findPin=null;
 const PAGE_WORDS={leave:'calendar time off holiday days off away',invoices:'pay earnings money invoice',timesheets:'hours clock times start finish',clock:'start finish shift times hours',directory:'phone numbers call contacts',runs:'run sheet streets gate codes notes',sort:'missort streets street sort',results:'scores performance eta scans',survey:'nps customer ranking',staff:'drivers details people',updates:'news messages notices',uniform:'shirts clothes order',vchecks:'van check vehicle',reports:'incident accident hazard safety',feedback:'message manager idea',cover:'floaters roster cover off',briefs:'toolbox talk sign brief',guide:'rules policy how to',precards:'card carded addresses',lockers:'parcel locker',me:'profile my details',summary:'contract postcode report',enquiries:'customer case enquiry',boss:'monthly report boss',compliance:'daily start finish forms',review:'review driver'};
@@ -1808,6 +1826,7 @@ function renderHome(){
   <div class="dh-cards">
    <div id="wx_box"></div>
    <section class="dh-card ah-find"><h2>Search</h2><div class="ah-frow"><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street or a page" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Search streets and pages">${(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="ah-mic" id="ah_mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>`:''}</div><div class="ah-say" id="ah_say" aria-live="polite" hidden></div><div id="ah_fres" aria-live="polite"></div></section>
+   <section class="dh-card ah-sum" id="ah_sum"></section>
    <div id="ah_dotw"></div>
    <div id="ah_focus"></div>
    <div id="ah_day"></div>
@@ -10147,7 +10166,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010167';
+const VERSION='202611010168';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11337,6 +11356,35 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button{border-bottom:0!important;border-radius:999px!important;padding:0 14px!important;height:32px!important;min-height:32px!important;line-height:32px!important;margin:6px 0!important}
 :root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button[aria-current=page]{background:#F2782D!important;color:#fff!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(input[type=search],input.dm-q,input.q,input.lk-q,#ah_fq){border-radius:999px!important;padding-left:16px!important}
+/* admin Home: minimal stack */
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .dh-cards{display:flex!important;flex-direction:column!important;gap:12px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-find{order:1;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-find>h2{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa{order:2;background:none!important;border:0!important;padding:0!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa>h2{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa .qa-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa .qa{display:flex!important;flex-direction:column!important;align-items:center!important;gap:6px!important;padding:0!important;background:none!important;border:0!important;min-height:0!important;height:auto!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa .qa .ic{width:48px!important;height:48px!important;border-radius:14px!important;margin:0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-qa .qa b{font-size:.8rem!important;font-weight:700!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .pu-strip{order:3;display:flex!important;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 8px 8px 14px!important;border-radius:12px!important;background:rgba(229,72,77,.12)!important;border:0!important;color:#E5484D;font-weight:700;font-size:.9rem}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .pu-strip>span{flex:1;min-width:0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .pu-strip .sh-btn{background:#E5484D!important;border-color:#E5484D!important;color:#fff!important;border-radius:999px!important;height:30px!important;min-height:30px!important;padding:0 14px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .pu-strip .pu-msg:empty{display:none}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .pu-strip .pu-msg{flex-basis:100%;margin:0;font-weight:500}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum{order:4;padding:2px 14px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .dh-cards>*:not(.ah-find):not(.ah-qa):not(.pu-strip):not(.ah-sum){order:5}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home #ah_todo,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home #ah_off,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home #ah_morn{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-todo #ah_todo,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-off #ah_off,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-morn #ah_morn{display:block!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-todo #ah_todo{order:4}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-off #ah_off{order:4}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-morn #ah_morn{order:4}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .sr-row{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:12px;width:100%;padding:11px 0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .sr-row+.sr-row{border-top:1px solid var(--sh-line)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .sr-row:focus-visible{outline:2px solid #F2782D;outline-offset:2px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:none;font-size:1rem}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx b{color:var(--sh-ink);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx small{color:var(--sh-muted);font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum em{font-style:normal;font-weight:800;font-size:.75rem;border-radius:999px;padding:2px 9px;background:#E5484D;color:#fff}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum i{font-style:normal;color:var(--sh-muted);font-size:1.1rem;width:14px;text-align:center}
 </style>
 </body>
 </html>
