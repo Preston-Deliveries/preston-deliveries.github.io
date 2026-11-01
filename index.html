@@ -1548,6 +1548,9 @@ document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest
  const val=b=>b.dataset.sw||b.dataset.pw||b.dataset.v||b.dataset.pd||b.dataset.sd||b.dataset.pcy||b.dataset.sc||'';
  const txt=(b,s)=>{const e=b.querySelector(s);return e?e.textContent.replace(/[•·]/g,'').trim():''};
  function label(b){const v=val(b),B=txt(b,'b')||b.textContent.trim(),S=txt(b,'small');const T=iso(new Date());
+   /* a calendar month (2026-11): show it in full, like 'November 2026' */
+   if(/^\d{4}-\d{2}$/.test(v)){const FM=['January','February','March','April','May','June','July','August','September','October','November','December'];const m=+v.slice(5)-1;return FM[m]+' '+v.slice(0,4)}
+   if(/^\d{4}$/.test(v)){return v}
    if(/^\d{4}-\d{2}-\d{2}$/.test(v)){
      if(/^Week/i.test(B)){const e=ad(v,5),mon=ad(T,-((fi(T).getDay()+6)%7));const rel=v===mon?'This week':v===ad(mon,-7)?'Last week':'';
        const a=fi(v),z=fi(e),rg=a.getDate()+(a.getMonth()!==z.getMonth()?' '+MO[a.getMonth()]:'')+' to '+z.getDate()+' '+MO[z.getMonth()];return rel?rel+' · '+rg:rg}
@@ -10397,7 +10400,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021100';
+const VERSION='202611021110';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
