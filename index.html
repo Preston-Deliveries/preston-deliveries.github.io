@@ -9874,9 +9874,40 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
      const gc=k=>/^\d{4}$/.test(k)?'g'+k:k==='SUPERVISOR'?'gsup':/PRINCIP|MANAGER/.test(k)?'gman':/XL|RELIEF/.test(k)?'gxl':'goth';
      return `${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
      ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Induction','Licence','Rego','Visa','Agreement','F2W'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
-     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><span class="cp-gl"><i></i>${esc(label(k))} <span>${g.length}</span></span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="${lev(r)?'cp-n '+lev(r):''}"><td class="cp-nm" title="${esc(lev(r)?why(r):'')}"><b>${esc(shortName(r.p))}</b></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
-   <p class="mt-note">Add licence, rego and visa details, the Fit2Work status and site induction in each driver's record on the Driver Management page. New drivers fill most of this in themselves through the welcome steps.</p>
+     ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><span class="cp-gl"><i></i>${esc(label(k))} <span>${g.length}</span></span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="cp-row ${lev(r)?'cp-n '+lev(r):''}" data-cpe="${esc(r.p.id)}" tabindex="0"><td class="cp-nm" title="${esc(lev(r)?why(r):'')}"><b>${esc(shortName(r.p))}</b><i class="cp-ed" aria-hidden="true">✎</i></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
+   <p class="mt-note">Tap a driver to update their dates and checks here.</p>
    <div class="cv-acts" data-noprint><button type="button" class="sh-btn primary" data-sh="print">Download PDF</button></div></section>`}
+/* Quick edit on the Compliance page: change dates and checks without opening the driver's record */
+function cpEdit(id){const p=(drivers()||[]).find(x=>x.id===id);if(!p)return;cpClose();
+  const sel=(k,opts,v)=>`<select data-cpf="${k}">${opts.map(o=>`<option value="${esc(o)}" ${String(v||'')===o?'selected':''}>${o?esc(o):'Not entered'}</option>`).join('')}</select>`;
+  const dt=(k,v)=>`<input type="date" data-cpf="${k}" value="${esc(v||'')}">`;
+  const w=document.createElement('div');w.id='cp_edit';w.className='cpe';w.setAttribute('role','dialog');w.setAttribute('aria-label','Update '+nameOf(p));
+  w.innerHTML=`<div class="cpe-bg" data-cpx="close"></div><div class="cpe-pn"><div class="cpe-hd"><b>${esc(nameOf(p))}</b><button type="button" class="cpe-x" data-cpx="close" aria-label="Close">✕</button></div>
+   <div class="cpe-bd">
+    <label class="cpe-f"><span>Site induction</span>${dt('indAt',p.indAt)}</label>
+    <label class="cpe-f"><span>Licence expiry</span>${dt('licDue',p.licDue)}</label>
+    <label class="cpe-f"><span>Rego expiry</span>${dt('regoDue',p.regoDue)}</label>
+    <label class="cpe-f"><span>Work rights</span>${sel('visa',['','Australian citizen','Permanent resident','New Zealand citizen','Visa holder'],p.visa)}</label>
+    <label class="cpe-f cpe-vd" ${p.visa==='Visa holder'?'':'hidden'}><span>Visa expiry</span>${dt('visaDue',p.visaDue)}</label>
+    <label class="cpe-f"><span>Fit2Work</span>${sel('fit2work',['','Passed','Pending','Failed','Not done'],p.fit2work)}</label>
+    <label class="cpe-ck"><input type="checkbox" data-cpf="agSigned" ${p.agSigned?'checked':''}> Agreement signed</label>
+    <p class="cpe-msg" role="status"></p>
+   </div>
+   <div class="cpe-ac"><button type="button" class="sh-btn" data-cpx="full">Full details</button><button type="button" class="sh-btn primary" data-cpx="save">Save</button></div></div>`;
+  w.dataset.id=id;document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
+function cpClose(){const w=document.getElementById('cp_edit');if(w)w.remove()}
+async function cpSave(w){const id=w.dataset.id,p=(drivers()||[]).find(x=>x.id===id);if(!p)return;const v=k=>{const e=w.querySelector(`[data-cpf="${k}"]`);return e?(e.type==='checkbox'?e.checked:e.value):undefined};
+  const me=String((window.__webMe&&window.__webMe.name)||'').trim();const patch={licDue:v('licDue'),regoDue:v('regoDue'),visa:v('visa'),visaDue:v('visa')==='Visa holder'?v('visaDue'):(p.visaDue||''),fit2work:v('fit2work'),updatedAt:new Date().toISOString()};
+  const ind=v('indAt');if(ind!==(p.indAt||'')){patch.indAt=ind;patch.indBy=ind?(me||p.indBy||''):''}
+  const ag=v('agSigned');if(ag!==!!p.agSigned)Object.assign(patch,ag?{agSigned:true,agSignedAt:new Date().toISOString(),agSignedBy:me}:{agSigned:false,agSignedAt:'',agSignedBy:''});
+  const m=w.querySelector('.cpe-msg'),b=w.querySelector('[data-cpx="save"]');b.disabled=true;m.textContent='Saving…';
+  try{const d=await getDb();await d.doc('staff/'+id).update(patch);Object.assign(p,patch);if(S.staff&&S.staff[id])Object.assign(S.staff[id],patch);cpClose();compliance()}
+  catch(e){b.disabled=false;m.textContent='Could not save. Check your internet and try again.'}}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const r=t.closest('#cp_root [data-cpe]');if(r){cpEdit(r.dataset.cpe);return}
+  const x=t.closest('#cp_edit [data-cpx]');if(!x)return;const k=x.dataset.cpx,w=document.getElementById('cp_edit');
+  if(k==='close')cpClose();else if(k==='save')cpSave(w);else if(k==='full'){const id=w.dataset.id;cpClose();if(window.APP)APP.go('staff');setTimeout(()=>{try{window.__dmOpen&&window.__dmOpen(id,'.dm-h')}catch(e){}},150)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cpClose();if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('#cp_root [data-cpe]')){e.preventDefault();cpEdit(e.target.dataset.cpe)}});
+document.addEventListener('change',e=>{const t=e.target;if(t.matches&&t.matches('#cp_edit [data-cpf="visa"]')){const l=document.querySelector('#cp_edit .cpe-vd');if(l)l.hidden=t.value!=='Visa holder'}});
 window.MGRT={paint};
 })();
 
@@ -10213,7 +10244,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010176';
+const VERSION='202611010177';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11459,6 +11490,16 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #v_tool[data-tab="view"] #v_viewC>.panel{display:none!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#r_tool,#v_tool) .sc-add{align-self:stretch!important;width:100%!important;grid-column:1/-1}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#r_tool,#v_tool) .sc-add>*{width:100%!important;max-width:none!important;box-sizing:border-box}
+#cp_root .cp-row{cursor:pointer}#cp_root .cp-row:hover td{filter:brightness(.97)}#cp_root .cp-ed{font-style:normal;margin-left:6px;opacity:.55;font-size:.85em}
+.cpe{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:flex-end;justify-content:center}.cpe-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.cpe-pn{position:relative;width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--sh-surface,#fff);color:var(--sh-ink,#111);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-sizing:border-box;box-shadow:0 -10px 30px rgba(0,0,0,.3)}
+@media (min-width:700px){.cpe{align-items:center}.cpe-pn{border-radius:20px}}
+.cpe-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}.cpe-hd b{font-size:1.2rem;flex:1;min-width:0}.cpe-x{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--sh-sunk,rgba(127,127,127,.12))}
+.cpe-bd{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cpe-f{display:flex;flex-direction:column;gap:4px;min-width:0}.cpe-f[hidden]{display:none}.cpe-f span{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--sh-muted)}
+.cpe-f input,.cpe-f select{width:100%;box-sizing:border-box;min-height:44px;font:inherit;font-size:1rem;padding:8px 10px;border-radius:12px;border:1px solid var(--sh-line,#ccc);background:var(--sh-surface,#fff);color:var(--sh-ink,#111)}
+.cpe-ck{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-weight:700;min-height:44px}.cpe-ck input{width:22px;height:22px;margin:0}.cpe-msg{grid-column:1/-1;margin:0;font-weight:700;color:#C0392B}.cpe-msg:empty{display:none}
+.cpe-ac{display:flex;gap:8px;margin-top:14px}.cpe-ac .sh-btn{flex:1;justify-content:center}
+@media (max-width:380px){.cpe-bd{grid-template-columns:1fr}}
 </style>
 <script>
 /* Results and Survey: the same top box as Summary (Download PDF, postcode, one driver, period) */
