@@ -5298,7 +5298,7 @@ function newHTML(){
     <label class="f wide" for="tb_fac">Facility<input type="text" id="tb_fac" value="Gold Coast Parcel Facility, PDC"></label>
     <label class="f wide" for="tb_main">The brief itself (the Word document or PDF)<input type="file" id="tb_main" accept=".docx,.pdf"></label>
     <label class="f wide" for="tb_att">Attachments (toolbox talks, Choose Safer slides, posters)<input type="file" id="tb_att" accept=".pdf,.png,.jpg,.jpeg,.pptx,.ppt" multiple></label>
-    <label class="chk" for="tb_show"><input type="checkbox" id="tb_show" checked> Show to drivers straight away</label>
+    
    </div>
    <p class="sub">PowerPoint slides can't be read on a phone. In PowerPoint use File, Save a Copy, PDF, and add the PDF here.</p>
    <div class="foot"><button type="button" class="sh-btn primary" data-tb="create" ${busy?'disabled':''}><span class="ix ix-add" aria-hidden="true"></span>Team brief</button><button type="button" class="sh-btn" data-tb="cancel">Cancel</button>
@@ -5359,7 +5359,7 @@ function topicsFrom(html){
   return out.slice(0,15);
 }
 async function create(){
-  const date=$('date').value,title=$('title').value.trim()||'Team brief',facility=$('fac').value.trim(),main=$('main').files[0],att=[...$('att').files],shown=$('show').checked;
+  const date=$('date').value,title=$('title').value.trim()||'Team brief',facility=$('fac').value.trim(),main=$('main').files[0],att=[...$('att').files],shown=true;
   if(!main&&!att.length){msg={err:true,t:'Add the brief or at least one attachment.'};render();return}
   for(const f of att){if(/\.pptx?$/i.test(f.name)){msg={err:true,t:`${f.name} is a PowerPoint file. Save it as a PDF first (File, Save a Copy, PDF) and add the PDF instead.`};render();return}}
   msg=null;const say=t=>{busy=t;const m=document.querySelector('#mod-briefs .foot .msg');if(m)m.textContent=t;else render()};
@@ -5371,7 +5371,7 @@ async function create(){
     const useDate=docDate&&date===todayIso()?docDate:date;const useFac=facility||docFacility;
     const id=useDate+'-'+Math.random().toString(36).slice(2,6);
     const doc={date:useDate,title,facility:useFac.replace(/\s+[\u2013\u2014-]\s+/g,', '),html,topics:topicsFrom(html),files,shown,createdAt:new Date().toISOString()};
-    await db.doc('briefs/'+id).set(doc);briefs[id]=Object.assign({id},doc);
+    await db.doc('briefs/'+id).set(doc);briefs[id]=Object.assign({id},doc);try{window.PUSH&&PUSH.send('urgent',{safety:true,title:'New team brief',body:String(title||'Tap to read and sign it.'),url:'#briefs'})}catch(x){}
     busy=null;creating=false;openId=id;msg={t:shown?'Added. Drivers can see it now.':'Added. It is hidden from drivers until you show it.',wa:shown?{sec:'briefs',title}:null};pushStat();render();window.scrollTo(0,0);
   }catch(e){busy=null;msg={err:true,t:e&&e.code==='quota_exceeded'?'Storage is full. Delete some old team briefs and try again.':(e&&e.message&&!/load https/.test(e.message)?e.message:'Could not read those files. Check your connection and try again.')};render()}
 }
@@ -5467,7 +5467,7 @@ document.addEventListener('click',async e=>{
   if(a==='zoom'){const im=el.querySelector('img');if(im&&im.src){zoomSrc=im.src;render()}return}
   if(a==='bigger'){el.classList.toggle('big');return}
   if(a==='unzoom'){if(e.target.tagName==='IMG')return;zoomSrc=null;render();return}
-  if(a==='toggle'){const b=briefs[openId];try{await db.doc('briefs/'+b.id).update({shown:!b.shown});b.shown=!b.shown;msg={t:b.shown?'Drivers can see this brief now.':'Hidden from drivers.'};pushStat();render()}catch(x){msg={err:true,t:'Could not change it just now.'};render()}return}
+  if(a==='toggle'){const b=briefs[openId];try{await db.doc('briefs/'+b.id).update({shown:!b.shown});b.shown=!b.shown;if(b.shown)try{window.PUSH&&PUSH.send('urgent',{safety:true,title:'New team brief',body:String(b.title||'Tap to read and sign it.'),url:'#briefs'})}catch(x){}msg={t:b.shown?'Drivers can see this brief now.':'Hidden from drivers.'};pushStat();render()}catch(x){msg={err:true,t:'Could not change it just now.'};render()}return}
   if(a==='rmfile'){removeFile(+el.dataset.v);return}
   if(a==='del'){delBrief();return}
   if(a==='sheet'){signSheet(el,el.dataset.v);return}
@@ -6787,7 +6787,7 @@ const postedText=ts=>{if(!ts)return '';const d=new Date(ts),t=new Date();const h
   const diff=Math.round((fromIso(iso(t))-fromIso(iso(d)))/864e5);return (diff===0?'Today':diff===1?'Yesterday':DOW[d.getDay()].slice(0,3)+' '+d.getDate()+' '+MON[d.getMonth()].slice(0,3))+' at '+hm};
 const today=()=>iso(new Date());
 let by=(()=>{try{return localStorage.getItem('nt_by')||'week'}catch(e){return 'week'}})(),openG=new Set(),closedG=new Set(),impOnly=false;
-let mode='wait',db=null,items={},live={},drafts={},msg=null,editing=null,armDel=false,showPast=false;
+let mode='wait',db=null,items={},live={},drafts={},msg=null,editing=null,armDel=false,armC=null,showPast=false;
 const isMgr=()=>mode==='mgr';
 const isPast=n=>!n.pinned&&((n.until&&n.until<today())||(!n.until&&n.date&&n.date<today()));
 function sorted(){return Object.values(items).filter(n=>isMgr()||n.live).sort((a,b)=>String(b.postedAt).localeCompare(String(a.postedAt)))}
@@ -6821,7 +6821,7 @@ function fullCardHTML(n){
    <h2>${esc(n.title)}${n.date?`<span class="dt"> ${esc(longDate(n.date))}</span>`:''}</h2>
    <div class="txt">${bodyHTML(n.body)}</div>
    <p class="meta">${n.live?'Posted':'Saved'} ${esc(postedText(n.postedAt))}${n.edited?' · updated '+esc(postedText(n.edited)):''} <button type="button" class="ntc" data-nt="row" data-v="${esc(n.id)}">Close ▲</button></p>
-   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button>${n.live?window.__waBtn({sec:'updates',title:n.title}).replace('class="sh-btn wa-share"','class="sh-btn wa-share sm"'):''}</div>`:''}</div></article>`;
+   ${isMgr()?`<div class="foot"><button type="button" class="sh-btn" data-nt="edit" data-v="${esc(n.id)}">Edit</button><button type="button" class="sh-btn danger ${armC===n.id?'arm':''}" data-nt="cdel" data-v="${esc(n.id)}">${armC===n.id?'Tap again to delete':'Delete'}</button>${n.live?window.__waBtn({sec:'updates',title:n.title}).replace('class="sh-btn wa-share"','class="sh-btn wa-share sm"'):''}</div>`:''}</div></article>`;
 }
 function render(){
   const box=$('root');if(!box)return;
@@ -6861,7 +6861,7 @@ function editHTML(){
    <p class="sub">After the date it happens (or the Show until date) the update is marked Finished and faded. It stays in its week and month so you can look back.</p>
    <label class="f" for="nt_body">Details<textarea id="nt_body" rows="8" placeholder="Sessions will run for 15 minutes in the satellite office lunchroom. Please arrive on time.&#10;6:30am: All first wave drivers&#10;8:30am: All second wave drivers">${esc(n.body)}</textarea></label>
    <p class="sub">Start a line with a time, like <b>6:30am:</b>, and it shows as a bold time slot. Lines starting with * or • become bullet points, and a short line just above bullets becomes a heading. Paste straight from WhatsApp or Word.</p>
-   <div class="checks"><label><input type="checkbox" id="nt_imp" ${n.important?'checked':''}> Mark as important</label><label><input type="checkbox" id="nt_pin" ${n.pinned?'checked':''}> Pin to the top</label><label><input type="checkbox" id="nt_live" ${n.live!==false?'checked':''}> Show to drivers now</label></div>
+   <div class="checks"><label><input type="checkbox" id="nt_imp" ${n.important?'checked':''}> Mark as important</label><label><input type="checkbox" id="nt_pin" ${n.pinned?'checked':''}> Pin to the top</label></div>
    <div class="foot"><button type="button" class="sh-btn primary" data-nt="save">${editing==='new'?'Post update':'Save changes'}</button><button type="button" class="sh-btn" data-nt="cancel">Cancel</button>${msg?`<span class="msg ${msg.err?'err':''}">${esc(msg.t)}</span>`:''}<span class="sp"></span>${editing==='new'?'':`<button type="button" class="sh-btn danger ${armDel?'arm':''}" data-nt="del">${armDel?'Tap again to delete':'Delete'}</button>`}</div></section></div>`;
 }
 const heads=n=>`📢 ${n.important?'Important update':'New update'}: ${n.title}${n.date?', '+longDate(n.date):''}. See the Claude app for details.`;
@@ -6873,12 +6873,12 @@ async function syncDrivers(){
 async function save(){
   const title=$('title').value.trim(),body=$('body').value.replace(/\s+$/,'');
   if(!title){msg={err:true,t:'Add a title.'};render();return}
-  const o={title,body,date:$('date').value||'',until:$('until').value||'',important:$('imp').checked,pinned:$('pin').checked,live:$('live').checked};
+  const o={title,body,date:$('date').value||'',until:$('until').value||'',important:$('imp').checked,pinned:$('pin').checked,live:true};
   const isNew=editing==='new';const id=isNew?Date.now().toString(36)+Math.random().toString(36).slice(2,6):editing;
   if(isNew)o.postedAt=new Date().toISOString();else{o.postedAt=items[id].postedAt;o.edited=new Date().toISOString()}
   if(!isNew&&!items[id].live&&o.live)o.postedAt=new Date().toISOString(),delete o.edited;
   const was=items[id];
-  try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;if(o.live&&!(was&&was.live))try{window.PUSH&&PUSH.send('update',{title:'New update from the office',body:String(o.title||'Tap to read it.'),url:'#updates'})}catch(x){}
+  try{await db.doc((o.live?'notices/':'ntdrafts/')+id).set(o);if(was&&was.live!==o.live)await db.doc((was.live?'notices/':'ntdrafts/')+id).delete();items[id]=Object.assign({id},o);editing=null;if(o.live&&!(was&&was.live))try{window.PUSH&&PUSH.send('urgent',{safety:true,title:'New update from the office',body:String(o.title||'Tap to read it.'),url:'#updates'})}catch(x){}
     msg={t:o.live?'Posted. Drivers get a pop up and a red 1 on Updates.':'Saved as a draft. Drivers can’t see it yet.',wa:o.live?{sec:'updates',title:o.title}:null};render();
     if(o.live||(was&&was.live)){const ok=await syncDrivers();if(!ok){msg={err:true,t:'Saved, but it could not be sent to the drivers’ link just now. Edit and save it again to retry.',wa:msg&&msg.wa};render()}}
     setTimeout(()=>document.getElementById('nt_n_'+id)?.scrollIntoView({block:'nearest'}),0)}
@@ -6894,6 +6894,8 @@ document.addEventListener('click',async e=>{
   if(a==='by'){by=v;openG.clear();closedG.clear();try{localStorage.setItem('nt_by',v)}catch(x){}render();return}
   if(a==='imp'){impOnly=!impOnly;render();return}
   if(a==='grp'){const open=el.getAttribute('aria-expanded')==='true';if(open){closedG.add(v);openG.delete(v)}else{openG.add(v);closedG.delete(v)}render();return}
+  if(a==='cdel'){const n=items[v];if(!n)return;if(armC!==v){armC=v;render();setTimeout(()=>{if(armC===v){armC=null;render()}},3500);return}
+    armC=null;try{await db.doc((n.live?'notices/':'ntdrafts/')+v).delete();delete items[v];msg={t:'Update deleted.'};if(n.live){render();await syncDrivers()}}catch(x){msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='del'){if(!armDel){armDel=true;render();setTimeout(()=>{if(armDel){armDel=false;render()}},3500);return}
     try{await db.doc((items[editing].live?'notices/':'ntdrafts/')+editing).delete();const wasLive=items[editing].live;delete items[editing];editing=null;armDel=false;msg={t:'Update deleted.'};if(wasLive){render();await syncDrivers()}}catch(x){armDel=false;msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='wa'){const t=heads(items[v]);const l=document.createElement('a');l.href='https://wa.me/?text='+encodeURIComponent(t);l.target='_blank';l.rel='noopener';document.body.appendChild(l);l.click();l.remove();msg={t:'WhatsApp opened. Pick the team group and send.'};render();return}
@@ -10356,7 +10358,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012050';
+const VERSION='202611012100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
