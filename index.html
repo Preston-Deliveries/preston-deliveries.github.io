@@ -367,6 +367,10 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 /* Start the app's parts. The ones the Home page needs run straight away; the rest run one at a time
    while the phone is idle, so the app opens quicker. Tapping to another page runs anything still waiting first. */
 window.__ivLoad=()=>window.IV_FILES?Promise.resolve():(window.__ivP=window.__ivP||new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='assets/iv-files.js';sc.onload=ok;sc.onerror=()=>{window.__ivP=null;no(new Error('load'))};document.head.appendChild(sc)}));
+/* admin pages that keep big lists live only start listening once that page is first opened (saves database reads on every open) */
+window.__lazyStart=(pages,fn)=>{let done=false;return role=>{if(done)return;if(role!=='mgr'){fn(role);return}
+  const now=()=>{if(done)return;done=true;window.removeEventListener('sh:go',h);fn(role)};const h=e=>{if(pages.includes(e.detail))now()};
+  if(window.APP&&pages.includes(APP.section)){now();return}window.addEventListener('sh:go',h)}};
 window.__runMods=function(admin){
   const ADMIN_ONLY=['staff','enquiries','summary','vchecks','timesheets','mgrtools'];
   const CORE=['i18n','shell','clockin','me','leave','runs','updates'];
@@ -1170,7 +1174,7 @@ async function openPushSend(mode){closeSettings();const P=window.PUSH;if(!P)retu
   const [cfg,phones,log]=await Promise.all([P.cfg(),P.phones(),P.log()]);puState={cfg,phones,log,msg:null,busy:false,when:'now',sched:[],to:'',toName:'Everyone',pick:false,q:'',people:[],mode:mode==='alert'||mode==='task'?mode:null,t:null};puSendRender();schLoad();puPeople()}
 async function puPeople(){try{const db=await window.__getDb();const q=await db.collection('staff').get();const L=[];q.docs.forEach(d=>{const v=(window.__D?window.__D(d):d.data())||{};const nm=[v.first,v.last].filter(Boolean).join(' ').trim()||v.name||'';if(!nm||v.left||v.archived)return;L.push({id:d.id,name:nm,runs:(v.runs||[]).filter(Boolean).join(' '),login:String(v.login||''),email:String(v.email||'').trim().toLowerCase()})});
   const on=new Set((puState.phones||[]).map(p=>String(p.staff||'')));L.forEach(x=>x.on=on.has(x.id));puState.people=L.sort((a,b)=>a.name.localeCompare(b.name))}catch(e){puState.people=[]}if(document.querySelector('#sh-set.pu-snd'))puSendRender()}
-async function schLoad(){try{const db=await window.__getDb();const q=await db.collection('schedalerts').where('active','==',true).get();puState.sched=q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>String(a.next).localeCompare(String(b.next)))}catch(e){puState.sched=[]}if(document.querySelector('#sh-set.pu-snd'))puSendRender()}
+async function schLoad(){try{const db=await window.__getDb();const q=await db.collection('schedalerts').where('active','==',true).get();puState.sched=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.type!=='outbox').sort((a,b)=>String(a.next).localeCompare(String(b.next)))}catch(e){puState.sched=[]}if(document.querySelector('#sh-set.pu-snd'))puSendRender()}
 const SCH_D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function schNext(time,date,days,after){const QLD=36e6;const [hh,mm]=String(time||'06:00').split(':').map(Number);after=after||Date.now();
   if(days&&days.length){const q=new Date(after+QLD);for(let i=0;i<=8;i++){const d=new Date(Date.UTC(q.getUTCFullYear(),q.getUTCMonth(),q.getUTCDate()+i,hh,mm)-QLD);if(d.getTime()>after&&days.includes(new Date(d.getTime()+QLD).getUTCDay()))return d.toISOString()}return null}
@@ -5488,7 +5492,7 @@ async function start(role){
   if(!db){msg={err:true,t:'Team briefs only open inside Claude while you are signed in.'};render();return}
   try{for(let i=0;i<60&&!window.CLOCK;i++)await new Promise(r=>setTimeout(r,100));me=window.CLOCK&&CLOCK.whoami?await CLOCK.whoami():null}catch(e){me=null}
   if(mode==='mgr')setTimeout(tidyOld,8000);
-  if(mode==='mgr'){db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{});
+  if(mode==='mgr'){window.__lazyStart(['briefs','updates'],()=>db.collection('briefsigs').onSnapshot(sn=>{const m={};for(const d of sn.docs)m[d.id]=__D(d);sigs=m;if(!pad.strokes.length)render()},()=>{}))('mgr');
     db.collection('staff').get().then(st=>{const OUT=['ADMIN','PRINCIPLE','PRINCIPAL'];notSigned=st.docs.map(d=>({id:d.id,...__D(d)})).filter(p=>!OUT.includes(String(p.role||'').toUpperCase().trim())).map(p=>({id:p.id,name:String([p.first,p.last].filter(Boolean).join(' ')).toLowerCase().replace(/(^|[\s'(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase())})).sort((a,b)=>a.name.localeCompare(b.name))}).catch(()=>{})}
   db.collection('briefs').onSnapshot(snap=>{const n={};for(const d of snap.docs)n[d.id]=Object.assign({id:d.id},__D(d));briefs=n;pushStat();loadMine();
     if(busy||creating)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#mod-briefs .card'))return;render()},()=>{msg={err:true,t:'Could not load team briefs just now. Reload the page.'};render()});
@@ -8188,8 +8192,8 @@ function syncEnq(){if(mode!=='mgr'||!db)return;clearTimeout(enqSyncT);enqSyncT=s
     if(Object.keys(up).length){try{await db.doc('days/'+id).update(up)}catch(e){console.warn('enq sync',e)}}}
 },1500)}
 render();
-window.addEventListener('app:role',e=>start(e.detail));
-if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
+const go0=window.__lazyStart(['summary','results','survey','enquiries','ncr','me','boss','review'],start);window.addEventListener('app:role',e=>go0(e.detail));
+if(window.APP&&APP.role&&APP.role!=='loading')go0(APP.role);
 })();
 
 </script>
@@ -8720,8 +8724,8 @@ async function start(role){
   setInterval(()=>{if(!typing())checkStat()},60000);
 }
 render();
-window.addEventListener('app:role',e=>start(e.detail));
-if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
+const go0=window.__lazyStart(['timesheets','invoices','clock'],start);window.addEventListener('app:role',e=>go0(e.detail));
+if(window.APP&&APP.role&&APP.role!=='loading')go0(APP.role);
 })();
 
 </script>
@@ -10367,7 +10371,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611020945';
+const VERSION='202611021000';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
