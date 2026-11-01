@@ -1178,7 +1178,7 @@ const puCard=()=>{try{const P=window.PUSH;if(!P||previewChild)return;const st=P.
   if(isAdm){c.classList.add('pu-strip');c.innerHTML=`<span>🔔 Notifications are ${st==='blocked'?'blocked':'off'}</span>${st==='blocked'?'<button type="button" class="sh-btn sm" data-sh="settings">Fix</button>':'<button type="button" class="sh-btn sm" data-pu="on">Turn on</button>'}<p class="pu-msg" id="pu_msg" role="status"></p>`;const qa=home.querySelector('.ah-qa');if(qa){qa.after(c)}else at.parentNode.insertBefore(c,at);return}
   c.innerHTML=st==='blocked'?`<b>🔔 Notifications are blocked</b><p>You need these for messages from the office. Open your phone’s <b>Settings → Apps → Chrome → Notifications</b> and allow them (on a computer: click the padlock next to the web address, set Notifications to Allow), then come back to the app.</p>`
    :`<b>🔔 Turn on notifications</b><p>The office uses these for important messages, new updates and enquiries. Please turn them on.</p><div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="on">Turn on</button>${isAdm?'<button type="button" class="sh-btn" data-pu="later">Not now</button>':''}</div><p class="pu-msg" id="pu_msg" role="status"></p>`;
-  at.parentNode.insertBefore(c,at)}catch(x){}};
+  const dc=home.querySelector('#dh_cards');if(dc)dc.parentNode.insertBefore(c,dc);else at.parentNode.insertBefore(c,at)}catch(x){}};
 setInterval(puCard,2500);
 /* add the card in the same frame Home is drawn, so nothing below it jumps */
 (()=>{const go=()=>{const h=document.getElementById('mod-home');if(!h){setTimeout(go,300);return}const mo=new MutationObserver(()=>{puCard();mo.takeRecords()});mo.observe(h,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});puCard()};go()})();
@@ -1818,7 +1818,7 @@ function renderHome(){
   const today=new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   if(role==='loading'){box.innerHTML=`<section class="sh-hero"><span class="sh-date">${esc(today)}</span><h1 class="sh-hero-t">Contract 1161</h1></section><div class="sh-wait">Opening your tools</div>`;return}
   if(role==='drv'){
-    box.innerHTML=`<section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section><div class="dh-cards"><section class="dh-card ah-find"><h2>Search</h2><div class="ah-frow"><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street or a page" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Search streets and pages">${(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="ah-mic" id="ah_mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>`:''}</div><div class="ah-say" id="ah_say" aria-live="polite" hidden></div><div id="ah_fres" aria-live="polite"></div></section></div><div class="dh-cards wx-wrap"><div id="wx_box"></div></div><div id="dh_cards" class="dh-cards"><div class="dh-card dh-wait">Getting your week ready…</div></div>`;
+    box.innerHTML=`<section class="sh-hero dh-hero"><span class="sh-date">${esc(today)}</span><div id="sh-clock"></div></section><div class="dh-cards wx-wrap"><div id="wx_box"></div></div><div class="dh-cards"><section class="dh-card ah-find"><h2>Search</h2><div class="ah-frow"><input type="search" id="ah_fq" class="ah-fq" placeholder="Type a street or a page" value="${esc(findQ)}" autocomplete="off" autocapitalize="characters" enterkeyhint="search" aria-label="Search streets and pages">${(window.SpeechRecognition||window.webkitSpeechRecognition)?`<button type="button" class="ah-mic" id="ah_mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>`:''}</div><div class="ah-say" id="ah_say" aria-live="polite" hidden></div><div id="ah_fres" aria-live="polite"></div></section></div><div id="dh_cards" class="dh-cards"><div class="dh-card dh-wait">Getting your week ready…</div></div>`;
     if(window.CLOCK)window.CLOCK.mount();findRender();try{WX.render($('wx_box'))}catch(e){}
     const fill=()=>{if(window.ME&&window.ME.home)window.ME.home();else setTimeout(fill,200)};fill();
     return;
@@ -3512,7 +3512,7 @@ function renderPk(){const box=$("pk");if(!box)return;
   const chip=(a,v,on,b,sm,has)=>`<button type="button" ${a}="${v}" aria-pressed="${on}" class="${has?"":"dim"}"><b>${b}</b><small>${sm}${has?" \u2022":""}</small></button>`;
   let c="";
   if(isW){const cs=sel.cycleStart;c=[1,2,3,4].map(n=>{const st=addDays(fromISO(cs),(n-1)*7);const has=saved.some(x=>x.id===docIdFor(cs,n));return chip("data-svw",n,n===sel.week,"Week "+n,st.getDate()+" "+st.toLocaleDateString("en-AU",{month:"short"}),has)}).join("")}
-  else{const cur=$("cycle").value||NOW_CYCLE,m=cycles();c=[-3,-2,-1,0].map(k=>toISO(addDays(fromISO(cur),28*k))).map(k=>{const[a,b]=ml(k);return chip("data-svc",k,k===cur,a,b,!!(m[k]&&m[k].length))}).join("")}
+  else{const cur=$("cycle").value||NOW_CYCLE,m=cycles();c=[-3,-2,-1,0].map(k=>toISO(addDays(fromISO(cur),28*k))).map(k=>{const[a]=ml(k),s0=fromISO(k),e0=addDays(s0,27),sh=d=>d.getDate()+" "+d.toLocaleDateString("en-AU",{month:"short"});return chip("data-svc",k,k===cur,a,sh(s0)+" to "+sh(e0),!!(m[k]&&m[k].length))}).join("")}
   box.innerHTML=`<div class="pseg2" role="group" aria-label="Period"><button type="button" data-sv="w" aria-pressed="${isW}">Week</button><button type="button" data-sv="c" aria-pressed="${!isW}">Month</button></div>
   <div class="pchips"><button type="button" class="pnav" data-svn="-1" aria-label="Earlier">\u2039</button><div class="pchs">${c}</div><button type="button" class="pnav" data-svn="1" aria-label="Later">\u203a</button></div>`}
 function svOpt(selEl,k,label){if(![...selEl.options].some(o=>o.value===k)){const o=document.createElement("option");o.value=k;o.textContent=label;selEl.appendChild(o)}selEl.value=k}
@@ -10177,7 +10177,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010171';
+const VERSION='202611010172';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11406,6 +11406,7 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home #ah_fu{display:none!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu{display:block!important;order:4}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu details.fu-nd{}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .dh-cards>#wx_box{order:0}
 </style>
 </body>
 </html>
