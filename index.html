@@ -10365,7 +10365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012300';
+const VERSION='202611012305';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12059,7 +12059,7 @@ function listHtml(){let all=Object.values(TK.all);
     ${one?'':`<small><b>${g.L.length-g.open.length} of ${g.L.length} done</b>${g.open.length&&g.open.length<=12?' · not yet: '+esc(g.open.map(x=>String(x.whoName||nameOf(x.who)).split(' ')[0]).join(', ')):''}</small>`}
     ${ld?`<small>Last ding ${tm(ld)}: ${ph?'went to '+ph+' phone'+(ph>1?'s':''):'no phone has notifications on'}</small>`:(t.dings||[]).length&&!g.done?`<small>Dings: ${esc(t.dings.map(d=>dayTxt(d.d)+' '+t12(d.t)).join(', '))}</small>`:''}
     ${t.note?`<p>${esc(t.note)}</p>`:''}
-    <div class="tk-foot">${one&&!g.done?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button>`:''}${one&&g.done?`<button type="button" class="sh-btn" data-tk-undo="${esc(t.id)}">Undo done</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===g.k?'arm':''}" data-tk="del" data-v="${esc(g.k)}">${TK.arm===g.k?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
+    <div class="tk-foot">${one&&!g.done?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button>`:''}${one&&g.done?`<button type="button" class="sh-btn" data-tk-undo="${esc(t.id)}">Undo done</button>`:''}${!g.done?`<button type="button" class="sh-btn" data-tk="gedit" data-v="${esc(g.k)}">Edit</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===g.k?'arm':''}" data-tk="del" data-v="${esc(g.k)}">${TK.arm===g.k?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
 function render(){const el=document.getElementById('tk_root');if(!el)return;if(!isMgr()){el.innerHTML='';return}
   if(TK.form){if(document.activeElement&&el.contains(document.activeElement)&&document.getElementById('tk_title'))readForm();}
   el.innerHTML=`<div class="tk">${TK.form?formHtml():`<p class="lead">Tasks stay on that person's Home until they tap Done. Once they do, no more dings go out for it.</p><button type="button" class="sh-btn primary" data-tk="new">+ New task</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}${listHtml()}`}</div>`}
@@ -12086,17 +12086,18 @@ window.tkSendRender=function(b){if(!window.__puS().t){const q=new Date(Date.now(
   const picker=to.startsWith('st:')?`<div class="pu-picked"><b>${esc(window.__puS().toName)}</b><button type="button" data-pu="to" data-v="one" aria-label="Choose someone else">✕</button></div>`:window.__puS().pick?`<input type="search" id="pu_q" class="pu-q" placeholder="Name or run, like D21" value="${esc(window.__puS().q||'')}" autocomplete="off" aria-label="Find a driver"><div class="pu-res2">${(()=>{const t=String(window.__puS().q||'').toLowerCase().replace(/\s+/g,'');const L=(window.__puS().people||[]).filter(x=>!t||(x.name+x.runs+x.login).toLowerCase().replace(/\s+/g,'').includes(t)).slice(0,6);return L.length?L.map(x=>`<button type="button" data-pu="pick" data-v="${esc(x.id)}" data-n="${esc(x.name)}"><b>${esc(x.name)}</b><small>${esc(x.runs)}${x.email?'':' · no login'}</small></button>`).join(''):`<p class="pu-none">${(window.__puS().people||[]).length?'Nobody matches.':'Loading drivers…'}</p>`})()}</div>`:'';
   const mine=Object.values(TK.all);const G={};mine.filter(t=>t.status!=='done').forEach(t=>{const k=t.grp||t.id;(G[k]=G[k]||[]).push(t)});
   const open=Object.values(G).sort((a,b)=>(a[0].due+(a[0].time||'99')).localeCompare(b[0].due+(b[0].time||'99'))).slice(0,6);
-  b.innerHTML=`<section class="pu-sec"><button type="button" class="pu-back" data-pu="mode" data-v="">‹ Alert or task</button>
+  if(T.editK){const hd=document.querySelector('#sh-set.pu-snd .hd b');if(hd)hd.textContent='Edit Task'}
+  b.innerHTML=`<section class="pu-sec">${T.editK?`<p class="pu-rl" style="margin-top:0">For</p><div class="pu-picked"><b>${esc(T.editName)}</b></div>`:`<button type="button" class="pu-back" data-pu="mode" data-v="">‹ Alert or task</button>
     <p class="pu-rl" style="margin-top:0">Send to</p><input type="hidden" id="pu_to" value="${esc(to)}">
     <div class="pu-tos" role="group" aria-label="Send to"><button type="button" data-pt="me" aria-pressed="${to==='me'}">Me</button><button type="button" data-pu="to" data-v="" aria-pressed="${!window.__puS().pick&&!to}">Everyone</button>${['4214','4215','4217','4218'].map(x=>`<button type="button" data-pu="to" data-v="pc:${x}" aria-pressed="${to==='pc:'+x}">${x}</button>`).join('')}<button type="button" data-pu="to" data-v="one" aria-pressed="${!!window.__puS().pick||to.startsWith('st:')}">One driver</button></div>
-    ${picker}
+    ${picker}`}
     <label class="pu-f">What needs doing<textarea id="pt_body" rows="3" maxlength="180" placeholder="e.g. Sign the van lease at the office">${esc(T.body)}</textarea></label>
     <div class="pu-row2"><label class="pu-f">Due date<input type="date" id="pt_due" value="${esc(T.due)}"></label><label class="pu-f">Due time (optional)<input type="time" id="pt_time" value="${esc(T.time)}"></label></div>
     <label class="pu-ck"><input type="checkbox" id="pt_ding" ${T.ding?'checked':''}> 🔔 Ding their phones</label>
     ${T.ding?`<p class="pu-rl">Ding at</p>${T.dings.map((g,i)=>`<div class="pu-dg"><input type="date" data-pdk="${i}" data-f="d" value="${esc(g.d)}" aria-label="Ding date"><input type="time" data-pdk="${i}" data-f="t" value="${esc(g.t)}" aria-label="Ding time"><button type="button" class="pu-dx" data-pt="dx" data-v="${i}" aria-label="Remove this ding">✕</button></div>`).join('')}<button type="button" class="sh-btn sm pu-dadd" data-pt="dadd">+ Add another ding</button>`:''}
-    <div class="pu-acts"><button type="button" class="sh-btn primary" data-pt="save" ${window.__puS().busy?'disabled':''}>${window.__puS().busy?'Saving…':'Add task'}</button></div>
+    <div class="pu-acts"><button type="button" class="sh-btn primary" data-pt="save" ${window.__puS().busy?'disabled':''}>${window.__puS().busy?'Saving…':T.editK?'Save changes':'Add task'}</button>${T.editK?'<button type="button" class="sh-btn" data-sh="setclose">Cancel</button>':''}</div>
     ${window.__puS().msg?`<p class="pu-res ${window.__puS().msg.err?'err':''}">${esc(window.__puS().msg.t)}</p>`:''}</section>
-    ${open.length?`<section class="pu-sec"><h3>Open tasks</h3><ul class="pu-sch">${open.map(L=>{const t=L[0];const n=mine.filter(x=>(x.grp||x.id)===(t.grp||t.id)).length;return `<li><span><b>${esc(t.due?whenTxt(t):'No due date')}</b><small>${esc(n>1?(t.toName||'Several people')+' · '+(n-L.length)+' of '+n+' done':nameOf(t.who))}</small><em>${esc(t.title)}</em></span></li>`}).join('')}</ul><button type="button" class="sh-btn sm" data-pt="all">See all tasks</button></section>`:''}`;
+    ${open.length&&!T.editK?`<section class="pu-sec"><h3>Open tasks</h3><ul class="pu-sch">${open.map(L=>{const t=L[0];const n=mine.filter(x=>(x.grp||x.id)===(t.grp||t.id)).length;return `<li><span><b>${esc(t.due?whenTxt(t):'No due date')}</b><small>${esc(n>1?(t.toName||'Several people')+' · '+(n-L.length)+' of '+n+' done':nameOf(t.who))}</small><em>${esc(t.title)}</em></span></li>`}).join('')}</ul><button type="button" class="sh-btn sm" data-pt="all">See all tasks</button></section>`:''}`;
   watchAll();loadPeople()};
 async function tkSave(){tkRead();const T=window.__puS().t,to=String(window.__puS().to||'');const body=String(T.body||'').trim();
   if(!body){window.__puS().msg={err:true,t:'Type what needs doing.'};window.__puRender();return}
@@ -12104,7 +12105,11 @@ async function tkSave(){tkRead();const T=window.__puS().t,to=String(window.__puS
   if(!T.due){window.__puS().msg={err:true,t:'Pick a due date.'};window.__puRender();return}
   const dings=T.ding?T.dings.filter(g=>g.d||g.t):[];
   if(dings.some(g=>!g.d||!g.t)){window.__puS().msg={err:true,t:'Each ding needs a date and a time.'};window.__puRender();return}
-  if(dings.some(g=>Date.parse(utcOf(g.d,g.t))<Date.now())){window.__puS().msg={err:true,t:'One of the ding times has already passed.'};window.__puRender();return}
+  if(!T.editK&&dings.some(g=>Date.parse(utcOf(g.d,g.t))<Date.now())){window.__puS().msg={err:true,t:'One of the ding times has already passed.'};window.__puRender();return}
+  if(T.editK){const ids=Object.values(TK.all).filter(t=>(t.grp||t.id)===T.editK);if(!ids.length)return;window.__puS().busy=true;window.__puS().msg=null;window.__puRender();
+    const d=await db();const upd={title:body,due:T.due,time:T.time,dings:dings.map(g=>({d:g.d,t:g.t}))};const r=rems(upd);upd.rems=r;upd.whenTxt=whenTxt(upd);
+    try{await Promise.all(ids.map(t=>d.doc('tasks/'+t.id).update(Object.assign({},upd,{next:t.status==='done'?'':nextOf(r)}))));window.__puS().busy=false;window.__closeSet();TK.msg={t:'Task updated.'+(r.length?' Dings still to come: '+r.length+'.':'')};render()}
+    catch(e){console.warn('task edit',e);window.__puS().busy=false;window.__puS().msg={err:true,t:'Could not save just now.'};window.__puRender()}return}
   /* who gets it: one task each, so everyone ticks off their own */
   const P=window.__puS().people||[];let R=[];
   if(to==='me')R=[{email:myEmail(),name:me().name||'Me',id:me().staff||''}];
@@ -12140,6 +12145,8 @@ document.addEventListener('click',async e=>{
   const b=e.target.closest&&e.target.closest('[data-tk]');if(!b||!document.getElementById('tk_root')||!document.getElementById('tk_root').contains(b))return;
   const a=b.dataset.tk,v=b.dataset.v;if(a!=='del')TK.arm=null;
   if(a==='new'){if(window.openPushSend)window.openPushSend('task');return}
+  if(a==='gedit'){const L=Object.values(TK.all).filter(t=>(t.grp||t.id)===v);const t=L[0];if(!t||!window.openPushSend)return;await window.openPushSend('task');const P=window.__puS();if(!P)return;
+    P.t={body:t.title||'',due:t.due||today(),time:t.time||'',ding:!!(t.dings||[]).length,dings:(t.dings||[]).length?t.dings.map(g=>({d:g.d,t:g.t})):[{d:t.due||today(),t:'07:00'}],editK:v,editName:L.length>1?(t.toName||'Several people')+' ('+L.length+' people)':(t.whoName||nameOf(t.who))};P.msg=null;const bx=document.querySelector('#sh-set.pu-snd .pu-body');if(bx)bx.innerHTML='';window.__puRender();return}
   if(a==='cancel'){TK.form=null;TK.msg=null;render();return}
   if(a==='dadd'){readForm();const L=TK.form.dings;const last=L[L.length-1];L.push({d:last?last.d:(TK.form.due||today()),t:last?last.t:'07:00'});render();return}
   if(a==='dx'){readForm();TK.form.dings.splice(+v,1);render();return}
