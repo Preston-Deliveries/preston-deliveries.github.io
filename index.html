@@ -641,6 +641,34 @@ if(document.body)check();else document.addEventListener('DOMContentLoaded',check
 window.__dtf=window.__dtf||(()=>{const C=new Map();return o=>{const k=JSON.stringify(o);let f=C.get(k);if(!f){f=new Intl.DateTimeFormat('en-AU',o);C.set(k,f)}return f}})();
 /* Heavy tools load only when needed: the spreadsheet tool for imports and Excel downloads, the screenshot tool for PDFs and images */
 window.__libs=window.__libs||{};
+/* iPhone and iPad: a saved file from the app often does nothing (most of all from the Home Screen app).
+   Instead show a small "ready" panel: Share or save (Files, Mail, WhatsApp, Print) and Open. */
+(()=>{if(window.__iosDl)return;window.__iosDl=1;
+  const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);if(!IOS)return;
+  const TY={pdf:'application/pdf',png:'image/png',jpg:'image/jpeg',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',csv:'text/csv',json:'application/json',docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'};
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function sheet(blob,name){const old=document.getElementById('dl-ready');if(old)old.remove();
+    const ext=String(name).split('.').pop().toLowerCase();const type=TY[ext]||blob.type||'application/octet-stream';const file=new File([blob],name,{type});const url=URL.createObjectURL(file);
+    const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+    const w=document.createElement('div');w.id='dl-ready';w.setAttribute('role','dialog');w.setAttribute('aria-label','File ready');
+    w.innerHTML=`<div class="dlr-bg" data-dlr="x"></div><div class="dlr-pn"><b>✓ Ready</b><span class="dlr-n">${esc(name)}</span><div class="dlr-a">${canShare?'<button type="button" class="dlr-p" data-dlr="share">Share or save</button>':''}<button type="button" class="${canShare?'':'dlr-p'}" data-dlr="open">Open</button><button type="button" data-dlr="x">Close</button></div></div>`;
+    w.addEventListener('click',async e=>{const b=e.target.closest('[data-dlr]');if(!b)return;const k=b.dataset.dlr;
+      if(k==='share'){try{await navigator.share({files:[file],title:name})}catch(x){}return}
+      if(k==='open'){const o=window.open(url,'_blank');if(!o)location.href=url;return}
+      w.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)});
+    document.body.appendChild(w)}
+  window.__iosSave=sheet;
+  const orig=HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click=function(){const h=this.getAttribute('href')||'';if(this.hasAttribute('download')&&/^(blob:|data:)/.test(h)){const name=this.getAttribute('download')||'download';fetch(h).then(r=>r.blob()).then(bl=>sheet(bl,name)).catch(()=>orig.call(this));return}return orig.call(this)};
+})();
+/* The picture tool used for PDFs cannot read newer CSS colours (color-mix). Turn them into plain rgba on the copy it draws. */
+(()=>{if(window.__h2cFix)return;window.__h2cFix=1;let real;
+  const cv=v=>String(v).replace(/color\(srgb\s+([\d.e+-]+)\s+([\d.e+-]+)\s+([\d.e+-]+)(?:\s*\/\s*([\d.e+-]+%?))?\)/g,(m,r,g,b,a)=>{const A=a==null?1:(/%$/.test(a)?parseFloat(a)/100:+a);return `rgba(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)},${A})`}).replace(/(oklab|oklch|lab|lch|color)\([^()]*\)/g,'rgba(0,0,0,0)');
+  const P=['color','background-color','border-top-color','border-right-color','border-bottom-color','border-left-color','outline-color','text-decoration-color','column-rule-color','fill','stroke','box-shadow','background-image','caret-color'];
+  const clean=doc=>{const w=doc.defaultView||window;doc.querySelectorAll('*').forEach(el=>{let cs;try{cs=w.getComputedStyle(el)}catch(e){return}for(const p of P){const v=cs.getPropertyValue(p);if(v&&/(color|oklab|oklch|lab|lch)\(/.test(v))el.style.setProperty(p,cv(v),'important')}})};
+  const wrap=f=>{if(!f||f.__fixed)return f;const g=function(el,o){o=Object.assign({},o||{});const oc=o.onclone;o.onclone=(d,e2)=>{try{clean(d)}catch(x){}return oc?oc(d,e2):undefined};return f.call(this,el,o)};g.__fixed=1;return g};
+  Object.defineProperty(window,'html2canvas',{configurable:true,get(){return real},set(v){real=wrap(v)}});
+})();
 window.loadLib=function(src,ready){if(ready())return Promise.resolve();if(!window.__libs[src])window.__libs[src]=new Promise((ok,no)=>{const e=document.createElement("script");e.src=src;e.onload=()=>ok();e.onerror=()=>{delete window.__libs[src];e.remove();no(new Error("load"))};document.head.appendChild(e)});return window.__libs[src]};
 window.loadXLSX=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",()=>typeof XLSX!=="undefined").catch(()=>{});
 window.loadH2C=()=>window.loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",()=>!!window.html2canvas).catch(()=>{});
@@ -2110,7 +2138,7 @@ function renderTop(){
   {const md=document.getElementById('modes');const off=!canWrite||(()=>{try{return window.parent!==window&&!!window.parent.__closeUV}catch(e){return false}})()||window.__webMe&&window.__webMe.role!=='admin'||S.view!=='runs';md.hidden=off;if(off)md.style.setProperty('display','none','important');else md.style.removeProperty('display')}
   document.getElementById('drivers').hidden=S.view!=='runs';
   {const nav=document.getElementById('drivers');const L=ids();
-   const h=`<label class="rs-pick"><select id="rs_sel" aria-label="Choose a driver">${L.map(id=>{const r=S.runs[id];return `<option value="${esc(id)}" ${id===S.cur?'selected':''}>${esc(r.driver||'Unassigned')} · ${esc(r.login)} · Bay ${esc(r.bay)}</option>`}).join('')}</select></label>`;
+   const h=`<label class="rs-pick"><select id="rs_sel" aria-label="Choose a driver">${L.map(id=>{const r=S.runs[id];return `<option value="${esc(id)}" ${id===S.cur?'selected':''}>${esc((String(r.driver||'').trim().split(/\s+/)[0])||'Unassigned')} · ${esc(r.login)}</option>`}).join('')}</select></label>`;
    if(nav.__h!==h){nav.__h=h;nav.innerHTML=h}else{const sel=nav.querySelector('#rs_sel');if(sel&&sel.value!==S.cur&&L.includes(S.cur))sel.value=S.cur}}
 }
 document.addEventListener('change',e=>{const t=e.target;if(!t||t.id!=='rs_sel')return;const b=document.createElement('button');b.type='button';b.hidden=true;b.dataset.act='driver';b.dataset.v=t.value;t.closest('nav').appendChild(b);b.click();b.remove()});
@@ -3751,8 +3779,13 @@ function startDb(){
 async function capture(boardId,boxId,W,name,shotId,shotBox,say){
   if(document.fonts?.ready) await document.fonts.ready;
   if(!window.html2canvas)await window.loadH2C();
-  const canvas=await html2canvas($(boardId),{scale:1.25,backgroundColor:"#ffffff",width:W,windowWidth:W+120,
-    onclone:doc=>{doc.getElementById("v_"+boardId).style.transform="none";doc.getElementById("v_"+boxId).style.height="auto";}});
+  /* the board is hidden on the Results tab: show it off screen while the picture is taken */
+  const bx=$(boxId),was={hidden:bx.hidden,css:bx.getAttribute("style")};
+  if(!bx.offsetParent){bx.hidden=false;bx.setAttribute("style",`display:block!important;position:fixed;left:-${W+400}px;top:0;width:${W}px;height:auto;visibility:visible`)}
+  let canvas;
+  try{canvas=await html2canvas($(boardId),{scale:1.25,backgroundColor:"#ffffff",width:W,windowWidth:W+120,
+    onclone:doc=>{doc.getElementById("v_"+boardId).style.transform="none";doc.getElementById("v_"+boxId).style.height="auto";}})}
+  finally{bx.hidden=was.hidden;if(was.css==null)bx.removeAttribute("style");else bx.setAttribute("style",was.css)}
   /* one A4 page PDF of the ranking */
   if(!window.jspdf)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
   const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
@@ -3766,7 +3799,7 @@ async function capture(boardId,boxId,W,name,shotId,shotBox,say){
 }
 const clean=s=>s.replace(/[^\w ]+/g," ").replace(/\s+/g," ").trim();
 $("save").addEventListener("click",async()=>{
-  if(!cur){status("Load a sheet first.","err");return;}
+  if(!cur){status("No NPS results loaded for this week yet.","err");return;}
   const b=$("save");b.disabled=true;status("Making the PDF…");
   try{await capture("board","fit",1280,`1161 NPS Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,"shot","shotBox",status)}catch(e){status("Couldn't make the image. Try again.","err")}
   b.disabled=false;
@@ -10239,7 +10272,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010191';
+const VERSION='202611010193';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11549,6 +11582,15 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .sheet .sh-mini b{color:var(--sh-ink);font-weight:800}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .rs-pick{display:block;width:100%}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs #rs_sel{width:100%;box-sizing:border-box;min-height:46px;font:inherit;font-size:1rem;font-weight:700;padding:10px 14px;border-radius:12px;border:1px solid var(--sh-line);background:var(--sh-surface);color:var(--sh-ink)}
+#dl-ready{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:flex-end;justify-content:center}
+#dl-ready .dlr-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+#dl-ready .dlr-pn{position:relative;width:100%;max-width:520px;box-sizing:border-box;background:var(--sh-surface,#fff);color:var(--sh-ink,#111);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;font-family:var(--sh-body,system-ui)}
+#dl-ready b{font-size:1.15rem;color:#1f9d55}
+#dl-ready .dlr-n{color:var(--sh-muted,#5a6576);word-break:break-word}
+#dl-ready .dlr-a{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+#dl-ready .dlr-a button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:13px;border-radius:12px;font-weight:800;border:1px solid var(--sh-line,#d6dce4)}
+#dl-ready .dlr-a .dlr-p{background:var(--pds-orange,#F2782D);border-color:var(--pds-orange,#F2782D);color:#fff}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sc-msg{margin:-4px 2px 10px;font-weight:700;color:#C0392B}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sc-msg:empty{display:none}
 </style>
 <script>
 /* Results and Survey: the same top box as Summary (Download PDF, postcode, one driver, period) */
@@ -11591,7 +11633,7 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
  document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('[data-scx]');if(c){const k=c.dataset.scx;ST[k].pc=c.dataset.v;if(k==='v')ST.v.drv='';run();return}
    const p=e.target.closest&&e.target.closest('[data-scpdf]');if(p){const k=p.dataset.scpdf;
      if(k==='r'){const b=document.querySelector('#r_rtAdmin [data-rb="pdf"]');if(b)b.click()}
-     else{const b=[...document.querySelectorAll('#v_save, #v_save4')].find(x=>{const v=x.closest('.view');return v&&!v.hidden});if(b)b.click()}}});
+     else{const b=[...document.querySelectorAll('#v_save, #v_save4')].find(x=>{const v=x.closest('.view');return v&&!v.hidden});const top=p.closest('.sc-top');let m=top&&top.nextElementSibling&&top.nextElementSibling.classList.contains('sc-msg')?top.nextElementSibling:null;if(top&&!m){m=document.createElement('p');m.className='sc-msg';top.after(m)}if(m)m.textContent='';if(b){b.click();const st=document.getElementById(b.id==='v_save'?'v_status':'v_status4');let n=0;const iv=setInterval(()=>{n++;if(m&&st&&st.classList.contains('err')&&st.textContent){m.textContent=st.textContent;clearInterval(iv)}else if(!b.disabled&&n>2||n>120)clearInterval(iv)},250)}}}});
  document.addEventListener('change',e=>{const s=e.target.closest&&e.target.closest('[data-scd]');if(!s)return;const k=s.dataset.scd,v=s.value;
    if(k==='r'){if(v){const b=document.querySelector(`#r_rtAdmin [data-rbk="${CSS.escape(v)}"]`);s.value='';if(b)b.click()}}
    else{ST.v.drv=v;run()}});
