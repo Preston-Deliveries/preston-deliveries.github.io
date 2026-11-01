@@ -10383,7 +10383,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021015';
+const VERSION='202611021025';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12058,7 +12058,7 @@ const db=async()=>{try{return window.__getDb?await window.__getDb():null}catch(e
 
 /* ---------- live data ---------- */
 async function watchMine(){if(TK.unM||!myEmail())return;if(!TK.cached){TK.cached=1;try{const c=JSON.parse(localStorage.getItem('pds_tkmine')||'null');if(c&&c.e===myEmail()&&!Object.keys(TK.mine).length){TK.mine=c.o||{};homePaint()}}catch(e){}}const d=await db();if(!d||TK.unM)return;
-  const em=[...new Set([myEmail(),...(me().emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean))];TK.unM=(em.length>1?d.collection('tasks').where('who','in',em):d.collection('tasks').where('who','==',myEmail())).onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(v.title)o[x.id]=Object.assign({id:x.id},v)});TK.mine=o;TK.fail=0;try{localStorage.setItem('pds_tkmine',JSON.stringify({e:myEmail(),o}))}catch(e){}homePaint()},()=>{TK.unM=null;TK.fail=(TK.fail||0)+1;setTimeout(watchMine,Math.min(30000,1500*TK.fail))})}
+  const em=[...new Set([myEmail(),...(me().emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean))];TK.unM=(em.length>1?d.collection('tasks').where('who','in',em):d.collection('tasks').where('who','==',myEmail())).onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(v.title)o[x.id]=Object.assign({id:x.id},v)});TK.mine=o;TK.fail=0;try{localStorage.setItem('pds_tkmine',JSON.stringify({e:myEmail(),o}))}catch(e){}homePaint()},e=>{TK.unM=null;TK.fail=(TK.fail||0)+1;TK.listenErr=(e&&(e.code||e.message))||'error';console.warn('tasks listen',e);setTimeout(watchMine,Math.min(30000,1500*TK.fail))})}
 async function watchAll(){if(TK.unA||!isMgr())return;const d=await db();if(!d||TK.unA)return;
   TK.unA=d.collection('tasks').onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(!v.title&&!v.who){d.doc('tasks/'+x.id).delete().catch(()=>{});return}o[x.id]=Object.assign({id:x.id},v)});TK.all=o;if(!TK.form)render()},()=>{TK.unA=null})}
 async function loadPeople(){if(TK.people)return;const d=await db();const L=[];const seen=new Set();
@@ -12068,14 +12068,23 @@ async function loadPeople(){if(TK.people)return;const d=await db();const L=[];co
 const nameOf=e=>{const p=(TK.people||[]).find(x=>x.email===e);return p?p.name.replace(/^Me \((.*)\)$/,'$1'):e};
 
 /* ---------- mark done (the person or an admin) ---------- */
-async function markDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d)return;const now=new Date().toISOString();
+/* Done and Undo show straight away on screen, then save. If the task was deleted meanwhile it just disappears. */
+const tkRaw=id=>{let F=window.firebase;try{if(!F&&window.parent!==window)F=window.parent.firebase}catch(e){}return F.firestore().doc('tasks/'+id)};
+function tkLocal(id,patch){for(const M of [TK.mine,TK.all]){if(!M[id])continue;if(patch===null)delete M[id];else M[id]=Object.assign({},M[id],patch)}
+  try{localStorage.setItem('pds_tkmine',JSON.stringify({e:myEmail(),o:TK.mine}))}catch(e){}homePaint();render()}
+async function markDone(t,btn){const now=new Date().toISOString();
+  if(!t.repeat){const before={status:t.status,doneAt:t.doneAt||'',next:t.next||''};tkLocal(t.id,{status:'done',doneAt:now,next:''});
+    try{await tkRaw(t.id).update({status:'done',doneAt:now,next:''})}
+    catch(e){if(e&&e.code==='not-found'){tkLocal(t.id,null);return}tkLocal(t.id,before);TK.err='Could not save that just now. Check your signal and try again.';homePaint();setTimeout(()=>{TK.err=null;homePaint()},6000)}
+    return}
+  if(btn)btn.disabled=true;const d=await db();if(!d)return;
   try{if(t.repeat){const due=advance(t);const n=Object.assign({},t,{due});const r=rems(n);await d.doc('tasks/'+t.id).update({due,rems:r,next:nextOf(r),whenTxt:whenTxt(n),lastDone:now,status:'open'})}
     else await d.doc('tasks/'+t.id).update({status:'done',doneAt:now,next:''})}
   catch(e){if(btn)btn.disabled=false;TK.msg={err:true,t:'Could not save just now.'};render()}}
 /* tapped Done by mistake: open it again and put back any dings that haven't happened yet */
-async function undoDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d)return;const r=rems(t);
-  try{await d.doc('tasks/'+t.id).update({status:'open',doneAt:'',rems:r,next:nextOf(r)})}
-  catch(e){if(btn)btn.disabled=false;TK.msg={err:true,t:'Could not undo just now.'};render()}}
+async function undoDone(t,btn){const r=rems(t);const before={status:t.status,doneAt:t.doneAt||'',next:t.next||''};tkLocal(t.id,{status:'open',doneAt:'',rems:r,next:nextOf(r)});
+  try{await tkRaw(t.id).update({status:'open',doneAt:'',rems:r,next:nextOf(r)})}
+  catch(e){if(e&&e.code==='not-found'){tkLocal(t.id,null);return}tkLocal(t.id,before);TK.err='Could not undo just now. Check your signal and try again.';homePaint();setTimeout(()=>{TK.err=null;homePaint()},6000)}}
 const doneToday=t=>t.status==='done'&&t.doneAt&&window.__qISO(new Date(t.doneAt))===today();
 
 /* ---------- Home card: your tasks for the next 7 days ---------- */
@@ -12086,7 +12095,7 @@ function homeHtml(){const L=Object.values(TK.mine).filter(t=>t.status!=='done').
   const showL=open?L:L.slice(0,N),showD=open?DT:recent;const hidden=(L.length-showL.length)+(DT.length-showD.length);
   const row=t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`};
   const drow=t=>`<div class="tk-r tk-dn"><div class="tx"><b>${esc(t.title)}</b><small>✓ Done ${esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16)))}</small></div><button type="button" class="tk-un" data-tk-undo="${esc(t.id)}">Undo</button></div>`;
-  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length?L.length+' to do':'All done'}</small></div>${showL.map(row).join('')}${showD.map(drow).join('')}${hidden||open&&(L.length>N||DT.length>recent.length)?`<button type="button" class="tk-more" data-tk-more="1" aria-expanded="${open}">${open?'Show less ▴':'Show '+hidden+' more ▾'}</button>`:''}</section>`}
+  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length?L.length+' to do':'All done'}</small></div>${TK.err?`<p style="margin:0;color:#C8352B;font-weight:700;font-size:.9rem">${esc(TK.err)}</p>`:''}${showL.map(row).join('')}${showD.map(drow).join('')}${hidden||open&&(L.length>N||DT.length>recent.length)?`<button type="button" class="tk-more" data-tk-more="1" aria-expanded="${open}">${open?'Show less ▴':'Show '+hidden+' more ▾'}</button>`:''}</section>`}
 function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
@@ -12128,7 +12137,7 @@ function listHtml(){let all=Object.values(TK.all);
     <div class="tk-foot">${one&&!g.done?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button>`:''}${one&&g.done?`<button type="button" class="sh-btn" data-tk-undo="${esc(t.id)}">Undo done</button>`:''}${!g.done?`<button type="button" class="sh-btn" data-tk="gedit" data-v="${esc(g.k)}">Edit</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===g.k?'arm':''}" data-tk="del" data-v="${esc(g.k)}">${TK.arm===g.k?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
 function render(){const el=document.getElementById('tk_root');if(!el)return;if(!isMgr()){el.innerHTML='';return}
   if(TK.form){if(document.activeElement&&el.contains(document.activeElement)&&document.getElementById('tk_title'))readForm();}
-  el.innerHTML=`<div class="tk">${TK.form?formHtml():`<p class="lead">Tasks stay on that person's Home until they tap Done. Once they do, no more dings go out for it.</p><button type="button" class="sh-btn primary" data-tk="new">+ New task</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}${listHtml()}`}</div>`}
+  el.innerHTML=`<div class="tk">${TK.form?formHtml():`<p class="lead">Tasks stay on that person's Home until they tap Done. Once they do, no more dings go out for it.</p>${TK.listenErr?`<p class="tk-msg err">Your Home task list couldn't update live (${esc(TK.listenErr)}). Tell Claude this code.</p>`:''}<button type="button" class="sh-btn primary" data-tk="new">+ New task</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}${listHtml()}`}</div>`}
 
 async function save(){readForm();const f=TK.form;
   if(!f.title){TK.msg={err:true,t:'Type what needs doing.'};render();return}
