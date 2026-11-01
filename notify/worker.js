@@ -134,8 +134,9 @@ function toFs(v) {
   if (typeof v === 'object') return { mapValue: { fields: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toFs(x)])) } };
   return { stringValue: String(v) };
 }
-async function fsPatch(path, obj, token, mask) {
-  const q = mask ? '?' + mask.map(f => 'updateMask.fieldPaths=' + encodeURIComponent(f)).join('&') : '';
+async function fsPatch(path, obj, token, mask, mustExist) {
+  /* mustExist: never create a document that was deleted in the meantime */
+  const q = mask ? '?' + mask.map(f => 'updateMask.fieldPaths=' + encodeURIComponent(f)).join('&') + (mustExist ? '&currentDocument.exists=true' : '') : '';
   const r = await fetch(`${FS}/${path}${q}`, { method: 'PATCH', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
     body: JSON.stringify({ fields: Object.fromEntries(Object.entries(obj).map(([k, x]) => [k, toFs(x)])) }) });
   if (!r.ok) throw new Error('Could not save ' + path + ' (' + r.status + ')');
@@ -198,7 +199,8 @@ async function runTasks(token, rep) {
       const due = list.filter(m => !m.sent && m.at <= nowIso);
       const later = list.map(m => (!m.sent && m.at <= nowIso) ? { ...m, sent: true } : m);
       const next = (later.find(m => !m.sent) || {}).at || '';
-      await fsPatch('tasks/' + t.id, { rems: later, next }, token, ['rems', 'next']);
+      if (!t.title || !t.who) continue;
+      await fsPatch('tasks/' + t.id, { rems: later, next }, token, ['rems', 'next'], true);
       if (t.status === 'done') continue;
       /* only send the latest one if several are due at once (e.g. the worker was off for a while) */
       const send = due.filter(m => Date.parse(m.at) > Date.now() - 6 * 3600e3);
@@ -209,7 +211,7 @@ async function runTasks(token, rep) {
         const phones = await findPhones(emailIs(t.who), token);
         rep.phones += phones.length;
         await fcmAll(phones, 'Task: ' + title, 'Due ' + (t.whenTxt || '') + '. Tap to see it.', token);
-        await fsPatch('tasks/' + t.id, { lastDing: new Date().toISOString(), lastPhones: phones.length }, token, ['lastDing', 'lastPhones']);
+        await fsPatch('tasks/' + t.id, { lastDing: new Date().toISOString(), lastPhones: phones.length }, token, ['lastDing', 'lastPhones'], true).catch(() => null);
       }
       if (over && t.by) {
         const phones = await findPhones(emailIs(t.by), token);
