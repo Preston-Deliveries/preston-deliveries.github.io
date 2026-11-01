@@ -10365,7 +10365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012310';
+const VERSION='202611012315';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11991,8 +11991,8 @@ const TK={all:{},mine:{},unA:null,unM:null,people:null,form:null,view:'open',who
 const db=async()=>{try{return window.__getDb?await window.__getDb():null}catch(e){return null}};
 
 /* ---------- live data ---------- */
-async function watchMine(){if(TK.unM||!myEmail())return;const d=await db();if(!d||TK.unM)return;
-  const em=[...new Set([myEmail(),...(me().emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean))];TK.unM=(em.length>1?d.collection('tasks').where('who','in',em):d.collection('tasks').where('who','==',myEmail())).onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(v.title)o[x.id]=Object.assign({id:x.id},v)});TK.mine=o;homePaint()},()=>{TK.unM=null;setTimeout(watchMine,30000)})}
+async function watchMine(){if(TK.unM||!myEmail())return;if(!TK.cached){TK.cached=1;try{const c=JSON.parse(localStorage.getItem('pds_tkmine')||'null');if(c&&c.e===myEmail()&&!Object.keys(TK.mine).length){TK.mine=c.o||{};homePaint()}}catch(e){}}const d=await db();if(!d||TK.unM)return;
+  const em=[...new Set([myEmail(),...(me().emails||[])].map(x=>String(x||'').toLowerCase()).filter(Boolean))];TK.unM=(em.length>1?d.collection('tasks').where('who','in',em):d.collection('tasks').where('who','==',myEmail())).onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(v.title)o[x.id]=Object.assign({id:x.id},v)});TK.mine=o;TK.fail=0;try{localStorage.setItem('pds_tkmine',JSON.stringify({e:myEmail(),o}))}catch(e){}homePaint()},()=>{TK.unM=null;TK.fail=(TK.fail||0)+1;setTimeout(watchMine,Math.min(30000,1500*TK.fail))})}
 async function watchAll(){if(TK.unA||!isMgr())return;const d=await db();if(!d||TK.unA)return;
   TK.unA=d.collection('tasks').onSnapshot(q=>{const o={};q.docs.forEach(x=>{const v=x.data()||{};if(!v.title&&!v.who){d.doc('tasks/'+x.id).delete().catch(()=>{});return}o[x.id]=Object.assign({id:x.id},v)});TK.all=o;if(!TK.form)render()},()=>{TK.unA=null})}
 async function loadPeople(){if(TK.people)return;const d=await db();const L=[];const seen=new Set();
