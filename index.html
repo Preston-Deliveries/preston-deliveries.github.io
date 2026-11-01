@@ -1143,7 +1143,7 @@ function puSendRender(){const b=document.querySelector('#sh-set.pu-snd .pu-body'
   b.innerHTML=`<section class="pu-sec">
      <label class="pu-f">Send to<select id="pu_to"><option value="">Everyone</option>${['4214','4215','4217','4218'].map(x=>`<option value="pc:${x}">${x} drivers</option>`).join('')}${people.map(([id,n])=>`<option value="st:${esc(id)}">${esc(n)}</option>`).join('')}</select></label>
      <label class="pu-f">Message<textarea id="pu_body" rows="4" maxlength="180" placeholder="Keep it short. No customer names or addresses (it shows on the lock screen)."></textarea></label>
-     <label class="pu-ck"><input type="checkbox" id="pu_safe"> Safety alert</label>
+     <label class="pu-ck"><input type="checkbox" id="pu_ding"> 🔔 Ding their phones</label>
      <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Sending…':'Send'}</button></div>
      ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>`}
 const puRefresh=()=>{if(document.querySelector('#sh-set.pu-snd'))puSendRender();else puRender()};
@@ -1162,15 +1162,41 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(k==='sendopen'){openPushSend();return}
   if(k==='test'){puState.msg={t:'Sending a test…'};puRefresh();const j=await P.send('test',{title:'Test notification',body:'Notifications are working. 👍',url:'#home'});
     puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:j.skipped==='Nobody has notifications turned on yet'?'Turn on notifications on this device first (Settings, the gear).':j.skipped}:{t:'Test sent to '+j.sent+' of your device'+(j.sent===1?'':'s')+'. It should arrive in a few seconds.'};puRefresh();return}
-  if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',body=(document.getElementById('pu_body')||{}).value||'',safe=!!(document.getElementById('pu_safe')||{}).checked,title=safe?'⚠️ Safety alert':'PDS Alert';
-    if(!body.trim()){puState.msg={err:true,t:'Type a message first.'};puRefresh();return}
+  if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',body=((document.getElementById('pu_body')||{}).value||'').trim(),ding=!!(document.getElementById('pu_ding')||{}).checked;
+    if(!body){puState.msg={err:true,t:'Type a message first.'};puRefresh();return}
     const sel=document.getElementById('pu_to');const label=sel&&sel.selectedOptions[0]?sel.selectedOptions[0].textContent:'Everyone';
     puState.busy=true;puState.msg=null;puRefresh();
-    const o={title:title.trim(),body:body.trim(),url:'#updates',safety:safe};if(to.startsWith('pc:'))o.pc=to.slice(3);if(to.startsWith('st:')){o.staff=to.slice(3);o.staffName=label}
-    const j=await P.send('urgent',o);puState.busy=false;
-    puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:'Not sent: '+j.skipped+'.'}:{t:'Sent to '+j.sent+' phone'+(j.sent===1?'':'s')+'.'};
-    if(!j.error&&!j.skipped){const bd=document.getElementById('pu_body');if(bd)bd.value=''}
+    /* every alert goes on Home until midnight */
+    let posted=false;const day=window.__qISO();
+    try{const db=await window.__getDb();await db.doc('updates/alert~'+Date.now().toString(36)).set({kind:'alert',body,day,at:new Date().toISOString(),to,toName:label,ding});posted=true;
+      db.collection('updates').where('kind','==','alert').get().then(q=>q.docs.forEach(d=>{if(String((d.data()||{}).day||'')<day)db.doc('updates/'+d.id).delete().catch(()=>{})})).catch(()=>{})}catch(x){}
+    let j={ok:true,sent:0};
+    if(ding){const o={title:'PDS Alert',body,url:'#home',safety:true};if(to.startsWith('pc:'))o.pc=to.slice(3);if(to.startsWith('st:')){o.staff=to.slice(3);o.staffName=label}j=await P.send('urgent',o)}
+    puState.busy=false;const who=label==='Everyone'?'everyone':label;
+    if(!posted&&(!ding||j.error))puState.msg={err:true,t:'Could not send. Check your internet.'};
+    else if(!ding)puState.msg={t:'On Home for '+who+' until midnight. Phones won’t ding.'};
+    else puState.msg=j.error?{err:true,t:'On Home until midnight, but the ding failed: '+j.error}:j.skipped?{t:'On Home for '+who+' until midnight. No ding: '+j.skipped+'.'}:{t:'On Home for '+who+' until midnight and dinged '+j.sent+' phone'+(j.sent===1?'':'s')+'.'};
+    if(posted||(ding&&!j.error)){const bd=document.getElementById('pu_body');if(bd)bd.value='';const dg=document.getElementById('pu_ding');if(dg)dg.checked=false}
     puState.log=await P.log();puRefresh();return}});
+/* Alerts on Home: everyone sees them until midnight. Admins see all of them and can remove one. */
+const AL={list:[],day:'',unsub:null,busy:false};
+const alMine=a=>{if(role==='mgr')return true;const me=window.__webMe||{};const t=String(a.to||'');if(!t)return true;
+  if(t.startsWith('pc:')){const pcs=(window.PUSH&&PUSH.pcs)?PUSH.pcs():[];return pcs.includes(t.slice(3))}
+  if(t.startsWith('st:'))return String(me.staff||'')===t.slice(3);return false};
+const alTime=iso=>{try{return new Date(iso).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',timeZone:'Australia/Brisbane'}).replace(/\s/g,'').toLowerCase()}catch(e){return ''}};
+function alHtml(){const today=window.__qISO();const L=AL.list.filter(a=>a.day===today&&alMine(a)).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '';
+  const adm=role==='mgr';
+  return L.map(a=>`<section class="dh-card al-card"><div class="al-h"><b>📣 Alert</b><small>${esc(alTime(a.at))}${adm?' · '+esc(a.toName||'Everyone')+(a.ding?' · 🔔':''):''}</small>${adm?`<button type="button" class="al-x" data-al-del="${esc(a.id)}" aria-label="Remove alert">✕</button>`:''}</div><p>${esc(a.body)}</p></section>`).join('')}
+function alPaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.al-wrap');const h=hero?alHtml():'';
+  if(!h){if(w)w.remove();return}
+  if(!w){w=document.createElement('div');w.className='dh-cards al-wrap'}
+  if(w.previousElementSibling!==hero)hero.after(w);
+  if(w.__h!==h){w.__h=h;w.innerHTML=h}}
+async function alWatch(){if(AL.unsub||AL.busy)return;AL.busy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}AL.busy=false;if(!db||AL.unsub){if(!db)setTimeout(alWatch,5000);return}
+  AL.day=window.__qISO();AL.unsub=db.collection('updates').where('day','==',AL.day).onSnapshot(q=>{AL.list=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.kind==='alert');alPaint()},()=>{try{AL.unsub&&AL.unsub()}catch(e){}AL.unsub=null;setTimeout(alWatch,30000)})}
+setInterval(()=>{if(AL.unsub&&AL.day!==window.__qISO()){try{AL.unsub()}catch(e){}AL.unsub=null;AL.list=[];alPaint();alWatch()}else{alPaint();if(!AL.unsub)alWatch()}},60000);
+(()=>{const go=()=>{const home=document.getElementById('sh-home');if(!home){setTimeout(go,300);return}new MutationObserver(()=>alPaint()).observe(home,{childList:true});alWatch();alPaint()};go()})();
+document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-al-del]');if(!b)return;b.disabled=true;try{const db=await window.__getDb();await db.doc('updates/'+b.dataset.alDel).delete()}catch(x){b.disabled=false}});
 /* a one off card on Home inviting people to turn notifications on */
 const puCard=()=>{try{const P=window.PUSH;if(!P||previewChild)return;const st=P.state();const home0=document.getElementById('mod-home');const old0=home0&&home0.querySelector('.pu-home');if(st==='on'||st==='unsupported'){if(old0&&!old0.dataset.done)old0.remove();return}if(old0&&old0.dataset.st!==st)old0.remove();const isAdm=P.role&&P.role()==='admin';let no=null;try{no=localStorage.getItem('push1161no')}catch(x){}if(no&&isAdm)return;
   const home=document.getElementById('mod-home');if(!home||home.hidden||home.querySelector('.pu-home'))return;const at=home.querySelector('.dh-cards');if(!at)return;
@@ -10177,7 +10203,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010172';
+const VERSION='202611010173';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -10637,7 +10663,7 @@ async function pushSave(){const tok=await pushToken();if(!tok)throw new Error('N
   await fs.doc('push/'+pushId()).set({token:tok,uid:UID,email:EMAIL,role:ROLE==='admin'?'admin':'driver',staff:String(me.staff||''),login:String(me.login||'').toUpperCase(),name:String(NAME||me.name||''),pcs:pushPcs(),device:pushKind(),at:new Date().toISOString()});
   fs.doc('push/'+UID).delete().catch(()=>{});
   try{localStorage.setItem('push1161','1')}catch(e){}}
-window.PUSH={
+window.PUSH={pcs:()=>pushPcs(),
   supported:()=>('Notification' in window)&&('serviceWorker' in navigator)&&('PushManager' in window),
   state(){if(!this.supported())return 'unsupported';if(Notification.permission==='denied')return 'blocked';let on=false;try{on=localStorage.getItem('push1161')==='1'}catch(e){}return Notification.permission==='granted'&&on?'on':'off'},
   async enable(){if(!this.supported())return 'unsupported';const p=await Notification.requestPermission();if(p!=='granted')return p==='denied'?'blocked':'off';await pushSave();return 'on'},
@@ -11407,6 +11433,13 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu{display:block!important;order:4}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu details.fu-nd{}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .dh-cards>#wx_box{order:0}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-wrap{display:flex;flex-direction:column;gap:10px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card{padding:12px 14px!important;border-left:4px solid #F2782D!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card .al-h{display:flex;align-items:center;gap:8px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card .al-h b{font-weight:800}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card .al-h small{color:var(--sh-muted);font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card .al-x{all:unset;cursor:pointer;margin-left:auto;width:32px;height:32px;display:grid;place-items:center;border-radius:10px;flex:none;color:var(--sh-muted)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .al-card p{margin:6px 0 0;font-size:1.02rem;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 </body>
 </html>
