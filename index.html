@@ -10272,7 +10272,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010204';
+const VERSION='202611010205';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11728,18 +11728,22 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
      el.querySelectorAll('select').forEach(s=>{if(s.value&&s.selectedIndex>=0)add(rest,s.options[s.selectedIndex].textContent)})}
    return lead.concat(rest).join(' · ')||'Filters'}
  function apply(){const secs=[...document.querySelectorAll('#sh-main .sh-sec')].filter(s=>!s.hidden&&vis(s));
+   const used=new Set();
    for(const sec of secs){
-     const all=[...sec.querySelectorAll(CAND)].filter(e=>!e.closest('.fold-x .fold-x')&&!e.closest('dialog,.ps-pop,form,.card.edit'));
+     const all=[...sec.querySelectorAll(CAND)].filter(e=>!e.closest('.fold-bar')&&!e.closest('dialog,.ps-pop,form,.card.edit'));
      let anchors=all.filter(e=>!all.some(o=>o!==e&&o.contains(e)));
      anchors=anchors.filter(e=>!anchors.some(o=>o!==e&&groupOf(o).slice(1).includes(e)));
      const gb=[...sec.querySelectorAll('[role=group][aria-label="Group by"]')].map(r=>r.closest('.bar')||r);anchors.push(...gb);
      anchors.forEach((a,i)=>{const g=groupOf(a);a=g[0];if(g.every(x=>x.hidden)||!vis(a.parentElement))return;if(!g.some(vis)&&!g.some(x=>x.classList.contains('fold-x')))return;
        const key=sec.id+':'+i;const open=!!OPEN.get(key);
-       let bar=a.previousElementSibling;if(!bar||!bar.classList.contains('fold-bar')){bar=document.createElement('button');bar.type='button';bar.className='fold-bar';bar.innerHTML='<span class="fb-ic ix-cal" aria-hidden="true"></span><b></b><span class="fb-ch" aria-hidden="true"></span>';a.parentNode.insertBefore(bar,a)}
+       let bar=a.__fb;if(!bar){const p=a.previousElementSibling;if(p&&p.classList.contains('fold-bar')&&!used.has(p))bar=p}
+       if(!bar){bar=document.createElement('button');bar.type='button';bar.className='fold-bar';bar.innerHTML='<span class="fb-ic ix-cal" aria-hidden="true"></span><b></b><span class="fb-ch" aria-hidden="true"></span>'}
+       a.__fb=bar;used.add(bar);if(a.previousElementSibling!==bar)a.parentNode.insertBefore(bar,a);
        bar.__key=key;bar.__g=g;
        const t=summary(g);const b=bar.querySelector('b');if(b.textContent!==t)b.textContent=t;
        if(bar.getAttribute('aria-expanded')!==String(open))bar.setAttribute('aria-expanded',String(open));
-       g.forEach(x=>{if(x.classList.contains('fold-x')===open)x.classList.toggle('fold-x',!open)})})}}
+       g.forEach(x=>{if(x.classList.contains('fold-x')===open)x.classList.toggle('fold-x',!open)})})}
+   document.querySelectorAll('#sh-main .fold-bar').forEach(b=>{if(!used.has(b)&&vis(b))b.remove()})}
  document.addEventListener('click',e=>{const bar=e.target.closest&&e.target.closest('.fold-bar');if(!bar)return;OPEN.set(bar.__key,!OPEN.get(bar.__key));run()});
  let mo;const run=()=>{if(mo)mo.disconnect();try{apply()}catch(e){}if(mo){mo.takeRecords();obs()}};
  const obs=()=>{const m=document.getElementById('sh-main');if(m)mo.observe(m,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden','aria-pressed']})};
