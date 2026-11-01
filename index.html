@@ -10285,7 +10285,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010219';
+const VERSION='202611010220';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11679,23 +11679,24 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  function acts(){const ph=document.getElementById('sh-ph');if(!ph||ph.hidden)return;const ttl=ph.querySelector('.ttl');if(!ttl)return;const sec=secOf();if(!sec)return;
    const want=[];
    for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))));if(b)want.push({k,label,b})}
-   const lt=[...sec.querySelectorAll(LOADTAB)].find(x=>vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement)));
-   if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:'load',label:on?'Back to results':'Load new results',b:lt,grp,on})}
+   for(const [tk,tsel,offL,onL] of [['load',LOADTAB,'Load new results','Back to results'],['edit','#modes [data-act="mode"][data-v="edit"]','Edit run sheet','Done editing']]){
+     const lt=[...sec.querySelectorAll(tsel)].find(x=>!x.parentElement.hidden&&(vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement))));
+     if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:tk,label:on?onL:offL,b:lt,grp,on})}}
    {const ab=[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement))));if(ab){const lab=(ab.textContent||'').trim()||'Add';want.push({k:'add',label:lab,b:ab})}}
    let box=ttl.querySelector('.ph-acts');
    const sig=want.map(w=>w.k+(w.on?'1':'0')).join(',');
    if(!want.length){if(box)box.remove();return}
    if(!box){box=document.createElement('span');box.className='ph-acts';ttl.appendChild(box)}
-   if(box.__sig!==sig){box.__sig=sig;box.innerHTML=want.map(w=>`<button type="button" class="ix-${w.k}" data-pha="${w.k}" aria-label="${w.label}" title="${w.label}" ${w.k==='load'?`aria-pressed="${!!w.on}"`:''}></button>`).join('')}
+   if(box.__sig!==sig){box.__sig=sig;box.innerHTML=want.map(w=>`<button type="button" class="ix-${w.k}" data-pha="${w.k}" aria-label="${w.label}" title="${w.label}" ${w.grp?`aria-pressed="${!!w.on}"`:''}></button>`).join('')}
    box.__w=want;
    for(const w of want){
-     if(w.k==='load'){if(!w.grp.classList.contains('ix-moved'))w.grp.classList.add('ix-moved');continue}
+     if(w.grp){if(!w.grp.classList.contains('ix-moved'))w.grp.classList.add('ix-moved');continue}
      const host=w.b.closest('.pf-top,.sc-top,.cv-acts,.has-dl')||w.b;
      const only=host!==w.b&&[...host.children].filter(c=>c.tagName==='BUTTON'||c.tagName==='A').length<=1;
      const el=only?host:w.b;if(!el.classList.contains('ix-moved'))el.classList.add('ix-moved')}
  }
  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.ph-acts [data-pha]');if(!b)return;const box=b.parentElement,w=(box.__w||[]).find(x=>x.k===b.dataset.pha);if(!w)return;
-   if(w.k==='load'){const other=[...w.grp.querySelectorAll('button')].find(x=>x!==w.b);(w.on?other:w.b).click();setTimeout(acts,0);return}
+   if(w.grp){const other=[...w.grp.querySelectorAll('button')].find(x=>x!==w.b);(w.on?other:w.b).click();setTimeout(acts,0);return}
    w.b.click()});
  /* matching icon in front of common buttons */
  const MAP=[[/whatsapp/i,'share'],[/^(edit|change)\b/i,'edit'],[/^(delete|remove)\b/i,'del'],[/^(approve)\b/i,'ok'],[/^(decline|deny|reject)\b/i,'no'],[/^call\b/i,'call'],[/^(share|whatsapp)\b/i,'share'],[/^copy( the)? link/i,'link'],[/^send\b/i,'send'],[/^(add|new)\b/i,'add'],[/^(upload|load new|choose (a |the )?file)/i,'load'],[/^(refresh|reload)/i,'refresh'],[/^(take|add) (a )?photo|^camera/i,'photo'],[/^attach/i,'attach'],[/^(open in maps|directions|navigate)/i,'nav'],[/^print\b/i,'print']];
