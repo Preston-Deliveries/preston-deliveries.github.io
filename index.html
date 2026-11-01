@@ -3480,6 +3480,13 @@ function wire(){
   $("savePng").onclick=savePng;$("saveXlsx").onclick=saveXlsx;
   $("shareDrivers").onclick=shareDrivers;$("previewDrivers").onclick=()=>{showDriverView(true);window.scrollTo(0,0)};$("dvBack").onclick=showTool;
 }
+
+/* Results always opens on Week, showing the latest week with results */
+let __latestW=null;
+try{const sec=document.getElementById('mod-results');let was=sec?sec.hidden:true;if(sec)new MutationObserver(async()=>{const show=was&&!sec.hidden;was=sec.hidden;if(!show||!isEditor)return;
+  if(week&&Object.keys(week.days||{}).length&&(!__latestW||weekId>__latestW))__latestW=weekId;
+  view="week";document.querySelectorAll('#r_perSeg [data-rv]').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rv==="week")));if($("viewSel"))$("viewSel").value="week";
+  if(__latestW&&weekId!==__latestW)await openWeek(__latestW);renderAll()}).observe(sec,{attributes:true,attributeFilter:['hidden']})}catch(e){}
 async function boot(){
   wire();
   weekId=iso(mondayOf(new Date()));renderTargets();renderAll();
@@ -3491,7 +3498,7 @@ async function boot(){
   if(!isEditor){showDriverView(false);if(isAdm())goLive();return}
   showTool();
   const s=await loadDoc("settings/main");if(s){settings={names:s.names||{},targets:{...DEFAULT_TARGETS,...(s.targets||{})}}}
-  const latest=await latestWeek();
+  const latest=await latestWeek();__latestW=latest;
   await openWeek(latest||weekId);
   const filled=DAYS.map(d=>d[0]).filter(k=>week.days[k]);if(filled.length)selDay=filled[filled.length-1];
   renderTargets();renderAll();
@@ -3763,13 +3770,19 @@ async function saveCur(){
     status(e&&e.code==="quota_exceeded"?"Storage is full. Remove some old weeks on the Monthly tab.":"Couldn't save this week for the monthly report. Try loading it again.","err");
   }
 }
+
+/* NPS always opens on Week, showing the latest week that has survey results */
+function npsLatest(){try{if(!saved.length)return false;const L=saved.slice().sort((a,b)=>(a.cycleStart+'_'+a.week)<(b.cycleStart+'_'+b.week)?1:-1)[0];
+  if($("tabW")&&$("tabW").getAttribute("aria-selected")!=="true")$("tabW").click();
+  svOpt($("wmonth"),L.cycleStart,monthName(L.cycleStart));$("week").value=String(L.week);$("wmonth").dispatchEvent(new Event("change"));try{renderPk()}catch(e){}return true}catch(e){return false}}
+try{const sec=document.getElementById('mod-survey');let was=sec?sec.hidden:true;if(sec)new MutationObserver(()=>{if(was&&!sec.hidden)npsLatest();was=sec.hidden}).observe(sec,{attributes:true,attributeFilter:['hidden']})}catch(e){}
 let firstSnap=true;
 function startDb(){
   db.collection("weeks").onSnapshot(snap=>{
     saved=snap.docs.map(d=>({id:d.id,...__D(d)})).filter(w=>w.week&&w.cycleStart);
     renderCycleOptions();
     if(window.APP){const cs=new Set(saved.map(w=>w.cycleStart));APP.stat("survey",saved.length?`${saved.length} week${saved.length>1?"s":""} saved across ${cs.size} pay cycle${cs.size>1?"s":""}`:"No weeks saved yet")}
-    if(firstSnap){firstSnap=false;if(!cur)showSaved();}
+    if(firstSnap){firstSnap=false;if(!npsLatest())if(!cur)showSaved();}
     renderWkSub();impWeeks();liveSurvey();
     if(!$("viewC").hidden) renderCycle();
   },()=>status4("Saved weeks couldn't be loaded. Reload the page.","err"));
@@ -10272,7 +10285,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010214';
+const VERSION='202611010215';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
