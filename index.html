@@ -1998,7 +1998,19 @@ async function shareAll(btn){
   try{for(const [nm,m] of parts){try{if(m&&m.share)await m.share();else missed.push(nm)}catch(e){missed.push(nm)}}}finally{}
   const patch=window.__collect;window.__collect=null;
   if(!Object.keys(patch).length){homeMsg={err:true,t:'Nothing was ready to send. Wait for the pages to finish loading and try again.'};msgRender();return}
-  try{await publish(patch);homeMsg={t:'Done. Drivers now see the latest of everything'+(missed.length?' except the '+missed.join(', ')+' (still loading, try again in a moment)':'')+'. The page is reloading.'}}
+  /* say exactly what went out; the page reloads after sending, so the note is kept and shown again after the reload */
+  const cnt=v=>Array.isArray(v)?v.length:(v&&typeof v==='object')?Object.keys(v).length:0;
+  const lines=[];const P=patch;
+  if(P.runs)lines.push('Run and sort sheets: '+cnt(P.runs)+' driver run'+(cnt(P.runs)===1?'':'s'));
+  if(P.results)lines.push('Driver results'+(P.results.updated?' (as of '+P.results.updated+')':''));
+  if(P.survey)lines.push('NPS ranking'+(P.survey.cycles?': '+cnt(P.survey.cycles)+' pay period'+(cnt(P.survey.cycles)===1?'':'s'):''));
+  if(P.leave)lines.push('Leave calendar: '+cnt(P.leave.days)+' day'+(cnt(P.leave.days)===1?'':'s')+' with someone off');
+  if(P.precards)lines.push('Precards: '+cnt(P.precards));
+  if(P.lockers)lines.push('Parcel lockers: '+cnt(P.lockers));
+  if(P.directory)lines.push('Contacts: '+cnt(P.directory)+' people');
+  const note='Sent to drivers:\n• '+lines.join('\n• ')+(missed.length?'\nNot sent (still loading, try again in a moment): '+missed.join(', '):'');
+  try{sessionStorage.setItem('pds_sentnote',JSON.stringify({t:note,at:Date.now()}))}catch(x){}
+  try{await publish(patch);homeMsg={t:note+'\nThe page is reloading.'}}
   catch(e){const c=e&&e.code;homeMsg={err:true,t:c==='conflict'?'The page changed somewhere else at the same time and is reloading. Try again after it loads.':c==='not_writer'||c==='not_granted'?'This view can\u2019t update the drivers\u2019 link.':'Could not send just now. Try again in a minute.'}}
   msgRender();
 }
@@ -10371,7 +10383,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021000';
+const VERSION='202611021010';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12008,6 +12020,15 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 window.__ckPing=()=>{};
 /* ding the office when a driver sends a report, feedback or a day off request. Also works from Driver view, so you can test it yourself */
 window.__officePing=(kind,o,fromUV)=>{let P=window.PUSH;let uv=!!fromUV;try{if(window.parent!==window&&window.parent.PUSH){P=P||window.parent.PUSH;uv=true}}catch(e){}if(!P)return;if(P.role&&P.role()==='admin'&&!uv)return;try{P.send(kind,o)}catch(e){}};/* clock on and off do not ding anyone */
+/* after Send latest to drivers the page reloads: show what was sent */
+(()=>{let n=null;try{n=JSON.parse(sessionStorage.getItem('pds_sentnote')||'null');sessionStorage.removeItem('pds_sentnote')}catch(e){}
+  if(!n||!n.t||Date.now()-n.at>3*60e3)return;
+  const put=()=>{const at=document.getElementById('sh-ph')||document.querySelector('#sh-main .sh-sec');if(!at||!at.parentNode){setTimeout(put,400);return}
+    const b=document.createElement('div');b.id='pds-sent';b.setAttribute('role','status');
+    b.style.cssText='position:relative;margin:10px 16px 0;border-radius:12px;background:#1E8A4C;color:#fff;font:600 14px/1.5 system-ui,sans-serif;padding:12px 44px 12px 14px;white-space:pre-line';
+    b.textContent='\u2713 '+n.t;const x=document.createElement('button');x.type='button';x.setAttribute('aria-label','Close');x.textContent='\u2715';
+    x.style.cssText='all:unset;cursor:pointer;position:absolute;top:8px;right:10px;width:30px;height:30px;display:grid;place-items:center;font-size:16px';x.onclick=()=>b.remove();b.appendChild(x);
+    at.parentNode.insertBefore(b,at);setTimeout(()=>{try{b.remove()}catch(e){}},60000)};put()})();
 /* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
 (()=>{
 const QLD=36e6;
