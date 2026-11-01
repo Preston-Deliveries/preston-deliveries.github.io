@@ -3814,17 +3814,42 @@ async function capture(boardId,boxId,W,name,shotId,shotBox,say){
     catch(e){if(e&&e.code==="declined")say("Save cancelled.");else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();say("PDF downloaded.","ok")}}
   }else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000);say("PDF downloaded.","ok");}
 }
+/* Neat A4 PDF of the NPS ranking, always one page */
+async function npsPdf(drivers,title,sub,name,say){
+  const rows=svRows(drivers).sort((a,b)=>(a.rank||999)-(b.rank||999)||b.pts-a.pts||b.n-a.n);if(!rows.length){say("No NPS scores to put in the PDF.","err");return}
+  if(!window.jspdf)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+  if(!window.jspdf.jsPDF.API.autoTable)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
+  const all=rows.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,team=window.NPS(all);
+  const {jsPDF}=window.jspdf;let doc,RH=null,tries=0;
+  for(;;){doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const W=210,M=10,top=40,bottom=14,n=rows.length,rh=RH!=null?RH:Math.max(3.2,Math.min(9,(297-top-bottom)/(n+1)-0.6)),fs=Math.max(5,Math.min(11,rh*1.25));
+    doc.setFillColor(15,26,42);doc.rect(0,0,W,26,"F");doc.setFillColor(242,120,45);doc.rect(0,26,W,1.6,"F");
+    doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  ·  CONTRACT 1161",M,9);
+    doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text(title,M,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(sub,M,23.5);
+    doc.setTextColor(20,33,58);doc.setFontSize(10);doc.setFont("helvetica","bold");doc.text(`Team NPS ${team==null?"–":team}`,M,34);doc.setFont("helvetica","normal");doc.setTextColor(90,102,128);doc.text(`${N} customer score${N===1?"":"s"}  ·  ${P} gave 9 or 10  ·  ${X} gave 0 to 6`,M+32,34);
+    doc.autoTable({head:[["#","DRIVER","POSTCODE","CUSTOMERS","9 OR 10","7 OR 8","0 TO 6","NPS"]],body:rows.map(r=>[r.rank?String(r.rank):"–",r.name?r.name+"  ("+r.id+")":r.id,r.grp||"",String(r.n),String(r.hi),String(r.mid),String(r.lo),r.pts==null?"–":String(r.pts)]),
+      startY:top,margin:{left:M,right:M,bottom},theme:"plain",
+      styles:{fontSize:fs,cellPadding:{top:(rh-fs*0.35)/2,bottom:(rh-fs*0.35)/2,left:1.5,right:1.5},textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2}},
+      headStyles:{fontStyle:"bold",textColor:[90,102,128],fontSize:Math.max(5,fs-1.5)},alternateRowStyles:{fillColor:[244,246,250]},
+      columnStyles:{0:{halign:"center",cellWidth:10,fontStyle:"bold"},1:{cellWidth:"auto",fontStyle:"bold",overflow:"ellipsize"},2:{halign:"center",cellWidth:20},3:{halign:"center",cellWidth:22},4:{halign:"center",cellWidth:18},5:{halign:"center",cellWidth:18},6:{halign:"center",cellWidth:18},7:{halign:"right",cellWidth:16,fontStyle:"bold"}},
+      didParseCell:d=>{if(d.section!=="body")return;const r=rows[d.row.index];if(d.column.index===4)d.cell.styles.textColor=[30,138,76];if(d.column.index===6&&r.lo)d.cell.styles.textColor=[198,40,40];if(d.column.index===7)d.cell.styles.textColor=r.pts>=70?[30,138,76]:r.pts>=0?[184,115,51]:[198,40,40]}});
+    if(doc.getNumberOfPages()<=1||++tries>12)break;RH=(RH!=null?RH:rh)*0.9}
+  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(90,102,128);doc.text("NPS = (customers who gave 9 or 10 minus customers who gave 0 to 6) ÷ all customers × 100. Same NPS: more customers ranks first.",10,291);
+  const blob=doc.output("blob");
+  if(downloads){try{await downloads.save({filename:name,data:blob});say("PDF saved.","ok")}catch(e){if(e&&e.code==="declined")say("Save cancelled.");else throw e}}
+  else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000);say("PDF downloaded.","ok")}
+}
 const clean=s=>s.replace(/[^\w ]+/g," ").replace(/\s+/g," ").trim();
 $("save").addEventListener("click",async()=>{
   if(!cur){status("No NPS results loaded for this week yet.","err");return;}
   const b=$("save");b.disabled=true;status("Making the PDF…");
-  try{await capture("board","fit",1280,`1161 NPS Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,"shot","shotBox",status)}catch(e){status("Couldn't make the image. Try again.","err")}
+  try{await npsPdf(cur.drivers,"NPS ranking",`Pay week ${sel.week}  \u00b7  ${weekRange(sel.cycleStart,sel.week)}`,`1161 NPS Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,status)}catch(e){console.warn(e);status("Couldn't make the PDF. Try again.","err")}
   b.disabled=false;
 });
 $("save4").addEventListener("click",async()=>{
   if(!$("cycle").value){status4("No weeks saved yet.","err");return;}
   const b=$("save4");b.disabled=true;status4("Making the PDF…");
-  try{await capture("board4","fit4",1000,`1161 NPS Ranking ${clean(monthName($("cycle").value))}.pdf`,"shot4","shotBox4",status4)}catch(e){status4("Couldn't make the image. Try again.","err")}
+  try{const key=$("cycle").value,agg={};saved.filter(w=>w.cycleStart===key).forEach(w=>Object.entries(w.drivers||{}).forEach(([id,r])=>{(agg[id]=agg[id]||[]).push(...r)}));await npsPdf(agg,"Monthly NPS ranking",`${monthName(key)}  \u00b7  ${cycleLabel(key)}`,`1161 NPS Ranking ${clean(monthName(key))}.pdf`,status4)}catch(e){console.warn(e);status4("Couldn't make the PDF. Try again.","err")}
   b.disabled=false;
 });
 
@@ -10287,7 +10312,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010236';
+const VERSION='202611010237';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
