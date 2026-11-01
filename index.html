@@ -10239,7 +10239,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010190';
+const VERSION='202611010191';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11521,9 +11521,10 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw nav.iw-prog>button{all:unset!important;cursor:pointer!important;flex:1 1 0!important;height:6px!important;min-height:0!important;border-radius:9px!important;background:var(--sh-line)!important;position:relative!important;padding:0!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw nav.iw-prog>button.on{background:var(--pds-orange,#F2782D)!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw nav.iw-prog>button.warn:not(.on){background:#E5484D!important}
-:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs{flex-wrap:nowrap!important;display:flex!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs{flex-wrap:wrap!important;display:flex!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs>button{flex:1 1 0!important;min-width:0!important;padding-left:6px!important;padding-right:6px!important;white-space:nowrap!important}
-:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs>button{flex:1 1 auto!important;font-size:.9rem!important;padding-left:4px!important;padding-right:4px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs{padding:4px!important;gap:2px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .ivx>.tabs>button{flex:1 1 auto!important;font-size:.92rem!important;padding-left:10px!important;padding-right:10px!important;text-align:center!important;justify-content:center!important;min-width:0!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw-me .iw-sec{border-top:0!important;padding-top:0!important;margin-top:10px!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-invoices .iw-me .iw-stepl{border-bottom:0!important;padding-bottom:0!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs nav#drivers{display:block!important;grid-template-columns:none!important;padding:0!important;border:0!important;background:none!important}
