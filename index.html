@@ -1309,7 +1309,7 @@ function adminGlance0(){const el=$('ah_glance');if(!el||role!=='mgr')return;cons
   let off=null;try{const L=window.LEAVE;if(L&&L.dayMap){const p=n=>String(n).padStart(2,'0');const o=(L.dayMap()||{})[d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())];off=o?((o.names||[]).length+(o.office||[]).length):0}}catch(e){}
   const first=String((window.__webMe&&window.__webMe.name)||'').trim().split(/\s+/)[0]||'';const nm=first?first.charAt(0).toUpperCase()+first.slice(1).toLowerCase():'';
   const chip=(n,l,nav,k)=>`<button type="button" class="gl gl-${k}${n?' on':''}" data-gl="${nav}"><b>${n==null?'–':n}</b><small>${l}</small></button>`;
-  const D=window.__ahDay;let res='';
+  const D=null;/* results no longer shown on the admin Home */let res='';
   if(D&&window.SCORE){const p1=v=>v==null?'–':(v>=.9995?'100':(Math.round(v*1000)/10).toFixed(1).replace(/\.0$/,''))+'%';const tg=D.tg||{etaG:98,cpG:99};const cl=(v,t)=>v==null?'':v>=.9995?'gd':Math.round(v*1000)/10>=t-1e-9?'g':'b';
     const dd=new Date(D.date+'T12:00:00');const day=window.__dtf({weekday:'short',day:'numeric',month:'short'}).format(dd);const sc=D.score;
     const st=(l,v,c)=>`<span class="rs"><b class="v-${c}">${v}</b><small>${l}</small></span>`;
@@ -10365,7 +10365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012240';
+const VERSION='202611012245';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
