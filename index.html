@@ -10365,7 +10365,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012200';
+const VERSION='202611012240';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11914,7 +11914,13 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 #sh-set.pu-snd .pu-dg input{min-width:0;font:inherit;padding:9px 6px 9px 8px;border-radius:10px;border:1px solid var(--sh-line);background:transparent;color:var(--sh-ink);min-height:42px;box-sizing:border-box}
 #sh-set.pu-snd .pu-dx{all:unset;cursor:pointer;width:36px;height:42px;display:grid;place-items:center;border-radius:10px;border:1px solid var(--sh-line);color:var(--sh-muted)}
 #sh-set.pu-snd .pu-dadd{margin:0 0 6px}
-#sh-set.pu-snd .pu-row2 .pu-f{min-width:0}#sh-set.pu-snd .pu-row2 input{min-width:0;max-width:100%}
+#sh-set.pu-snd .pu-row2{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+#sh-set.pu-snd .pu-row2 .pu-f{min-width:0}
+/* date and time boxes: same size and look everywhere, and they never spill off the screen on iPhone */
+#sh-set.pu-snd input[type=date],#sh-set.pu-snd input[type=time]{-webkit-appearance:none;appearance:none;display:block;box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:48px;min-height:48px;margin:0;padding:0 10px;font:inherit;font-weight:400;font-size:1rem;line-height:48px;text-align:left;border-radius:10px;border:1px solid rgba(127,127,127,.45);background:transparent;color:inherit}
+#sh-set.pu-snd input[type=date]::-webkit-date-and-time-value,#sh-set.pu-snd input[type=time]::-webkit-date-and-time-value{text-align:left;margin:0}
+#sh-set.pu-snd .pu-dg{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 48px;gap:10px}
+#sh-set.pu-snd .pu-dx{width:48px;height:48px;box-sizing:border-box;border:1px solid rgba(127,127,127,.45)}
 :root:root #sh-main #mod-tasks .tk{display:flex;flex-direction:column;gap:14px;max-width:820px}
 :root:root #sh-main #mod-tasks .tk .lead{margin:0;color:var(--sh-muted)}
 :root:root #sh-main #mod-tasks .tk-f{display:flex;flex-direction:column;gap:12px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:16px}
