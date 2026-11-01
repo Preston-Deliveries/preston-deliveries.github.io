@@ -1225,13 +1225,15 @@ function adminSum(){const el=$('ah_sum');if(!el||role!=='mgr')return;
     const DW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];for(let i=1;i<=6;i++){const d=new Date(t);d.setDate(t.getDate()+i);if(d.getDay()===0||d.getDay()===6)continue;const k=n(d);if(k)parts.push(k+' on '+DW[d.getDay()])}
     offT=parts.join(' · ')}}catch(e){}
   let mt='';if(mn){const rb=[...mn.querySelectorAll('b')].map(b=>b.textContent.trim()).filter(Boolean);const ok=mn.querySelector('.mc-ok,.ok,.dh-ok');mt=rb.length&&!/^(Sunday|Saturday|Monday|Tuesday|Wednesday|Thursday|Friday)$/.test(rb[0])?rb[0]:(mn.innerText||'').replace(/^MORNING CHECK\s*/i,'').split('\n').map(x=>x.trim()).filter(Boolean).slice(-1)[0]||'Nothing needs you'}
-  const IC={todo:['📋','rgba(229,72,77,.14)'],off:['📅','rgba(91,141,239,.16)'],morn:['✅','rgba(48,164,108,.16)']};
+  const IC={todo:['📋','rgba(229,72,77,.14)'],off:['📅','rgba(91,141,239,.16)'],morn:['✅','rgba(48,164,108,.16)'],fu:['📞','rgba(242,120,45,.16)']};
+  const FU=window.__fuSum,fuEl=$('ah_fu'),hasFu=!!(FU&&fuEl&&fuEl.innerHTML.trim());
   const row=(k,t,sub,n)=>`<button type="button" class="sr-row" data-sum="${k}" aria-expanded="${sumOpen.has(k)}"><span class="ic" style="background:${IC[k][1]}">${IC[k][0]}</span><span class="tx"><b>${esc(t)}</b><small>${esc(sub)}</small></span>${n?`<em>${n}</em>`:''}<i aria-hidden="true">${sumOpen.has(k)?'▾':'›'}</i></button>`;
   const html=row('todo',todo.length?todo[0]+(todo.length>1?' and '+(todo.length-1)+' more':''):'All caught up',todo.length?'Needs you':'Nothing waiting on you',todo.length)
-    +row('off','Who’s off',offT,0)+row('morn','Morning check',mt.replace(/^✓\s*/,''),0);
+    +row('off','Who’s off',offT,0)+row('morn','Morning check',mt.replace(/^✓\s*/,''),0)
+    +(hasFu?row('fu','Follow ups',FU.left?FU.left+' driver'+(FU.left===1?'':'s')+' to follow up from '+FU.day:'All done for '+FU.day,FU.left):'');
   if(el.__h!==html){el.__h=html;el.innerHTML=html}
-  const home=$('sh-home');if(home)['todo','off','morn'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ah_sum [data-sum]');if(!b)return;const k=b.dataset.sum;if(sumOpen.has(k))sumOpen.delete(k);else sumOpen.add(k);adminSum()});
+  const home=$('sh-home');if(home)['todo','off','morn','fu'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ah_sum [data-sum]');if(!b)return;const k=b.dataset.sum;if(sumOpen.has(k))sumOpen.delete(k);else sumOpen.add(k);adminSum();if(k==='fu'&&sumOpen.has(k)){const d=document.querySelector('#ah_fu details.fu-nd');if(d)d.open=true}});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home'){adminOff();adminGlance()}};
 let aoSel=null;
@@ -1397,7 +1399,7 @@ function adminFollow(){try{adminDay()}catch(e){}const el=$('ah_fu');if(!el||role
   const PCS=[...new Set(L.map(x=>x.pc))].sort();const left=L.filter(x=>!FC.fu[x.id]).length;
   const html=`<section class="dh-card fuc"><details class="mc-nd fu-nd"${window.__fuOpen?' open':''}><summary><span>Follow ups · ${esc(tlNice(FC.last.date))}</span><b class="${left?'':'ok'}">${left?left:'✓'}</b></summary><div class="fu-in"><p class="fu-p">2 hr ETA under ${FU_ETA}% or scan compliance under ${FU_CP}%. Tick when you have spoken to the driver. ${left?left+' to talk to.':'All done.'}</p>
    ${PCS.map(pc=>{const g=L.filter(x=>x.pc===pc),d=g.filter(x=>FC.fu[x.id]).length;return `<details class="fu-g" ${d<g.length?'open':''}><summary><b>${esc(pc==='other'?'Other':pc.toUpperCase())}</b><span class="${d===g.length?'ok':''}">${d} of ${g.length} done</span></summary>${g.map(fuRow).join('')}</details>`}).join('')}</div></details></section>`;
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}window.__fuSum={left,n:L.length,day:tlNice(FC.last.date)};try{adminSum()}catch(e){}}
 function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el||role!=='mgr')return;if(!TL.fset&&Object.keys(MC.staff).length){try{adminLoads()}catch(e){}}const f=myFocus();if(!f){if(el.__h!==''){el.__h='';el.innerHTML=''}return}fcLoad();
   const pc=f.pc,P=MC.staff,T=mcIso(new Date());const G=window.__runGrp||{};
   const grpOfStaff=id=>tlGrp(id);const inPc=id=>grpOfStaff(id)===pc;
@@ -10175,7 +10177,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010170';
+const VERSION='202611010171';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11401,6 +11403,9 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul.sv-hk li{display:block;margin:6px 0}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul.sv-hk li .sv-b{display:inline-grid!important;margin-right:6px;vertical-align:middle}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how .sv-f{background:var(--sh-sunk);border-radius:10px;padding:8px 10px}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home #ah_fu{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu{display:block!important;order:4}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home.so-fu #ah_fu details.fu-nd{}
 </style>
 </body>
 </html>
