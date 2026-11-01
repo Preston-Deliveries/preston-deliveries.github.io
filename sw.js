@@ -1,7 +1,10 @@
 /* PDS Contract 1161: keeps a copy of the app on the phone so it opens with poor or no signal.
    Driver data is not stored here. Firebase keeps its own offline copy of the records each person is allowed to see. */
-const CACHE = 'pds-app-v9';
+const CACHE = 'pds-app-v10';
 /* sw 5: the app page is always checked with the internet (downloaded again only when it has changed) */
+const PAGE = 'app-page';
+/* the newest app version downloaded in the background, for the open app to ask about */
+let latestPage = '', pageCheck = null;
 const SHELL = ['manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 const LIBS = [
   'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
@@ -37,11 +40,27 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  /* The app page itself: always the live version from the internet. With no signal, say so plainly. */
+  /* The app page itself: opens instantly from the copy saved on this phone, while the newest version
+     downloads in the background. If it changed, the open app is told and refreshes itself (not while typing). */
   if (req.mode === 'navigate' && url.origin === location.origin) {
-    /* 'no-cache' still checks with the server every time (always the live version),
-       but if nothing has changed the server just says so and the phone reuses its copy: much faster. */
-    e.respondWith(fetch(req, { cache: 'no-cache' }).catch(() => new Response(OFFLINE, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })));
+    e.respondWith((async () => {
+      const c = await caches.open(CACHE);
+      const saved = await c.match(PAGE);
+      const net = fetch(req, { cache: 'no-cache' }).then(async r => {
+        if (r.ok && r.type === 'basic') {
+          const txt = await r.clone().text();
+          const nv = (txt.match(/const VERSION='(\d+)'/) || [])[1] || '';
+          let ov = '';
+          if (saved) { try { ov = ((await saved.clone().text()).match(/const VERSION='(\d+)'/) || [])[1] || ''; } catch (x) {} }
+          await c.put(PAGE, r.clone());
+          if (nv) latestPage = nv;
+        }
+        return r;
+      });
+      pageCheck = net.then(() => latestPage, () => latestPage);
+      if (saved) { e.waitUntil(net.catch(() => {})); return saved; }
+      return net.catch(() => new Response(OFFLINE, { headers: { 'Content-Type': 'text/html; charset=utf-8' } }));
+    })());
     return;
   }
 
@@ -103,4 +122,12 @@ self.addEventListener('notificationclick', e => {
 });
 
 /* the app asks which version this is, to show in Settings */
-self.addEventListener('message', e => { if (e.data && e.data.type === 'ver' && e.ports && e.ports[0]) e.ports[0].postMessage({ v: CACHE }); });
+self.addEventListener('message', e => {
+  if (e.data && e.data.type === 'ver' && e.ports && e.ports[0]) e.ports[0].postMessage({ v: CACHE });
+  /* the app asks: has a newer version finished downloading? (waits for the background download if it is still going) */
+  if (e.data && e.data.type === 'pagever' && e.ports && e.ports[0]) {
+    const port = e.ports[0];
+    e.waitUntil((async () => { let v = latestPage; try { if (pageCheck) v = await Promise.race([pageCheck, new Promise(r => setTimeout(() => r(latestPage), 20000))]); } catch (x) {}
+      port.postMessage({ v: v || latestPage }); })());
+  }
+});
