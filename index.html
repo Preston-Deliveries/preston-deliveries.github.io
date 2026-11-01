@@ -1147,7 +1147,7 @@ function pushRow(){const P=window.PUSH;if(!P)return '';const st=P.state();
    :st==='unsupported'?`<p class="pu-st">This ${/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'phone can’t get notifications from the app yet. Open the app from its home screen icon and try again.':'browser can’t get notifications. Try Chrome or Edge.'}</p>`
    :`<p class="pu-st">Get a ding on this device for important things only.</p><button type="button" class="sh-btn primary" data-pu="on">Turn on notifications</button>`;
   return `<div class="dm-row pu-row"><h3>Notifications</h3>${body}${P.role&&P.role()==='admin'?`<button type="button" class="sh-btn" data-pu="admin">Notification settings</button>`:''}<p class="pu-msg" id="pu_msg" role="status"></p></div>`}
-const PU_TYPES=[['update','New update posted (to all drivers)'],['enquiry','New customer enquiry (to that driver)'],['report','New report from a driver (to admins)'],['feedback','New feedback from a driver (to admins)'],['uniform','New uniform order (to admins)'],['leave','Day off request (to admins)'],['invoice','New invoice (to admins)'],['clockon','Driver clocked on (to admins)'],['clockoff','Driver clocked off (to admins)']];
+const PU_TYPES=[['update','New update posted (to all drivers)'],['enquiry','New customer enquiry (to that driver)'],['report','New report from a driver (to admins)'],['feedback','New feedback from a driver (to admins)'],['leave','Day off request (to admins)']];
 let puState={cfg:null,phones:null,log:null,msg:null,busy:false};
 async function openPushAdmin(){closeSettings();const P=window.PUSH;if(!P)return;
   const w=document.createElement('div');w.id='sh-set';w.className='pu-adm';w.setAttribute('role','dialog');w.setAttribute('aria-label','Notification settings');
@@ -7100,7 +7100,7 @@ function doneHTML(done){
   ${bulkBar(done,'done')}
   ${done.length?listHTML(done,'done'):'<div class="empty">No completed orders yet.</div>'}`;
 }
-async function saveOrder(name,items){const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);const o={name,items,status:'requested',requestedAt:new Date().toISOString()};await db.doc('uniorders/'+id).set(o);orders[id]=Object.assign({id},o);try{window.PUSH&&PUSH.role()!=='admin'&&PUSH.send('uniform')}catch(x){}return id}
+async function saveOrder(name,items){const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);const o={name,items,status:'requested',requestedAt:new Date().toISOString()};await db.doc('uniorders/'+id).set(o);orders[id]=Object.assign({id},o);return id}
 /* ---------- printable forms ---------- */
 function loadScript(src){return new Promise((res,rej)=>{if([...document.scripts].some(s=>s.src===src))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 async function pdfLibs(){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');return window.jspdf.jsPDF}
@@ -9487,7 +9487,7 @@ async function saveCfg(){const me2={};for(const k of MEK)me2[k]=cfg[k]||'';me2.a
 const OFFICE_EMAIL='pds2004@hotmail.com.au',OFFICE_NAME='Kim';
 async function writeLog(inv){const id=logId(sid,from);const prev=logs[id];const by=(window.__webMe&&window.__webMe.email)||'';
   const doc={...inv,total:inv.T.total,status:role==='drv'?'submitted':(prev&&prev.status==='paid'?'paid':'submitted'),submittedAt:new Date().toISOString(),submittedBy:by,at:new Date().toISOString()};
-  await db.doc('invlog/'+id).set(JSON.parse(JSON.stringify(doc)));if(role==='drv'&&!(prev&&prev.status==='submitted'))try{window.PUSH&&PUSH.send('invoice')}catch(x){}logs[id]=doc;try{await saveCfg()}catch(x){}}
+  await db.doc('invlog/'+id).set(JSON.parse(JSON.stringify(doc)));logs[id]=doc;try{await saveCfg()}catch(x){}}
 function blocked(){const prev=logs[logId(sid,from)];if(role==='drv'&&prev&&prev.status&&prev.status!=='submitted'){msg={err:true,t:'The office has already '+(prev.status==='paid'?'paid':'checked')+' this invoice. Call the office if something needs changing.'};paint();return true}return false}
 async function submit(){
   const inv=snap();if(!inv.rows.length&&!inv.extras.length){msg={err:true,t:'There is nothing to invoice in those dates.'};paint();return}
@@ -10367,7 +10367,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611020925';
+const VERSION='202611020935';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12001,7 +12001,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 </style>
 <script>
 /* office ding when someone clocks on or off (the office can switch these off in Notification settings) */
-window.__ckPing=(kind,t,day)=>{try{if(window.PUSH&&/^\d{2}:\d{2}$/.test(String(t||'')))PUSH.send(kind,{t,day:day||''})}catch(e){}};
+window.__ckPing=()=>{};/* clock on and off do not ding anyone */
 /* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
 (()=>{
 const QLD=36e6;
