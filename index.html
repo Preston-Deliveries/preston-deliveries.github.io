@@ -10285,7 +10285,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010215';
+const VERSION='202611010218';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11681,6 +11681,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))));if(b)want.push({k,label,b})}
    const lt=[...sec.querySelectorAll(LOADTAB)].find(x=>vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement)));
    if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:'load',label:on?'Back to results':'Load new results',b:lt,grp,on})}
+   {const ab=[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement))));if(ab){const lab=(ab.textContent||'').trim()||'Add';want.push({k:'add',label:lab,b:ab})}}
    let box=ttl.querySelector('.ph-acts');
    const sig=want.map(w=>w.k+(w.on?'1':'0')).join(',');
    if(!want.length){if(box)box.remove();return}
@@ -11713,8 +11714,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    f.__b=b;if(!b.classList.contains('ix-moved'))b.classList.add('ix-moved');
    const side=document.querySelector('.sh-side');const r=side&&side.getBoundingClientRect();const bottom=r&&r.top>innerHeight/2?(innerHeight-r.top)+16:24;f.style.bottom=bottom+'px';
    f.hidden=false;document.body.classList.add('has-fab')}
- addEventListener('resize',()=>{try{fab()}catch(e){}});
- const run=()=>{try{acts()}catch(e){}try{fab()}catch(e){}try{tag()}catch(e){}};
+ const run=()=>{try{acts()}catch(e){}try{const f=document.getElementById('pds-fab');if(f)f.remove();document.body.classList.remove('has-fab')}catch(e){}try{tag()}catch(e){}};
  const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,300);return}
    const ph=document.getElementById('sh-ph');const mo=new MutationObserver(()=>{mo.disconnect();run();mo.takeRecords();obs()});const obs=()=>{mo.observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','aria-pressed']});if(ph&&!m.contains(ph))mo.observe(ph,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})};run();obs()};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
@@ -11762,6 +11762,33 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  let mo;const run=()=>{if(mo)mo.disconnect();try{apply()}catch(e){}if(mo){mo.takeRecords();obs()}};
  const obs=()=>{const m=document.getElementById('sh-main');if(m)mo.observe(m,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden','aria-pressed']})};
  const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,300);return}let t=null;mo=new MutationObserver(()=>{if(t)return;t=requestAnimationFrame(()=>{t=null;run()})});obs();run();document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#sh-main'))setTimeout(run,0)},true)};
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+})();
+</script>
+<style id="space-css">
+:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph h1{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;min-width:0!important;font-size:1.15rem!important;line-height:1.25!important}
+:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl{min-width:0!important}
+:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-menu .am-g{margin:0 0 14px!important}
+@media (min-width:900px){:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts button{color:#fff!important}}
+:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl{min-height:48px!important;box-sizing:border-box}
+@media (min-width:900px){:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph{padding-top:14px!important}:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in{height:auto!important;min-height:64px!important;padding-top:8px!important;padding-bottom:8px!important;box-sizing:border-box}}
+@media (max-width:380px){:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph h1{font-size:1rem!important}:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts button{width:42px!important}}
+</style>
+<script>
+/* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
+(()=>{const GAP=14;const vis=e=>!!(e&&e.getClientRects().length);
+ const paints=(n,cs)=>/^(BUTTON|INPUT|SELECT|TEXTAREA|IMG|SVG|CANVAS|VIDEO|TABLE)$/i.test(n.tagName)||parseFloat(cs.borderTopWidth)>0||(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor))||cs.backgroundImage!=='none'||cs.boxShadow!=='none'||[...n.childNodes].some(x=>x.nodeType===3&&x.textContent.trim());
+ function norm(){const sec=[...document.querySelectorAll('#sh-main .sh-sec')].find(s=>!s.hidden&&vis(s));if(!sec||sec.id==='mod-home')return;
+   const hs=[document.getElementById('sh-tabs'),document.getElementById('sh-ph')].filter(e=>vis(e)&&!sec.contains(e));if(!hs.length)return;
+   const hb=Math.max(...hs.map(e=>e.getBoundingClientRect().bottom));
+   let top=Infinity;const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n;
+   while(n=w.nextNode()){if(n.closest('.ph-acts')||!vis(n))continue;const cs=getComputedStyle(n);if(cs.position==='fixed'||cs.position==='absolute'||cs.visibility==='hidden')continue;const r=n.getBoundingClientRect();if(r.height<2||r.width<2)continue;if(!paints(n,cs))continue;if(r.top<top)top=r.top}
+   if(!isFinite(top))return;const gap=top-hb;if(Math.abs(gap-GAP)<1.5)return;
+   const cur=parseFloat(getComputedStyle(sec).paddingTop)||0;const want=Math.max(0,Math.min(60,cur+GAP-gap));
+   if(Math.abs(want-cur)>=1)sec.style.setProperty('padding-top',want+'px','important')}
+ let t=null;const kick=()=>{if(t)return;t=requestAnimationFrame(()=>{t=null;try{norm()}catch(e){}})};
+ const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,300);return}
+   new MutationObserver(kick).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});addEventListener('resize',kick);kick()};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
 })();
 </script>
