@@ -43,6 +43,10 @@ export default {
     };
     const out = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (req.method === 'GET' && new URL(req.url).searchParams.has('check')) {
+      /* runs the scheduled alert check now and says what happened (no message text is shown) */
+      try { return out(await runScheduled(env)); } catch (e) { return out({ ok: false, error: String(e && e.message || e).slice(0, 300) }); }
+    }
     if (req.method !== 'POST') return out({ ok: true, service: 'pds notify' });
     if (!ORIGINS.includes(origin)) return out({ error: 'Not allowed' }, 403);
 
@@ -137,13 +141,18 @@ async function fsPatch(path, obj, token, mask) {
   if (!r.ok) throw new Error('Could not save ' + path + ' (' + r.status + ')');
 }
 async function runScheduled(env) {
+  const rep = { ok: true, now: new Date().toISOString(), active: 0, due: 0, sent: 0, phones: 0, errors: [] };
   const token = await googleAccess(env, 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/firebase.messaging');
   const q = { structuredQuery: { from: [{ collectionId: 'schedalerts' }], where: { fieldFilter: { field: { fieldPath: 'active' }, op: 'EQUAL', value: { booleanValue: true } } }, limit: 200 } };
   const r = await fetch(`${FS}:runQuery`, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(q) });
   if (!r.ok) throw new Error('Could not read scheduled alerts (' + r.status + ')');
   const now = Date.now();
-  const due = (await r.json()).filter(x => x.document).map(x => ({ id: x.document.name.split('/').pop(), ...Object.fromEntries(Object.entries(x.document.fields || {}).map(([k, v]) => [k, val(v)])) }))
+  const all = (await r.json()).filter(x => x.document);
+  rep.active = all.length;
+  rep.next = all.map(x => (x.document.fields.next || {}).stringValue || '');
+  const due = all.map(x => ({ id: x.document.name.split('/').pop(), ...Object.fromEntries(Object.entries(x.document.fields || {}).map(([k, v]) => [k, val(v)])) }))
     .filter(a => a.next && Date.parse(a.next) <= now && Date.parse(a.next) > now - 6 * 3600e3);
+  rep.due = due.length;
   for (const a of due) {
     try {
       const nx = nextAt(a, now);
@@ -152,18 +161,22 @@ async function runScheduled(env) {
       const body = clip(a.body, 180); if (!body) continue;
       const day = new Date(now + QLD).toISOString().slice(0, 10);
       await fsPatch('updates/alert~' + now.toString(36) + a.id.slice(0, 4), { kind: 'alert', body, day, at: new Date(now).toISOString(), to: a.to || '', toName: a.toName || 'Everyone', ding: !!a.ding, sched: a.id }, token);
+      rep.sent++;
       if (!a.ding) continue;
       const to = String(a.to || '');
       let filter = null;
       if (to.startsWith('st:')) filter = eq('staff', to.slice(3));
       else if (to.startsWith('pc:')) filter = { fieldFilter: { field: { fieldPath: 'pcs' }, op: 'ARRAY_CONTAINS', value: { stringValue: to.slice(3) } } };
       const phones = await findPhones(filter, token);
+      rep.phones += phones.length;
       await Promise.all(phones.map(p => fetch(`https://fcm.googleapis.com/v1/projects/${PROJECT}/messages:send`, {
         method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: { token: p.token, data: { title: 'PDS Alert', body, url: '#home', kind: 'urgent' }, webpush: { headers: { Urgency: 'high', TTL: '86400' } } } })
       }).catch(() => null)));
-    } catch (e) { /* try the next one */ }
+    } catch (e) { rep.errors.push(String(e && e.message || e).slice(0, 200)); }
   }
+  console.log('scheduled alerts', JSON.stringify(rep));
+  return rep;
 }
 
 /* ---------- helpers ---------- */
@@ -206,7 +219,7 @@ async function findPhones(filter, idToken) {
   const r = await fetch(`${FS}:runQuery`, { method: 'POST', headers: { Authorization: 'Bearer ' + idToken, 'Content-Type': 'application/json' }, body: JSON.stringify(q) });
   if (!r.ok) throw new Error('Could not read phone list (' + r.status + ')');
   const rows = await r.json();
-  return rows.filter(x => x.document).map(x => ({ id: x.document.name.split('/').pop(), token: val(x.document.fields.token) })).filter(p => p.token);
+  return rows.map(x => ({ id: x.document.name.split('/').pop(), token: val(x.document.fields.token) })).filter(p => p.token);
 }
 
 /* Check the Firebase sign in token is real, current and for this project */
