@@ -8,6 +8,10 @@
   Secret needed in Cloudflare (Settings, Variables and Secrets):
     SA_JSON  = the whole contents of the pds notify key file (type: Secret)
 
+  Scheduled alerts: a Cron Trigger (every minute, "* * * * *") runs scheduled() below.
+  It sends any alert in the schedalerts collection whose time has come. For this the key's
+  service account also needs the "Cloud Datastore User" role in Google Cloud.
+
   No driver or customer details are stored here.
 */
 
@@ -28,6 +32,7 @@ const KINDS = {
 };
 
 export default {
+  async scheduled(event, env, ctx) { ctx.waitUntil(runScheduled(env)); },
   async fetch(req, env) {
     const origin = req.headers.get('Origin') || '';
     const cors = {
@@ -103,6 +108,64 @@ export default {
   }
 };
 
+
+/* ---------- scheduled alerts ---------- */
+const QLD = 10 * 3600e3; // Queensland is UTC+10 all year
+function nextAt(a, after) {
+  const [hh, mm] = String(a.time || '06:00').split(':').map(Number);
+  const days = Array.isArray(a.days) ? a.days.map(Number) : [];
+  if (!days.length) return null; // one off: nothing after it has been sent
+  const q = new Date(after + QLD);
+  for (let i = 0; i <= 8; i++) {
+    const d = new Date(Date.UTC(q.getUTCFullYear(), q.getUTCMonth(), q.getUTCDate() + i, hh, mm) - QLD);
+    if (d.getTime() > after && days.includes(new Date(d.getTime() + QLD).getUTCDay())) return d.toISOString();
+  }
+  return null;
+}
+function toFs(v) {
+  if (v === null || v === undefined) return { nullValue: null };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+  if (Array.isArray(v)) return { arrayValue: { values: v.map(toFs) } };
+  if (typeof v === 'object') return { mapValue: { fields: Object.fromEntries(Object.entries(v).map(([k, x]) => [k, toFs(x)])) } };
+  return { stringValue: String(v) };
+}
+async function fsPatch(path, obj, token, mask) {
+  const q = mask ? '?' + mask.map(f => 'updateMask.fieldPaths=' + encodeURIComponent(f)).join('&') : '';
+  const r = await fetch(`${FS}/${path}${q}`, { method: 'PATCH', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: Object.fromEntries(Object.entries(obj).map(([k, x]) => [k, toFs(x)])) }) });
+  if (!r.ok) throw new Error('Could not save ' + path + ' (' + r.status + ')');
+}
+async function runScheduled(env) {
+  const token = await googleAccess(env, 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/firebase.messaging');
+  const q = { structuredQuery: { from: [{ collectionId: 'schedalerts' }], where: { fieldFilter: { field: { fieldPath: 'active' }, op: 'EQUAL', value: { booleanValue: true } } }, limit: 200 } };
+  const r = await fetch(`${FS}:runQuery`, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(q) });
+  if (!r.ok) throw new Error('Could not read scheduled alerts (' + r.status + ')');
+  const now = Date.now();
+  const due = (await r.json()).filter(x => x.document).map(x => ({ id: x.document.name.split('/').pop(), ...Object.fromEntries(Object.entries(x.document.fields || {}).map(([k, v]) => [k, val(v)])) }))
+    .filter(a => a.next && Date.parse(a.next) <= now && Date.parse(a.next) > now - 6 * 3600e3);
+  for (const a of due) {
+    try {
+      const nx = nextAt(a, now);
+      /* mark it first so a slow send can never go out twice */
+      await fsPatch('schedalerts/' + a.id, { next: nx || '', active: !!nx, lastSent: new Date(now).toISOString() }, token, ['next', 'active', 'lastSent']);
+      const body = clip(a.body, 180); if (!body) continue;
+      const day = new Date(now + QLD).toISOString().slice(0, 10);
+      await fsPatch('updates/alert~' + now.toString(36) + a.id.slice(0, 4), { kind: 'alert', body, day, at: new Date(now).toISOString(), to: a.to || '', toName: a.toName || 'Everyone', ding: !!a.ding, sched: a.id }, token);
+      if (!a.ding) continue;
+      const to = String(a.to || '');
+      let filter = null;
+      if (to.startsWith('st:')) filter = eq('staff', to.slice(3));
+      else if (to.startsWith('pc:')) filter = { fieldFilter: { field: { fieldPath: 'pcs' }, op: 'ARRAY_CONTAINS', value: { stringValue: to.slice(3) } } };
+      const phones = await findPhones(filter, token);
+      await Promise.all(phones.map(p => fetch(`https://fcm.googleapis.com/v1/projects/${PROJECT}/messages:send`, {
+        method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: { token: p.token, data: { title: 'PDS Alert', body, url: '#home', kind: 'urgent' }, webpush: { headers: { Urgency: 'high', TTL: '86400' } } } })
+      }).catch(() => null)));
+    } catch (e) { /* try the next one */ }
+  }
+}
+
 /* ---------- helpers ---------- */
 const clip = (s, n) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, n);
 const safeUrl = u => /^#[a-z0-9/_-]{0,60}$/i.test(String(u || '')) ? u : '';
@@ -168,13 +231,14 @@ async function verifyIdToken(tok) {
 }
 
 /* Get a short lived Google access token from the send only key */
-let accessCache = { exp: 0, tok: null };
-async function googleAccess(env) {
-  if (accessCache.tok && Date.now() < accessCache.exp - 60e3) return accessCache.tok;
+const accessCache = {};
+async function googleAccess(env, scope = 'https://www.googleapis.com/auth/firebase.messaging') {
+  const c = accessCache[scope];
+  if (c && c.tok && Date.now() < c.exp - 60e3) return c.tok;
   const sa = JSON.parse(env.SA_JSON);
   const now = Math.floor(Date.now() / 1000);
   const enc = o => b64uEnc(new TextEncoder().encode(JSON.stringify(o)));
-  const unsigned = enc({ alg: 'RS256', typ: 'JWT' }) + '.' + enc({ iss: sa.client_email, scope: 'https://www.googleapis.com/auth/firebase.messaging', aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 });
+  const unsigned = enc({ alg: 'RS256', typ: 'JWT' }) + '.' + enc({ iss: sa.client_email, scope, aud: 'https://oauth2.googleapis.com/token', iat: now, exp: now + 3600 });
   const pem = sa.private_key.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
   const key = await crypto.subtle.importKey('pkcs8', Uint8Array.from(atob(pem), c => c.charCodeAt(0)), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
   const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key, new TextEncoder().encode(unsigned));
@@ -182,8 +246,8 @@ async function googleAccess(env) {
     body: 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + unsigned + '.' + b64uEnc(new Uint8Array(sig)) });
   const j = await r.json();
   if (!j.access_token) throw new Error('Google key was not accepted');
-  accessCache = { tok: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
-  return accessCache.tok;
+  accessCache[scope] = { tok: j.access_token, exp: Date.now() + (j.expires_in || 3600) * 1000 };
+  return j.access_token;
 }
 function b64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); }
 function b64uEnc(bytes) { let s = ''; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }

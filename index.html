@@ -1166,7 +1166,15 @@ async function openPushSend(){closeSettings();const P=window.PUSH;if(!P)return;
   const w=document.createElement('div');w.id='sh-set';w.className='pu-adm pu-snd';w.setAttribute('role','dialog');w.setAttribute('aria-label','Send a Message');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Send a Message</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div><div class="pu-body"><p class="nt0">Loading…</p></div></div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'));
-  const [cfg,phones,log]=await Promise.all([P.cfg(),P.phones(),P.log()]);puState={cfg,phones,log,msg:null,busy:false};puSendRender()}
+  const [cfg,phones,log]=await Promise.all([P.cfg(),P.phones(),P.log()]);puState={cfg,phones,log,msg:null,busy:false,when:'now',sched:[]};puSendRender();schLoad()}
+async function schLoad(){try{const db=await window.__getDb();const q=await db.collection('schedalerts').where('active','==',true).get();puState.sched=q.docs.map(d=>Object.assign({id:d.id},d.data())).sort((a,b)=>String(a.next).localeCompare(String(b.next)))}catch(e){puState.sched=[]}if(document.querySelector('#sh-set.pu-snd'))puSendRender()}
+const SCH_D=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function schNext(time,date,days,after){const QLD=36e6;const [hh,mm]=String(time||'06:00').split(':').map(Number);after=after||Date.now();
+  if(days&&days.length){const q=new Date(after+QLD);for(let i=0;i<=8;i++){const d=new Date(Date.UTC(q.getUTCFullYear(),q.getUTCMonth(),q.getUTCDate()+i,hh,mm)-QLD);if(d.getTime()>after&&days.includes(new Date(d.getTime()+QLD).getUTCDay()))return d.toISOString()}return null}
+  if(!date)return null;const [y,mo,dd]=date.split('-').map(Number);const t=Date.UTC(y,mo-1,dd,hh,mm)-QLD;return t>after?new Date(t).toISOString():null}
+function schWhen(a){const QLD=36e6;const t=String(a.time||'');const h=+t.slice(0,2),m=t.slice(3,5);const tm=((h%12)||12)+(m!=='00'?':'+m:'')+(h<12?'am':'pm');
+  if(a.days&&a.days.length){const d=[...a.days].sort();const wk=d.join()==='1,2,3,4,5'?'Every weekday':d.length===7?'Every day':'Every '+d.map(x=>SCH_D[x]).join(', ');return wk+' at '+tm}
+  const n=new Date(Date.parse(a.next)+QLD);return n.toLocaleDateString('en-AU',{timeZone:'UTC',weekday:'short',day:'numeric',month:'short'})+' at '+tm}
 function puSendRender(){const b=document.querySelector('#sh-set.pu-snd .pu-body');if(!b)return;const {phones,log}=puState;
   const drv=phones.filter(p=>p.role!=='admin');const people=[...new Map(drv.filter(p=>p.staff).map(p=>[p.staff,p.name||p.email])).entries()].sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
   const nDrv=new Set(drv.map(p=>p.email)).size;
@@ -1174,8 +1182,12 @@ function puSendRender(){const b=document.querySelector('#sh-set.pu-snd .pu-body'
      <label class="pu-f">Send to<select id="pu_to"><option value="">Everyone</option>${['4214','4215','4217','4218'].map(x=>`<option value="pc:${x}">${x} drivers</option>`).join('')}${people.map(([id,n])=>`<option value="st:${esc(id)}">${esc(n)}</option>`).join('')}</select></label>
      <label class="pu-f">Message<textarea id="pu_body" rows="4" maxlength="180" placeholder="Keep it short. No customer names or addresses (it shows on the lock screen)."></textarea></label>
      <label class="pu-ck"><input type="checkbox" id="pu_ding"> 🔔 Ding their phones</label>
-     <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Sending…':'Send'}</button></div>
-     ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>`}
+     <div class="pu-when" role="group" aria-label="When"><button type="button" data-pu="when" data-v="now" aria-pressed="${puState.when!=='later'}">Now</button><button type="button" data-pu="when" data-v="later" aria-pressed="${puState.when==='later'}">Later</button></div>
+     ${puState.when==='later'?`<div class="pu-row2">${(puState.days||[]).length?'':`<label class="pu-f">Date<input type="date" id="pu_date" value="${esc(puState.date||window.__qISO())}"></label>`}<label class="pu-f">Time<input type="time" id="pu_time" value="${esc(puState.time||'06:00')}"></label></div>
+     <p class="pu-rl">Repeat every (optional)</p><div class="pu-days" role="group" aria-label="Repeat every">${[1,2,3,4,5,6,0].map(d=>`<button type="button" data-pu="day" data-v="${d}" aria-pressed="${(puState.days||[]).includes(d)}">${SCH_D[d]}</button>`).join('')}</div>`:''}
+     <div class="pu-acts"><button type="button" class="sh-btn primary" data-pu="send" ${puState.busy?'disabled':''}>${puState.busy?'Saving…':puState.when==='later'?'Schedule':'Send'}</button></div>
+     ${puState.msg?`<p class="pu-res ${puState.msg.err?'err':''}">${esc(puState.msg.t)}</p>`:''}</section>
+     ${(puState.sched||[]).length?`<section class="pu-sec"><h3>Scheduled</h3><ul class="pu-sch">${puState.sched.map(a=>`<li><span><b>${esc(schWhen(a))}</b><small>${esc(a.toName||'Everyone')}${a.ding?' · dings phones':''}</small><em>${esc(a.body)}</em></span><button type="button" class="sh-btn sm" data-pu="unsched" data-v="${esc(a.id)}">Cancel</button></li>`).join('')}</ul></section>`:''}`}
 const puRefresh=()=>{if(document.querySelector('#sh-set.pu-snd'))puSendRender();else puRender()};
 async function puSaveCfg(o){Object.assign(puState.cfg,o);puRender();try{await window.PUSH.setCfg(o)}catch(e){puState.msg={err:true,t:'Could not save the setting. Check your internet.'};puRender()}}
 document.addEventListener('change',e=>{const t=e.target;if(!t.closest||!t.closest('#sh-set.pu-adm'))return;const k=t.dataset.pu;
@@ -1192,9 +1204,21 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
   if(k==='sendopen'){openPushSend();return}
   if(k==='test'){puState.msg={t:'Sending a test…'};puRefresh();const j=await P.send('test',{title:'Test notification',body:'Notifications are working. 👍',url:'#home'});
     puState.msg=j.error?{err:true,t:j.error}:j.skipped?{err:true,t:j.skipped==='Nobody has notifications turned on yet'?'Turn on notifications on this device first (Settings, the gear).':j.skipped}:{t:'Test sent to '+j.sent+' of your device'+(j.sent===1?'':'s')+'. It should arrive in a few seconds.'};puRefresh();return}
+  if(k==='when'||k==='day'){const keep=()=>{const g=id=>(document.getElementById(id)||{}).value;puState.keep={to:g('pu_to'),body:g('pu_body'),ding:!!(document.getElementById('pu_ding')||{}).checked};if(g('pu_date'))puState.date=g('pu_date');if(g('pu_time'))puState.time=g('pu_time')};keep();
+    if(k==='when')puState.when=b.dataset.v;else{const d=+b.dataset.v,L=new Set(puState.days||[]);L.has(d)?L.delete(d):L.add(d);puState.days=[...L]}
+    puState.msg=null;puSendRender();const K=puState.keep||{};const set=(id,v,ck)=>{const e=document.getElementById(id);if(e){if(ck)e.checked=!!v;else if(v!=null)e.value=v}};set('pu_to',K.to);set('pu_body',K.body);set('pu_ding',K.ding,1);return}
+  if(k==='unsched'){b.disabled=true;try{const db=await window.__getDb();await db.doc('schedalerts/'+b.dataset.v).delete();puState.msg={t:'Scheduled alert cancelled.'}}catch(x){puState.msg={err:true,t:'Could not cancel. Check your internet.'}}await schLoad();return}
   if(k==='send'){const to=(document.getElementById('pu_to')||{}).value||'',body=((document.getElementById('pu_body')||{}).value||'').trim(),ding=!!(document.getElementById('pu_ding')||{}).checked;
     if(!body){puState.msg={err:true,t:'Type a message first.'};puRefresh();return}
     const sel=document.getElementById('pu_to');const label=sel&&sel.selectedOptions[0]?sel.selectedOptions[0].textContent:'Everyone';
+    if(puState.when==='later'){const time=(document.getElementById('pu_time')||{}).value||'',date=(document.getElementById('pu_date')||{}).value||'',days=puState.days||[];
+      if(!time){puState.msg={err:true,t:'Pick a time.'};puRefresh();return}
+      const next=schNext(time,date,days);if(!next){puState.msg={err:true,t:days.length?'Pick at least one day.':'That time has already passed. Pick a later time.'};puRefresh();return}
+      puState.busy=true;puState.msg=null;puRefresh();
+      try{const db=await window.__getDb();const me=window.__webMe||{};await db.doc('schedalerts/s'+Date.now().toString(36)).set({body,to,toName:label,ding,time,date:days.length?'':date,days,next,active:true,by:me.email||'',created:new Date().toISOString()});
+        puState.busy=false;puState.days=[];puState.msg={t:'Scheduled: '+schWhen({time,days,next})+' for '+(label==='Everyone'?'everyone':label)+'.'};const bd=document.getElementById('pu_body');if(bd)bd.value=''}
+      catch(x){puState.busy=false;puState.msg={err:true,t:'Could not save. Check your internet.'}}
+      await schLoad();return}
     puState.busy=true;puState.msg=null;puRefresh();
     /* every alert goes on Home until midnight */
     let posted=false;const day=window.__qISO();
@@ -10312,7 +10336,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010240';
+const VERSION='202611010241';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11816,6 +11840,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 @media (min-width:900px){:root:root:root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs>button{font-size:1.1rem!important;height:48px!important;min-height:48px!important;line-height:48px!important}:root:root:root:root:root:root:root:root:root:root body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utrow{padding:4px 12px!important}}
 @media (max-width:899.98px){:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-bk.sh-bk.sh-bk,:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main [data-sh=backup][data-sh=backup],:root:root:root:root:root:root:root:root:root:root:root:root body #sh-bkwarn#sh-bkwarn#sh-bkwarn{display:none!important}}
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home#sh-home #ah_sum .sr-row>.ic,:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home#sh-home .dh-do>.ic,:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home#sh-home .dh-todo .ic{display:none!important}
+.pu-when,.pu-days{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.pu-when button,.pu-days button{all:unset;cursor:pointer;box-sizing:border-box;min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid var(--sh-line);font-weight:700;color:var(--sh-muted)}.pu-days{flex-wrap:nowrap;gap:4px;margin-top:4px}.pu-days button{flex:1 1 0;min-width:0;text-align:center;padding:8px 0}.pu-rl{margin:8px 0 0;font-weight:700;font-size:.9rem}.pu-when button[aria-pressed=true],.pu-days button[aria-pressed=true]{background:var(--pds-orange,#F2782D);border-color:var(--pds-orange,#F2782D);color:#fff}.pu-sch{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.pu-sch li{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--sh-line);border-radius:12px}.pu-sch li span{display:flex;flex-direction:column;min-width:0}.pu-sch small{color:var(--sh-muted)}.pu-sch em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
