@@ -6755,20 +6755,18 @@ function render(){
   if(mode==='wait'){box.innerHTML='<div class="ntx"><div class="empty">Opening latest updates</div></div>';return}
   if(editing&&isMgr()){box.innerHTML=editHTML();return}
   const L=sorted().filter(n=>!impOnly||n.important),pins=L.filter(n=>n.pinned),rest=L.filter(n=>!n.pinned);
-  /* only the newest update and pinned ones are open; older ones sit in closed weeks or months */
-  /* updates about something still coming up stay open with the newest one */
-  const top=rest.filter((n,i)=>i===0||(n.date&&n.live&&!isPast(n))),G=groups(rest.filter(n=>!top.includes(n)));
+  /* same layout as Team briefs: one fold per month, newest month open */
+  const MS={},M=[];rest.forEach(n=>{const k=String(n.date||n.postedAt||'').slice(0,7);const m=/^(\d{4})-(\d{2})$/.exec(k);const key=m?k:'none';if(!MS[key]){MS[key]={key,label:m?`${MON[+m[2]-1]} ${m[1]}`:'No date',items:[]};M.push(MS[key])}MS[key].items.push(n)});
+  const cnt=n=>`${n} update${n===1?'':'s'}`;
   box.innerHTML=`<div class="ntx">
    ${isMgr()?'<button type="button" class="sh-btn primary nt-add" data-nt="new"><span class="ix ix-add" aria-hidden="true"></span>Update</button>':''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa&&isMgr()?window.__waBtn(msg.wa):''}`:''}
-   <div class="bar"><div class="tabs" role="group" aria-label="Group by"><button type="button" data-nt="by" data-v="week" aria-pressed="${by==='week'}">By week</button><button type="button" data-nt="by" data-v="month" aria-pressed="${by==='month'}">By month</button></div></div>
-   ${pins.length?`<section class="grp pin"><h2>Pinned <span>${pins.length}</span></h2><div class="list">${pins.map(cardHTML).join('')}</div></section>`:''}
-   ${top.length?`<section class="grp"><h2>Latest</h2><div class="list">${top.map(cardHTML).join('')}</div></section>`:''}
-   ${G.length?'<h2 class="nt-older">Older updates</h2>':''}
-   ${G.map((g,i)=>{const open=!closedG.has(g.k)&&openG.has(g.k);return `<section class="grp"><button type="button" class="gh" data-nt="grp" data-v="${g.k}" aria-expanded="${open}"><h2>${esc(g.t)} <span>${g.L.length} update${g.L.length===1?'':'s'}${g.imp?`, ${g.imp} important`:''}</span></h2><i aria-hidden="true">${open?'▾':'▸'}</i></button>${open?`<div class="list">${g.L.map(cardHTML).join('')}</div>`:''}</section>`}).join('')}
-   ${!L.length?`<div class="empty">${impOnly?'No important updates.':isMgr()?'No updates yet. Press + Update to post one.':'No updates right now.'}</div>`:''}
+   ${pins.length?`<details class="mon" data-m="pin" ${(ntMon.pin??true)?'open':''}><summary><span class="ml">Pinned</span><span class="mc">${cnt(pins.length)}</span></summary><div class="list">${pins.map(cardHTML).join('')}</div></details>`:''}
+   ${M.map((g,gi)=>`<details class="mon" data-m="${g.key}" ${(ntMon[g.key]??gi===0)?'open':''}><summary><span class="ml">${esc(g.label)}</span><span class="mc">${cnt(g.items.length)}</span></summary><div class="list">${g.items.map(cardHTML).join('')}</div></details>`).join('')}
+   ${!L.length?`<div class="empty">${impOnly?'No important updates.':isMgr()?'No updates yet. Press + to post one.':'No updates right now.'}</div>`:''}
   </div>`;
 }
+var ntMon={};document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.classList&&d.classList.contains('mon')&&d.closest('#mod-updates'))ntMon[d.dataset.m]=d.open},true);
 function groups(L){
   const now=new Date(),mon=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
   const thisMon=iso(mon(now)),lastMon=(()=>{const x=mon(now);x.setDate(x.getDate()-7);return iso(x)})(),thisM=now.getFullYear()+'-'+pad(now.getMonth()+1);
@@ -10285,7 +10283,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010225';
+const VERSION='202611010227';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11779,6 +11777,8 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_days#r_days#r_days>button.day>.chips{display:grid!important;grid-template-columns:1fr!important}@media (max-width:899px){:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_days#r_days#r_days>button.day{padding:8px!important}:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_days#r_days#r_days>button.day>b{font-size:.85rem!important}}:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .card.imp h2{font-size:1.15rem!important;line-height:1.25!important}
 :root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=import] .vw.vw.vw,:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=import] .fold-bar.fold-bar{display:none!important}
 :root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .rb-top>div:first-child,:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-survey #v_tool>header,:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-survey #v_driverView>header{display:none!important}
+#mod-updates .mon{display:block}#mod-updates .mon>summary{display:flex;align-items:baseline;gap:12px;cursor:pointer;list-style:none;padding:10px 4px 8px;border-bottom:1.5px solid var(--sh-line);margin-bottom:10px}#mod-updates .mon>summary::-webkit-details-marker{display:none}#mod-updates .mon>summary::before{content:'\25B8';color:var(--sh-muted);display:inline-block}#mod-updates .mon[open]>summary::before{transform:rotate(90deg)}#mod-updates .mon .ml{font-family:var(--sh-display);font-size:1.35rem;font-weight:700;color:var(--sh-ink)}#mod-updates .mon .mc{color:var(--sh-muted);font-size:.86rem;font-weight:600}
+:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-briefs .tbx>.head{margin-bottom:-14px!important;min-height:0!important}
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
