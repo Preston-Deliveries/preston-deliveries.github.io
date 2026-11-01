@@ -6629,7 +6629,8 @@ function render(){
   const c=cfg();
   if(editing&&isMgr()){box.innerHTML=editHTML(c);return}
   if(!isMgr())setTimeout(()=>{if(window.ME&&window.ME.paySummary)window.ME.paySummary()},0);
-  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates</button></div>`:isMgr()?`<div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted</button><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make invoice</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates</button></div>`:'';
+  window.__ivTab=ivtab;
+  const tabs=!isMgr()?`<div id="iv_sum" class="iv-sum"></div><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="make" aria-pressed="${ivtab==='make'}">Make invoice</button><button type="button" data-iv="tab" data-v="mine" aria-pressed="${ivtab==='mine'}">My invoices</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates</button></div>`:isMgr()?`<button type="button" class="iv-hook ix-moved" data-iv="tab" data-v="make">Make an invoice</button><div class="tabs" role="group" aria-label="Invoices"><button type="button" data-iv="tab" data-v="sub" aria-pressed="${ivtab==='sub'}">Submitted</button><button type="button" data-iv="tab" data-v="tpl" aria-pressed="${ivtab==='tpl'}">Templates</button></div>`:'';
   if(!isMgr()&&(ivtab==='make'||ivtab==='mine')){box.innerHTML=`<div class="ivx">${tabs}<div id="im_root"><div class="empty">Opening…</div></div></div>`;if(!window.INVMAKE){setTimeout(render,150);return}window.INVMAKE.mount(ivtab==='mine'?'list':'make','drv');return}
   if(isMgr()&&!render.once){render.once=true;ivtab='sub'}/* managers open on Submitted invoices */
   if(isMgr()&&ivtab==='mine')ivtab='make';
@@ -10442,7 +10443,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611020929';
+const VERSION='1202611020932';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11915,7 +11916,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    const m=MAP.find(([r])=>r.test(t));if(m)b.classList.add('ix','ix-'+m[1]);else b.dataset.ixn='1'})}
 
  /* main add action: one round + button, bottom right above the tab bar (like Gmail, WhatsApp, Google Calendar) */
- const ADDSEL='[data-ts="addtop"],[data-tk="new"],[data-nt="new"],[data-tb="new"],[data-eq="new"],[data-eq="nnew"],[data-rp="file"],[data-vc="new"]:not([data-v]),[data-dm="add"],[data-pc="add"],[data-lk="add"],[data-lv="add"]';
+ const ADDSEL='[data-ts="addtop"],.iv-hook[data-iv="tab"],[data-tk="new"],[data-nt="new"],[data-tb="new"],[data-eq="new"],[data-eq="nnew"],[data-rp="file"],[data-vc="new"]:not([data-v]),[data-dm="add"],[data-pc="add"],[data-lk="add"],[data-lv="add"]';
  function fab(){let f=document.getElementById('pds-fab');const sec=secOf();const ph=document.getElementById('sh-ph');
    const b=sec&&ph&&!ph.hidden?[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement)))):null;
    if(!b){if(f)f.hidden=true;document.body.classList.remove('has-fab');return}
@@ -12132,7 +12133,7 @@ const A={ /* office */
  'mod-updates':'Updates show on every driver’s Home and ding their phones as soon as you post. Use Edit or Delete on a card to change it.',
  'mod-briefs':'Team briefs ding every driver when you post them. Drivers sign each brief, so you can see who has read it.',
  'mod-directory':'Everyone’s phone numbers. Tap a number to call. Drivers see this list after you press Send latest to drivers.',
- 'mod-invoices':t=>/make/i.test(t)?'Follow the steps to make an invoice. Parcels and days fill in from results for the pay period you pick.':/templ/i.test(t)?'Blank invoice templates for GST registered and non GST registered drivers.':'Invoices drivers sent for the pay period you pick. Tap Check if one needs a second look, Done once it is sorted, and Undo to move it back. Print all prints the tab you are on.',
+ 'mod-invoices':t=>(window.__ivTab==='make'||/make/i.test(t))?'Follow the steps to make an invoice. Parcels and days fill in from results for the pay period you pick.':/templ/i.test(t)?'Blank invoice templates for GST registered and non GST registered drivers.':'Invoices drivers sent for the pay period you pick. Tap Check if one needs a second look, Done once it is sorted, and Undo to move it back. Print all prints the tab you are on.',
  'mod-clock':'Tap Start shift when you arrive and Finish shift when you finish. If you forgot, use Forgot? to put the right time in. Your last 7 days are listed underneath.',
  'mod-staff':'Everyone on the team. Use the buttons at the top to choose which details show, and tap a name to see or edit that person.',
  'mod-compliance':'Licence, rego, visa, Fit2Work and induction for each person. Anything expired, expiring or missing is highlighted. Tap ✎ next to a name to update it.',
