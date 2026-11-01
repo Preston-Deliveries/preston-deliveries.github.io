@@ -117,6 +117,16 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Tasks: admins set them; the person a task is for can see it and tick it done (a repeating one moves to its next date)
+    match /tasks/{id} {
+      allow read: if isAdmin() || (signedIn() && resource.data.who == myEmail());
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (signedIn()
+        && resource.data.who == myEmail()
+        && request.resource.data.who == resource.data.who
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'doneAt', 'next', 'due', 'rems', 'whenTxt', 'lastDone']));
+    }
+
     // Feedback: anyone on the team can send a message for themselves; only admins can read, change or delete
     match /feedback/{id} {
       allow read, update, delete: if isAdmin();

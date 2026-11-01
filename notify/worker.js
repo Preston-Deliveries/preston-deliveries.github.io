@@ -175,8 +175,54 @@ async function runScheduled(env) {
       }).catch(() => null)));
     } catch (e) { rep.errors.push(String(e && e.message || e).slice(0, 200)); }
   }
+  try { await runTasks(token, rep); } catch (e) { rep.errors.push('tasks: ' + String(e && e.message || e).slice(0, 200)); }
   console.log('scheduled alerts', JSON.stringify(rep));
   return rep;
+}
+
+/* ---------- task reminders: ding the person a task is for, and nudge whoever set it if it's still not done ---------- */
+async function runTasks(token, rep) {
+  const nowIso = new Date().toISOString();
+  const q = { structuredQuery: { from: [{ collectionId: 'tasks' }], where: { compositeFilter: { op: 'AND', filters: [
+    { fieldFilter: { field: { fieldPath: 'next' }, op: 'GREATER_THAN', value: { stringValue: '' } } },
+    { fieldFilter: { field: { fieldPath: 'next' }, op: 'LESS_THAN_OR_EQUAL', value: { stringValue: nowIso } } }
+  ] } }, limit: 200 } };
+  const r = await fetch(`${FS}:runQuery`, { method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(q) });
+  if (!r.ok) throw new Error('Could not read tasks (' + r.status + ')');
+  const rows = (await r.json()).filter(x => x.document);
+  rep.tasks = rows.length;
+  for (const x of rows) {
+    try {
+      const t = { id: x.document.name.split('/').pop(), ...Object.fromEntries(Object.entries(x.document.fields || {}).map(([k, v]) => [k, val(v)])) };
+      const list = Array.isArray(t.rems) ? t.rems : [];
+      const due = list.filter(m => !m.sent && m.at <= nowIso);
+      const later = list.map(m => (!m.sent && m.at <= nowIso) ? { ...m, sent: true } : m);
+      const next = (later.find(m => !m.sent) || {}).at || '';
+      await fsPatch('tasks/' + t.id, { rems: later, next }, token, ['rems', 'next']);
+      if (t.status === 'done') continue;
+      /* only send the latest one if several are due at once (e.g. the worker was off for a while) */
+      const send = due.filter(m => Date.parse(m.at) > Date.now() - 6 * 3600e3);
+      const ding = send.filter(m => m.k !== 'over').pop();
+      const over = send.find(m => m.k === 'over');
+      const title = clip(t.title, 100);
+      if (ding && t.who) {
+        const phones = await findPhones(eq('email', String(t.who).toLowerCase()), token);
+        rep.phones += phones.length;
+        await fcmAll(phones, 'Task: ' + title, 'Due ' + (t.whenTxt || '') + '. Tap to see it.', token);
+      }
+      if (over && t.by) {
+        const phones = await findPhones(eq('email', String(t.by).toLowerCase()), token);
+        rep.phones += phones.length;
+        await fcmAll(phones, 'Task not done yet', title + ' (' + clip(t.whoName || t.who, 40) + ')', token, '#tasks');
+      }
+    } catch (e) { rep.errors.push('task: ' + String(e && e.message || e).slice(0, 200)); }
+  }
+}
+async function fcmAll(phones, title, body, token, url = '#home') {
+  await Promise.all(phones.map(p => fetch(`https://fcm.googleapis.com/v1/projects/${PROJECT}/messages:send`, {
+    method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: { token: p.token, data: { title, body, url, kind: 'urgent' }, webpush: { headers: { Urgency: 'high', TTL: '86400' } } } })
+  }).catch(() => null)));
 }
 
 /* ---------- helpers ---------- */

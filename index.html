@@ -354,7 +354,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 <section class="sh-sec" id="mod-cover" hidden><div id="cv_root"></div></section>
 <section class="sh-sec" id="mod-review" hidden><div id="rv_root"></div></section>
 <section class="sh-sec" id="mod-boss" hidden><div id="bs_root"></div></section>
-<section class="sh-sec" id="mod-compliance" hidden><div id="cp_root"></div></section>
+<section class="sh-sec" id="mod-compliance" hidden><div id="cp_root"></div></section> <section class="sh-sec" id="mod-tasks" hidden><div id="tk_root"></div></section>
 <section class="sh-sec" id="mod-reports" hidden><div id="rp_root"></div></section>
 <section class="sh-sec" id="mod-timesheets" hidden><div id="ts_root"></div></section>
 <section class="sh-sec" id="mod-uniform" hidden><div id="un_root"></div></section>
@@ -751,7 +751,7 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'Updates and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','ncr','clock']},{k:'team',name:'Team',secs:['leave','cover','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices','reports','review','boss','compliance']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'Updates and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','ncr','clock']},{k:'team',name:'Team',secs:['leave','cover','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices','reports','review','boss','compliance','tasks']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
 window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
@@ -759,7 +759,7 @@ window.__runNamesFrom=list=>{const m={};for(const p of list||[]){const nm=String
 try{if(Array.isArray(SNAP.directory)&&SNAP.directory.length){window.__runNames=window.__runNamesFrom(SNAP.directory);window.__runGrp=window.__runGrpFrom(SNAP.directory)}}catch(e){}
 setTimeout(()=>{try{const G=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));Object.entries({home:'mod-home',me:'mod-me',alerts:'mod-alerts',clock:'mod-clock',summary:'mod-summary',sort:'mod-runs',reports:'mod-reports',precards:'mod-precards',lockers:'mod-lockers',updates:'mod-updates',briefs:'mod-briefs',guide:'mod-guide',results:'mod-results',survey:'mod-survey',enquiries:'mod-enquiries',leave:'mod-leave',directory:'mod-directory',feedback:'mod-feedback',timesheets:'mod-timesheets',staff:'mod-staff',vchecks:'mod-vchecks',uniform:'mod-uniform',invoices:'mod-invoices'}).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.classList.add('pg','g-'+G[k])})}catch(e){}},0);
 const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
-const MGR_ONLY=['staff','enquiries','ncr','summary','vchecks','timesheets','precards','lockers','sort','cover','review','boss','compliance'];
+const MGR_ONLY=['staff','enquiries','ncr','summary','vchecks','timesheets','precards','lockers','sort','cover','review','boss','compliance','tasks'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
 const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform'];
@@ -782,13 +782,14 @@ const DRV_TILES=['guide','reports','runs','leave','invoices','directory','unifor
 const DNAMES={home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'Invoices',leave:'Leave Calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Guide',runs:'Run Sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'NPS results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'NPS',guide:'Driver Guide',staff:'Driver Management',precards:'Precards',lockers:'Parcel Lockers',briefs:'Team Briefs',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',ncr:'NCRs',summary:'Contract Summary',vchecks:'Van Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Driver Compliance'};
-const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',ncr:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance'};
+const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'NPS',guide:'Driver Guide',staff:'Driver Management',precards:'Precards',lockers:'Parcel Lockers',briefs:'Team Briefs',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',ncr:'NCRs',summary:'Contract Summary',vchecks:'Van Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Driver Compliance',tasks:'Tasks'};
+const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',ncr:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance',tasks:'mod-tasks'};
 const ICONS={
  cover:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 8h5M18.5 5.5v5"/></svg>',
  review:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
  boss:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V5M16 20v-8M21 20H3"/></svg>',
  compliance:'<svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>',
+ tasks:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg>',
  menu:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>',
  reports:'<svg viewBox="0 0 24 24"><path d="M12 3.5L2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.2v.3"/></svg>',
  feedback:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
@@ -817,7 +818,7 @@ const ICONS={
  guide:'<svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5v13c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>'
 };
 const DESC={
- mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes. Drivers see them in the app.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
+ mgr:{me:'Your own details, shifts, scores and run. Only you can see it.',alerts:'Things that changed for you personally.',reports:'Incident, vehicle accident and safety hazard reports from drivers, with follow up, printable reports and a register. Only managers can see these.',feedback:'Private messages from drivers about the app, ideas, work, a person, a problem or anything else. Only managers can see these.',clock:'Start and finish your shift, and see your times for the week.',timesheets:'Daily start, finish, break and hours for every driver. Drivers tap Start and Finish shift in the app. Export a year to keep for 7 years.',vchecks:'Record each van check by a supervisor or manager, see who is due or overdue, and print the blank check form.',summary:'Everything about the whole contract, each postcode, or one driver for a day, week, month or year. Search a driver to see it all. Print it for your boss.',tasks:'Set a to do for one person with reminder dings. It shows only on their Home page.',sort:'Find which driver a street belongs to and print the missort sheet for each postcode.',runs:'Put each driver’s streets in delivery order, add gate codes and notes, and hand over to fill ins.',results:'Load the daily performance emails and check each driver’s results.',survey:'Upload the Call Reason Drill sheet to see each driver’s customer scores.',guide:'One page sheets on how we deliver, scan, stay safe and behave. Edit any sheet here.',staff:'Contact details, logins, vans and emergency contacts. Only you can see this.',precards:'Approved precard addresses with the reason and date. Add, review, print and send to drivers.',lockers:'Building lockers on our runs and public Australia Post lockers, with where to find them.',briefs:'Post the weekly brief from the facility with its toolbox talks and Choose Safer slides.',leave:'Everyone\u2019s booked leave, your daily limit and no leave periods.',invoices:'Invoice templates for drivers, the due date notice and who invoices go to.',directory:'Names, roles, phone numbers and driver numbers. Choose who is listed for drivers.',updates:'Post notices for the team, like training or site changes. Drivers see them in the app.',uniform:'Shirt order form with size guide. Set who orders go to and print a blank form.',enquiries:'Record each enquiry and whether the driver was at fault. Search by driver or address.'},
  drv:{me:'',alerts:'',menu:'',reports:'',feedback:'',clock:'Your start and finish times.',runs:'Your streets, gate codes and notes.',guide:'How we do things, one topic at a time.',briefs:'Read the team brief, then sign it.',leave:'Check which days are free, then ask for time off.',invoices:'See what you have earned and send your invoice.',directory:'Tap a name to call or message.',updates:'Messages from the office.',uniform:'Order your shirts.'}
 };
 let canMgr=false,previewUser=false;
@@ -1114,7 +1115,7 @@ function tile(s){const st=role==='mgr'||s==='briefs'||s==='updates'?(stats[s]||'
 const AMENU=[['Performance','day',[['results','Results, NPS and summary'],['enquiries','Customer enquiries and NCRs']]],
  ['On the road','road',[['runs','Run sheets and sort sheets'],['precards','Precards and lockers'],['guide','How we do things']]],
  ['Team','team',[['leave','Who is off and cover planner'],['updates','Driver news and weekly brief'],['reports','Incidents and driver messages'],['directory','Phone numbers for the team']]],
- ['Office','office',[['invoices','Invoices and clock in hours'],['staff','Details, compliance and van checks'],['uniform','Uniform orders']]]];
+ ['Office','office',[['invoices','Invoices and clock in hours'],['staff','Details, compliance and van checks'],['uniform','Uniform orders'],['tasks','To do with reminders for one person']]]];
 /* Settings: the gear on the title bar opens this panel (view, language, screen, text size, sign out) */
 const setRows=(drv)=>`${true?`<div class="dm-row" data-notr><h3>Language · Idioma · ਭਾਸ਼ਾ</h3><div class="thseg" role="group" aria-label="Language">${[['en','English'],['pt','Português'],['pa','ਪੰਜਾਬੀ']].map(([k,l])=>`<button type="button" data-lang-set="${k}" aria-pressed="${(window.__lang&&window.__lang())===k}">${l}</button>`).join('')}</div></div>`:''}
    <div class="dm-row"><h3>Screen</h3><div class="thseg" role="group" aria-label="Light or dark screen">${[['auto','Auto'],['light','☀ Light'],['dark','☾ Dark']].map(([k,l])=>`<button type="button" data-theme-set="${k}" aria-pressed="${(window.__theme&&window.__theme())===k}">${l}</button>`).join('')}</div></div>
@@ -1641,7 +1642,7 @@ function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=w
   if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Home: one box to find a street (whose it is) or a page of the app */
 let findQ='',findT=null,findPin=null;
-const PAGE_WORDS={leave:'calendar time off holiday days off away',invoices:'pay earnings money invoice',timesheets:'hours clock times start finish',clock:'start finish shift times hours',directory:'phone numbers call contacts',runs:'run sheet streets gate codes notes',sort:'missort streets street sort',results:'scores performance eta scans',survey:'nps customer ranking',staff:'drivers details people',updates:'news messages notices',uniform:'shirts clothes order',vchecks:'van check vehicle',reports:'incident accident hazard safety',feedback:'message manager idea',cover:'floaters roster cover off',briefs:'toolbox talk sign brief',guide:'rules policy how to',precards:'card carded addresses',lockers:'parcel locker',me:'profile my details',summary:'contract postcode report',enquiries:'customer case enquiry',boss:'monthly report boss',compliance:'daily start finish forms',review:'review driver'};
+const PAGE_WORDS={leave:'calendar time off holiday days off away',invoices:'pay earnings money invoice',timesheets:'hours clock times start finish',clock:'start finish shift times hours',directory:'phone numbers call contacts',runs:'run sheet streets gate codes notes',sort:'missort streets street sort',results:'scores performance eta scans',survey:'nps customer ranking',staff:'drivers details people',updates:'news messages notices',uniform:'shirts clothes order',vchecks:'van check vehicle',reports:'incident accident hazard safety',feedback:'message manager idea',cover:'floaters roster cover off',briefs:'toolbox talk sign brief',guide:'rules policy how to',precards:'card carded addresses',lockers:'parcel locker',me:'profile my details',summary:'contract postcode report',enquiries:'customer case enquiry',boss:'monthly report boss',compliance:'daily start finish forms',tasks:'tasks to do todo reminder',review:'review driver'};
 function findPages(q){const ws=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(Boolean);if(!ws.length)return [];
   const d=DESC[role==='mgr'?'mgr':'drv']||{};
   return visible().filter(x=>x!=='home'&&NAMES[x]).map(x=>{const nm=NAMES[x].toLowerCase(),hay=(nm+' '+(PAGE_WORDS[x]||'')+' '+(d[x]||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/);
@@ -10359,7 +10360,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611012105';
+const VERSION='202611012140';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11317,7 +11318,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pkx{margin-top:0!important;margin-bottom:0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #g_view{padding-top:0!important;padding-left:0!important;padding-right:0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .wrap{padding-left:max(16px,env(safe-area-inset-left,0px))!important;padding-right:max(16px,env(safe-area-inset-right,0px))!important}
-:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cv_root,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root{padding:18px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))!important}
+:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cv_root,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root,:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #tk_root{padding:18px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .dm-head{row-gap:8px!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .dm-head>.dm-act2{margin-top:0!important}
 :root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .bar.vcbar{gap:8px!important}
@@ -11780,7 +11781,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    const m=MAP.find(([r])=>r.test(t));if(m)b.classList.add('ix','ix-'+m[1]);else b.dataset.ixn='1'})}
 
  /* main add action: one round + button, bottom right above the tab bar (like Gmail, WhatsApp, Google Calendar) */
- const ADDSEL='[data-nt="new"],[data-tb="new"],[data-eq="new"],[data-eq="nnew"],[data-rp="file"],[data-vc="new"]:not([data-v]),[data-dm="add"],[data-pc="add"],[data-lk="add"],[data-lv="add"]';
+ const ADDSEL='[data-tk="new"],[data-nt="new"],[data-tb="new"],[data-eq="new"],[data-eq="nnew"],[data-rp="file"],[data-vc="new"]:not([data-v]),[data-dm="add"],[data-pc="add"],[data-lk="add"],[data-lv="add"]';
  function fab(){let f=document.getElementById('pds-fab');const sec=secOf();const ph=document.getElementById('sh-ph');
    const b=sec&&ph&&!ph.hidden?[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement)))):null;
    if(!b){if(f)f.hidden=true;document.body.classList.remove('has-fab');return}
@@ -11895,5 +11896,171 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  const go=()=>{add();new MutationObserver(()=>{const s=document.querySelector('.sh-side');if(s&&s.querySelector('.web-out')&&!s.querySelector('.sb-acts'))add()}).observe(document.body,{childList:true,subtree:true})};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();})();
 </script>
+<style>
+:root:root #sh-main #mod-tasks .tk{display:flex;flex-direction:column;gap:14px;max-width:820px}
+:root:root #sh-main #mod-tasks .tk .lead{margin:0;color:var(--sh-muted)}
+:root:root #sh-main #mod-tasks .tk-f{display:flex;flex-direction:column;gap:12px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:16px}
+:root:root #sh-main #mod-tasks .tk-f label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:.95rem}
+:root:root #sh-main #mod-tasks .tk-f :is(input,select,textarea){font:inherit;font-weight:500;padding:11px 12px;border-radius:10px;border:1px solid var(--sh-line);background:var(--sh-bg,transparent);color:var(--sh-ink);min-height:46px;box-sizing:border-box;width:100%}
+:root:root #sh-main #mod-tasks .tk-f textarea{min-height:80px;resize:vertical}
+:root:root #sh-main #mod-tasks .tk-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+:root:root #sh-main #mod-tasks .tk-h{font-weight:700;font-size:.95rem;margin:2px 0 -4px}
+:root:root #sh-main #mod-tasks .tk-chips{display:flex;flex-wrap:wrap;gap:8px}
+:root:root #sh-main #mod-tasks .tk-chips button{all:unset;cursor:pointer;padding:9px 14px;border-radius:999px;border:1px solid var(--sh-line);font-weight:700;font-size:.92rem;color:var(--sh-ink)}
+:root:root #sh-main #mod-tasks .tk-chips button[aria-pressed=true]{background:#F2782D;border-color:#F2782D;color:#fff}
+:root:root #sh-main #mod-tasks .tk-foot{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+:root:root #sh-main #mod-tasks .tk-msg{font-weight:700;color:#1E8A4C}
+:root:root #sh-main #mod-tasks .tk-msg.err{color:#C8352B}
+:root:root #sh-main #mod-tasks .tk-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+:root:root #sh-main #mod-tasks .tk-bar select{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--sh-line);background:transparent;color:var(--sh-ink);min-height:42px}
+:root:root #sh-main #mod-tasks .tk-list{display:flex;flex-direction:column;gap:10px}
+:root:root #sh-main #mod-tasks .tk-i{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+:root:root #sh-main #mod-tasks .tk-i.over{border-left:4px solid #C8352B}
+:root:root #sh-main #mod-tasks .tk-i.done{opacity:.7}
+:root:root #sh-main #mod-tasks .tk-i b{font-size:1.05rem}
+:root:root #sh-main #mod-tasks .tk-i small{color:var(--sh-muted);font-size:.88rem}
+:root:root #sh-main #mod-tasks .tk-i p{margin:0;white-space:pre-wrap}
+:root:root #sh-main #mod-tasks .tk-i .tk-foot{gap:8px}:root:root #sh-main #mod-tasks .tk-i .tk-foot .sh-btn{min-height:40px;margin:0}
+:root:root #sh-main #mod-tasks .tk-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:800;letter-spacing:.3px;margin-right:6px;background:var(--sh-line);color:var(--sh-ink)}
+:root:root #sh-main #mod-tasks .tk-tag.red{background:#C8352B;color:#fff}
+:root:root #sh-main #mod-tasks .tk-tag.grn{background:#1E8A4C;color:#fff}
+:root:root #sh-main #mod-tasks .tk-empty{padding:30px 10px;text-align:center;color:var(--sh-muted)}
+.tk-card{padding:12px 14px!important;border-left:4px solid #2F6FDB!important;display:flex;flex-direction:column;gap:8px}
+.tk-card .tk-ch{display:flex;align-items:center;justify-content:space-between}
+.tk-card .tk-ch small{color:var(--sh-muted);font-weight:600}
+.tk-card .tk-r{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--sh-line)}
+.tk-card .tk-r:first-of-type{border-top:0}
+.tk-card .tk-r .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tk-card .tk-r .tx b{font-size:1rem}
+.tk-card .tk-r .tx small{color:var(--sh-muted);font-size:.85rem}
+.tk-card .tk-r .tx small.red{color:#C8352B;font-weight:700}
+.tk-card .tk-r .tx span{font-size:.9rem;white-space:pre-wrap}
+.tk-card .tk-ok{all:unset;cursor:pointer;flex:none;padding:8px 14px;border-radius:10px;background:#1E8A4C;color:#fff;font-weight:800;font-size:.92rem}
+.tk-card .tk-ok:disabled{opacity:.6}
+</style>
+<script>
+/* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
+(()=>{
+const QLD=36e6;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>window.__qISO();
+const addD=(iso,n)=>{const d=new Date(iso+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const utcOf=(iso,hm)=>{const[y,m,d]=iso.split('-').map(Number);const[h,mi]=String(hm||'07:00').split(':').map(Number);return new Date(Date.UTC(y,m-1,d,h,mi)-QLD).toISOString()};
+const DN=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const t12=hm=>{if(!hm)return '';let[h,m]=hm.split(':').map(Number);const ap=h>=12?'pm':'am';h=h%12||12;return h+(m?':'+String(m).padStart(2,'0'):'')+ap};
+const dayTxt=iso=>{const T=today();if(iso===T)return 'Today';if(iso===addD(T,1))return 'Tomorrow';if(iso===addD(T,-1))return 'Yesterday';const d=new Date(iso+'T12:00:00Z');return DN[d.getUTCDay()]+' '+d.getUTCDate()+' '+MN[d.getUTCMonth()]};
+const whenTxt=t=>dayTxt(t.due)+(t.time?' at '+t12(t.time):'');
+const REM=[['3d','3 days before'],['1d','Day before'],['am','Morning of'],['at','At the time']];
+const REP=[['','No repeat'],['w','Every week'],['f','Every 2 weeks'],['m','Every month']];
+const me=()=>window.__webMe||{};
+const myEmail=()=>String(me().email||'').toLowerCase();
+const isMgr=()=>!!(window.APP&&APP.role==='mgr');
+const isOver=t=>t.status!=='done'&&(t.due<today()||(t.due===today()&&t.time&&Date.now()>Date.parse(utcOf(t.due,t.time))));
+/* reminder times for a task, in UTC, only the ones still in the future */
+function rems(t){const out=[];const add=(k,iso,hm)=>{const at=utcOf(iso,hm);if(Date.parse(at)>Date.now()+30e3)out.push({k,at})};
+  for(const k of t.remind||[]){if(k==='3d')add(k,addD(t.due,-3),'07:00');if(k==='1d')add(k,addD(t.due,-1),'07:00');if(k==='am')add(k,t.due,'07:00');if(k==='at'&&t.time)add(k,t.due,t.time)}
+  /* nudge whoever made it if it's still not done */
+  if(t.time){const[h,m]=t.time.split(':').map(Number);const x=Math.min(h*60+m+60,23*60+30);add('over',t.due,String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'))}else add('over',t.due,'17:00');
+  out.sort((a,b)=>a.at.localeCompare(b.at));return out}
+const nextOf=r=>(r.find(x=>!x.sent)||{}).at||'';
+function advance(t){const d=new Date(t.due+'T12:00:00Z');if(t.repeat==='w')d.setUTCDate(d.getUTCDate()+7);else if(t.repeat==='f')d.setUTCDate(d.getUTCDate()+14);else if(t.repeat==='m'){const day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+1);const last=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();d.setUTCDate(Math.min(day,last))}return d.toISOString().slice(0,10)}
+
+const TK={all:{},mine:{},unA:null,unM:null,people:null,form:null,view:'open',who:'',msg:null,arm:null,busy:false};
+const db=async()=>{try{return window.__getDb?await window.__getDb():null}catch(e){return null}};
+
+/* ---------- live data ---------- */
+async function watchMine(){if(TK.unM||!myEmail())return;const d=await db();if(!d||TK.unM)return;
+  TK.unM=d.collection('tasks').where('who','==',myEmail()).onSnapshot(q=>{const o={};q.docs.forEach(x=>o[x.id]=Object.assign({id:x.id},x.data()));TK.mine=o;homePaint()},()=>{TK.unM=null;setTimeout(watchMine,30000)})}
+async function watchAll(){if(TK.unA||!isMgr())return;const d=await db();if(!d||TK.unA)return;
+  TK.unA=d.collection('tasks').onSnapshot(q=>{const o={};q.docs.forEach(x=>o[x.id]=Object.assign({id:x.id},x.data()));TK.all=o;if(!TK.form)render()},()=>{TK.unA=null})}
+async function loadPeople(){if(TK.people)return;const d=await db();const L=[];const seen=new Set();
+  const mine=myEmail();if(mine){L.push({email:mine,name:'Me'+(me().name?' ('+me().name+')':'')});seen.add(mine)}
+  try{const q=await d.collection('access').get();q.docs.forEach(x=>{const v=x.data()||{};const e=x.id.toLowerCase();if(seen.has(e))return;seen.add(e);L.push({email:e,name:v.name||e,role:v.role})})}catch(e){}
+  const m0=L.shift();L.sort((a,b)=>a.name.localeCompare(b.name));if(m0)L.unshift(m0);TK.people=L;render()}
+const nameOf=e=>{const p=(TK.people||[]).find(x=>x.email===e);return p?p.name.replace(/^Me \((.*)\)$/,'$1'):e};
+
+/* ---------- mark done (the person or an admin) ---------- */
+async function markDone(t,btn){if(btn)btn.disabled=true;const d=await db();if(!d)return;const now=new Date().toISOString();
+  try{if(t.repeat){const due=advance(t);const n=Object.assign({},t,{due});const r=rems(n);await d.doc('tasks/'+t.id).update({due,rems:r,next:nextOf(r),whenTxt:whenTxt(n),lastDone:now,status:'open'})}
+    else await d.doc('tasks/'+t.id).update({status:'done',doneAt:now,next:''})}
+  catch(e){if(btn)btn.disabled=false;TK.msg={err:true,t:'Could not save just now.'};render()}}
+
+/* ---------- Home card: your tasks for the next 7 days ---------- */
+function homeHtml(){const T=today(),lim=addD(T,7);const L=Object.values(TK.mine).filter(t=>t.status!=='done'&&t.due<=lim).sort((a,b)=>(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));if(!L.length)return '';
+  return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length} to do</small></div>${L.map(t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}${t.repeat?' · repeats':''}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`}).join('')}</section>`}
+function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
+  if(!h){if(w)w.remove();return}
+  if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
+  const anchor=home.querySelector(':scope>.al-wrap')||hero;if(w.previousElementSibling!==anchor)anchor.after(w);
+  if(w.__h!==h){w.__h=h;w.innerHTML=h}}
+
+/* ---------- admin page ---------- */
+const blank=()=>({title:'',note:'',who:myEmail(),due:addD(today(),1),time:'',remind:['1d','am'],repeat:''});
+function formHtml(){const f=TK.form;const P=TK.people||[];
+  return `<div class="tk-f"><div class="tk-h">${f.id?'Edit task':'New task'}</div>
+  <label>What needs doing<input id="tk_title" value="${esc(f.title)}" placeholder="e.g. Sign the van lease" maxlength="120"></label>
+  <label>Note (optional)<textarea id="tk_note" placeholder="Any details they need" maxlength="600">${esc(f.note)}</textarea></label>
+  <label>Who it's for<select id="tk_who">${P.length?P.map(p=>`<option value="${esc(p.email)}" ${p.email===f.who?'selected':''}>${esc(p.name)}</option>`).join(''):`<option value="${esc(f.who)}">Loading…</option>`}</select></label>
+  <div class="tk-2"><label>Due date<input type="date" id="tk_due" value="${esc(f.due)}"></label><label>Time (optional)<input type="time" id="tk_time" value="${esc(f.time)}"></label></div>
+  <div class="tk-h">Ding their phone</div>
+  <div class="tk-chips">${REM.map(([k,l])=>`<button type="button" data-tk="rem" data-v="${k}" aria-pressed="${f.remind.includes(k)}">${l}</button>`).join('')}</div>
+  <small style="color:var(--sh-muted)">Morning dings go at 7am. "At the time" needs a time set.</small>
+  <div class="tk-h">Repeat</div>
+  <div class="tk-chips">${REP.map(([k,l])=>`<button type="button" data-tk="rep" data-v="${k}" aria-pressed="${f.repeat===k}">${l}</button>`).join('')}</div>
+  <div class="tk-foot"><button type="button" class="sh-btn primary" data-tk="save" ${TK.busy?'disabled':''}>${f.id?'Save changes':'Add task'}</button><button type="button" class="sh-btn" data-tk="cancel">Cancel</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}</div></div>`}
+function readForm(){const f=TK.form;const v=id=>(document.getElementById(id)||{}).value;f.title=(v('tk_title')||'').trim();f.note=(v('tk_note')||'').trim();f.who=v('tk_who')||f.who;f.due=v('tk_due')||f.due;f.time=v('tk_time')||''}
+function listHtml(){const T=today();let L=Object.values(TK.all);
+  if(TK.who)L=L.filter(t=>t.who===TK.who);
+  const cnt={open:L.filter(t=>t.status!=='done'&&!isOver(t)).length,over:L.filter(isOver).length,done:L.filter(t=>t.status==='done').length};
+  L=L.filter(t=>TK.view==='done'?t.status==='done':TK.view==='over'?isOver(t):t.status!=='done'&&!isOver(t));
+  L.sort((a,b)=>TK.view==='done'?String(b.doneAt).localeCompare(String(a.doneAt)):(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));
+  const whoOpts=[...new Set(Object.values(TK.all).map(t=>t.who))];
+  return `<div class="tk-bar"><div class="tk-chips">${[['open','To do'],['over','Overdue'],['done','Done']].map(([k,l])=>`<button type="button" data-tk="view" data-v="${k}" aria-pressed="${TK.view===k}">${l} ${cnt[k]}</button>`).join('')}</div>
+    ${whoOpts.length>1?`<select id="tk_fwho" aria-label="Who"><option value="">Everyone</option>${whoOpts.map(e=>`<option value="${esc(e)}" ${TK.who===e?'selected':''}>${esc(nameOf(e))}</option>`).join('')}</select>`:''}</div>
+  <div class="tk-list">${L.length?L.map(t=>{const o=isOver(t);return `<div class="tk-i ${o?'over':''} ${t.status==='done'?'done':''}">
+    <div>${o?'<span class="tk-tag red">OVERDUE</span>':''}${t.status==='done'?'<span class="tk-tag grn">DONE</span>':''}${t.repeat?`<span class="tk-tag">${esc((REP.find(r=>r[0]===t.repeat)||[])[1]||'')}</span>`:''}</div>
+    <b>${esc(t.title)}</b><small>For ${esc(nameOf(t.who))} · due ${esc(whenTxt(t))}${t.status==='done'?' · done '+esc(dayTxt(window.__qISO(new Date(t.doneAt))))+' at '+esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16))):''}${t.lastDone&&t.status!=='done'?' · last done '+esc(dayTxt(window.__qISO(new Date(t.lastDone)))):''}</small>
+    ${t.note?`<p>${esc(t.note)}</p>`:''}
+    <div class="tk-foot">${t.status!=='done'?`<button type="button" class="sh-btn" data-tk="done" data-v="${esc(t.id)}">Done</button><button type="button" class="sh-btn" data-tk="edit" data-v="${esc(t.id)}">Edit</button>`:''}<button type="button" class="sh-btn danger ${TK.arm===t.id?'arm':''}" data-tk="del" data-v="${esc(t.id)}">${TK.arm===t.id?'Tap again to delete':'Delete'}</button></div></div>`}).join(''):`<div class="tk-empty">${TK.view==='done'?'Nothing done yet.':TK.view==='over'?'Nothing overdue.':'No tasks to do. Tap + to add one.'}</div>`}</div>`}
+function render(){const el=document.getElementById('tk_root');if(!el)return;if(!isMgr()){el.innerHTML='';return}
+  if(TK.form){if(document.activeElement&&el.contains(document.activeElement)&&document.getElementById('tk_title'))readForm();}
+  el.innerHTML=`<div class="tk">${TK.form?formHtml():`<p class="lead">Set a to do for anyone with a login. Only that person sees it, on their Home page, and their phone dings when you choose. If it's not done by the end of the day, you get a ding.</p><button type="button" class="sh-btn primary" data-tk="new">+ New task</button>${TK.msg?`<span class="tk-msg ${TK.msg.err?'err':''}">${esc(TK.msg.t)}</span>`:''}${listHtml()}`}</div>`}
+
+async function save(){readForm();const f=TK.form;
+  if(!f.title){TK.msg={err:true,t:'Type what needs doing.'};render();return}
+  if(!f.due){TK.msg={err:true,t:'Pick a due date.'};render();return}
+  if(f.remind.includes('at')&&!f.time){TK.msg={err:true,t:'Set a time, or untick "At the time".'};render();return}
+  const d=await db();if(!d)return;TK.busy=true;render();
+  const t={title:f.title,note:f.note,who:f.who,whoName:nameOf(f.who),due:f.due,time:f.time,remind:f.remind.slice(),repeat:f.repeat,status:'open'};
+  const r=rems(t);Object.assign(t,{rems:r,next:nextOf(r),whenTxt:whenTxt(t)});
+  try{if(f.id)await d.doc('tasks/'+f.id).update(t);
+    else{const id='t'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);await d.doc('tasks/'+id).set(Object.assign(t,{by:myEmail(),byName:me().name||'',created:new Date().toISOString()}))}
+    TK.busy=false;TK.form=null;TK.view='open';TK.msg={t:(f.id?'Saved. ':'Task added. ')+(r.filter(x=>x.k!=='over').length?'Their phone dings '+r.filter(x=>x.k!=='over').length+' time'+(r.filter(x=>x.k!=='over').length>1?'s':'')+' before it’s due.':'It shows on their Home page.')};render();window.scrollTo(0,0)}
+  catch(e){console.warn('task save',e);TK.busy=false;TK.msg={err:true,t:'Could not save just now.'};render()}}
+
+document.addEventListener('click',async e=>{
+  const hd=e.target.closest&&e.target.closest('[data-tk-done]');
+  if(hd){const t=TK.mine[hd.dataset.tkDone]||TK.all[hd.dataset.tkDone];if(t)markDone(t,hd);return}
+  const b=e.target.closest&&e.target.closest('[data-tk]');if(!b||!document.getElementById('tk_root')||!document.getElementById('tk_root').contains(b))return;
+  const a=b.dataset.tk,v=b.dataset.v;if(a!=='del')TK.arm=null;
+  if(a==='new'){TK.form=blank();TK.msg=null;loadPeople();render();window.scrollTo(0,0);setTimeout(()=>document.getElementById('tk_title')?.focus(),0);return}
+  if(a==='cancel'){TK.form=null;TK.msg=null;render();return}
+  if(a==='rem'){readForm();const r=TK.form.remind;const i=r.indexOf(v);if(i>=0)r.splice(i,1);else r.push(v);render();return}
+  if(a==='rep'){readForm();TK.form.repeat=v;render();return}
+  if(a==='save'){save();return}
+  if(a==='view'){TK.view=v;TK.msg=null;render();return}
+  if(a==='edit'){const t=TK.all[v];if(!t)return;TK.form={id:t.id,title:t.title||'',note:t.note||'',who:t.who,due:t.due,time:t.time||'',remind:(t.remind||[]).slice(),repeat:t.repeat||''};TK.msg=null;loadPeople();render();window.scrollTo(0,0);return}
+  if(a==='done'){const t=TK.all[v];if(t){await markDone(t,b);TK.msg={t:t.repeat?'Done. The next one is set.':'Marked done.'};render()}return}
+  if(a==='del'){if(TK.arm!==v){TK.arm=v;render();setTimeout(()=>{if(TK.arm===v){TK.arm=null;render()}},3500);return}
+    TK.arm=null;try{const d=await db();await d.doc('tasks/'+v).delete();TK.msg={t:'Task deleted.'}}catch(x){TK.msg={err:true,t:'Could not delete just now.'}}render();return}
+});
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='tk_fwho'){TK.who=e.target.value;render()}});
+
+window.addEventListener('sh:go',e=>{if(e.detail==='tasks'){watchAll();loadPeople();render()}});
+(()=>{const go=()=>{const home=document.getElementById('sh-home');if(!home||!myEmail()){setTimeout(go,500);return}new MutationObserver(()=>homePaint()).observe(home,{childList:true});watchMine();homePaint()};go()})();
+setInterval(()=>{homePaint();if(!TK.unM)watchMine()},60000);
+})();
+</script>
+
 </body>
 </html>
