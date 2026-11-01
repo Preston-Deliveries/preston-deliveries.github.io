@@ -772,7 +772,7 @@ const HUBS={mgr:[
  {t:'Enquiries and NCRs',s:[['enquiries','Enquiries'],['ncr','NCRs']]},
  {t:'Updates and Team Briefs',s:[['updates','Updates'],['briefs','Team briefs']]},
  {t:'Invoices and Timesheets',s:[['invoices','Invoices'],['timesheets','Timesheets'],['clock','My times']]},
- {t:'Driver Management',s:[['staff','Driver details'],['compliance','Compliance'],['vchecks','Van checks']]},
+ {t:'Driver Management',s:[['staff','Details'],['compliance','Compliance'],['vchecks','Van checks']]},
  {t:'Reports and Feedback',s:[['reports','Reports'],['feedback','Feedback']]},
 ],
  drv:[{t:'Updates',s:[['updates','Updates'],['briefs','Team brief']]},{t:'Reports',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
@@ -4554,10 +4554,10 @@ function render(){
       <div class="act dm-act1"><button type="button" class="sh-btn primary" data-dm="add"><span class="ix ix-add" aria-hidden="true"></span>Person</button></div><div class="dm-act2"><button type="button" class="sh-btn" data-dm="pdf" title="Download the driver list as a PDF">PDF</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     ${(()=>{const D=[];for(const p of Object.values(people))for(const[k,l]of EXP){const n=daysTo(p[k]);if(n!=null&&n<=RDAYS)D.push({p,k,l,n})}D.sort((a,b)=>a.n-b.n);return D.length?`<section class="card rgsoon"><h2>Expiring soon</h2>${D.map(z=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(z.p.id)}"><b>${esc(fullName(z.p))}</b><span>${esc(z.l)}${z.k==='regoDue'&&z.p.rego?' '+esc(z.p.rego):''}</span><span class="svb">${esc(expTxt(z.n,z.p[z.k]))}</span></button>`).join('')}</section>`:''})()}
-    <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
-</div>
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
     <div class="dm-bar"><div class="chips" role="group" aria-label="Show columns">${COLS.map(([k,l])=>`<button type="button" data-dm="col" data-v="${k}" aria-pressed="${shown.has(k)}">${l}</button>`).join('')}</div></div>
+    <div class="dm-bar"><input type="search" id="dm_q" class="dm-q" placeholder="Name, login, mobile, rego" value="${esc(q)}" autocomplete="off" aria-label="Search drivers">
+</div>
     ${list.length?(()=>{let n=0;const nc=4+COLS.filter(([k])=>shown.has(k)).length;return `<div class="tw"><table><thead><tr><th class="c-no">#</th><th>Name</th><th>Role</th><th>Run and bays</th>${COLS.filter(([k])=>shown.has(k)).map(([k,l])=>`<th class="h-${k}">${l}</th>`).join('')}</tr></thead><tbody>
       ${DGROUPS.map(([gk,gt])=>({gk,gt,L:list.filter(p=>dgrp(p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="${nc}" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>${L.map((p)=>{const i=n++;return `<tr class="dg-${dgrp(p.role)}" data-dm="open" data-v="${esc(p.id)}" tabindex="0"><td class="c-no num">${i+1}</td><td class="c-name"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="nm">${esc(fullName(p))}</span>${p.notes?`<span class="sub">${esc(p.notes)}</span>`:''}</td><td class="c-role">${roleTag(p.role)}</td>
       <td class="c-run num">${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${bayLine(p)?`<span class="sub">${esc(bayLine(p))}</span>`:''}</td>${optCells(p)}</tr>`}).join('')}`).join('')}
@@ -6924,7 +6924,7 @@ function render(){
   if(!render.once&&isMgr()){render.once=true;view='req'}/* managers open on the requests */
   const c=cfg(),L=lines(),n=total();
   const open=Object.values(orders).filter(o=>o.status!=='completed'),done=Object.values(orders).filter(o=>o.status==='completed');
-  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-un="view" data-v="form" aria-pressed="${view==='form'}">Order form</button><button type="button" data-un="view" data-v="req" aria-pressed="${view==='req'}">Requests${open.length?` <b class="cnt">${open.length}</b>`:''}</button><button type="button" data-un="view" data-v="done" aria-pressed="${view==='done'}">Completed${done.length?` <b class="cnt">${done.length}</b>`:''}</button></div>`:'';
+  const tabs=isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-un="view" data-v="form" aria-pressed="${view==='form'}">Order</button><button type="button" data-un="view" data-v="req" aria-pressed="${view==='req'}">Requests${open.length?` <b class="cnt">${open.length}</b>`:''}</button><button type="button" data-un="view" data-v="done" aria-pressed="${view==='done'}">Completed${done.length?` <b class="cnt">${done.length}</b>`:''}</button></div>`:'';
   const head=`<div class="head"><h1>Uniform Orders</h1>${isMgr()?'<div class="act"><button type="button" class="sh-btn" data-un="edit">Order settings</button><button type="button" class="sh-btn" data-un="pdf"><span class="ix ix-print" aria-hidden="true"></span>Blank order</button></div>':''}</div>`;
   const m=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
   if(isMgr()&&view!=='form'){box.innerHTML=`<div class="unx">${head}${m}${tabs}${view==='req'?reqHTML(open):doneHTML(done)}</div>`;return}
@@ -10283,7 +10283,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010227';
+const VERSION='202611010229';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11779,6 +11779,8 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results .rb-top>div:first-child,:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-survey #v_tool>header,:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-survey #v_driverView>header{display:none!important}
 #mod-updates .mon{display:block}#mod-updates .mon>summary{display:flex;align-items:baseline;gap:12px;cursor:pointer;list-style:none;padding:10px 4px 8px;border-bottom:1.5px solid var(--sh-line);margin-bottom:10px}#mod-updates .mon>summary::-webkit-details-marker{display:none}#mod-updates .mon>summary::before{content:'\25B8';color:var(--sh-muted);display:inline-block}#mod-updates .mon[open]>summary::before{transform:rotate(90deg)}#mod-updates .mon .ml{font-family:var(--sh-display);font-size:1.35rem;font-weight:700;color:var(--sh-ink)}#mod-updates .mon .mc{color:var(--sh-muted);font-size:.86rem;font-weight:600}
 :root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-briefs .tbx>.head{margin-bottom:-14px!important;min-height:0!important}
+:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-cl{display:none!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw{display:block!important;overflow-x:auto!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw>table{display:table!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar:has(.chips){display:flex!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar .chips{display:flex!important;flex-wrap:wrap!important}
+:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-head{height:0!important;min-height:0!important;padding:0!important;border:0!important;overflow:hidden!important;margin:0 0 -14px!important}
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
