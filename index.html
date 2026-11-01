@@ -9477,13 +9477,13 @@ function drawCover(doc,cv){
   const done=cv.rows.filter(r=>r.inv),todo=cv.rows.filter(r=>!r.inv);
   let y=34;const X={n:M+2,name:M+10,no:84,st:108,ex:150,gst:172,tot:W-M-2};
   doc.setFillColor(...SOFT);doc.rect(M,y,W-2*M,7,'F');doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7.2);
-  doc.text('#',X.n,y+4.8);doc.text('DRIVER',X.name,y+4.8);doc.text('INVOICE NO.',X.no,y+4.8);doc.text('STATUS',X.st,y+4.8);doc.text('EX GST',X.ex,y+4.8,{align:'right'});doc.text('GST',X.gst,y+4.8,{align:'right'});doc.text('TOTAL',X.tot,y+4.8,{align:'right'});y+=7;
-  doc.setFont('helvetica','normal');doc.setFontSize(8.8);let sub=0,gst=0,tot=0;
-  done.forEach((r,i)=>{if(y>262){doc.addPage();y=20}const T=r.inv.T;doc.setTextColor(...INK);doc.text(String(i+1),X.n,y+4.2);doc.text(doc.splitTextToSize(r.name,X.no-X.name-3)[0],X.name,y+4.2);doc.text(String(r.inv.no||''),X.no,y+4.2);doc.text(STAT[r.inv.status]||'Submitted',X.st,y+4.2);
+  doc.text('#',X.n,y+4.8);doc.text('DRIVER',X.name,y+4.8);doc.text('INVOICE NO.',X.no,y+4.8);doc.text('PARCELS',X.st+18,y+4.8,{align:'right'});doc.text('EX GST',X.ex,y+4.8,{align:'right'});doc.text('GST',X.gst,y+4.8,{align:'right'});doc.text('TOTAL',X.tot,y+4.8,{align:'right'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.8);let sub=0,gst=0,tot=0,pcs=0;
+  done.forEach((r,i)=>{if(y>262){doc.addPage();y=20}const T=r.inv.T;doc.setTextColor(...INK);doc.text(String(i+1),X.n,y+4.2);doc.text(doc.splitTextToSize(r.name,X.no-X.name-3)[0],X.name,y+4.2);doc.text(String(r.inv.no||''),X.no,y+4.2);{const T0=r.inv.T||{};let pc=(+T0.l1||0)+(+T0.l2||0)+(+T0.xp||0);if(!pc)pc=(r.inv.rows||[]).reduce((t,x)=>t+(x.t==='h'||x.t==='d'?0:(+x.pc||0)),0);pcs+=pc;doc.text(pc?Math.round(pc).toLocaleString('en-AU'):'',X.st+18,y+4.2,{align:'right'})}
     doc.text(money(T.sub),X.ex,y+4.2,{align:'right'});doc.text(T.gst?money(T.gst):'',X.gst,y+4.2,{align:'right'});doc.text(money(T.total),X.tot,y+4.2,{align:'right'});sub+=T.sub;gst+=T.gst;tot+=T.total;
     doc.setDrawColor(...LINE);doc.setLineWidth(.15);doc.line(M,y+6.2,W-M,y+6.2);y+=6.2});
   y+=3;doc.setFillColor(...NAVY);doc.rect(M,y,W-2*M,8,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(9.2);
-  doc.text(done.length+' invoice'+(done.length===1?'':'s'),X.name,y+5.4);doc.text(money(sub),X.ex,y+5.4,{align:'right'});doc.text(money(gst),X.gst,y+5.4,{align:'right'});doc.text(money(tot),X.tot,y+5.4,{align:'right'});y+=16;
+  doc.text(done.length+' invoice'+(done.length===1?'':'s'),X.name,y+5.4);if(pcs)doc.text(Math.round(pcs).toLocaleString('en-AU'),X.st+18,y+5.4,{align:'right'});doc.text(money(sub),X.ex,y+5.4,{align:'right'});doc.text(money(gst),X.gst,y+5.4,{align:'right'});doc.text(money(tot),X.tot,y+5.4,{align:'right'});y+=16;
   if(todo.length){doc.setTextColor(...MUT);doc.setFont('helvetica','bold');doc.setFontSize(7.2);doc.text('NOT SUBMITTED YET ('+todo.length+')',M,y);y+=4.5;doc.setFont('helvetica','normal');doc.setFontSize(8.4);doc.setTextColor(...INK);
     const L=doc.splitTextToSize(todo.map(r=>r.name).join(',  '),W-2*M);doc.text(L.slice(0,Math.max(1,Math.floor((282-y)/3.8))),M,y)}
   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUT);doc.text('Printed '+nice(TODAY)+'. Each invoice follows on its own page.',M,290)}
@@ -9643,16 +9643,21 @@ function ckItem(v){const id=v.sid,pay=payOf(id,v),a=v.from,b=v.to||v.from,st=stD
   const g=v.gst!==undefined?!!v.gst:(cfgs[id]&&cfgs[id].gst!==undefined?!!cfgs[id].gst:!!(mes[id]&&mes[id].gst));
   let sub,gst,tot;if(!v.ext&&v.T){sub=num(v.T.sub);gst=num(v.T.gst);tot=num(v.T.total)}else{sub=v.sub!=null?num(v.sub):null;gst=sub!=null&&g?Math.round(sub*10)/100:0;tot=sub!=null?Math.round((sub+gst)*100)/100:null}
   return{id,pay,days,T,cmp,diff,ok,g,sub,gst,tot,st}}
-function listHTML(){const C=ckData(),{P2}=C,L=C.L.filter(v=>!v.ext&&v.rows&&v.T).sort((a,b)=>String((staff[a.sid]&&nameOf(staff[a.sid]))||a.name).localeCompare(String((staff[b.sid]&&nameOf(staff[b.sid]))||b.name)));
+function listHTML(){const C=ckData(),{P2}=C,ALL=C.L.filter(v=>!v.ext&&v.rows&&v.T).sort((a,b)=>String((staff[a.sid]&&nameOf(staff[a.sid]))||a.name).localeCompare(String((staff[b.sid]&&nameOf(staff[b.sid]))||b.name)));
+  /* the office ticks each invoice Done once printed and dealt with; it moves to the Done list for that pay period */
+  const L=ALL.filter(v=>!v.officeDone),DN=ALL.filter(v=>v.officeDone);
+  const nm=v=>esc((staff[v.sid]&&nameOf(staff[v.sid]))||v.name);
+  const row=(v,dn)=>`<div class="sv-r ${dn?'ivdn':'got'}"><div class="nm"><b>${nm(v)}</b><small>No. ${esc(v.no||'')} · ${esc(short(v.from))} to ${esc(short(v.to||v.from))} · <b>${money(v.T.total)}</b>${dn?' · done '+esc(short(window.__qISO(new Date(v.officeDone)))):''}</small></div>
+        <div class="bt"><button type="button" class="sh-btn" data-im="lpdf" data-v="${esc(v.id)}" aria-label="Print" title="Print"><span class="ix ix-print" aria-hidden="true"></span></button>${dn?`<button type="button" class="sh-btn" data-im="lundo" data-v="${esc(v.id)}">Undo</button>`:`<button type="button" class="sh-btn" data-im="lopen" data-v="${esc(v.id)}">Edit</button><button type="button" class="sh-btn primary ivdone" data-im="ldone" data-v="${esc(v.id)}">Done</button>`}</div></div>`;
   return `<section class="card im ivk"><h2>Submitted invoices</h2>
    <div class="row"><label class="f grow"><span>Pay period</span><select id="im_lper">${P2.map(f=>`<option value="${f}" ${f===lper?'selected':''}>${esc(nice(f))} to ${esc(nice(add(f,25)))}${f===period(0)[0]?' (this period)':f===period(-1)[0]?' (last period)':''}</option>`).join('')}</select></label></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-   <div class="sv-top"><p class="ck-prog"><b>${L.length}</b> invoice${L.length===1?'':'s'} sent in the app</p>
+   <div class="sv-top"><p class="ck-prog"><b>${L.length}</b> to do${DN.length?` · ${DN.length} done`:''}</p>
      <button type="button" class="sh-btn primary" data-im="pall" ${L.length&&!busy?'':'disabled'}><span class="ix ix-print" aria-hidden="true"></span>All (${L.length})</button></div>
-   <div class="sv-list">${L.map(v=>`<div class="sv-r got"><div class="nm"><b>${esc((staff[v.sid]&&nameOf(staff[v.sid]))||v.name)}</b><small>No. ${esc(v.no||'')} · ${esc(short(v.from))} to ${esc(short(v.to||v.from))} · <b>${money(v.T.total)}</b></small></div>
-        <div class="bt"><button type="button" class="sh-btn" data-im="lpdf" data-v="${esc(v.id)}" aria-label="Print" title="Print"><span class="ix ix-print" aria-hidden="true"></span></button><button type="button" class="sh-btn" data-im="lopen" data-v="${esc(v.id)}">Edit</button></div></div>`).join('')||'<p class="sub">No invoices sent in the app for this pay period yet.</p>'}</div>
+   <div class="sv-list">${L.map(v=>row(v,false)).join('')||`<p class="sub">${ALL.length?'All done for this pay period.':'No invoices sent in the app for this pay period yet.'}</p>`}</div>
+   ${DN.length?`<h3 class="ivdn-h">Done (${DN.length})</h3><div class="sv-list">${DN.map(v=>row(v,true)).join('')}</div>`:''}
    </section>`}
-async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>cycleOf(x)===lper).map(([id,x])=>({id,...x})).filter(x=>x.rows&&x.T).sort((a,b)=>a.name.localeCompare(b.name));
+async function printAll(btn){const L=Object.entries(logs).filter(([,x])=>cycleOf(x)===lper).map(([id,x])=>({id,...x})).filter(x=>x.rows&&x.T&&!x.officeDone).sort((a,b)=>a.name.localeCompare(b.name));
   const D=driversList();for(const x of L)if(!D.some(d=>d.id===x.sid))D.push({id:x.sid,name:x.name});const cover={from:lper,to:add(lper,25),rows:D.map(d=>({name:d.name,inv:L.find(x=>x.sid===d.id)||null}))};
   busy=true;msg={t:'Making '+L.length+' invoices…'};paint();
   try{const blob=await pdfOf(L,cover);await save(blob,`Driver invoices ${lper} to ${add(lper,25)}.pdf`);msg={t:'Saved. The summary page is first, then each invoice.'}}catch(e){msg={err:true,t:'Could not make the PDF. Check your connection and try again.'}}
@@ -9743,6 +9748,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='lpdf'&&logs[v]){dlOne({...logs[v]},'pdf',el);return}
   if(a==='lxls'&&logs[v]){dlOne({...logs[v]},'xlsx',el);return}
   if(a==='lopen'){openLog(v);return}
+  if((a==='ldone'||a==='lundo')&&logs[v]){const up={officeDone:a==='ldone'?new Date().toISOString():''};const keep=logs[v].officeDone;logs[v]={...logs[v],...up};msg={t:a==='ldone'?'Moved to Done.':'Back in the to do list.'};paint();
+    try{await db.doc('invlog/'+v).update(up)}catch(x){logs[v]={...logs[v],officeDone:keep};msg={err:true,t:'Could not save just now.'};paint()}return}
   if(a==='lmake'){msg=null;from=lper;to=add(lper,25);invDate=TODAY;pick(v);setView('make');return}
   if(a==='ckstep'){ckStep=v;msg=null;paint();window.scrollTo(0,0);return}
   if(a==='ckprev'||a==='cknext'){const C=ckData(),T=C.L.filter(x=>!x.ext&&!C.done(x)),i=T.findIndex(x=>x.id===ckCur);const n=T[a==='ckprev'?i-1:i+1];if(n){ckCur=n.id;paint()}return}
@@ -10383,7 +10390,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021040';
+const VERSION='202611021050';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12035,6 +12042,7 @@ window.__officePing=(kind,o,fromUV)=>{let P=window.PUSH;let uv=!!fromUV;try{if(w
 (()=>{const st=document.createElement('style');st.textContent='.ah-frow .ah-fw{position:relative;flex:1;min-width:0;display:flex}.ah-frow .ah-fw .ah-fq{flex:1;min-width:0;width:100%;padding-right:52px!important}#ah_fq::-webkit-search-cancel-button{-webkit-appearance:none;display:none}.ah-fx{all:unset;position:absolute;right:9px;top:calc(50% + 1px);transform:translateY(-50%);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;font-size:18px;font-weight:800;color:#fff;background:rgba(127,127,127,.55)}.ah-fx[hidden]{display:none}.ah-frow{align-items:center}';(document.head||document.documentElement).appendChild(st);
   document.addEventListener('input',e=>{if(e.target&&e.target.id==='ah_fq'){const x=e.target.parentNode&&e.target.parentNode.querySelector('.ah-fx');if(x)x.hidden=!e.target.value}},true);
   document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('.ah-fx');if(!x)return;const q=x.parentNode.querySelector('#ah_fq');if(!q)return;q.value='';q.dispatchEvent(new Event('input',{bubbles:true}));x.hidden=true;q.blur();e.preventDefault()})})();
+(()=>{const st=document.createElement('style');st.textContent='.ivk .ivdn-h{margin:18px 0 8px;font-size:1rem;color:var(--sh-muted)}.ivk .sv-r.ivdn{opacity:.75}.ivk .sv-r.ivdn .nm small{color:var(--sh-muted)}.ivk .sv-r .bt .ivdone{background:#1E8A4C!important;border-color:#1E8A4C!important;color:#fff!important}';(document.head||document.documentElement).appendChild(st)})();
 /* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
 (()=>{
 const QLD=36e6;
