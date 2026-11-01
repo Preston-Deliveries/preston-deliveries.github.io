@@ -28,8 +28,20 @@ const KINDS = {
   enquiry:  { who: 'admin',  to: 'login',  title: 'New customer enquiry', body: 'There is a new customer enquiry about one of your deliveries. Tap to view.', url: '' },
   report:   { who: 'member', to: 'admins', title: 'New report', body: 'A driver has sent a report. Tap to view.', url: '#reports' },
   feedback: { who: 'member', to: 'admins', title: 'New feedback', body: 'A driver has sent feedback. Tap to view.', url: '#feedback' },
-  uniform:  { who: 'member', to: 'admins', title: 'New uniform order', body: 'A driver has ordered uniform. Tap to view.', url: '#uniform' }
+  uniform:  { who: 'member', to: 'admins', title: 'New uniform order', body: 'A driver has ordered uniform. Tap to view.', url: '#uniform' },
+  leave:    { who: 'member', to: 'admins', title: 'Day off request', body: 'A driver has asked for time off. Tap to view.', url: '#leave' },
+  invoice:  { who: 'member', to: 'admins', title: 'New invoice', body: 'A driver has submitted an invoice. Tap to view.', url: '#invoices' }
 };
+/* what each driver message says when we know who sent it (drivers can never write the words themselves) */
+const WHO_SAYS = {
+  report: n => n + ' has sent a report. Tap to view.',
+  feedback: n => n + ' has sent feedback. Tap to view.',
+  uniform: n => n + ' has ordered uniform. Tap to view.',
+  leave: n => n + ' has asked for time off. Tap to view.',
+  invoice: n => n + ' has submitted an invoice. Tap to view.'
+};
+const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const niceDay = s => { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(s || ''))) return ''; const d = new Date(s + 'T12:00:00Z'); return DN[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MN[d.getUTCMonth()]; };
 
 export default {
   async scheduled(event, env, ctx) { ctx.waitUntil(runScheduled(env)); },
@@ -60,6 +72,7 @@ export default {
       if (!K) return out({ error: 'Unknown notification type' }, 400);
 
       /* who is sending */
+      const acc = OWNERS.includes(me.email) ? null : await getDoc('access/' + encodeURIComponent(me.email), idToken).catch(() => null);
       const role = await roleOf(me.email, idToken);
       if (!role) return out({ error: 'No access' }, 403);
       if (K.who === 'admin' && role !== 'admin') return out({ error: 'Admins only' }, 403);
@@ -68,10 +81,15 @@ export default {
       const cfg = await getDoc('pushcfg/main', idToken).catch(() => null) || {};
       if (cfg.off && cfg.off.includes(b.kind)) return out({ ok: true, sent: 0, skipped: 'This type is switched off' });
       const safety = b.kind === 'urgent' && b.safety === true;
-      if (!safety && b.kind !== 'test' && inQuietHours(cfg)) return out({ ok: true, sent: 0, skipped: 'Quiet hours' });
+      /* quiet hours only hold back messages going to drivers; messages to the office always go straight away */
+      if (!safety && b.kind !== 'test' && K.to !== 'admins' && inQuietHours(cfg)) return out({ ok: true, sent: 0, skipped: 'Quiet hours' });
 
       /* the message: drivers can never set the words themselves */
-      const msg = K.title ? { title: K.title, body: K.body, url: K.url }
+      const nm = clip(acc && acc.name, 40);
+      let mb = K.body;
+      if (nm && WHO_SAYS[b.kind]) mb = WHO_SAYS[b.kind](nm);
+      if (b.kind === 'leave' && niceDay(b.from)) { const f = niceDay(b.from), t = niceDay(b.to); mb = (nm || 'A driver') + ' has asked for ' + (t && t !== f ? f + ' to ' + t : f) + ' off. Tap to view.'; }
+      const msg = K.title ? { title: K.title, body: mb, url: K.url }
         : { title: clip(b.title, 60) || 'Preston Delivery Service', body: clip(b.body, 180), url: safeUrl(b.url) };
       if (!msg.body) return out({ error: 'Message is empty' }, 400);
 
