@@ -37,6 +37,8 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 <style id="pg-help">#sh-main .sh-sec p.pgh{font-size:.88rem;line-height:1.45;color:var(--sh-muted);margin:16px 2px 6px;max-width:900px;flex-basis:100%;width:auto}#sh-main .sh-sec p.pgh.pgg{margin-left:16px;margin-right:16px}.sh-side .sb-ver{display:none}@media (min-width:900px){.sh-side .sb-ver{display:block!important;align-self:flex-end!important;margin:-36px 14px 0 0!important;font:600 .74rem "Barlow",system-ui,sans-serif;color:rgba(255,255,255,.5);pointer-events:none}}.set-ver{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center;gap:8px 12px;margin:10px 0 4px;font-size:.92rem;color:var(--sh-muted)}.set-ver b{color:var(--sh-ink)}.set-ver small{flex-basis:100%}.set-ver small:empty{display:none}#sh-main .appver.avg{margin-left:16px;margin-right:16px}#sh-main .appver{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:18px 2px 8px;font-size:.88rem;color:var(--sh-muted)}#sh-main .appver b{color:inherit;font-weight:600}#sh-main .appver{justify-content:center}#sh-main .appver small{flex-basis:100%;font-size:.84rem}#sh-main .appver small:empty{display:none}
 .sh-side .sb-ver{margin:8px 10px 4px;font:600 .74rem "Barlow",system-ui,sans-serif;color:rgba(255,255,255,.55);line-height:1.5}.sh-side .sb-ver b{color:rgba(255,255,255,.85)}.sh-side .sb-ver button{all:unset;cursor:pointer;text-decoration:underline;color:rgba(255,255,255,.7)}.sh-side .sb-ver small{display:block;color:rgba(255,255,255,.7)}.sh-side .sb-ver small:empty{display:none}
 #mod-staff .c-app{white-space:nowrap}
+#mod-invoices .iv-del{justify-content:center;color:#B91C1C}
+@media (max-width:600px){#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn{min-width:0!important;padding-left:6px!important;padding-right:6px!important}#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:has(.ix-print),#sh-main #mod-invoices .ivk .sv-r .bt .iv-del{flex:0 0 42px!important}#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:not(.iv-del):not(:has(.ix-print)) .ix,#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:not(.iv-del):not(:has(.ix-print))::before{display:none!important}#sh-main #mod-invoices .ivk .iv-tabs .iv-t{display:inline-flex!important;flex-wrap:nowrap!important;align-items:center;justify-content:center;gap:4px;white-space:nowrap!important;padding-left:4px!important;padding-right:4px!important;min-width:0}}
 #mod-staff .av-ok{color:#15803D;font-weight:700}#mod-staff .av-old{color:#C2410C;font-weight:700}#mod-staff .av-none{color:var(--sh-muted)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .av-ok{color:#4ADE80}:root:not([data-theme=light]) #mod-staff .av-old{color:#FB923C}}:root[data-theme=dark] #mod-staff .av-ok{color:#4ADE80}:root[data-theme=dark] #mod-staff .av-old{color:#FB923C}</style>
 </head>
@@ -9689,18 +9691,18 @@ function ckItem(v){const id=v.sid,pay=payOf(id,v),a=v.from,b=v.to||v.from,st=stD
   const g=v.gst!==undefined?!!v.gst:(cfgs[id]&&cfgs[id].gst!==undefined?!!cfgs[id].gst:!!(mes[id]&&mes[id].gst));
   let sub,gst,tot;if(!v.ext&&v.T){sub=num(v.T.sub);gst=num(v.T.gst);tot=num(v.T.total)}else{sub=v.sub!=null?num(v.sub):null;gst=sub!=null&&g?Math.round(sub*10)/100:0;tot=sub!=null?Math.round((sub+gst)*100)/100:null}
   return{id,pay,days,T,cmp,diff,ok,g,sub,gst,tot,st}}
-let IVTAB='td';const IVOPEN={};document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.ivg)IVOPEN[d.dataset.ivg]=d.open},true);
+let IVTAB='td',IVDEL=null,IVLAST=null;const IVOPEN={};document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.ivg)IVOPEN[d.dataset.ivg]=d.open},true);
 function listHTML(){const C=ckData(),{P2}=C,ALL=C.L.filter(v=>!v.ext&&v.rows&&v.T).sort((a,b)=>String((staff[a.sid]&&nameOf(staff[a.sid]))||a.name).localeCompare(String((staff[b.sid]&&nameOf(staff[b.sid]))||b.name)));
   /* the office works through each invoice: Check (something to look into, yellow) or Done (green); Undo puts it back */
   const L=ALL.filter(v=>!v.officeDone&&!v.officeCheck),CK=ALL.filter(v=>!v.officeDone&&v.officeCheck),DN=ALL.filter(v=>v.officeDone);
   const nm=v=>esc((staff[v.sid]&&nameOf(staff[v.sid]))||v.name);
   const when=x=>esc(short(window.__qISO(new Date(x))));
   const row=(v,k)=>`<div class="sv-r iv-${k}"><div class="nm"><b>${nm(v)}</b><small>No. ${esc(v.no||'')} · ${esc(short(v.from))} to ${esc(short(v.to||v.from))} · <b>${money(v.T.total)}</b>${k==='dn'?' · done '+when(v.officeDone):k==='ck'?' · to check since '+when(v.officeCheck):''}</small></div>
-        <div class="bt"><button type="button" class="sh-btn" data-im="lpdf" data-v="${esc(v.id)}" aria-label="Print" title="Print"><span class="ix ix-print" aria-hidden="true"></span></button>${k==='dn'?`<button type="button" class="sh-btn" data-im="lundo" data-v="${esc(v.id)}">Undo</button>`:`<button type="button" class="sh-btn" data-im="lopen" data-v="${esc(v.id)}">Edit</button>${k==='ck'?`<button type="button" class="sh-btn" data-im="lunck" data-v="${esc(v.id)}">Undo</button>`:`<button type="button" class="sh-btn iv-ckb" data-im="lcheck" data-v="${esc(v.id)}">Check</button>`}<button type="button" class="sh-btn iv-dnb" data-im="ldone" data-v="${esc(v.id)}">Done</button>`}</div></div>`;
+        <div class="bt"><button type="button" class="sh-btn" data-im="lpdf" data-v="${esc(v.id)}" aria-label="Print" title="Print"><span class="ix ix-print" aria-hidden="true"></span></button>${k==='dn'?`<button type="button" class="sh-btn" data-im="lundo" data-v="${esc(v.id)}">Undo</button>`:`<button type="button" class="sh-btn" data-im="lopen" data-v="${esc(v.id)}">Edit</button>${k==='ck'?`<button type="button" class="sh-btn" data-im="lunck" data-v="${esc(v.id)}">Undo</button>`:`<button type="button" class="sh-btn iv-ckb" data-im="lcheck" data-v="${esc(v.id)}">Check</button>`}<button type="button" class="sh-btn iv-dnb" data-im="ldone" data-v="${esc(v.id)}">Done</button>`}${IVDEL===v.id?`<button type="button" class="sh-btn danger" data-im="ldelok" data-v="${esc(v.id)}">Delete</button><button type="button" class="sh-btn" data-im="ldelno">Keep</button>`:`<button type="button" class="sh-btn ghost iv-del" data-im="ldel" data-v="${esc(v.id)}" aria-label="Delete this invoice" title="Delete this invoice"><span class="ix ix-del" aria-hidden="true"></span></button>`}</div></div>`;
   const grp=(k,t,list)=>list.length?`<details class="iv-grp iv-g${k}" data-ivg="${k}" ${IVOPEN[k]!==false?'open':''}><summary><b>${t} (${list.length})</b><span class="iv-ch" aria-hidden="true">▾</span></summary><div class="sv-list">${list.map(v=>row(v,k)).join('')}</div></details>`:'';
   return `<section class="card im ivk"><h2>Submitted invoices</h2>
    <div class="row"><label class="f grow"><span>Pay period</span><select id="im_lper">${P2.map(f=>`<option value="${f}" ${f===lper?'selected':''}>${esc(nice(f))} to ${esc(nice(add(f,25)))}${f===period(0)[0]?' (this period)':f===period(-1)[0]?' (last period)':''}</option>`).join('')}</select></label></div>
-   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.undo&&IVLAST?' <button type="button" class="sh-btn sm" data-im="ldelundo">Undo</button>':''}</p>`:''}
    <div class="iv-tabs" role="group" aria-label="Show">${[['td','To do',L.length],['ck','Check',CK.length],['dn','Done',DN.length]].map(([k,t,n])=>`<button type="button" class="iv-t iv-t${k}" data-im="ivtab" data-v="${k}" aria-pressed="${IVTAB===k}">${t} <span>${n}</span></button>`).join('')}</div>
    ${(()=>{const LS=IVTAB==='ck'?CK:IVTAB==='dn'?DN:L;return `<div class="sv-top"><p class="ck-prog"><b>${LS.length}</b> ${IVTAB==='ck'?'to check':IVTAB==='dn'?'done':'to do'}</p>
      <button type="button" class="sh-btn primary" data-im="pall" ${LS.length&&!busy?'':'disabled'}><span class="ix ix-print" aria-hidden="true"></span>All (${LS.length})</button></div>
@@ -9797,7 +9799,13 @@ document.addEventListener('click',async e=>{const el=e.target.closest('[data-im]
   if(a==='lpdf'&&logs[v]){dlOne({...logs[v]},'pdf',el);return}
   if(a==='lxls'&&logs[v]){dlOne({...logs[v]},'xlsx',el);return}
   if(a==='lopen'){openLog(v);return}
-  if(a==='ivtab'){IVTAB=v;msg=null;paint();return}
+  if(a==='ivtab'){IVTAB=v;msg=null;IVDEL=null;paint();return}
+  if(a==='ldel'){IVDEL=v;paint();return}
+  if(a==='ldelno'){IVDEL=null;paint();return}
+  if(a==='ldelok'&&logs[v]){IVDEL=null;const old={...logs[v]};IVLAST={id:v,doc:old};delete logs[v];msg={t:'Invoice deleted.',undo:true};paint();
+    try{await db.doc('invlog/'+v).delete()}catch(x){logs[v]=old;IVLAST=null;msg={err:true,t:'Could not delete just now. Check your connection.'};paint()}return}
+  if(a==='ldelundo'&&IVLAST){const L=IVLAST;IVLAST=null;logs[L.id]=L.doc;msg={t:'Invoice put back.'};paint();
+    try{await db.doc('invlog/'+L.id).set(L.doc)}catch(x){delete logs[L.id];msg={err:true,t:'Could not put it back just now.'};paint()}return}
   if(['ldone','lundo','lcheck','lunck'].includes(a)&&logs[v]){const now=new Date().toISOString();
     const up=a==='ldone'?{officeDone:now,officeCheck:''}:a==='lcheck'?{officeCheck:now,officeDone:''}:a==='lunck'?{officeCheck:''}:{officeDone:'',officeCheck:''};
     const keep={officeDone:logs[v].officeDone||'',officeCheck:logs[v].officeCheck||''};logs[v]={...logs[v],...up};
@@ -10443,7 +10451,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611020937';
+const VERSION='1202611020952';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
