@@ -3206,7 +3206,7 @@ function rtBody(box){
   const tb=box.querySelector("table");tb.querySelectorAll("tbody").forEach(b=>b.remove());const cols=tb.tHead.rows[0].cells.length;
   tb.insertAdjacentHTML("beforeend",`<tbody>${F.length?F.map(r=>rowHTML(r,multi)).join(""):`<tr><td colspan="${cols}" class="none">No drivers match these filters.</td></tr>`}</tbody>`);
   const busy=RT.q||RT.grp!=="all";
-  box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-rt="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
+  box.querySelector(".rt-n").innerHTML=`${rows.some(r=>r.me)?' <button type="button" data-rt="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-rs]").forEach(b=>{const on=b.dataset.rs===RT.sort;b.closest("th").setAttribute("aria-sort",on?(RT.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(RT.dir===1?"▲":"▼"):""});
   box.querySelectorAll("[data-rg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rg===RT.grp)));
   box.querySelectorAll("[data-rf]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rf===RT.st)));
@@ -3859,7 +3859,7 @@ function svBody(box){
    const mx=box.querySelector(".sv-mix");if(mx)mx.innerHTML=`<span class="p" style="width:${N?100*P/N:0}%"></span><span class="m" style="width:${N?100*M/N:0}%"></span><span class="d" style="width:${N?100*X/N:0}%"></span>`}
   box.querySelector("tbody").innerHTML=F.length?F.map(svRowHTML).join(""):`<tr><td colspan="4" class="none">No drivers match.</td></tr>`;
   const busy=SV.q||SV.grp!=="all";
-  box.querySelector(".rt-n").innerHTML=`Showing <b>${F.length}</b> of ${rows.length} driver${rows.length===1?"":"s"}${busy?' <button type="button" data-sv="clear">Clear filters</button>':""}${rows.some(r=>r.me)?' <button type="button" data-sv="find">Find me</button>':""}`;
+  box.querySelector(".rt-n").innerHTML=`${rows.some(r=>r.me)?' <button type="button" data-sv="find">Find me</button>':""}`;
   box.querySelectorAll("thead [data-ss]").forEach(b=>{const on=b.dataset.ss===SV.sort;b.closest("th").setAttribute("aria-sort",on?(SV.dir===1?"ascending":"descending"):"none");b.querySelector("i").textContent=on?(SV.dir===1?"▲":"▼"):""});
   box.querySelectorAll("[data-sg]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.sg===SV.grp)));const psel=box.querySelector("[data-sv=pc]");if(psel)psel.value=SV.grp;
   const so=box.querySelector("[data-sv=sort]");if(so)so.value=SV.sort;
@@ -10283,7 +10283,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010229';
+const VERSION='202611010230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11781,6 +11781,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-briefs .tbx>.head{margin-bottom:-14px!important;min-height:0!important}
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-cl{display:none!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw{display:block!important;overflow-x:auto!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw>table{display:table!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar:has(.chips){display:flex!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar .chips{display:flex!important;flex-wrap:wrap!important}
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-head{height:0!important;min-height:0!important;padding:0!important;border:0!important;overflow:hidden!important;margin:0 0 -14px!important}
+:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rt-n:empty{display:none!important}
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
