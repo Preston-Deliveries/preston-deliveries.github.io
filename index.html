@@ -1298,7 +1298,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-sh]');if(!
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings()});
 document.addEventListener('click',e=>{if(e.target.closest('#sh-set [data-nav]'))setTimeout(closeSettings,0)});
 function appCard(){return `<div class="dh-cards am-app"><section class="dh-card ah-link"><h2>Drivers’ app</h2><p>Send drivers your latest changes.</p>
-    <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
+    <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button><p class="sh-sendwhat" style="margin:8px 0 0;font-size:.85rem;color:var(--sh-muted);line-height:1.4">Sends: run and sort sheets, driver results, NPS, leave calendar, precards, lockers and contacts. Updates, briefs, alerts and tasks go out by themselves.</p>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section></div>`}
 function msgRender(){if(cur==='menu')renderMenu();else renderHome()}
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
@@ -10383,7 +10383,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611021010';
+const VERSION='202611021015';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11949,7 +11949,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 (()=>{const add=()=>{const side=document.querySelector('.sh-side');const out=side&&side.querySelector('.web-out');if(!out)return;
   const me=window.__webMe;if(!me||me.role!=='admin'){const x=side.querySelector('.sb-acts');if(x)x.remove();return}
   let box=side.querySelector('.sb-acts');if(box&&box.nextElementSibling===out)return;if(!box){box=document.createElement('div');box.className='sb-acts';
-   box.innerHTML='<button type="button" class="sb-send ix-send" data-sh="shareAll">Send latest to drivers</button>'+(window.__backup?'<button type="button" class="sb-bk ix-dl" data-sh="backup">Download backup</button>':'')}
+   box.innerHTML='<button type="button" class="sb-send ix-send" data-sh="shareAll">Send latest to drivers</button><p class="sb-sendwhat" style="margin:2px 2px 8px;font-size:.72rem;line-height:1.35;color:rgba(255,255,255,.6)">Run sheets, results, NPS, leave, precards, lockers and contacts</p>'+(window.__backup?'<button type="button" class="sb-bk ix-dl" data-sh="backup">Download backup</button>':'')}
   out.parentNode.insertBefore(box,out)};
  const go=()=>{add();new MutationObserver(()=>{const s=document.querySelector('.sh-side');if(s&&s.querySelector('.web-out')&&!s.querySelector('.sb-acts'))add()}).observe(document.body,{childList:true,subtree:true})};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();})();
