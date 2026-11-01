@@ -548,7 +548,7 @@ const RULES=[
  [/^2 hr ETA below target: (\S+) \(target (\S+)\)\.$/,m=>'ETA 2 h abaixo da meta: '+m[1]+' (meta '+m[2]+').',m=>'2 ਘੰਟੇ ETA ਟੀਚੇ ਤੋਂ ਘੱਟ: '+m[1]+' (ਟੀਚਾ '+m[2]+')।'],
  [/^2 hr ETA on target: (\S+)\.$/,m=>'ETA 2 h na meta: '+m[1]+'.',m=>'2 ਘੰਟੇ ETA ਟੀਚੇ ਤੇ: '+m[1]+'।'],
  [/^Too many at fault enquiries: (\S+) per 1k parcels \((\d+) in total\)\.$/,m=>'Muitas reclamações com culpa: '+m[1]+' por mil pacotes ('+m[2]+' no total).',m=>'ਬਹੁਤ ਗ਼ਲਤੀ ਵਾਲੀਆਂ ਸ਼ਿਕਾਇਤਾਂ: ਹਰ 1000 ਪਾਰਸਲਾਂ ਵਿੱਚ '+m[1]+' (ਕੁੱਲ '+m[2]+')।'],
- [/^First time delivery on target: (\S+)\.$/,m=>'Entrega na primeira tentativa na meta: '+m[1]+'.',m=>'ਪਹਿਲੀ ਵਾਰ ਡਿਲੀਵਰੀ ਟੀਚੇ ਤੇ: '+m[1]+'।'],
+ [/^FTD on target: (\S+)\.$/,m=>'Entrega na primeira tentativa na meta: '+m[1]+'.',m=>'ਪਹਿਲੀ ਵਾਰ ਡਿਲੀਵਰੀ ਟੀਚੇ ਤੇ: '+m[1]+'।'],
  [/^Scan compliance on target: (\S+)\.$/,m=>'Escaneamento na meta: '+m[1]+'.',m=>'ਸਕੈਨ ਪਾਲਣਾ ਟੀਚੇ ਤੇ: '+m[1]+'।'],
  [/^Customers are happy: NPS score (\S+)\.$/,m=>'Clientes satisfeitos: nota da pesquisa '+m[1]+'.',m=>'ਗਾਹਕ ਖ਼ੁਸ਼ ਹਨ: ਸਰਵੇਖਣ ਸਕੋਰ '+m[1]+'।'],
  [/^Best 2 hr ETA: (\S+) \((\S+)\)\.$/,m=>'Melhor ETA 2 h: '+m[1]+' ('+m[2]+').',m=>'ਸਭ ਤੋਂ ਵਧੀਆ 2 ਘੰਟੇ ETA: '+m[1]+' ('+m[2]+')।'],
@@ -688,7 +688,7 @@ window.__uvSubs=[];
      2 hr ETA: 1 point for every 1% below 100%. At most 30 a day.
      Scan compliance: 1 point for every 0.5% below 100%. At most 10 a day.
    A week or month is the average of the days worked. A 0 or blank figure is an error and is skipped.
-   First time delivery and the survey are shown but never scored. */
+   FTD and the survey are shown but never scored. */
 window.SCORE=(()=>{
   const num=v=>v==null||v===''||isNaN(+v)?null:+v;
   const frac=v=>{v=num(v);if(v==null||v===0)return null;return v>1.0001?v/100:v};
@@ -710,7 +710,7 @@ window.SCORE=(()=>{
   const RULES=[['Enquiries','40 points for each at fault enquiry, 20 for partly at fault, 0 for not at fault. At most 60 a day.'],
     ['2 hr ETA','1 point for every 1% below 100%. At most 30 a day.'],
     ['Scan compliance','1 point for every 0.5% below 100%. At most 10 a day.']];
-  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the Contract Score works</summary><p>Your Contract Score: every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. <b>96 or more is green</b>: that is what you score when you hit every target (2 hr ETA 98%, scan compliance 99%, no enquiries). Under 96 is red. First time delivery and the NPS are shown, but they are not part of the score. A place on the board needs 3 days worked in a week, or 12 days in a month.</p></details>`;
+  const howHTML=(cls)=>`<details class="${cls||'sc-how'}"><summary>How the Contract Score works</summary><p>Your Contract Score: every day you work starts at <b>100</b>. You lose points for:</p><ul>${RULES.map(([a,b])=>`<li><b>${a}:</b> ${b}</li>`).join('')}</ul><p>Your week or month is the average of the days you worked. <b>96 or more is green</b>: that is what you score when you hit every target (2 hr ETA 98%, scan compliance 99%, no enquiries). Under 96 is red. FTD and the NPS are shown, but they are not part of the score. A place on the board needs 3 days worked in a week, or 12 days in a month.</p></details>`;
   return{day,period,fmt,lost,NEED,RULES,howHTML}})();
 window.__uvDb=async()=>{const d=window.claude&&window.claude.use?await window.claude.use('db'):null;if(!d)return null;
   const sub=(q,f,e)=>{const u=q.onSnapshot(x=>{try{f(x)}catch(_){}},x=>{try{e&&e(x)}catch(_){}});window.__uvSubs.push(u);return u};
@@ -3003,7 +3003,7 @@ function drawBoard(){queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
   let x=48;g.font="700 28px "+FD;
   for(const[k,lab]of items){const w=g.measureText(lab).width+84;g.fillStyle=C[k];rr(x,y,w,54,27);g.fill();g.fillStyle="#fff";g.beginPath();g.arc(x+29,y+27,18,0,7);g.fill();mark(g,k,x+29,y+27,24,C[k]);g.fillStyle="#fff";g.fillText(lab,x+56,y+37);x+=w+16}
   // columns
-  const cols=[["pc","PARCELS",""],["ftd","DELIVERED","FIRST TIME"],["eta","ON TIME","2HR ETA"],["cp","SCAN","COMPLIANCE"],["enq","ENQUIRIES","PER 1000"]];
+  const cols=[["pc","PARCELS",""],["ftd","FTD",""],["eta","ON TIME","2HR ETA"],["cp","SCAN","COMPLIANCE"],["enq","ENQUIRIES","PER 1000"]];
   const cx=[392,500,620,750,880,1004];
   y=HEAD+LEG;g.fillStyle=C.alt;g.fillRect(0,y,W,COLH);
   g.fillStyle=C.muted;g.font="700 24px "+FD;g.textAlign="left";g.fillText("DRIVER",48,y+108);
@@ -5747,7 +5747,7 @@ const rkc=r=>!r||r.rank==null?'':r.rank===1?'rk1':r.rank===2?'rk2':r.rank===3?'r
 const nrTxt=r=>r.days<r.need?`You worked ${r.days} day${r.days===1?'':'s'}. A place needs ${r.need} days${r.pn?' and '+r.pn.toLocaleString('en-AU')+' parcels':''}.`:`You delivered ${Math.round(r.pc||0).toLocaleString('en-AU')} parcels. A place needs ${(r.pn||0).toLocaleString('en-AU')}.`;
 /* the score out of 100 with the three counted parts underneath */
 function scoreHTML(x,rk,small){const S=window.SCORE;const sc=x&&x.sc;if(!sc)return '';const v=rk?rk.avg:sc.score;
-  return `<div class="sc-box${small?' sm':''}"><div class="sc-tot"><small>Contract Score</small><b class="${v>=96-1e-9?'p':'r'}">${S.fmt(v)}</b></div><div class="sc-cats"><span><small>Enquiries</small><b class="${sc.enq>0.05?'l':''}">${S.lost(sc.enq)}</b></span><span><small>2 hr ETA</small><b class="${sc.eta>0.05?'l':''}">${S.lost(sc.eta)}</b></span><span><small>Scan compliance</small><b class="${sc.scan>0.05?'l':''}">${S.lost(sc.scan)}</b></span></div>${small?'':`<p class="sc-note">Points lost a day on average. First time delivery and NPS are not part of the score.</p>`}</div>`}
+  return `<div class="sc-box${small?' sm':''}"><div class="sc-tot"><small>Contract Score</small><b class="${v>=96-1e-9?'p':'r'}">${S.fmt(v)}</b></div><div class="sc-cats"><span><small>Enquiries</small><b class="${sc.enq>0.05?'l':''}">${S.lost(sc.enq)}</b></span><span><small>2 hr ETA</small><b class="${sc.eta>0.05?'l':''}">${S.lost(sc.eta)}</b></span><span><small>Scan compliance</small><b class="${sc.scan>0.05?'l':''}">${S.lost(sc.scan)}</b></span></div>${small?'':`<p class="sc-note">Points lost a day on average. FTD and NPS are not part of the score.</p>`}</div>`}
 function statsHTML(per,x,sv,own){
   const t=targets(),sh=s=>{const d=fromIso(s);return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]+' '+d.getDate()};
   const my=[];for(const dt of per.dates){const d=data&&data.days[dt];const r=d&&myRow(d.rows);if(r)my.push({dt,...r})}
@@ -5781,7 +5781,7 @@ function statsHTML(per,x,sv,own){
   return `<section class="ms">
    <div class="ms-sec"><h3>Driver results</h3>
     ${x?[
-      row('First time delivery (FTD)',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':x.ftd>=.9995?'g gd':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
+      row('FTD',x.ftd!=null?pctf(x.ftd):'–',x.ftd==null?'':x.ftd>=.9995?'g gd':Math.round(x.ftd*1000)/10>=92?'g':'b','','92%'),
       row('2 hr ETA',pctf(x.eta)+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(metricRank(per.dates,'eta'))),etaBad.length?'b':x.eta>=.9995?'g gd':'g',ok(etaBad.length,`Under ${t.etaG}% on ${etaBad.map(r=>sh(r.dt)).join(', ')}`),t.etaG+'%'),
       row('Scan compliance',(x.cp==null?'–':pctf(x.cp))+((q=>q?` <small class="mr">${q.rank}/${q.of}</small>`:'')(x.cp==null?null:metricRank(per.dates,'nc'))),x.cp==null?'':ncDays.length?'b':x.cp>=.9995?'g gd':'g',ok(ncDays.length,`Under ${t.cpG}% on ${ncDays.map(r=>sh(r.dt)).join(', ')}`),t.cpG+'%'),
       row('Enquiries (at fault)',epkTxt(x.enqK)+` <small class="mr">${Math.round(x.enq||0)}</small>`,x.enqK===0?'g gd':x.enqK<=1+1e-9?'g':'b',ok(enqDays.length,`Per 1k parcels. On ${enqDays.map(r=>sh(r.dt)).join(', ')}`),'1 per 1k')].join('')
@@ -5876,7 +5876,7 @@ function tiles4(x,sv,withFtd){const t=targets();
     ['Scan compliance',x&&x.cp!=null?pctf(x.cp):null,x&&x.cp!=null?x.cp*100>=t.cpG-1e-9:null,'Target '+t.cpG+'%',!!(x&&x.cp!=null&&x.cp>=.9995)],
     ['Enquiries',x?String(Math.round(x.enq||0))+(x.enqP?' + '+Math.round(x.enqP)+' partly':''):null,x?((x.enq||0)+(x.enqP||0))===0:null,(x&&(x.enq||x.enqP)?(Math.round(x.enq||0)+' at fault'+(x.enqP?', '+Math.round(x.enqP)+' partly':'')+'. '):'')+'Target 0',!!(x&&!(x.enq||0)&&!(x.enqP||0))],
     ['NPS',sv&&sv.found&&sv.avg!=null?String(Math.round(sv.avg*100)/10):null,sv&&sv.found&&sv.avg!=null?sv.avg*10>=70:null,'Target 70. Not in the score',!!(sv&&sv.found&&sv.avg!=null&&sv.avg*10>=100)]];
-  if(withFtd){T.splice(4,0,['First time delivery',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%. Not in the score',!!(x&&x.ftd!=null&&x.ftd>=.9995)])}
+  if(withFtd){T.splice(4,0,['FTD',x&&x.ftd!=null?pctf(x.ftd):null,x&&x.ftd!=null?Math.round(x.ftd*1000)/10>=92:null,'Target 92%. Not in the score',!!(x&&x.ftd!=null&&x.ftd>=.9995)])}
   return T}
 /* parcels for the period: total, work days and the average a day, like the Summary page */
 function pcsHTML(x){const n=x&&x.pc!=null?+x.pc:null,d=x?x.days:0;return `<div class="dt pcs"><small>Parcels</small><b>${n==null?'–':n.toLocaleString('en-AU')}</b><span class="st">${n==null?'No results yet':Math.round(n/Math.max(1,d)).toLocaleString('en-AU')+' a day'}</span><span class="tg">${n==null?'':d+' work day'+(d===1?'':'s')}</span></div>`}
@@ -6055,7 +6055,7 @@ window.PERFUI=(()=>{
       out+=sec('now','Results',[
         row('pc','Parcels',sub(c.days?`${N(c.days)} work day${c.days===1?'':'s'} · ${N(c.perDay!=null?c.perDay:c.pc/Math.max(1,c.days))} a day${c.perDriver?' per driver':''}`:'','',dlt(c.pc,p.pc,'pc',L)),N(c.pc),'pc'),
         row('sv','NPS',c.sv==null?'No NPS scores yet · Target 70':sub(SAY[svs],'Target 70',dlt(c.sv,p.sv,'sv',L))+(c.svN?` · ${N(c.svN)} customer${c.svN===1?'':'s'}`:''),c.sv==null?'–':String(Math.round(c.sv*10)/10),svs),
-        row('ftd','First time delivery',c.ftd==null?'No result · Target 92%':sub(SAY[st('ftd',c.ftd,t)],'Target 92%',dlt(c.ftd,p.ftd,'eta',L)),P1(c.ftd),st('ftd',c.ftd,t))]);
+        row('ftd','FTD',c.ftd==null?'No result · Target 92%':sub(SAY[st('ftd',c.ftd,t)],'Target 92%',dlt(c.ftd,p.ftd,'eta',L)),P1(c.ftd),st('ftd',c.ftd,t))]);
       out+=sec('fb','What customers said',(m.said||[]).filter(x=>x&&(x.c||typeof x==='string')).slice(0,6).map(x=>{const o=typeof x==='string'?{s:null,c:x}:x,sc=o.s!=null&&!isNaN(o.s)&&o.s!==''?+o.s:null;return `<div class="pr-row pr-q"><span class="pr-rate ${sc==null?'':sc>=9?'g':sc>=7?'w':'b'}">${sc==null?'–':sc}</span><div class="pr-tx"><small>${E(String(o.c).replace(/^[“"]|[”"]$/g,''))}</small></div></div>`}));
     }
     return out+(L&&m.prev&&c?`<p class="pf-cap">▲▼ compare with ${E(L)}${m.prevPart?', the same days so far':''}.</p>`:'')+window.SCORE.howHTML('sc-how pf-how')}
@@ -7722,7 +7722,7 @@ function tiles(a,extra,pa){
   const S=window.SCORE,scv=a.days?a.sc/a.days:null,psc=pa&&pa.days?pa.sc/pa.days:null;
   const T=[['Contract Score',scv==null?'–':S.fmt(scv),a.days?`${scope.t==='drv'?'':'Average of every driver day. '}Points lost a day: enquiries ${S.lost(a.le/a.days)} · 2 hr ETA ${S.lost(a.lt/a.days)} · scan ${S.lost(a.ls/a.days)}`:'No results loaded',scv==null?'none sc':scv>=96-1e-9?'good svg sc':'bad svb sc'],
    ['Parcels',fmtN(a.pc),a.days?`${a.wdates.size} work day${a.wdates.size===1?'':'s'} · average ${fmtN(Math.round(a.pc/(scope.t==='drv'?Math.max(1,a.wdates.size):a.days)))} a day${scope.t==='drv'?'':' per driver'}`:'No results loaded',''],
-   ['First time delivery',fmtPct(ftd),'Target '+FTDG+'% · not in the score',ftd==null?'':fc(ftd)==='svgd'?'gold svgd':fc(ftd)==='svg'?'good svg':'bad svb'],
+   ['FTD',fmtPct(ftd),'Target '+FTDG+'% · not in the score',ftd==null?'':fc(ftd)==='svgd'?'gold svgd':fc(ftd)==='svg'?'good svg':'bad svb'],
    ['2HR ETA',fmtPct(eta),'Target '+targets().etaG+'%',eta==null?'none':eta>=.9995?'gold svgd':Math.round(eta*1000)/10>=targets().etaG?'good svg':'bad svb'],
    ['Scan compliance',fmtPct(pct(a.cpW,a.cpN)),'Target '+targets().cpG+'%',pct(a.cpW,a.cpN)==null?'none':pct(a.cpW,a.cpN)>=.9995?'gold svgd':grade('cp',pct(a.cpW,a.cpN))==='good'?'good svg':'bad svb'],
    ['Enquiries per 1k',a.days?epkTxt(epk(a.enq+(a.enqP||0),a.pc)):'–',`${fmtN(a.enq)} at fault${a.enqP?', '+fmtN(a.enqP)+' partly':''} · Target 1 or less`,a.days?(epk(a.enq+(a.enqP||0),a.pc)===0?'gold svgd':grade('enq',epk(a.enq+(a.enqP||0),a.pc))==='good'?'good svg':'bad svb'):'none'],
@@ -7775,7 +7775,7 @@ function bossNotes(C,all,pa,pcs){
   const P=v=>(v*100).toFixed(1)+'%',eta=pct(all.etaW,all.etaN),ftd=pct(all.ftdW,all.ftdN),cp=pct(all.cpW,all.cpN),n=nps(all.scores),k=epk(all.enq+(all.enqP||0),all.pc);
   const good=[],watch=[];
   if(eta!=null)(eta*100>=t.etaG-1e-9?good:watch).push(eta*100>=t.etaG-1e-9?`2 hr ETA on target: ${P(eta)}.`:`2 hr ETA below target: ${P(eta)} (target ${t.etaG}%).`);
-  if(ftd!=null)(Math.round(ftd*1000)/10>=FTDG?good:watch).push(Math.round(ftd*1000)/10>=FTDG?`First time delivery on target: ${P(ftd)}.`:`First time delivery below target: ${P(ftd)} (target ${FTDG}%).`);
+  if(ftd!=null)(Math.round(ftd*1000)/10>=FTDG?good:watch).push(Math.round(ftd*1000)/10>=FTDG?`FTD on target: ${P(ftd)}.`:`FTD below target: ${P(ftd)} (target ${FTDG}%).`);
   if(cp!=null)(cp*100>=t.cpG-1e-9?good:watch).push(cp*100>=t.cpG-1e-9?`Scan compliance on target: ${P(cp)}.`:`Scan compliance below target: ${P(cp)} (target ${t.cpG}%).`);
   if(!all.enq)good.push('No at fault customer enquiries.');
   else (k<=1+1e-9?good:watch).push(`${k<=1+1e-9?'At fault enquiries within target':'Too many at fault enquiries'}: ${epkTxt(k)} per 1k parcels (${fmtN(all.enq)} in total).`);
@@ -10243,7 +10243,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010179';
+const VERSION='202611010180';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
