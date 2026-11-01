@@ -248,6 +248,15 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && id.matches(request.auth.uid + '(_.*)?'));
     }
 
+    // Which app version each phone or computer last opened. Each person saves only their own; only admins can read them.
+    match /appver/{id} {
+      allow read: if isAdmin();
+      allow create, update: if signedIn() && id.matches(request.auth.uid + '_[a-z0-9]{8,30}')
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == myEmail();
+      allow delete: if isAdmin();
+    }
+
     // New driver onboarding: each driver fills in their own form and uploads their own documents.
     // Only that driver and admins can see them. Site induction sign off lives on the driver record (admins only).
     match /onboard/{id} {
