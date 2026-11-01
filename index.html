@@ -1248,9 +1248,10 @@ const alMine=a=>{if(role==='mgr')return true;const me=window.__webMe||{};const t
   if(t.startsWith('pc:')){const pcs=(window.PUSH&&PUSH.pcs)?PUSH.pcs():[];return pcs.includes(t.slice(3))}
   if(t.startsWith('st:'))return String(me.staff||'')===t.slice(3);return false};
 const alTime=iso=>{try{return new Date(iso).toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit',timeZone:'Australia/Brisbane'}).replace(/\s/g,'').toLowerCase()}catch(e){return ''}};
-function alHtml(){const today=window.__qISO();const L=AL.list.filter(a=>a.day===today&&alMine(a)).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '';
+function alHid(){try{return JSON.parse(localStorage.getItem('pds_alhide')||'[]')}catch(e){return []}}
+function alHtml(){const today=window.__qISO();const hid=alHid();const L=AL.list.filter(a=>a.day===today&&alMine(a)&&!hid.includes(a.id)).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '';
   const adm=role==='mgr';
-  return L.map(a=>`<section class="dh-card al-card"><div class="al-h"><b>📣 Alert</b><small>${esc(alTime(a.at))}${adm?' · '+esc(a.toName||'Everyone')+(a.ding?' · 🔔':''):''}</small>${adm?`<button type="button" class="al-x" data-al-del="${esc(a.id)}" aria-label="Remove alert">✕</button>`:''}</div><p>${esc(a.body)}</p></section>`).join('')}
+  return L.map(a=>`<section class="dh-card al-card"><div class="al-h"><b>📣 Alert</b><small>${esc(alTime(a.at))}${adm?' · '+esc(a.toName||'Everyone')+(a.ding?' · 🔔':''):''}</small>${adm?`<button type="button" class="al-x" data-al-del="${esc(a.id)}" aria-label="Remove alert for everyone">✕</button>`:`<button type="button" class="al-x" data-al-hide="${esc(a.id)}" aria-label="Hide this alert">✕</button>`}</div><p>${esc(a.body)}</p></section>`).join('')}
 function alPaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.al-wrap');const h=hero?alHtml():'';
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards al-wrap'}
@@ -1260,6 +1261,15 @@ async function alWatch(){if(AL.unsub||AL.busy)return;AL.busy=true;let db=null;tr
   AL.day=window.__qISO();AL.unsub=db.collection('updates').where('day','==',AL.day).onSnapshot(q=>{AL.list=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.kind==='alert');alPaint()},()=>{try{AL.unsub&&AL.unsub()}catch(e){}AL.unsub=null;setTimeout(alWatch,30000)})}
 setInterval(()=>{if(AL.unsub&&AL.day!==window.__qISO()){try{AL.unsub()}catch(e){}AL.unsub=null;AL.list=[];alPaint();alWatch()}else{alPaint();if(!AL.unsub)alWatch()}},60000);
 (()=>{const go=()=>{const home=document.getElementById('sh-home');if(!home){setTimeout(go,300);return}new MutationObserver(()=>alPaint()).observe(home,{childList:true});alWatch();alPaint()};go()})();
+function alHide(id){const ids=new Set(AL.list.map(a=>a.id));const h=alHid().filter(x=>ids.has(x));if(!h.includes(id))h.push(id);try{localStorage.setItem('pds_alhide',JSON.stringify(h))}catch(x){}}
+/* swipe an alert card sideways to hide it on this device */
+(()=>{let c=null,x0=0,y0=0,dx=0,on=false;
+  document.addEventListener('touchstart',e=>{const t=e.target.closest&&e.target.closest('.al-card');if(!t||e.target.closest('button'))return;c=t;x0=e.touches[0].clientX;y0=e.touches[0].clientY;dx=0;on=false},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!c)return;const mx=e.touches[0].clientX-x0,my=e.touches[0].clientY-y0;if(!on){if(Math.abs(my)>Math.abs(mx)&&Math.abs(my)>8){c=null;return}if(Math.abs(mx)>8)on=true}if(on){dx=mx;c.style.transition='none';c.style.transform='translateX('+dx+'px)';c.style.opacity=String(Math.max(.2,1-Math.abs(dx)/300))}},{passive:true});
+  document.addEventListener('touchend',()=>{if(!c)return;const t=c;c=null;if(!on)return;t.style.transition='transform .2s,opacity .2s';
+    if(Math.abs(dx)>90){t.style.transform='translateX('+(dx>0?120:-120)+'%)';t.style.opacity='0';const id=(t.querySelector('[data-al-del],[data-al-hide]')||{}).dataset;alHide(id&&(id.alDel||id.alHide));setTimeout(()=>{t.remove();alPaint()},200)}
+    else{t.style.transform='';t.style.opacity=''}},{passive:true})})();
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-al-hide]');if(!b)return;alHide(b.dataset.alHide);const c=b.closest('.al-card');if(c)c.remove();alPaint()});
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-al-del]');if(!b)return;b.disabled=true;try{const db=await window.__getDb();await db.doc('updates/'+b.dataset.alDel).delete()}catch(x){b.disabled=false}});
 /* a one off card on Home inviting people to turn notifications on */
 const puCard=()=>{try{const P=window.PUSH;if(!P||previewChild)return;const st=P.state();const home0=document.getElementById('mod-home');const old0=home0&&home0.querySelector('.pu-home');if(st==='on'||st==='unsupported'){if(old0&&!old0.dataset.done)old0.remove();return}if(old0&&old0.dataset.st!==st)old0.remove();const isAdm=P.role&&P.role()==='admin';let no=null;try{no=localStorage.getItem('push1161no')}catch(x){}if(no&&isAdm)return;
@@ -10346,7 +10356,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010242';
+const VERSION='202611012050';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
