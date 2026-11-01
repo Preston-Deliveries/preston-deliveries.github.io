@@ -30,7 +30,9 @@ const KINDS = {
   feedback: { who: 'member', to: 'admins', title: 'New feedback', body: 'A driver has sent feedback. Tap to view.', url: '#feedback' },
   uniform:  { who: 'member', to: 'admins', title: 'New uniform order', body: 'A driver has ordered uniform. Tap to view.', url: '#uniform' },
   leave:    { who: 'member', to: 'admins', title: 'Day off request', body: 'A driver has asked for time off. Tap to view.', url: '#leave' },
-  invoice:  { who: 'member', to: 'admins', title: 'New invoice', body: 'A driver has submitted an invoice. Tap to view.', url: '#invoices' }
+  invoice:  { who: 'member', to: 'admins', title: 'New invoice', body: 'A driver has submitted an invoice. Tap to view.', url: '#invoices' },
+  clockon:  { who: 'member', to: 'admins', title: 'Clocked on', body: 'A driver has clocked on.', url: '#timesheets', notMe: true },
+  clockoff: { who: 'member', to: 'admins', title: 'Clocked off', body: 'A driver has clocked off.', url: '#timesheets', notMe: true }
 };
 /* what each driver message says when we know who sent it (drivers can never write the words themselves) */
 const WHO_SAYS = {
@@ -88,6 +90,10 @@ export default {
       const nm = clip(acc && acc.name, 40);
       let mb = K.body;
       if (nm && WHO_SAYS[b.kind]) mb = WHO_SAYS[b.kind](nm);
+      if ((b.kind === 'clockon' || b.kind === 'clockoff') && /^\d{2}:\d{2}$/.test(String(b.t || ''))) {
+        const [h, m] = b.t.split(':').map(Number); const tm = ((h % 12) || 12) + ':' + String(m).padStart(2, '0') + (h < 12 ? 'am' : 'pm');
+        mb = (nm || 'A driver') + (b.kind === 'clockon' ? ' clocked on at ' : ' clocked off at ') + tm + (niceDay(b.day) ? ' on ' + niceDay(b.day) : '') + '.';
+      }
       if (b.kind === 'leave' && niceDay(b.from)) { const f = niceDay(b.from), t = niceDay(b.to); mb = (nm || 'A driver') + ' has asked for ' + (t && t !== f ? f + ' to ' + t : f) + ' off. Tap to view.'; }
       const msg = K.title ? { title: K.title, body: mb, url: K.url }
         : { title: clip(b.title, 60) || 'Preston Delivery Service', body: clip(b.body, 180), url: safeUrl(b.url) };
@@ -104,7 +110,8 @@ export default {
         else if (b.pc) filter = { fieldFilter: { field: { fieldPath: 'pcs' }, op: 'ARRAY_CONTAINS', value: { stringValue: String(b.pc) } } };
         else filter = null; // everyone
       }
-      const phones = await findPhones(filter, idToken);
+      let phones = await findPhones(filter, idToken);
+      if (K.notMe) phones = phones.filter(p => p.email !== me.email);
       if (!phones.length) return out({ ok: true, sent: 0, skipped: 'Nobody has notifications turned on yet' });
 
       /* send */
@@ -292,7 +299,7 @@ async function findPhones(filter, idToken) {
   const r = await fetch(`${FS}:runQuery`, { method: 'POST', headers: { Authorization: 'Bearer ' + idToken, 'Content-Type': 'application/json' }, body: JSON.stringify(q) });
   if (!r.ok) throw new Error('Could not read phone list (' + r.status + ')');
   const rows = await r.json();
-  return rows.map(x => ({ id: x.document.name.split('/').pop(), token: val(x.document.fields.token) })).filter(p => p.token);
+  return rows.filter(x => x.document).map(x => ({ id: x.document.name.split('/').pop(), token: val(x.document.fields.token), email: String(val(x.document.fields.email) || '').toLowerCase() })).filter(p => p.token);
 }
 
 /* Check the Firebase sign in token is real, current and for this project */

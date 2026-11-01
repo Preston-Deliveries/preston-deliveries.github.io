@@ -1147,7 +1147,7 @@ function pushRow(){const P=window.PUSH;if(!P)return '';const st=P.state();
    :st==='unsupported'?`<p class="pu-st">This ${/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?'phone can’t get notifications from the app yet. Open the app from its home screen icon and try again.':'browser can’t get notifications. Try Chrome or Edge.'}</p>`
    :`<p class="pu-st">Get a ding on this device for important things only.</p><button type="button" class="sh-btn primary" data-pu="on">Turn on notifications</button>`;
   return `<div class="dm-row pu-row"><h3>Notifications</h3>${body}${P.role&&P.role()==='admin'?`<button type="button" class="sh-btn" data-pu="admin">Notification settings</button>`:''}<p class="pu-msg" id="pu_msg" role="status"></p></div>`}
-const PU_TYPES=[['update','New update posted (to all drivers)'],['enquiry','New customer enquiry (to that driver)'],['report','New report from a driver (to admins)'],['feedback','New feedback from a driver (to admins)'],['uniform','New uniform order (to admins)'],['leave','Day off request (to admins)'],['invoice','New invoice (to admins)']];
+const PU_TYPES=[['update','New update posted (to all drivers)'],['enquiry','New customer enquiry (to that driver)'],['report','New report from a driver (to admins)'],['feedback','New feedback from a driver (to admins)'],['uniform','New uniform order (to admins)'],['leave','Day off request (to admins)'],['invoice','New invoice (to admins)'],['clockon','Driver clocked on (to admins)'],['clockoff','Driver clocked off (to admins)']];
 let puState={cfg:null,phones:null,log:null,msg:null,busy:false};
 async function openPushAdmin(){closeSettings();const P=window.PUSH;if(!P)return;
   const w=document.createElement('div');w.id='sh-set';w.className='pu-adm';w.setAttribute('role','dialog');w.setAttribute('aria-label','Notification settings');
@@ -8880,21 +8880,21 @@ document.addEventListener('click',async e=>{
   if(a==='fin'){ui={fin:true};msg=null;render();return}
   if(a==='finlate'){ui={fin:true,late:true};msg=null;render();return}
   if(a==='start'){const now=new Date();const d0={...base(),start:hmOf(now),startAt:db.serverTime?db.serverTime():now.toISOString(),startLate:false,updatedAt:UT()};
-    await save(async()=>{const d=OFF?{...base(),start:hmOf(now),startLate:true,updatedAt:UT()}:d0;await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=OFF?d:{...d,startAt:now.toISOString()}},'Shift started at '+nice(d0.start)+'. Have a good run.');return}
+    await save(async()=>{const d=OFF?{...base(),start:hmOf(now),startLate:true,updatedAt:UT()}:d0;await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=OFF?d:{...d,startAt:now.toISOString()};window.__ckPing&&window.__ckPing('clockon',d.start)},'Shift started at '+nice(d0.start)+'. Have a good run.');return}
   if(a==='latestart'){const t=ckVal(el,'ck-st');if(!t){msg={err:true,t:'Pick the time you started.'};render();return}
     if(toMin(t)>toMin(hmOf(new Date()))){msg={err:true,t:'That time is later than now.'};render();return}
     const d={...base(),start:t,startLate:true,updatedAt:UT()};
-    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=d},'Start time saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).set(d));T=d;window.__ckPing&&window.__ckPing('clockon',d.start)},'Start time saved.');return}
   if(a==='finish'){if(!answered(''))return;const now=new Date();const f={finish:hmOf(now),finishAt:db.serverTime?db.serverTime():now.toISOString(),finishLate:false,...endData(''),updatedAt:UT()};
-    await save(async()=>{const g=OFF?(({finishAt,...r})=>({...r,finishLate:true}))(f):f;await put(db.doc('clock/'+today+'_'+me.staff).update(g));T={...T,...g}},'Shift finished. Thanks!');return}
+    await save(async()=>{const g=OFF?(({finishAt,...r})=>({...r,finishLate:true}))(f):f;await put(db.doc('clock/'+today+'_'+me.staff).update(g));T={...T,...g};window.__ckPing&&window.__ckPing('clockoff',g.finish)},'Shift finished. Thanks!');return}
   if(a==='latefin'){const t=ckVal(el,'ck-ft');if(!t||!answered('')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(T.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData(''),updatedAt:UT()};
-    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f}},'Finish time saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+today+'_'+me.staff).update(f));T={...T,...f};window.__ckPing&&window.__ckPing('clockoff',f.finish)},'Finish time saved.');return}
   if(a==='yfin'){const t=ckVal(el,'ck-yt');if(!t||!answered('y')){msg={err:true,t:'Pick the finish time and answer the questions.'};render();return}
     if(toMin(t)<=toMin(Y.start)){msg={err:true,t:'The finish time must be after your start time.'};render();return}
     const f={finish:t,finishLate:true,...endData('y'),updatedAt:UT()};
-    await save(async()=>{await put(db.doc('clock/'+yday+'_'+me.staff).update(f));Y={...Y,...f}},'Thanks, yesterday is saved.');return}
+    await save(async()=>{await put(db.doc('clock/'+yday+'_'+me.staff).update(f));Y={...Y,...f};window.__ckPing&&window.__ckPing('clockoff',f.finish,yday)},'Thanks, yesterday is saved.');return}
 });
 document.addEventListener('input',e=>{const id=e.target.id;if(!id||!id.startsWith('ck-'))return;const k=id.slice(3);if(['st','ft','yt','et'].includes(k)){ui[k]=e.target.value;if(k==='ft'||k==='yt'){/* keep button state */}return}ui[k]=e.target.value});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&me&&!busy&&!Object.keys(ui).length){fresh=false;mount()}});
@@ -10367,7 +10367,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611020915';
+const VERSION='202611020925';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12000,6 +12000,8 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 .tk-card .tk-ok:disabled{opacity:.6}.tk-card .tk-more{all:unset;cursor:pointer;display:block;text-align:center;padding:10px 0 2px;border-top:1px solid var(--sh-line);font-weight:800;font-size:.92rem;color:#2F6FDB}.tk-card .tk-dn .tx b{text-decoration:line-through;opacity:.6}.tk-card .tk-dn .tx small{color:#1E8A4C;font-weight:700}.tk-card .tk-un{all:unset;cursor:pointer;flex:none;padding:8px 14px;border-radius:10px;border:1px solid var(--sh-line);font-weight:800;font-size:.92rem;color:var(--sh-ink)}
 </style>
 <script>
+/* office ding when someone clocks on or off (the office can switch these off in Notification settings) */
+window.__ckPing=(kind,t,day)=>{try{if(window.PUSH&&/^\d{2}:\d{2}$/.test(String(t||'')))PUSH.send(kind,{t,day:day||''})}catch(e){}};
 /* ---------- Tasks: admins set a to do for one person, with reminder dings; it shows on that person's Home ---------- */
 (()=>{
 const QLD=36e6;
