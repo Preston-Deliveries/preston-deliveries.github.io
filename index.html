@@ -3276,6 +3276,7 @@ function mountBoard(box,rows){
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><div class="rb-dl rb-dl2"><button type="button" class="sh-btn rb-pdf" data-rb="pdf" aria-label="Download PDF" title="Download PDF">PDF</button></div></div><p class="rb-msg" id="r_boardMsg" hidden></p>
+  ${window.SCORE.howHTML("sc-how sv-how").replace("</details>",`<p>Drivers on the same score share the same place.</p></details>`)}
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries</span><span role="columnheader">Contract Score</span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
@@ -3283,7 +3284,7 @@ function mountBoard(box,rows){
      ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b class="v-${(r.avg||0)>=96-1e-9?"g":"b"}">${scTxt(r)}</b></span></div>`}).join("")}
   </div>
-  <p class="rb-key">Ranked by Contract Score. Every day starts at 100 and loses points for enquiries, 2 hr ETA and scan compliance; the score is the average of the days worked. ${view==="day"?"":`A place needs ${NEED[view]} days worked.`} Drivers on the same score share the same place.</p>${window.SCORE.howHTML("sc-how")}`;
+`;
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("[data-rbk]")&&window.ME&&ME.warm)ME.warm()},{passive:true});setTimeout(()=>{if(window.ME&&ME.warm)ME.warm()},1500);
   box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
@@ -10283,7 +10284,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='202611010230';
+const VERSION='202611010232';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11782,6 +11783,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-cl{display:none!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw{display:block!important;overflow-x:auto!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .tw>table{display:table!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar:has(.chips){display:flex!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-bar .chips{display:flex!important;flex-wrap:wrap!important}
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff#mod-staff .dm-head{height:0!important;min-height:0!important;padding:0!important;border:0!important;overflow:hidden!important;margin:0 0 -14px!important}
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rt-n:empty{display:none!important}
+:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results#mod-results .rb-top{display:none!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results#mod-results #r_stepShare>.row-actions.has-dl:not(:has(>:not(.ix-moved):not([hidden]):not(.dlb))){display:none!important}:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results#mod-results #r_rtAdmin>details.sc-how{margin:0 0 14px!important}
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
