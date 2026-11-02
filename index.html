@@ -68,6 +68,16 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-enquiries .eq-st.new{background:#D93025;color:#fff}
 #mod-enquiries .eq-st.ok{background:rgba(30,138,76,.15);color:#15703D}
 #mod-enquiries .eq-fpics{margin:4px 0 12px}
+#sh-main #mod-enquiries .eq-closebtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;width:100%;margin-top:14px;min-height:50px;border-radius:12px;background:#1E8A4C;color:#fff;font-weight:800;font-size:1.02rem;text-align:center;padding:10px 14px}
+#sh-main #mod-enquiries .eq-closebtn:hover{filter:brightness(1.08)}
+#sh-main #mod-enquiries .eq-tabs{display:flex;gap:6px;margin:4px 0 10px;flex-wrap:wrap}
+#sh-main #mod-enquiries .eq-tabs button{all:unset;cursor:pointer;box-sizing:border-box;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;border:1px solid var(--sh-line);background:var(--sh-surface);font-weight:800;font-size:.95rem;color:var(--sh-ink)}
+#sh-main #mod-enquiries .eq-tabs button[aria-pressed=true]{background:#F2782D;border-color:#F2782D;color:#fff}
+#sh-main #mod-enquiries .eq-tabs .n{display:inline-block;min-width:1.4em;text-align:center;border-radius:999px;padding:0 6px;background:rgba(127,127,127,.2);font-size:.82rem}
+#sh-main #mod-enquiries .eq-tabs .n.hot{background:#D93025;color:#fff}
+#sh-main #mod-enquiries .eq-tabs button[aria-pressed=true] .n{background:rgba(255,255,255,.25);color:#fff}
+#mod-enquiries .eq-tabhint{margin:0 0 8px}
+#sh-main #mod-enquiries .eqx.nx>.eq-tabs{order:1}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -7730,10 +7740,15 @@ async function importOld(files){const done=[],skip=[],need=[];msg={t:'Reading '+
   msg={t:`Added ${done.length} NCR${done.length===1?'':'s'} as dealt with.`+(need.length?` Pick the driver on: ${need.join(', ')} (login not on the Drivers page).`:'')+(skip.length?` Skipped: ${skip.join(', ')}.`:''),err:false};render()}
 async function patchN(id,patch,t){const n=recs[id];if(!n)return;const doc={...n,...patch,updatedAt:new Date().toISOString()};delete doc.id;recs[id]={id,...doc};msg=t?{t}:null;render();try{await db.doc('enqlog/'+id).set(doc)}catch(e){msg={err:true,t:'Could not save just now.'};render()}}
 /* ---------- list ---------- */
+/* Needs action: no outcome yet, or a conversation with the driver still open. Done: closed, or an outcome with nothing open. */
+let eqTab='todo';
+const isDone=r=>{const D=DRV[r.id];return D?!!D.closedAt:!!r.fault};
+const actRank=r=>{const D=DRV[r.id];if(D&&unread(D))return 0;if(!D)return r.fault?3:1;return 2};
 function filtered(){
   const d=qDriver.trim().toLowerCase();
-  return enqs().filter(r=>inPer(r.date,'enq')&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)))
-    .sort((x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt)));
+  const L=enqs().filter(r=>(eqTab==='todo'?!isDone(r):(inPer(r.date,'enq')&&(eqTab==='all'||isDone(r))))&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
+  const by=(x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt));
+  return eqTab==='todo'?L.sort((x,y)=>actRank(x)-actRank(y)||by(x,y)):L.sort(by);
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
   return `<div class="sum">${Object.entries(by).map(([k,v])=>`<div><b>${esc(k)}</b><span>${v.n} enquir${v.n===1?'y':'ies'}</span><span class="fc">${v.f} at fault</span></div>`).join('')||'<div><span>No enquiries found.</span></div>'}</div>`}
@@ -7758,8 +7773,9 @@ function render(){
       <div class="b"><button type="button" class="sh-btn primary" data-eq="plgo" ${pList.rows.length&&pList.rows.every(x=>x.login)?'':'disabled'}>+ ${pList.rows.reduce((a,x)=>a+x.n,0)} enquiries</button><button type="button" class="sh-btn" data-eq="plback">Edit the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`
     :`<p>One line each: day, driver, how many, at fault. For example <i>TUE 6/10 NATHAN INGRAM 1 at fault</i>.</p><textarea id="eq_pltxt" rows="8" placeholder="TUE 6/10 NATHAN INGRAM 1 at fault">${esc(pList.text||'')}</textarea><div class="b"><button type="button" class="sh-btn primary" data-eq="plcheck">Check the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`}</section>`
   :''}
-  ${perBar('enq',enqs().map(x=>x.date))}
-  ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
+  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const T=enqs().filter(r=>!isDone(r)).length,N=enqs().filter(r=>!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0],['all','All',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
+  ${eqTab==='todo'?`<p class="sub eq-tabhint">Every enquiry still open, newest replies first: no outcome yet, or still talking with the driver. Close it with the outcome and it moves to Done.</p>`:perBar('enq',enqs().map(x=>x.date))}
+  ${eqTab==='todo'?'':(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
   <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off">
    <label class="tog"><input type="checkbox" id="eq_of" ${onlyFault?'checked':''}> At fault only</label></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
@@ -7768,10 +7784,10 @@ function render(){
 }
 const tabsHTML=no=>''&&`<div class="tabs" role="group" aria-label="Show"><button type="button" data-eq="tab" data-v="enq" aria-pressed="${tab==='enq'}">Enquiries</button><button type="button" data-eq="tab" data-v="ncr" aria-pressed="${tab==='ncr'}">NCRs${no?` <span class="n">${no}</span>`:''}</button></div>`;
 function resHTML(L){const total=enqs().length;
-  return `${sumHTML(L)}<div class="rh"><span class="sub">${L.length} of ${total} enquir${total===1?'y':'ies'}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
+  return `${sumHTML(L)}<div class="rh"><span class="sub">${eqTab==='todo'?L.length+' still open':L.length+' of '+total+' enquir'+(total===1?'y':'ies')}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
   ${L.length?L.map(r=>`<button type="button" class="card ncr fo-${r.fault||'none'}" data-eq="open" data-v="${esc(r.id)}"><div class="t"><b>${esc(r.driver||(byLogin(r.login)||{}).name||r.login||'')}${dnTag(r.login)}</b>${chip(r.fault)}</div>
-     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}${r.outside?'<small class="wt">Outside delivery radius</small>':''}${DRV[r.id]?`<small>${drvChip(r.id)}</small>`:''}</button>`).join('')
-   :`<div class="empty">${total?'Nothing matches that search.':'No enquiries recorded yet. Press + Enquiry.'}</div>`}`;
+     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}${r.outside?'<small class="wt">Outside delivery radius</small>':''}${DRV[r.id]?`<small>${drvChip(r.id)}</small>`:!r.fault?'<small><span class="eq-st wait">Not sent to driver · no outcome yet</span></small>':''}</button>`).join('')
+   :`<div class="empty">${eqTab==='todo'&&!qDriver.trim()?'✓ Nothing needs action. Every enquiry has an outcome and no conversations are open.':qDriver.trim()||onlyFault?'Nothing matches that search.':!total?'No enquiries recorded yet. Press + Enquiry.':eqTab==='done'?'No finished enquiries in this period. Pick another month, or All.':'No enquiries in this period.'}</div>`}`;
 }
 function formHTML(){
   const r=draft;const isNew=!r.id;
@@ -7844,7 +7860,7 @@ function drvBox(id,kind){const D=convo(DRV[id]),r=recs[id]||{},p=byLogin(r.login
       <textarea id="eq_cnote" rows="2" placeholder="Note to ${esc(fn)} (optional)"></textarea>
       <div class="b"><button type="button" class="sh-btn primary" data-eq="closeok" data-v="${esc(id)}" data-k="${kind}">Close and tell ${esc(fn)}</button><button type="button" class="sh-btn" data-eq="closeno">Cancel</button></div><p class="sub">${esc(fn)} sees the ${kind==='ncr'?'note':'outcome'}${kind==='ncr'?'':', and it is saved on the enquiry'}.</p></div>`
    :`<textarea id="eq_rtxt" rows="2" placeholder="Reply to ${esc(fn)}">${esc(replyTxt[id]||'')}</textarea>
-     <div class="b"><button type="button" class="sh-btn primary" data-eq="oreply" data-v="${esc(id)}">Send reply</button>${D.lastFrom!=='d'&&!(D.need==='info'&&D.ack)?`<button type="button" class="sh-btn" data-eq="remind" data-v="${esc(id)}" data-k="${kind}">Remind ${esc(fn)}</button>`:''}<button type="button" class="sh-btn" data-eq="closeit" data-v="${esc(id)}">Close…</button></div>`}
+     <div class="b"><button type="button" class="sh-btn primary" data-eq="oreply" data-v="${esc(id)}">Send reply</button>${D.lastFrom!=='d'&&!(D.need==='info'&&D.ack)?`<button type="button" class="sh-btn" data-eq="remind" data-v="${esc(id)}" data-k="${kind}">Remind ${esc(fn)}</button>`:''}</div><button type="button" class="eq-closebtn" data-eq="closeit" data-v="${esc(id)}">✓ Close this ${kind==='ncr'?'NCR':'case'} and set the outcome</button>`}
   </section>`}
 function drvChip(id){const D=convo(DRV[id]);if(!D)return '';if(D.closedAt)return `<span class="eq-st ok">Closed${D.outcome?' · '+(OUT[D.outcome]||''):''}</span>`;if(unread(D))return `<span class="eq-st new">${D.need==='info'&&D.ack&&D.lastFrom!=='d'?'Read by driver':'New reply'}</span>`;
   if(D.need==='info')return D.ack?'<span class="eq-st ok">Read by driver</span>':'<span class="eq-st wait">Sent for info</span>';return D.lastFrom==='d'?'<span class="eq-st ok">Driver replied</span>':'<span class="eq-st wait">Waiting for driver</span>'}
@@ -7909,6 +7925,7 @@ document.addEventListener('click',async ev=>{
   const el=ev.target.closest('[data-eq]');if(!el||!document.getElementById('mod-enquiries').contains(el))return;
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
   if(a==='pmode'){PER[el.dataset.k].mode=v;render();return}
+  if(a==='eqtab'){eqTab=v;msg=null;render();return}
   if(a==='pchip'){const P=PER[el.dataset.k];if(P.mode==='year')P.y=v;else P.m=v;render();return}
   if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
@@ -10801,7 +10818,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021123';
+const VERSION='1202611021127';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12486,7 +12503,7 @@ const A={ /* office */
  'mod-results':'Results come from the daily performance reports. Use the date bar to pick a day, week or pay period, and tap How the Contract Score works to see how each score is worked out.',
  'mod-survey':'Scores from the customer survey. A 9 or 10 is a promoter and 0 to 6 is a detractor. Tap How the NPS score works to see how the team score is worked out.',
  'mod-summary':'The whole contract at a glance for the period you pick, built from the same results as the Results tab.',
- 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Press + Enquiry and use Fill in from the case PDF: it brings in the scan events, the maps and the scan photo. Open it and send it to the driver as Needs action or For your info. Reply back and forth, then Close it with the outcome when you have everything.',
+ 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Needs action lists every enquiry still open, newest driver replies first. Press + to add one from the case PDF and send it to the driver. When you have everything, tap the green Close button with the outcome and it moves to Done.',
  'mod-runs':t=>/sort/i.test(t)?'Which driver each street goes to, by postcode. Use it at the depot to redirect missorts. Drivers get changes after you press Send latest to drivers.':'Each driver’s streets in delivery order, with customer and access notes. Pick a postcode at the top. Drivers get changes after you press Send latest to drivers.',
  'mod-precards':'Precards are split into Approved and Under review. Check the ones under review and approve them once they are right.',
  'mod-lockers':'Parcel lockers on the contract, with the building and Australia Post details for each one.',
