@@ -1501,8 +1501,8 @@ function adminGlance0(){const el=$('ah_glance');if(!el||role!=='mgr')return;cons
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
 /* admin Home: one short list of what needs attention; tap a line to open the full card under it */
 const sumOpen=new Set();
-{const st=document.createElement('style');st.textContent='#ah_sum>#ah_todo,#ah_sum>#ah_off,#ah_sum>#ah_morn,#ah_sum>#ah_fu{margin:4px 0 10px!important;order:0!important}#ah_sum>div>.dh-card,#ah_sum>div>section{margin:0!important;box-shadow:none!important}';document.head.appendChild(st)}
-function adminSum(){if(adminSum.q)return;adminSum.q=1;queueMicrotask(()=>{adminSum.q=0;adminSum0()})}
+{const st=document.createElement('style');st.textContent='#ah_sum>#ah_todo,#ah_sum>#ah_off,#ah_sum>#ah_morn,#ah_sum>#ah_fu{margin:4px 0 10px!important;order:0!important}#ah_sum>div>.dh-card,#ah_sum>div>section{margin:0!important;box-shadow:none!important}#sh-home #ah_tk{display:none!important}#sh-home.so-tk #ah_tk{display:block!important;margin:4px 0 10px!important}#ah_sum #ah_tk .tk-card{border-left:1px solid var(--sh-line)!important}#ah_sum #ah_tk .tk-ch{display:none!important}#ah_sum .ah-off .ao-h{justify-content:flex-end!important}#ah_sum .ah-off .ao-h>b{display:none!important}#sh-home .ah-sum .ah-off .ao-ch i{width:auto!important;font-size:.9rem!important;color:inherit;text-align:left;white-space:nowrap;padding:4px 11px!important;line-height:1.3}';document.head.appendChild(st)}
+window.__adminSum=()=>adminSum();function adminSum(){if(adminSum.q)return;adminSum.q=1;queueMicrotask(()=>{adminSum.q=0;adminSum0()})}
 function adminSum0(){const el=$('ah_sum');if(!el||role!=='mgr')return;
   const td=$('ah_todo'),mn=$('ah_morn');
   const todo=td?[...td.querySelectorAll('.dh-do b')].map(b=>b.textContent.trim()):[];
@@ -1511,18 +1511,19 @@ function adminSum0(){const el=$('ah_sum');if(!el||role!=='mgr')return;
     const DW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];for(let i=1;i<=6;i++){const d=new Date(t);d.setDate(t.getDate()+i);if(d.getDay()===0||d.getDay()===6)continue;const k=n(d);if(k)parts.push(k+' on '+DW[d.getDay()])}
     offT=parts.join(' · ')}}catch(e){}
   let mt='';const mcn=mn&&mn.querySelector('.mc-n'),mct=mn&&mn.querySelector('.mc-t');if(mcn){mt=(mcn.textContent.trim()+' '+(mct?mct.textContent.trim():'clocked on')).replace(/\s+/g,' ')}else if(mn){const rb=[...mn.querySelectorAll('b')].map(b=>b.textContent.trim()).filter(Boolean);const ok=mn.querySelector('.mc-ok,.ok,.dh-ok');mt=rb.length&&!/^(Sunday|Saturday|Monday|Tuesday|Wednesday|Thursday|Friday)$/.test(rb[0])?rb[0]:[...mn.querySelectorAll('h2,h3,p,div,span,small')].filter(x=>!x.children.length).map(x=>x.textContent).join('\n').replace(/^MORNING CHECK\s*/i,'').split('\n').map(x=>x.trim()).filter(Boolean).slice(-1)[0]||'Nothing needs you'}
-  const IC={todo:['📋','rgba(229,72,77,.14)'],off:['📅','rgba(91,141,239,.16)'],morn:['✅','rgba(48,164,108,.16)'],fu:['📞','rgba(242,120,45,.16)']};
+  const IC={tk:['✅','rgba(47,111,219,.16)'],todo:['📋','rgba(229,72,77,.14)'],off:['📅','rgba(91,141,239,.16)'],morn:['✅','rgba(48,164,108,.16)'],fu:['📞','rgba(242,120,45,.16)']};
   const FU=window.__fuSum,fuEl=$('ah_fu'),hasFu=!!(FU&&fuEl&&fuEl.innerHTML.trim());
+  const TS=window.__tkSum,tkEl=$('ah_tk'),hasTk=!!(TS&&tkEl&&tkEl.innerHTML.trim());
   const row=(k,t,sub,n)=>`<button type="button" class="sr-row" data-sum="${k}" aria-expanded="${sumOpen.has(k)}"><span class="ic" style="background:${IC[k][1]}">${IC[k][0]}</span><span class="tx"><b>${esc(t)}</b><small>${esc(sub)}</small></span>${n?`<em>${n}</em>`:''}<i aria-hidden="true">${sumOpen.has(k)?'▾':'›'}</i></button>`;
-  const html=row('todo',todo.length?todo[0]+(todo.length>1?' and '+(todo.length-1)+' more':''):'All caught up',todo.length?'Needs you':'Nothing waiting on you',todo.length)
+  const html=(hasTk?row('tk','Your tasks',TS.n?TS.first+(TS.n>1?' and '+(TS.n-1)+' more':''):'All done for today',TS.n):'')+row('todo',todo.length?todo[0]+(todo.length>1?' and '+(todo.length-1)+' more':''):'All caught up',todo.length?'Needs you':'Nothing waiting on you',todo.length)
     +row('off','Who’s off',offT,0)+row('morn','Morning check',mt.replace(/^✓\s*/,''),0)
     +(hasFu?row('fu','Follow ups',FU.left?FU.left+' driver'+(FU.left===1?'':'s')+' to follow up from '+FU.day:'All done for '+FU.day,FU.left):'');
   /* an opened row shows its details right underneath it: the block moves up under the row, and back when closed */
-  const SECS={todo:'ah_todo',off:'ah_off',morn:'ah_morn',fu:'ah_fu'};
+  const SECS={tk:'ah_tk',todo:'ah_todo',off:'ah_off',morn:'ah_morn',fu:'ah_fu'};
   for(const [k,id] of Object.entries(SECS)){const b=$(id);if(!b)continue;if(!b.__ph){b.__ph=document.createComment(id);b.parentNode.insertBefore(b.__ph,b)}if(el.contains(b)&&(el.__h!==html||!sumOpen.has(k)))b.__ph.parentNode.insertBefore(b,b.__ph.nextSibling)}
   if(el.__h!==html){el.__h=html;el.innerHTML=html}
   for(const [k,id] of Object.entries(SECS)){if(!sumOpen.has(k))continue;const b=$(id),r=el.querySelector('[data-sum="'+k+'"]');if(b&&r&&r.nextElementSibling!==b)r.after(b)}
-  const home=$('sh-home');if(home)['todo','off','morn','fu'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
+  const home=$('sh-home');if(home)['tk','todo','off','morn','fu'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ah_sum [data-sum]');if(!b)return;const k=b.dataset.sum;if(sumOpen.has(k))sumOpen.delete(k);else sumOpen.add(k);adminSum();if(k==='fu'&&sumOpen.has(k)){const d=document.querySelector('#ah_fu details.fu-nd');if(d)d.open=true}});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
 window.__lvChange=()=>{if(cur==='home'){adminOff();adminGlance()}};
@@ -12184,7 +12185,7 @@ html[data-theme=dark] body #sh-home .ah-hero .v-g,html:not([data-theme=light]) b
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx b{color:var(--sh-ink);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .tx small{color:var(--sh-muted);font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum em{font-style:normal;font-weight:800;font-size:.75rem;border-radius:999px;padding:2px 9px;background:#E5484D;color:#fff}
-:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum i{font-style:normal;color:var(--sh-muted);font-size:1.1rem;width:14px;text-align:center}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-home .ah-sum .sr-row>i{font-style:normal;color:var(--sh-muted);font-size:1.1rem;width:14px;text-align:center}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how{margin:10px 0 12px}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how p,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how li{font-size:.92rem;line-height:1.45;color:var(--sh-ink)}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sv-how ul{margin:6px 0 10px;padding-left:18px}
@@ -12719,17 +12720,18 @@ const doneToday=t=>t.status==='done'&&t.doneAt&&window.__qISO(new Date(t.doneAt)
 
 /* ---------- Home card: your tasks for the next 7 days ---------- */
 function homeHtml(){const L=Object.values(TK.mine).filter(t=>t.status!=='done').sort((a,b)=>(a.due+(a.time||'99')).localeCompare(b.due+(b.time||'99')));
-  const DT=Object.values(TK.mine).filter(doneToday).sort((a,b)=>String(b.doneAt).localeCompare(String(a.doneAt)));if(!L.length&&!DT.length)return '';
+  const DT=Object.values(TK.mine).filter(doneToday).sort((a,b)=>String(b.doneAt).localeCompare(String(a.doneAt)));window.__tkSum={n:L.length,first:L[0]?L[0].title:''};if(!L.length&&!DT.length)return '';
   /* keep the card short: the next 3, the rest behind Show all. Something just ticked stays in view for a few minutes so Undo is easy */
   const N=3,open=!!TK.homeAll;const recent=DT.filter(t=>Date.now()-Date.parse(t.doneAt)<5*60e3);
   const showL=open?L:L.slice(0,N),showD=open?DT:recent;const hidden=(L.length-showL.length)+(DT.length-showD.length);
   const row=t=>{const o=isOver(t);return `<div class="tk-r"><div class="tx"><b>${esc(t.title)}</b><small class="${o?'red':''}">${o?'Overdue · ':''}${esc(whenTxt(t))}</small>${t.note?`<span>${esc(t.note)}</span>`:''}</div><button type="button" class="tk-ok" data-tk-done="${esc(t.id)}">Done</button></div>`};
   const drow=t=>`<div class="tk-r tk-dn"><div class="tx"><b>${esc(t.title)}</b><small>✓ Done ${esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16)))}</small></div><button type="button" class="tk-un" data-tk-undo="${esc(t.id)}">Undo</button></div>`;
   return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length?L.length+' to do':'All done'}</small></div>${TK.err?`<p style="margin:0;color:#C8352B;font-weight:700;font-size:.9rem">${esc(TK.err)}</p>`:''}${showL.map(row).join('')}${showD.map(drow).join('')}${hidden||open&&(L.length>N||DT.length>recent.length)?`<button type="button" class="tk-more" data-tk-more="1" aria-expanded="${open}">${open?'Show less ▴':'Show '+hidden+' more ▾'}</button>`:''}</section>`}
-function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
+function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');const adm=!!home.querySelector('#ah_sum');let w=home.querySelector(adm?'#ah_tk':':scope>.tk-wrap');const h=hero?homeHtml():'';
   if(window.__placeFind)window.__placeFind();
-  if(!h){if(w)w.remove();return}
-  if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
+  if(!h){if(w)w.remove();if(adm&&window.__adminSum)window.__adminSum();return}
+  if(!w){w=document.createElement('div');w.className=adm?'tk-wrap':'dh-cards tk-wrap';if(adm)w.id='ah_tk'}
+  if(adm){if(!w.isConnected)home.querySelector('#ah_sum').after(w);if(w.__h!==h){w.__h=h;w.innerHTML=h}if(window.__adminSum)window.__adminSum();return}
   const fw=window.__placeFind?window.__placeFind():null;const anchor=home.querySelector(':scope>.al-wrap')||fw||hero;if(w.previousElementSibling!==anchor)anchor.after(w);
   if(w.__h!==h){w.__h=h;w.innerHTML=h}}
 
