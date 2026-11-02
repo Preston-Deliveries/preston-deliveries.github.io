@@ -10947,7 +10947,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021450';
+const VERSION='1202611021455';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13129,6 +13129,29 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root
       let n=r.el.isConnected?r.el:null;if(!n){try{const L=[...cur.querySelectorAll(r.sel)];n=L.find(x=>(x.textContent||'').trim().slice(0,40)===r.txt)||(L.length===1?L[0]:null)}catch(x){}}
       if(!n||!n.isConnected||!n.offsetParent)return;const d=n.getBoundingClientRect().top-r.top;if(Math.abs(d)>24){r.mine=true;sBy(0,d);r.mine=false}};
     requestAnimationFrame(()=>{fix();setTimeout(fix,150);setTimeout(()=>{fix();if(rec===r)rec=null},450)})},true);
+})();
+</script>
+<style id="clear-x">input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+html:root body input[type=search].has-x{padding-right:46px!important}
+.qx{position:fixed;z-index:60;width:34px;height:34px;border:0;margin:0;padding:0;border-radius:50%;display:none;place-items:center;background:var(--sh-sunk,#1C2635);color:var(--sh-ink,#E8EDF3);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.qx.on{display:grid}.qx svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.6;fill:none;stroke-linecap:round}</style>
+<script id="clear-x-js">
+/* An X inside every search box that has text in it: tap it to empty the box and start again */
+(()=>{const M=new Map();let q=0;
+  const mk=inp=>{const b=document.createElement('button');b.type='button';b.className='qx';b.setAttribute('aria-label','Clear');b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    b.addEventListener('pointerdown',e=>e.preventDefault());
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const i=b.__inp;if(!i)return;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));i.dispatchEvent(new Event('search',{bubbles:true}));try{i.focus()}catch(x){}place()});
+    document.body.appendChild(b);return b};
+  function place(){q=0;const L=[...document.querySelectorAll('input[type=search]')];
+    for(const [i,b] of M)if(!i.isConnected){b.remove();M.delete(i)}
+    for(const i of L){const r=i.getBoundingClientRect(),vis=!!i.offsetParent&&r.width>60&&r.bottom>0&&r.top<innerHeight;
+      if(!vis||!i.value){const b=M.get(i);if(b)b.classList.remove('on');continue}
+      i.classList.add('has-x');let b=M.get(i);if(!b){b=mk(i);M.set(i,b)}b.__inp=i;
+      b.style.left=(r.right-40)+'px';b.style.top=(r.top+r.height/2-17)+'px';b.classList.add('on')}}
+  const soon=()=>{if(!q)q=requestAnimationFrame(place)};
+  ['input','change','focusin','focusout','scroll','resize','click','keyup'].forEach(t=>window.addEventListener(t,soon,true));
+  try{new MutationObserver(soon).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  setInterval(soon,1000);
 })();
 </script>
 </body>
