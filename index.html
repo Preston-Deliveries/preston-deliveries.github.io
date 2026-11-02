@@ -97,6 +97,8 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-invoices .iw-st.warn small{color:#D93025}
 #sh-main #mod-invoices .iw-st[aria-pressed=true]{background:#F2782D;border-color:#F2782D;color:#fff}
 #sh-main #mod-invoices .iw-st[aria-pressed=true] i,#sh-main #mod-invoices .iw-st[aria-pressed=true] small{color:#fff}
+#sh-main #mod-enquiries .oc.need{outline:2px solid #D93025;outline-offset:4px;border-radius:12px}
+#sh-main #mod-enquiries .eq-ferr{margin:8px 0 0;font-weight:700}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -7894,8 +7896,10 @@ function formHTML(){
   ${(r.events||[]).length?eventsHTML(r):''}
   ${lboxHTML()}
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
-  <span class="lbl">Outcome</span>
-  <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button>${r.fault==='no'?`<button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="true">Not at fault</button>`:''}</div>
+  <span class="lbl">Outcome (required)</span>
+  <div class="oc ${msg&&msg.err&&!r.fault?'need':''}" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button>${r.fault==='no'?`<button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="true">Not at fault</button>`:''}</div>
+  <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Anything the supervisor wants to note">${esc(r.note||'')}</textarea></label>
+  ${msg&&msg.err?`<p class="msg err eq-ferr" role="alert">${esc(msg.t)}</p>`:''}
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
   </section></div>`;
 }
@@ -10908,7 +10912,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021246';
+const VERSION='1202611021255';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
