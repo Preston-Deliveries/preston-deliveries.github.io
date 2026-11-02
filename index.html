@@ -3528,13 +3528,16 @@ function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank
 const scTxt=r=>window.SCORE.fmt(r.avg||0);
 function mountBoard(box,rows){
   box.classList.remove("rt");
+  {const S=window.__rbS,num=v=>v==null||v===""||isNaN(+v)?null:+v,F={pc:[r=>num(r.pc),-1],eta:[r=>num(r.eta),1],cp:[r=>num(r.cp),1],enq:[r=>(+r.enq||0)+(+r.enqP||0),-1]}[S];
+   if(F){const [f,d]=F;rows=rows.slice().sort((a,b)=>{const x=f(a),y=f(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (x-y)*d})}}
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><div class="rb-dl rb-dl2"><button type="button" class="sh-btn rb-pdf" data-rb="pdf" aria-label="Download PDF" title="Download PDF">PDF</button></div></div><p class="rb-msg" id="r_boardMsg" hidden></p>
   ${(()=>{const n=a=>a.filter(v=>v!=null&&v!==""&&!isNaN(+v)).map(Number),av=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null},sm=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0):null};
     const pc=sm(rows.map(r=>r.pc)),eta=av(rows.map(r=>r.eta)),cp=av(rows.map(r=>r.cp)),eq=sm(rows.map(r=>(+r.enq||0)));const tg=(window.SCORE&&window.SCORE.targets&&window.SCORE.targets())||{};
     const cE=eta==null?"n":eta*100>=(tg.etaG||98)-1e-9?"g":"b",cC=cp==null?"n":cp*100>=(tg.cpG||99)-1e-9?"g":"b";
-    return `<div class="rb-tot"><span><b>${pc==null?"–":Math.round(pc).toLocaleString("en-AU")}</b><small>Parcels</small></span><span><b class="v-${cE}">${eta==null?"–":p1(eta)}</b><small>2 hr ETA</small></span><span><b class="v-${cC}">${cp==null?"–":p1(cp)}</b><small>Scan</small></span><span><b class="v-${eq?"b":"g"}">${eq==null?"0":Math.round(eq)}</b><small>Enquiries</small></span></div>`})()}
+    const S=window.__rbS||"",tb=(k,v,c,l)=>`<button type="button" data-rbs="${k}" aria-pressed="${S===k}"><b class="v-${c}">${v}</b><small>${l}${S===k?" ▾":""}</small></button>`;
+    return `<div class="rb-tot">${tb("pc",pc==null?"–":Math.round(pc).toLocaleString("en-AU"),"n","Parcels")}${tb("eta",eta==null?"–":p1(eta),cE,"2 hr ETA")}${tb("cp",cp==null?"–":p1(cp),cC,"Scan")}${tb("enq",eq==null?"0":Math.round(eq),eq?"b":"g","Enquiries")}</div>`})()}
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
@@ -3545,7 +3548,7 @@ function mountBoard(box,rows){
 `;
   if(box.__wiredB)return;box.__wiredB=true;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("[data-rbk]")&&window.ME&&ME.warm)ME.warm()},{passive:true});setTimeout(()=>{if(window.ME&&ME.warm)ME.warm()},1500);
-  box.addEventListener("click",e=>{if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
+  box.addEventListener("click",e=>{{const t=e.target.closest("[data-rbs]");if(t){window.__rbS=window.__rbS===t.dataset.rbs?"":t.dataset.rbs;renderRTAdmin();return}}if(e.target.closest("[data-rb=pdf]")){boardPdf(e.target.closest("[data-rb=pdf]"));return}if(e.target.closest("[data-rb=share]")){shareBoard(e.target.closest("[data-rb=share]"));return}
     const d=e.target.closest("[data-rbk]");if(d&&window.SUMMARY&&window.SUMMARY.openLogin)window.SUMMARY.openLogin(d.dataset.rbk);else if(d&&window.ME&&window.ME.openLogin)window.ME.openLogin(d.dataset.rbk)});
 }
 /* the picture for the team: always light, sized for a phone, every driver ranked */
@@ -5094,7 +5097,7 @@ function render(){
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?(()=>{const G={};for(const p of l){const k=String(p.postcode||'').trim()||'Other';(G[k]=G[k]||[]).push(p)}const ks=Object.keys(G).sort();
-     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<span class="pc-${k}"><b>${(G[k]||[]).length}</b><small>${k}</small></span>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-pc="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.address)}</b><small>${esc(p.suburb||'')}${p.date?' · '+esc(fmtDate(p.date)):''}</small>${p.reason?`<em>${esc(p.reason)}</em>`:''}</span><span class="dv">${badge(p.driver)}<small>${esc(driverName(p.driver)||'')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
+     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<button type="button" class="pcz-${k}" data-pc="pcf" data-v="${pcf===k?'all':k}" aria-pressed="${pcf===k}"><b>${Object.values(items).filter(p=>(p.status||'approved')===tab&&String(p.postcode||'').trim()===k).length}</b><small>${k}</small></button>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-pc="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.address)}</b><small>${esc(p.suburb||'')}${p.date?' · '+esc(fmtDate(p.date)):''}</small>${p.reason?`<em>${esc(p.reason)}</em>`:''}</span><span class="dv">${badge(p.driver)}<small>${esc(driverName(p.driver)||'')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
    ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
@@ -5244,7 +5247,7 @@ function render(){
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?(()=>{const G={};for(const p of l){const k=String(p.postcode||'').trim()||'Other';(G[k]=G[k]||[]).push(p)}const ks=Object.keys(G).sort();
-     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<span class="pc-${k}"><b>${(G[k]||[]).length}</b><small>${k}</small></span>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-lk="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.name||p.address)}</b><small>${esc([p.name?p.address:'',p.location].filter(Boolean).join(' · '))}</small>${p.description?`<em>${desc(p.description)}</em>`:'<small class="nd">No details yet</small>'}</span><span class="dv">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}<small>${dnames(p).map(n=>esc(n)).join(', ')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
+     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<button type="button" class="pcz-${k}" data-lk="pcf" data-v="${pcf===k?'all':k}" aria-pressed="${pcf===k}"><b>${Object.values(items).filter(p=>(p.type||'building')===tab&&String(p.postcode||'').trim()===k).length}</b><small>${k}</small></button>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-lk="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.name||p.address)}</b><small>${esc([p.name?p.address:'',p.location].filter(Boolean).join(' · '))}</small>${p.description?`<em>${desc(p.description)}</em>`:'<small class="nd">No details yet</small>'}</span><span class="dv">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}<small>${dnames(p).map(n=>esc(n)).join(', ')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
    ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Building</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address||p.name)}</b></td><td class="aa">${p.address?esc(p.name):''}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}</td><td class="dn">${dnames(p).map(n=>`<span class="nl">${esc(n)}</span>`).join('')}</td><td class="rs">${p.description?desc(p.description):'<span class="sub">No details yet</span>'}</td></tr>`).join('')}
@@ -7848,13 +7851,13 @@ let eqTab='todo';
 const PCOWN=[['4214','Joshua Drewes'],['4215','Stephen Seaborn'],['4217','Jonathan Simpson'],['4218','Kim Rutten']];
 const myPc=()=>{let me=window.__webMe||{};try{me=me.name?me:(window.parent.__webMe||me)}catch(e){}const n=String(me.name||'').toLowerCase().replace(/\s+/g,' ').trim();const em=String(me.email||'').toLowerCase();
   if(['jozza21@gmail.com','jozza721@gmail.com'].includes(em))return '4217';const hit=PCOWN.find(([,nm])=>n&&(n===nm.toLowerCase()||n.split(' ')[0]===nm.toLowerCase().split(' ')[0]&&n.split(' ').pop()===nm.toLowerCase().split(' ').pop()));return hit?hit[0]:''};
-let eqPc=null;const getPc=()=>{if(eqPc==null)eqPc=myPc()||'';return eqPc};
+let eqPc=null,eqF='';const getPc=()=>{if(eqPc==null)eqPc=myPc()||'';return eqPc};
 const isDone=r=>{const D=DRV[r.id];return D?!!D.closedAt:!!r.fault};
 const actRank=r=>{const D=DRV[r.id];if(D&&unread(D))return 0;if(!D)return r.fault?3:1;return 2};
 function filtered(){
   const d=qDriver.trim().toLowerCase();
   const pc=getPc();
-  const L=enqs().filter(r=>(!pc||pcOf(r)===pc)&&inPer(r.date,'enq')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
+  const L=enqs().filter(r=>(!pc||pcOf(r)===pc)&&(!eqF||r.fault===eqF)&&inPer(r.date,'enq')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
   return L.sort((x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt)));
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
@@ -7883,7 +7886,7 @@ function render(){
   <div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>inPer(r.date,'enq'));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
     return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span>${n(k)?`<span class="c">${n(k)}</span>`:''}</div>`).join('')})()}</div>
   ${perBar('enq',enqs().map(x=>x.date))}
-  ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>x.fault==='partly').length}</b><small>Partly at fault</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')&&(!getPc()||pcOf(x)===getPc())))}
+  ${(P=>`<div class="nstat nstf"><button type="button" data-eq="eqf" data-v="" aria-pressed="${!eqF}"><b>${P.length}</b><small>Enquiries</small></button><button type="button" class="${P.some(x=>x.fault==='yes')?'r':''}" data-eq="eqf" data-v="yes" aria-pressed="${eqF==='yes'}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></button><button type="button" data-eq="eqf" data-v="partly" aria-pressed="${eqF==='partly'}"><b>${P.filter(x=>x.fault==='partly').length}</b><small>Partly at fault</small></button></div>`)(enqs().filter(x=>inPer(x.date,'enq')&&(!getPc()||pcOf(x)===getPc())))}
   <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off"></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
   <div id="eq_res" class="eres">${resHTML(L)}</div>
@@ -8044,7 +8047,7 @@ document.addEventListener('click',async ev=>{
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
   if(a==='pmode'){PER[el.dataset.k].mode=v;render();return}
   if(a==='eqtab'){eqTab=v;msg=null;render();return}
-  if(a==='eqpc'){eqPc=v;msg=null;render();return}
+  if(a==='eqpc'){eqPc=v;msg=null;render();return}if(a==='eqf'){eqF=eqF===v?'':v;msg=null;render();return}
   if(a==='pchip'){const P=PER[el.dataset.k];if(P.mode==='year')P.y=v;else P.m=v;render();return}
   if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
@@ -8755,7 +8758,8 @@ const ITEMS=[
 const OUT={pass:['Pass','good'],minor:['Pass, fix needed','warn'],fail:['Fail, do not drive','bad']};
 const CHECKER_ROLES=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
 
-let mode='wait',db=null,recs={},staff={},view='status',q='',open=null,editing=null,draft=null,msg=null,busy=false,arm=false,every=30,sortS='urgent',sortA='newest',mf='all';
+let mode='wait',db=null,recs={},staff={},view='status',q='',open=null,editing=null,draft=null,msg=null,busy=false,arm=false,every=30,sortS='urgent',sortA='newest',mf='all',vcF='';
+const vcKey=x=>!x.last?'never':x.last.outcome==='fail'?'fail':x.last.outcome==='minor'?'fix':x.due<0?'over':'ok';
 const hay=r=>r?[r.driver,r.rego,r.vehicle,r.checker,r.notes,r.action,nice(r.date),longD(r.date),(OUT[r.outcome]||[''])[0],fails(r).map(i=>i[1]).join(' ')].join(' ').toLowerCase():'';
 const MONF=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const monthLabel=k=>{const[y,m]=k.split('-');return MONF[+m-1]+' '+y};
@@ -8778,8 +8782,11 @@ function statusHTML(){
   if(sortS==='newest'||sortS==='oldest'){const dir=sortS==='newest'?-1:1;rows.sort((a,b)=>{if(!a.last&&!b.last)return a.p.name.localeCompare(b.p.name);if(!a.last)return 1;if(!b.last)return -1;return dir*String(a.last.date).localeCompare(String(b.last.date))||a.p.name.localeCompare(b.p.name)})}
   else if(sortS==='name')rows.sort((a,b)=>a.p.name.localeCompare(b.p.name));
   else rows.sort((a,b)=>{const s=x=>x.last&&x.last.outcome==='fail'?0:!x.last?1:x.due<0?2:x.last.outcome==='minor'?3:4;return s(a)-s(b)||(a.due??-9999)-(b.due??-9999)||a.p.name.localeCompare(b.p.name)});
+  const vT=(k,cls,lab,n,ti)=>`<button type="button" class="tile ${cls}" data-vc="vcf" data-v="${k}" aria-pressed="${vcF===k}"${ti?` title="${ti}"`:''}><span>${lab}</span><b>${n}</b></button>`;
+  const rows0=rows.slice();
   const cnt={never:rows.filter(x=>!x.last).length,over:rows.filter(x=>x.last&&x.due<0).length,fail:rows.filter(x=>x.last&&x.last.outcome==='fail').length,fix:rows.filter(x=>x.last&&x.last.outcome==='minor').length,ok:rows.filter(x=>x.last&&x.due>=0&&x.last.outcome==='pass').length};
-  return `<div class="tiles trow" style="--tn:5"><div class="tile bad" title="Failed, do not drive"><span>Failed</span><b>${cnt.fail}</b></div><div class="tile warn" title="Fix needed"><span>Fix</span><b>${cnt.fix}</b></div><div class="tile warn"><span>Overdue</span><b>${cnt.over}</b></div><div class="tile none" title="No check in 4 months"><span>Unchecked</span><b>${cnt.never}</b></div><div class="tile good" title="Up to date"><span>Up to date</span><b>${cnt.ok}</b></div></div>
+  if(vcF){const keep=rows.filter(x=>vcKey(x)===vcF);rows.length=0;rows.push(...keep)}
+  return `<div class="tiles trow vcf" style="--tn:5">${vT('fail','bad','Failed',cnt.fail,'Failed, do not drive')}${vT('fix','warn','Fix',cnt.fix,'Fix needed')}${vT('over','warn','Overdue',cnt.over)}${vT('never','none','Unchecked',cnt.never,'No check in 4 months')}${vT('ok','good','Up to date',cnt.ok)}</div>
   <div class="bar vcbar"><input type="search" id="vc_q" placeholder="Driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts"><select id="vc_sorts" aria-label="Sort">${[['urgent','Most urgent first'],['newest','Last check, newest first'],['oldest','Last check, oldest first'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every"><select id="vc_every" aria-label="Check every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>Every ${n} days</option>`).join('')}</select></label></div>
   <div class="tw"><table class="tb vc-drv"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
   ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk} ${!last||due<0||last.outcome==='fail'?'st-bad':last.outcome==='minor'||due<=7?'st-warn':'st-ok'}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
@@ -8899,6 +8906,7 @@ document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-vc]');const sec=document.getElementById('mod-vchecks');if(!el||!sec||!sec.contains(el))return;
   const a=el.dataset.vc,v=el.dataset.v;if(a!=='del')arm=false;
   if(a==='view'){view=v;open=null;msg=null;render();return}
+  if(a==='vcf'){vcF=vcF===v?'':v;render();return}
   if(a==='drv'){view='drv';open=v;msg=null;render();window.scrollTo(0,0);return}
   if(a==='open'){window.__edY={y:scrollY,s:window.APP&&APP.section};open=v;msg=null;render();window.scrollTo(0,0);return}
   if(a==='back'){if(open&&recs[open]){const r=recs[open];open=view==='drv'?(r.driverId||null):null}else{open=null;view=view==='drv'?'status':view}msg=null;render();return}
@@ -10577,8 +10585,9 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
      const say=(c,x)=>c==='ind'?'Induction not done':c==='agr'?'Agreement not signed':c==='f2w'?'Fit2Work '+x.t.toLowerCase():c==='visa'&&/No expiry/.test(x.t)?'Visa has no expiry date':LB[c]+(x.c==='bad'?' '+x.t.replace(/^Expired/,'expired'):' due '+x.t.split(' (')[0].replace(/ \d{4}$/,''));
      const mr=rows.map(r=>{const b=COLS.filter(([c])=>r[c].c==='bad'),w=COLS.filter(([c])=>r[c].c==='warn'),n=COLS.filter(([c])=>r[c].c==='none'&&c!=='agr');return{r,b,w,n,lv:b.length?3:w.length?2:n.length?1:0}}).sort((a,b)=>b.lv-a.lv||b.b.length-a.b.length||nameOf(a.r.p).localeCompare(nameOf(b.r.p)));
      const nc=k=>mr.filter(x=>x.lv===k).length;
-     const mob=`<div class="cpm"><div class="cpm-t"><span class="b"><b>${nc(3)}</b><small>Action needed</small></span><span class="w"><b>${nc(2)}</b><small>Due soon</small></span><span class="n"><b>${nc(1)}</b><small>Missing info</small></span><span class="g"><b>${nc(0)}</b><small>All good</small></span></div>
-       <div class="cpm-l">${mr.map(x=>`<button type="button" class="cpm-r l${x.lv}" data-cpe="${esc(x.r.p.id)}"><i></i><span class="tx"><b>${esc(nameOf(x.r.p))} <em>${esc(label(roleOf(x.r.p)))}</em></b>${x.b.map(([c])=>`<small class="b">${esc(say(c,x.r[c]))}</small>`).join('')}${x.w.map(([c])=>`<small class="w">${esc(say(c,x.r[c]))}</small>`).join('')}${x.n.length?`<small class="n">Not entered: ${esc(x.n.map(([c])=>LB[c]).join(', '))}</small>`:''}${x.lv===0?'<small class="g">All up to date</small>':''}</span><span class="go">›</span></button>`).join('')}</div></div>`;
+     const cT=(k,c,l)=>`<button type="button" class="${c}" data-cplv="${k}" aria-pressed="${CP.lv===k}"><b>${nc(k)}</b><small>${l}</small></button>`;
+     const mob=`<div class="cpm"><div class="cpm-t">${cT(3,'b','Action needed')}${cT(2,'w','Due soon')}${cT(1,'n','Missing info')}${cT(0,'g','All good')}</div>
+       <div class="cpm-l">${mr.filter(x=>CP.lv==null||x.lv===CP.lv).map(x=>`<button type="button" class="cpm-r l${x.lv}" data-cpe="${esc(x.r.p.id)}"><i></i><span class="tx"><b>${esc(nameOf(x.r.p))} <em>${esc(label(roleOf(x.r.p)))}</em></b>${x.b.map(([c])=>`<small class="b">${esc(say(c,x.r[c]))}</small>`).join('')}${x.w.map(([c])=>`<small class="w">${esc(say(c,x.r[c]))}</small>`).join('')}${x.n.length?`<small class="n">Not entered: ${esc(x.n.map(([c])=>LB[c]).join(', '))}</small>`:''}${x.lv===0?'<small class="g">All up to date</small>':''}</span><span class="go">›</span></button>`).join('')}</div></div>`;
      return `${mob}${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
      ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Induction','Licence','Rego','Visa','Agreement','F2W'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
      ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><span class="cp-gl"><i></i>${esc(label(k))} <span>${g.length}</span></span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="cp-row ${lev(r)?'cp-n '+lev(r):''}" data-cpe="${esc(r.p.id)}" tabindex="0"><td class="cp-nm" title="${esc(lev(r)?why(r):'')}"><b>${esc(shortName(r.p))}</b><i class="cp-ed" aria-hidden="true">✎</i></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
@@ -10610,6 +10619,7 @@ async function cpSave(w){const id=w.dataset.id,p=(drivers()||[]).find(x=>x.id===
   const m=w.querySelector('.cpe-msg'),b=w.querySelector('[data-cpx="save"]');b.disabled=true;m.textContent='Saving…';
   try{const d=await getDb();await d.doc('staff/'+id).update(patch);Object.assign(p,patch);if(S.staff&&S.staff[id])Object.assign(S.staff[id],patch);cpClose();compliance()}
   catch(e){b.disabled=false;m.textContent='Could not save. Check your internet and try again.'}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#cp_root [data-cplv]');if(!b)return;const k=+b.dataset.cplv;CP.lv=CP.lv===k?null:k;compliance()});
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const r=t.closest('#cp_root [data-cpe]');if(r){cpEdit(r.dataset.cpe);return}
   const x=t.closest('#cp_edit [data-cpx]');if(!x)return;const k=x.dataset.cpx,w=document.getElementById('cp_edit');
   if(k==='close')cpClose();else if(k==='save')cpSave(w);else if(k==='full'){const id=w.dataset.id;cpClose();if(window.APP)APP.go('staff');setTimeout(()=>{try{window.__dmOpen&&window.__dmOpen(id,'.dm-h')}catch(e){}},150)}});
@@ -10951,7 +10961,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021500';
+const VERSION='1202611021508';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13190,10 +13200,49 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precard
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx small.nd{font-style:italic}
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .dv{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;max-width:40%;text-align:right}
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .dv small{font-size:.78rem;color:var(--sh-muted);font-weight:600;line-height:1.25}
-html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4214::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4214{background:#2F6FDB}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4215::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4215{background:#D4A20B}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4217::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4217{background:#1E8A4C}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4218::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4218{background:#C62828}
+
 }
 @media (max-width:899px) and (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{color:#FFB27A}}
 @media (max-width:899px){html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{color:#FFB27A}}
 </style>
+<style id="rd-tiles">
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn[aria-pressed=false]{background:var(--ps)!important;color:var(--p)!important;border-color:transparent!important;box-shadow:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn[aria-pressed=true],html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn.on{background:var(--p)!important;color:var(--ps)!important;border-color:var(--p)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn *{color:inherit!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcbtn .c{background:rgba(0,0,0,.14)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-t button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:12px;background:var(--ps);border:2px solid transparent}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-t button b{font-size:1.35rem;font-weight:800;line-height:1.1;color:var(--p)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-t button small{font-size:.78rem;font-weight:800;color:var(--p)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-t button[aria-pressed=true]{border-color:var(--p);box-shadow:0 0 0 1px var(--p) inset}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-h i{background:var(--p)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .pcm-h{color:var(--p)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm-t,.nstf,.vcf)>button{all:unset;box-sizing:border-box;cursor:pointer;-webkit-tap-highlight-color:transparent}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot>button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot>button b{font:800 1.2rem/1.1 var(--sh-body);white-space:nowrap}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot>button b.v-n{color:var(--sh-ink)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot>button small{font-size:.72rem;font-weight:700;color:var(--sh-muted)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 4px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button b{font-size:1.4rem;font-weight:800;line-height:1.1;color:var(--sh-ink)}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button small{font-size:.72rem;font-weight:700;color:var(--sh-muted);line-height:1.15}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.b b{color:#C62828}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.w b{color:#B26A00}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.g b{color:#1E8A4C}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .nstf>button{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:14px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .nstf>button b{font-size:1.6rem;font-weight:800;line-height:1.1;color:var(--sh-ink)}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .nstf>button.r b{color:#C62828}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .nstf>button small{font-size:.9rem;color:var(--sh-muted)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .vcf>button.tile{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm-t,.nstf,.vcf)>button[aria-pressed=true]{border:2px solid #F2782D!important;box-shadow:0 0 0 1px #F2782D inset!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm-t,.nstf,.vcf)>button:focus-visible{outline:2px solid #F2782D;outline-offset:2px}
+</style>
+<style>@media (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.cpm-t>button.b b,.nstf>button.r b){color:#FF8A80}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.w b{color:#FFB547}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.g b{color:#5CCB8E}}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.cpm-t>button.b b,.nstf>button.r b){color:#FF8A80}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.w b{color:#FFB547}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .cpm-t>button.g b{color:#5CCB8E}</style>
+<script id="pc-btn-js">
+/* any button whose label is a postcode gets that postcode's colour */
+(()=>{const RX=/^(4214|4215|4217|4218)$/;let q=0;
+  function tag(){q=0;const m=document.getElementById('sh-main');if(!m)return;
+    for(const b of m.querySelectorAll('button,[role=button]')){if(b.closest('.pcm-t'))continue;
+      const l=b.querySelector(':scope>.l');const t=(l?l.textContent:[...b.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('')||b.textContent).trim();
+      const k=RX.test(t)?t:'';const had=b.dataset.pcb||'';if(k===had)continue;
+      if(had)b.classList.remove('pcbtn','pcz-'+had);if(k){b.classList.add('pcbtn','pcz-'+k);b.dataset.pcb=k}else delete b.dataset.pcb}}
+  const soon=()=>{if(!q)q=requestAnimationFrame(tag)};
+  try{new MutationObserver(soon).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  setTimeout(tag,500);
+})();
+</script>
 </body>
 </html>
