@@ -3531,9 +3531,12 @@ function mountBoard(box,rows){
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><div class="rb-dl rb-dl2"><button type="button" class="sh-btn rb-pdf" data-rb="pdf" aria-label="Download PDF" title="Download PDF">PDF</button></div></div><p class="rb-msg" id="r_boardMsg" hidden></p>
-  ${window.SCORE.howHTML("sc-how sv-how").replace("</details>",`<p>Drivers on the same score share the same place.</p></details>`)}
+  ${(()=>{const n=a=>a.filter(v=>v!=null&&v!==""&&!isNaN(+v)).map(Number),av=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null},sm=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0):null};
+    const pc=sm(rows.map(r=>r.pc)),eta=av(rows.map(r=>r.eta)),cp=av(rows.map(r=>r.cp)),eq=sm(rows.map(r=>(+r.enq||0)));const tg=(window.SCORE&&window.SCORE.targets&&window.SCORE.targets())||{};
+    const cE=eta==null?"n":eta*100>=(tg.etaG||98)-1e-9?"g":"b",cC=cp==null?"n":cp*100>=(tg.cpG||99)-1e-9?"g":"b";
+    return `<div class="rb-tot"><span><b>${pc==null?"–":Math.round(pc).toLocaleString("en-AU")}</b><small>Parcels</small></span><span><b class="v-${cE}">${eta==null?"–":p1(eta)}</b><small>2 hr ETA</small></span><span><b class="v-${cC}">${cp==null?"–":p1(cp)}</b><small>Scan</small></span><span><b class="v-${eq?"b":"g"}">${eq==null?"0":Math.round(eq)}</b><small>Enquiries</small></span></div>`})()}
   <div class="rb" role="table" aria-label="Driver results">
-   <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader">Scan compliance</span><span role="columnheader">Enquiries</span><span role="columnheader">Contract Score</span></div>
+   <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
      return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR(r.name||r.login)}</b><small>${r.days} day${r.days===1?"":"s"}${r.rank?"":" · not ranked"}</small></span></button>
      ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
@@ -12892,5 +12895,32 @@ setInterval(()=>{homePaint();if(!TK.unM)watchMine()},60000);
 })();
 </script>
 
+<style id="rd-results">
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot>span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line);min-width:0}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b{font:800 1.2rem/1.1 var(--sh-body);color:var(--sh-ink);white-space:nowrap}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-g{color:#1E8A4C}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-b{color:#C62828}@media (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-g{color:#5CCB8E}html:not([data-theme=light]) body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-b{color:#FF8A80}}html[data-theme=dark] body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-g{color:#5CCB8E}html[data-theme=dark] body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot b.v-b{color:#FF8A80}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-tot small{font-size:.72rem;font-weight:700;color:var(--sh-muted)}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h i{font-style:normal}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h i.sh{display:none}
+@media (max-width:899px){
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb{display:block!important;gap:0!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;overflow:hidden;background:var(--sh-surface)!important;padding:0 12px!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r{display:grid!important;grid-template-columns:minmax(0,1fr) 54px 54px 30px 50px!important;gap:4px!important;align-items:center!important;background:transparent!important;border:0!important;border-top:1px solid var(--sh-line)!important;border-radius:0!important;padding:9px 0!important;box-shadow:none!important;margin:0!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r.rb-h{display:grid!important;border-top:0!important;padding:8px 0 6px!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h>span{font:800 .66rem var(--sh-body)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-muted)!important;text-align:right;white-space:nowrap}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h>span:first-child{text-align:left}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r.rb-r>:nth-child(2):nth-child(2){display:none!important}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>:nth-child(1){grid-row:1!important;grid-column:1!important}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>:nth-child(3){grid-row:1!important;grid-column:2!important}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>:nth-child(4){grid-row:1!important;grid-column:3!important}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>:nth-child(5){grid-row:1!important;grid-column:4!important}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>:nth-child(6){grid-row:1!important;grid-column:5!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h i.lg{display:none}html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-h i.sh{display:inline}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-d{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;align-items:center;gap:8px;min-width:0;grid-column:auto!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-d .rk{flex:none;width:22px!important;height:22px!important;min-width:0!important;border-radius:50%;display:grid;place-items:center;font:800 .75rem/1 var(--sh-body)!important;box-shadow:none!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-d .nm{display:flex;flex-direction:column;min-width:0}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-d .nm b{font-size:.95rem!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--sh-ink)}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-d .nm small{font-size:.72rem!important;color:var(--sh-muted)}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-c{display:block!important;text-align:right;padding:0!important;background:none!important;border:0!important;min-width:0}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-c small{display:none!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-c b{font-size:.86rem!important;font-weight:700!important;white-space:nowrap}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-s{display:block!important;text-align:right;padding:0!important;grid-column:auto!important;grid-row:auto!important;background:none!important;border:0!important}
+html body #sh-main#sh-main#sh-main #mod-results#mod-results .rb-r>.rb-s b{font-size:1rem!important;font-weight:800!important}
+}
+</style>
 </body>
 </html>
