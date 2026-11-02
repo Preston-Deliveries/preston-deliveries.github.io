@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611022140';
+const VERSION='1202611022158';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12436,7 +12436,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    for(const [tk,tsel,offL,onL] of [['load',LOADTAB,'Load new results','Back to results'],['edit','#modes [data-act="mode"][data-v="edit"]','Edit run sheet','Done editing']]){
      const lt=[...sec.querySelectorAll(tsel)].find(x=>!x.parentElement.hidden&&(vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement))));
      if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:tk,label:on?onL:offL,b:lt,grp,on})}}
-   {const ab=[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement))));if(ab){const lab=(ab.textContent||'').trim()||'Add';want.push({k:'add',label:lab,b:ab})}}
+   {const ab=[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement))||(!!x.closest('.head,.dm-head')&&!x.closest('[hidden]'))));if(ab){const lab=(ab.textContent||'').trim()||'Add';want.push({k:'add',label:lab,b:ab})}}
    let box=ttl.querySelector('.ph-acts');
    const sig=want.map(w=>w.k+(w.on?'1':'0')).join(',');
    if(!want.length){if(box)box.remove();return}
@@ -12462,7 +12462,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  /* main add action: one round + button, bottom right above the tab bar (like Gmail, WhatsApp, Google Calendar) */
  const ADDSEL='[data-ts="addtop"],.iv-hook[data-iv="tab"],[data-tk="new"],[data-nt="new"],[data-tb="new"],[data-eq="new"],[data-eq="nnew"],[data-rp="file"],[data-vc="new"]:not([data-v]),[data-dm="add"],[data-pc="add"],[data-lk="add"],[data-lv="add"]';
  function fab(){let f=document.getElementById('pds-fab');const sec=secOf();const ph=document.getElementById('sh-ph');
-   const b=sec&&ph&&!ph.hidden?[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement)))):null;
+   const b=sec&&ph&&!ph.hidden?[...sec.querySelectorAll(ADDSEL)].find(x=>!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.classList.contains('ix-moved')&&vis(x.parentElement))||(!!x.closest('.head,.dm-head')&&!x.closest('[hidden]')))):null;
    if(!b){if(f)f.hidden=true;document.body.classList.remove('has-fab');return}
    if(!f){f=document.createElement('button');f.type='button';f.id='pds-fab';f.className='ix-add';f.addEventListener('click',()=>{f.__b&&f.__b.click()});document.body.appendChild(f)}
    const lab=(b.textContent||'').trim().replace(/^\+\s*/,'')||'Add';f.setAttribute('aria-label',lab);f.title=lab;
