@@ -11442,7 +11442,8 @@ async function onbCheck(){
     if(ROLE==='admin')return;const me=window.__webMe||{};const sid=String(me.staff||'');if(!sid)return;
     const s=await fs.doc('staff/'+sid).get();if(!s.exists)return;const st=DEC(s.data())||{};
     if(st.onboard!=='pending'){
-      if(st.decReq){const o=await window.ONB.get(sid);const dn=o&&o.dec&&o.dec.at;if(!(dn&&dn>=st.decReq)){OB.sid=sid;OB.staff=st;OB.mode='dec';OB.step=4;OB.d={};onbOpen();return}}
+      /* declarations are added by the office by hand, so drivers are never stopped for one */
+      if(0&&st.decReq){const o=await window.ONB.get(sid);const dn=o&&o.dec&&o.dec.at;if(!(dn&&dn>=st.decReq)){OB.sid=sid;OB.staff=st;OB.mode='dec';OB.step=4;OB.d={};onbOpen();return}}
       agrCheck();return}
     const o=await window.ONB.get(sid);if(o&&o.status==='submitted'){agrCheck();return}
     OB.sid=sid;OB.staff=st;OB.d=Object.assign({first:st.first||'',last:st.last||'',mobile:st.mobile||'',email:st.email||EMAIL},o&&o.d||{});OB.step=Math.min(o&&o.step||0,OB_STEPS.length-1);
