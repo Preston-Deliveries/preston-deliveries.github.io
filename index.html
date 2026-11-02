@@ -113,6 +113,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-enquiries .eq-dst{margin:4px 0 0;font-weight:700}#mod-enquiries .eq-dst.done{color:#15703D}
 #mod-enquiries .eq-close{border-top:1px solid var(--sh-line);margin-top:8px;padding-top:10px}
 #mod-enquiries .eq-close .oc{margin:8px 0}
+#sh-main #mod-enquiries .oc .ob.part[aria-pressed=true]{background:#D97706!important;border-color:#D97706!important;color:#fff!important}
 #mod-enquiries .ob.later[aria-pressed=true]{background:var(--sh-sunk,rgba(127,127,127,.2))!important;border-color:var(--sh-muted)!important;color:inherit!important}
 #mod-myenq .my-i.wait{border-left:4px solid #E0A526}#mod-myenq .my-st.wait{background:rgba(224,165,38,.2);color:#8A5A00}
 #mod-myenq .my-need{margin:6px 0 0;font-weight:700;color:var(--sh-muted)}#mod-myenq .my-need.act{color:#C2410C}
@@ -7869,7 +7870,6 @@ function formHTML(){
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
   <span class="lbl">Was the driver at fault? You can decide later, after the driver replies.</span>
   <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button><button type="button" class="ob later" data-eq="f" data-v="" aria-pressed="${!r.fault}">Decide later</button></div>
-  <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Why">${esc(r.note||'')}</textarea></label>
   ${(()=>{if(r.id&&DRV[r.id])return `<div class="foot"><button type="button" class="sh-btn primary" data-eq="save">Save changes</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>`;
     const p=byLogin(r.login),fn=p?p.name.split(' ')[0]:'the driver';
     return `<div class="eq-fsend"><span class="lbl">Send to ${esc(fn)}</span>
@@ -7984,7 +7984,7 @@ async function printList(){
     msg={t:'PDF saved. Open it to print.'}}catch(x){msg=x&&x.code==='declined'?null:{err:true,t:'Could not make the PDF just now.'}}render();
 }
 /* ---------- actions ---------- */
-function readForm(){const r=draft;const g=k=>($(k)||{}).value||'';r.enqType=g('type').trim();r.category=g('cat').trim();r.customer=g('cust').trim();r.tracking=g('trk').trim();r.scanAddr=g('scan').trim();r.deliveredAt=g('dat').trim();r.date=$('date').value||today();r.caseNo=$('case').value.trim();r.login=$('drv').value;const p=byLogin(r.login);r.driver=p?p.name:(r.driver||'');r.supervisor=$('sup').value;r.address=$('addr').value.trim();r.details=$('det').value.trim();r.note=$('note').value.trim();return r}
+function readForm(){const r=draft;const g=k=>($(k)||{}).value||'';r.enqType=g('type').trim();r.category=g('cat').trim();r.customer=g('cust').trim();r.tracking=g('trk').trim();r.scanAddr=g('scan').trim();r.deliveredAt=g('dat').trim();r.date=$('date').value||today();r.caseNo=$('case').value.trim();r.login=$('drv').value;const p=byLogin(r.login);r.driver=p?p.name:(r.driver||'');r.supervisor=$('sup').value;r.address=$('addr').value.trim();r.details=$('det').value.trim();r.note=$('note')?$('note').value.trim():(r.note||'');return r}
 document.addEventListener('click',async ev=>{
   const el=ev.target.closest('[data-eq]');if(!el||!document.getElementById('mod-enquiries').contains(el))return;
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
@@ -10883,7 +10883,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021152';
+const VERSION='1202611021155';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
