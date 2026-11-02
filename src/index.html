@@ -1854,7 +1854,7 @@ function findRender(){const el=$('ah_fres');if(!el)return;clearTimeout(findT);fi
   if(R==null){el.innerHTML=dv+pg+'<p class="ah-fnote">Loading streets…</p>';findT=setTimeout(findRender,700);return}
   if(!R.length&&!P.length&&!(D&&D.length)){el.innerHTML='<p class="ah-fnote">No street or page matches. Check the spelling or try the first few letters.</p>';return}
   const shown=R.slice(0,8);
-  el.innerHTML=dv+pg+(shown.length?`${P.length||(D&&D.length)?'<h3 class="ah-fh">Streets</h3>':''}<div class="ah-flist">${shown.map(g=>`<div class="ah-fst"><div class="ah-ftop"><b>${hl(g.name,q)}</b><span class="ah-fpc">${esc(g.pc)}</span></div>${g.parts.map(x=>`<button type="button" class="ah-fp" data-fid="${esc(x.id)}"><i style="background:${x.col||'#999'}"></i><span class="ah-fwho"><b>${esc(x.driver||'Unassigned')}</b><small>${[x.login,x.bay?'Trolley bay '+x.bay:'',x.rg].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`).join('')}</div>${R.length>8?`<p class="ah-fnote">${R.length-8} more streets. Keep typing to narrow it down.</p>`:''}`:'');
+  el.innerHTML=dv+pg+(shown.length?`${P.length||(D&&D.length)?'<h3 class="ah-fh">Streets</h3>':''}<div class="ah-flist">${shown.map(g=>`<div class="ah-fst"><div class="ah-ftop"><b>${g.num!=null?esc(g.num)+' ':''}${hl(g.name,g.num!=null?g.t:q)}</b><span class="ah-fpc">${esc(g.pc)}</span></div>${g.num!=null&&g.all>1?`<p class="ah-fnum">${esc(g.how==='num'?`Split street. Number ${g.num} is on this run.`:g.how==='rest'?`Split street. Number ${g.num} is not in a listed range, so it is the rest of the street.`:`Split street. No run lists number ${g.num}, so check the ranges below.`)}</p>`:''}${g.parts.map(x=>`<button type="button" class="ah-fp" data-fid="${esc(x.id)}"><i style="background:${x.col||'#999'}"></i><span class="ah-fwho"><b>${esc(x.driver||'Unassigned')}</b><small>${[x.login,x.bay?'Trolley bay '+x.bay:'',x.rg].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`).join('')}</div>${R.length>8?`<p class="ah-fnote">${R.length-8} more streets. Keep typing to narrow it down.</p>`:''}`:'');
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='ah_fq'){findQ=e.target.value;findPin=null;hSay('');findRender()}});
 /* Home: tap Ask, say "who does Palmer St", see and hear whose street it is */
@@ -2747,6 +2747,11 @@ function voiceFuzzy(t){const sufs=new Set(Object.values(SUF));const w=t.split(' 
   scored.sort((a,b)=>a[0]-b[0]);if(!scored.length)return[];const best=scored[0][0];
   return scored.filter(x=>x[0]<=best+.05).slice(0,3).map(x=>x[1])}
 function voiceAnswer(q,noFuzzy){
+  const pa=addrParse(q);
+  if(pa.num!=null&&pa.t){const r=voiceAnswer(pa.t,noFuzzy);if(!r||!r.txt)return r;
+    const A=addrFind(pa.num+' '+(r.q||pa.t)),G=A.groups.filter(g=>g.has&&g.has.length);
+    if(A.sure&&G.length&&G.length<=3)return{q:pa.num+' '+A.t,txt:(/^Did you mean/.test(r.txt)?'Did you mean: ':'')+G.map(g=>`${pa.num} ${spokenSt(g.name)} is ${g.has.map(p=>p.driver+(p.login?', run '+p.login:'')).join(' or ')}, in ${g.pc}`).join('. ')+'.'};
+    r.txt=`I couldn't tell which part has number ${pa.num}. `+r.txt;return r}
   let t=normName(q);let hits=voiceHits(q);let note='';
   if(!hits.length){const w=t.split(' ');const sufs=new Set(Object.values(SUF));
     if(w.length>1&&sufs.has(w[w.length-1])){const base=w.slice(0,-1).join(' ');hits=voiceHits(base);if(hits.length){note='1';t=base}}}
@@ -2777,6 +2782,44 @@ function streetIndex(){
   out.forEach(g=>g.parts.sort((a,b)=>String(a.login).localeCompare(String(b.login),undefined,{numeric:true})));
   out.sort((a,b)=>a.n.localeCompare(b.n));
   return out;
+}
+/* house numbers: "345 Southport Nerang Rd" finds the street, then the driver whose part of the street has 345 */
+function addrParse(q){
+  const s=String(q||'').toUpperCase().replace(/[,.#]/g,' ').replace(/([A-Z])\s*-\s*([A-Z])/g,'$1 $2').replace(/\s+/g,' ').trim();
+  const m=/^(?:(?:UNIT|U|APT|LOT|SHOP|SUITE|NO|NUMBER)\s*)?(?:\d+[A-Z]?\s*\/\s*)?(\d+)\s*[A-Z]?(?:\s*-\s*\d+[A-Z]?)?\s+([A-Z].*)$/.exec(s);
+  return m?{t:normName(m[2]),num:+m[1]}:{t:normName(s),num:null};
+}
+function numIn(rg,n){
+  const s=String(rg||'').toUpperCase();if(!s.trim())return null;
+  let par=null,any=false,ok=false;
+  for(const seg of s.split(/,|;|\)\s*\(|&|\bAND\b(?!\s*(?:UP|ABOVE|OVER))/)){
+    if(/\bODDS?\b/.test(seg))par=1;else if(/\bEVENS?\b/.test(seg))par=0;
+    const fits=(lo,hi,p)=>{if(n>=lo&&n<=hi&&(p==null||n%2===p))ok=true};
+    let r=seg.replace(/(\d+)[A-Z]?\s*(?:-|–|TO|THROUGH|THRU)\s*(\d+)[A-Z]?/g,(m,a,b)=>{any=true;a=+a;b=+b;const p=par!=null?par:(a%2===b%2&&!/\b(ALL|BOTH)\b/.test(seg)?a%2:null);fits(Math.min(a,b),Math.max(a,b),p);return ' '});
+    r=r.replace(/(?:UP TO|UNDER|BELOW|BEFORE|TO)\s*(\d+)/g,(m,a)=>{any=true;fits(0,+a,par);return ' '});
+    r=r.replace(/(?:FROM|OVER|ABOVE|AFTER)\s*(\d+)|(\d+)[A-Z]?\s*(?:\+|ONWARDS|ON\b|AND UP|AND ABOVE|AND OVER|PLUS|UP\b)/g,(m,a,b)=>{any=true;fits(+(a||b),1e9,par);return ' '});
+    r.replace(/\d+/g,m=>{any=true;if(+m===n)ok=true;return m});
+  }
+  return any?ok:null;
+}
+function addrFind(q){
+  const {t:t0,num}=addrParse(q);if(!t0)return{t:'',num,groups:[]};
+  const sufs=new Set(Object.values(SUF));
+  const fix=t=>{const w=t.split(' ');if(w.length>1&&SUF[w[w.length-1]])w[w.length-1]=SUF[w[w.length-1]];return w.join(' ')};
+  const idx=streetIndex(),hit=t=>idx.filter(g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t));
+  let t=fix(t0),res=hit(t);
+  if(!res.length&&t!==t0){res=hit(t0);if(res.length)t=t0}
+  /* "345 Southport Nerang Rd Southport": drop words from the end until a street matches */
+  if(!res.length&&num!=null){const w=t.split(' ');while(!res.length&&w.length>1){w.pop();if(w.length===1&&sufs.has(w[0]))break;const tt=fix(w.join(' '));res=hit(tt);if(res.length)t=tt}}
+  const exact=res.filter(g=>g.n===t);if(num!=null&&exact.length)res=exact;
+  res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));
+  if(num==null)return{t,num,groups:res};
+  const out=res.map(g=>{const sc=g.parts.map(p=>numIn(p.rg,num));let has=g.parts.filter((p,i)=>sc[i]===true);let how='num';
+    if(!has.length){has=g.parts.filter(p=>!p.rg);how='rest'}
+    if(!has.length&&g.parts.length===1){has=g.parts;how='only'}
+    return Object.assign({},g,{has,how})});
+  let sure=out.filter(g=>g.has.length);if(sure.some(g=>g.how==='num'))sure=sure.filter(g=>g.how==='num');
+  return{t,num,groups:sure.length?sure:out,sure:sure.length>0};
 }
 const badgeHTML=(login,col)=>`<span class="dno" style="background:${col}">${esc(login)}</span>`;
 function shortDrv(n){const all=[...new Set(allIds().map(i=>String(S.runs[i].driver||'')))],p=String(n||'').trim().split(/\s+/),f=p[0]||'';const dup=all.some(x=>x!==n&&x.split(/\s+/)[0]===f);return dup&&p.length>1?f+' '+p[p.length-1][0]+'.':f}
@@ -2873,13 +2916,14 @@ function renderResults(){
   const colD=colourMap();
   const drvHTML=drv.length?`<div class="lk-drv"><h3 class="lk-h">Drivers</h3>${drv.map(id=>{const r=S.runs[id],st=[...new Set((r.streets||[]).map(x=>String(x.name||'').trim()).filter(Boolean))];return `<div class="lk-st"><div class="lk-top"><i class="cdot" style="background:${colD[id]}"></i><span class="lk-name">${esc(r.driver)}</span><span class="lk-pc">${esc(r.postcode)}</span>${r.login?`<span class="rg">${esc(r.login)}</span>`:''}<button type="button" class="go" data-act="openRun" data-v="${esc(id)}">Run sheet</button></div><div class="lk-sts">${st.length?st.slice(0,40).map(n=>`<span>${esc(n)}</span>`).join('')+(st.length>40?`<span>and ${st.length-40} more</span>`:''):'<span>No streets yet</span>'}</div></div>`}).join('')}</div>`:'';
   /* every postcode, with this postcode's streets listed first */
-  const hit=g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t);
-  let res=idx.filter(hit);S.allPc=res.some(g=>g.pc!==S.pc);
-  res.sort((a,b)=>((b.pc===S.pc)-(a.pc===S.pc))||(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));
+  const A=addrFind(S.q),tA=A.t||t;
+  let res=A.groups;S.allPc=res.some(g=>g.pc!==S.pc);
+  res.sort((a,b)=>((b.pc===S.pc)-(a.pc===S.pc))||(b.n.startsWith(tA)-a.n.startsWith(tA))||a.n.localeCompare(b.n));
   const shown=res.slice(0,60);
   cnt.textContent=[drv.length?`${drv.length} driver${drv.length===1?'':'s'}`:'',res.length?`${res.length} street${res.length===1?'':'s'}${S.allPc?' across all postcodes':' in '+S.pc}${res.length>60?', showing the first 60':''}`:''].filter(Boolean).join(' and ');
-  box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res lk2">${shown.map((g,gi)=>`<div class="lk-st${gi===0?' top':''}"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="lk2-ed" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}" aria-label="Edit ${esc(g.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>`:''}</div>
-    ${g.parts.map(p=>{const R=S.runs[p.id]||{};return `<button type="button" class="lk2-p" data-act="openRun" data-v="${esc(p.id)}"><i class="cdot" style="background:${p.col}"></i><span class="tx"><b>${R.login?'Run '+esc(R.login)+' · ':''}${esc(p.driver)}</b><small>${p.rg?esc(p.rg):'Whole street'}</small></span>${R.bay?`<span class="bay"><small>Bay</small><b>${esc(R.bay)}</b></span>`:'<span class="go2">›</span>'}</button>`}).join('')}</div>`).join('')}</div>`
+  box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res lk2">${shown.map((g,gi)=>`<div class="lk-st${gi===0?' top':''}"><div class="lk-top"><span class="lk-name">${A.num!=null?esc(A.num)+' ':''}${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="lk2-ed" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}" aria-label="Edit ${esc(g.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>`:''}</div>
+    ${A.num!=null&&g.parts.length>1?`<p class="lk-num">${esc(g.how==='num'?`Split street. Number ${A.num} is on this run.`:g.how==='rest'?`Split street. Number ${A.num} is not in a listed range, so it is the rest of the street.`:`Split street. No run lists number ${A.num}, so check the ranges below.`)}</p>`:''}
+    ${(g.has&&g.has.length?g.has:g.parts).map(p=>{const R=S.runs[p.id]||{};return `<button type="button" class="lk2-p" data-act="openRun" data-v="${esc(p.id)}"><i class="cdot" style="background:${p.col}"></i><span class="tx"><b>${R.login?'Run '+esc(R.login)+' · ':''}${esc(p.driver)}</b><small>${p.rg?esc(p.rg):'Whole street'}</small></span>${R.bay?`<span class="bay"><small>Bay</small><b>${esc(R.bay)}</b></span>`:'<span class="go2">›</span>'}</button>`}).join('')}</div>`).join('')}</div>`
     :drv.length?'':`<div class="state"><h2>No street or driver matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Check the spelling, or try the first few letters.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`);
 }
 function sortPrintDoc(pc){
@@ -2907,7 +2951,7 @@ if(!ok){set(5,7);ps.forEach(function(p){var z=H/p.scrollHeight;if(z<1){p.style.z
 }
 
 async function shareRuns(){if(!window.APP)throw new Error('unavailable');await APP.publish({runs:JSON.parse(JSON.stringify(S.runs))})}
-window.RUNS={find(q){if(!S.loaded&&!Object.keys(S.runs).length)return null;const t=normName(q);if(!t)return [];const res=streetIndex().filter(g=>g.n.startsWith(t)||g.n.split(' ').some(w=>w.startsWith(t))||g.n.includes(t));res.sort((a,b)=>(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));return res.map(g=>({name:g.name,pc:g.pc,parts:g.parts.map(x=>({id:x.id,login:String(x.login||''),driver:String(x.driver||''),rg:x.rg,col:x.col,bay:String((S.runs[x.id]||{}).bay||'')}))}))},openId(id){if(!S.runs[id])return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';S.mode='sheet';remember();if(window.APP)APP.go('runs');return true},list(){return allIds().map(i=>({id:i,login:String(S.runs[i].login||'').toUpperCase(),postcode:String(S.runs[i].postcode||''),driver:String(S.runs[i].driver||'')}))},driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
+window.RUNS={find(q){if(!S.loaded&&!Object.keys(S.runs).length)return null;const A=addrFind(q);if(!A.t)return [];const res=A.groups;return res.map(g=>({name:g.name,pc:g.pc,num:A.num,how:g.how||'',t:A.t,all:g.parts.length,parts:(g.has&&g.has.length?g.has:g.parts).map(x=>({id:x.id,login:String(x.login||''),driver:String(x.driver||''),rg:x.rg,col:x.col,bay:String((S.runs[x.id]||{}).bay||'')}))}))},openId(id){if(!S.runs[id])return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';S.mode='sheet';remember();if(window.APP)APP.go('runs');return true},list(){return allIds().map(i=>({id:i,login:String(S.runs[i].login||'').toUpperCase(),postcode:String(S.runs[i].postcode||''),driver:String(S.runs[i].driver||'')}))},driver(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].driver||''):''},trolley(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());return id?String(S.runs[id].bay||''):''},openLogin(l){const id=allIds().find(i=>String(S.runs[i].login).toUpperCase()===String(l).toUpperCase());if(!id)return false;S.cur=id;S.pc=String(S.runs[id].postcode);S.view='runs';remember();if(window.APP)APP.go('runs');return true},setView(v){S.view=v;if(v==='runs'&&(!S.cur||!ids().includes(S.cur)))S.cur=ids()[0]||null;render();if(v==='lookup'&&S.loaded&&window.matchMedia&&matchMedia('(min-width:900px)').matches)focusQ()},share:shareRuns};
 window.RUNS.vClean=voiceClean;window.RUNS.vAnswer=voiceAnswer;window.RUNS.sKey=sKey;window.RUNS.lev=lev;
 function useSnapshot(){
   const snap=window.APP&&APP.SNAP&&APP.SNAP.runs;
@@ -10984,7 +11028,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611030525';
+const VERSION='1202611030630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13780,6 +13824,8 @@ html[data-theme=dark]:root:root:root:root:root:root:root:root:root:root body #sh
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ah-qa .qa-grid .qa>b{white-space:nowrap!important;font-size:.8rem!important;letter-spacing:-.01em!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs main#app:has(>.state:only-child){padding-bottom:4px!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs main#app>.state:only-child{margin-bottom:12px!important}
+:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=view] header.top .weeknav,:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=view] #rl_fold{display:none!important}
+:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ah-fnum,:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .lk2 .lk-num{margin:4px 0 2px!important;font-size:.85rem!important;font-weight:600!important;color:var(--sh-muted)!important;line-height:1.35!important}
 </style>
 <script id="cp-q-js">(()=>{const norm=t=>String(t||'').toLowerCase().replace(/\s+/g,' ');function apply(){const q=norm((window.__cpQ||'').trim());document.querySelectorAll('#mod-compliance .cpm-r,#mod-compliance tr.cp-row').forEach(r=>{r.hidden=!!q&&!norm(r.textContent).includes(q)});document.querySelectorAll('#mod-compliance tr.cp-gr').forEach(g=>{let n=g.nextElementSibling,any=false;while(n&&!n.classList.contains('cp-gr')){if(!n.hidden)any=true;n=n.nextElementSibling}g.hidden=!!q&&!any});document.querySelectorAll('#mod-compliance .cp-q').forEach(i=>{if(document.activeElement!==i&&i.value!==(window.__cpQ||''))i.value=window.__cpQ||''})}
 document.addEventListener('input',e=>{const i=e.target;if(!i.classList||!i.classList.contains('cp-q'))return;window.__cpQ=i.value;apply()},true);
