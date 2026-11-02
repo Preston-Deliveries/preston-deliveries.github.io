@@ -1,0 +1,7 @@
+{
+  "name": "pds-build",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "node build.mjs ../src/index.html ../index.html" },
+  "dependencies": { "terser": "5.31.0", "postcss": "8.4.38" }
+}
