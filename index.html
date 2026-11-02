@@ -77,7 +77,12 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-enquiries .eq-tabs .n.hot{background:#D93025;color:#fff}
 #sh-main #mod-enquiries .eq-tabs button[aria-pressed=true] .n{background:rgba(255,255,255,.25);color:#fff}
 #mod-enquiries .eq-tabhint{margin:0 0 8px}
-#sh-main #mod-enquiries .eqx.nx>.eq-tabs{order:1}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
+#sh-main #mod-enquiries .eqx.nx>.eq-tabs{order:1}#sh-main #mod-enquiries .eqx.nx>.eq-pcs{order:1}
+#sh-main #mod-enquiries .eq-pcs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 10px}
+#sh-main #mod-enquiries .eq-pcs .eq-pc{all:unset;cursor:pointer;box-sizing:border-box;display:flex!important;align-items:center;justify-content:center;gap:5px;padding:9px 2px;border-radius:12px;border:1px solid var(--sh-line)!important;background:var(--sh-surface)!important;color:var(--sh-ink)!important;min-width:0;text-align:center}
+#sh-main #mod-enquiries .eq-pcs .eq-pc .l{font-weight:800;font-size:.95rem;background:none!important;color:inherit!important;padding:0!important}
+#sh-main #mod-enquiries .eq-pcs .eq-pc .c{font-weight:800;font-size:.7rem;line-height:1.5;background:#D93025!important;color:#fff!important;border-radius:999px;min-width:1.5em;padding:0 4px;text-align:center}
+#sh-main #mod-enquiries .eq-pcs .eq-pc[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.3)}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -7742,11 +7747,17 @@ async function patchN(id,patch,t){const n=recs[id];if(!n)return;const doc={...n,
 /* ---------- list ---------- */
 /* Needs action: no outcome yet, or a conversation with the driver still open. Done: closed, or an outcome with nothing open. */
 let eqTab='todo';
+/* who looks after each postcode's enquiries; each person's app opens on their own postcode */
+const PCOWN=[['4214','Joshua Drewes'],['4215','Stephen Seaborn'],['4217','Jonathan Simpson'],['4218','Kim Rutten']];
+const myPc=()=>{let me=window.__webMe||{};try{me=me.name?me:(window.parent.__webMe||me)}catch(e){}const n=String(me.name||'').toLowerCase().replace(/\s+/g,' ').trim();const em=String(me.email||'').toLowerCase();
+  if(['jozza21@gmail.com','jozza721@gmail.com'].includes(em))return '4217';const hit=PCOWN.find(([,nm])=>n&&(n===nm.toLowerCase()||n.split(' ')[0]===nm.toLowerCase().split(' ')[0]&&n.split(' ').pop()===nm.toLowerCase().split(' ').pop()));return hit?hit[0]:''};
+let eqPc=null;const getPc=()=>{if(eqPc==null)eqPc=myPc()||'';return eqPc};
 const isDone=r=>{const D=DRV[r.id];return D?!!D.closedAt:!!r.fault};
 const actRank=r=>{const D=DRV[r.id];if(D&&unread(D))return 0;if(!D)return r.fault?3:1;return 2};
 function filtered(){
   const d=qDriver.trim().toLowerCase();
-  const L=enqs().filter(r=>(eqTab==='todo'?!isDone(r):(inPer(r.date,'enq')&&(eqTab==='all'||isDone(r))))&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
+  const pc=getPc();
+  const L=enqs().filter(r=>(!pc||pcOf(r)===pc)&&(eqTab==='todo'?!isDone(r):(inPer(r.date,'enq')&&(eqTab==='all'||isDone(r))))&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
   const by=(x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt));
   return eqTab==='todo'?L.sort((x,y)=>actRank(x)-actRank(y)||by(x,y)):L.sort(by);
 }
@@ -7773,7 +7784,9 @@ function render(){
       <div class="b"><button type="button" class="sh-btn primary" data-eq="plgo" ${pList.rows.length&&pList.rows.every(x=>x.login)?'':'disabled'}>+ ${pList.rows.reduce((a,x)=>a+x.n,0)} enquiries</button><button type="button" class="sh-btn" data-eq="plback">Edit the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`
     :`<p>One line each: day, driver, how many, at fault. For example <i>TUE 6/10 NATHAN INGRAM 1 at fault</i>.</p><textarea id="eq_pltxt" rows="8" placeholder="TUE 6/10 NATHAN INGRAM 1 at fault">${esc(pList.text||'')}</textarea><div class="b"><button type="button" class="sh-btn primary" data-eq="plcheck">Check the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`}</section>`
   :''}
-  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const T=enqs().filter(r=>!isDone(r)).length,N=enqs().filter(r=>!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0],['all','All',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
+  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const pc=getPc(),inPc=r=>!pc||pcOf(r)===pc;const T=enqs().filter(r=>inPc(r)&&!isDone(r)).length,N=enqs().filter(r=>inPc(r)&&!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0],['all','All',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
+  <div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>!isDone(r));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
+    return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span>${n(k)?`<span class="c">${n(k)}</span>`:''}</div>`).join('')})()}</div>
   ${eqTab==='todo'?`<p class="sub eq-tabhint">Every enquiry still open, newest replies first: no outcome yet, or still talking with the driver. Close it with the outcome and it moves to Done.</p>`:perBar('enq',enqs().map(x=>x.date))}
   ${eqTab==='todo'?'':(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
   <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off">
@@ -7933,6 +7946,7 @@ document.addEventListener('click',async ev=>{
   const a=el.dataset.eq,v=el.dataset.v;if(a!=='del'&&a!=='ndel')arm=false;
   if(a==='pmode'){PER[el.dataset.k].mode=v;render();return}
   if(a==='eqtab'){eqTab=v;msg=null;render();return}
+  if(a==='eqpc'){eqPc=v;msg=null;render();return}
   if(a==='pchip'){const P=PER[el.dataset.k];if(P.mode==='year')P.y=v;else P.m=v;render();return}
   if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
@@ -10825,7 +10839,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021129';
+const VERSION='1202611021133';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
