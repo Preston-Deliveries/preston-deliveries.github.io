@@ -2152,7 +2152,8 @@ let first='home';
 if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
 else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
-else if(/^myenq\//.test(h)){first='myenq';window.__myEnqOpen=h.slice(6)}
+else if(/^myenq\//.test(h)){first='myenq';window.__myEnqOpen=h.slice(6);window.__deepOpen=h.slice(6)}
+else if(/^(enq|ncr)\//.test(h)){first=h.startsWith('ncr')?'ncr':'enquiries';window.__deepOpen=h.replace(/^(enq|ncr)\//,'')}
 else if(h) first='runs';
 else if(previewChild){try{const v=sessionStorage.getItem('uv1161')||window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
 /* the app always opens on Home; if it sat in the background for 15 minutes or more, it goes back to Home too */
@@ -7454,7 +7455,7 @@ async function say(x,text,ack){x=cv(L[x.id]);busy=true;render();const now=new Da
   if(text){up.msgs=x.msgs.concat([{f:'d',t:text,at:now}]);up.lastFrom='d';up.lastAt=now}
   if(ack)up.ack=now;
   try{await db.doc('drvenq/'+x.id).update(up);Object.assign(L[x.id],up);delete draft[x.id];delete qSel[x.id];msg={t:ack&&!text?'Thanks. The office can see you have read it.':'Sent. The office has been told.'};
-    try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{})}catch(z){}
+    try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{id:x.id})}catch(z){}
     try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}}
   catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'};busy=false;render();return}
   busy=false;const tx=$('txt');if(tx){tx.value='';tx.blur()}render()}
@@ -7470,7 +7471,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
 });
 document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open]=e.target.value});
 /* a ding opens straight to that enquiry: #myenq/<id> */
-function fromHash(){const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
+function fromHash(){const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;if(window.APP&&APP.role==='mgr'&&window.parent===window)return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
 window.addEventListener('hashchange',fromHash);
 async function start(role){
   if(role==='mgr'&&window.parent===window){state='none';return}
@@ -8055,13 +8056,19 @@ async function start(role){
   try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>Object.assign({id:d.id},clone(__D(d)))))}catch(x){}
   db.collection('drvenq').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));DRV=o;const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{});
   setTimeout(cleanPics,8000);
-  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();
+  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();if(window.__deepOpen&&deepGo())return;
     const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{msg={err:true,t:'Could not load enquiries.'};render()});
   render();
 }
 render();
+/* a ding opens straight to one enquiry or NCR: #enq/<id>, #ncr/<id> (and #myenq/<id> when the office taps a driver ding) */
+function deepGo(){const id=window.__deepOpen;if(!id||mode!=='mgr'||!recs[id])return false;window.__deepOpen=null;const r=recs[id];
+  if(r.kind==='ncr'){tab='ncr';nDraft=null;nOpen=id;if(window.APP&&APP.section!=='ncr')APP.go('ncr')}else{tab='enq';view='one';open=id;draft=null;if(window.APP&&APP.section!=='enquiries')APP.go('enquiries')}
+  msg=null;closing=null;const D=DRV[id];if(D&&unread(D)){D.offSeen=new Date().toISOString();db.doc('drvenq/'+id).update({offSeen:D.offSeen}).catch(()=>{})}
+  render();window.scrollTo(0,0);return true}
+window.addEventListener('hashchange',()=>{const h=decodeURIComponent((location.hash||'').slice(1));const m=/^(enq|ncr|myenq)\/(.+)$/.exec(h);if(!m)return;window.__deepOpen=m[2];deepGo()});
 window.addEventListener('app:role',e=>start(e.detail));
-window.addEventListener('sh:go',e=>{const want=e.detail==='ncr'?'ncr':e.detail==='enquiries'?'enq':null;if(want&&want!==tab){tab=want;msg=null;nOpen=null;nDraft=null;view='list';try{render()}catch(x){}}});
+window.addEventListener('sh:go',e=>{if(window.__deepOpen&&deepGo())return;const want=e.detail==='ncr'?'ncr':e.detail==='enquiries'?'enq':null;if(want&&want!==tab){tab=want;msg=null;nOpen=null;nDraft=null;view='list';try{render()}catch(x){}}});
 if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 })();
 
@@ -10794,7 +10801,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021112';
+const VERSION='1202611021123';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();

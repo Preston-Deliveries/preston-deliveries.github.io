@@ -101,6 +101,8 @@ export default {
       if (b.kind === 'leave' && niceDay(b.from)) { const f = niceDay(b.from), t = niceDay(b.to); mb = (nm || 'A driver') + ' has asked for ' + (t && t !== f ? f + ' to ' + t : f) + ' off. Tap to view.'; }
       const msg = K.title ? { title: K.title, body: mb, url: K.url }
         : { title: clip(b.title, 60) || 'Preston Delivery Service', body: clip(b.body, 180), url: safeUrl(b.url) };
+      /* a driver's reply opens that exact enquiry or NCR for the office */
+      if ((b.kind === 'enqreply' || b.kind === 'ncrreply') && /^[A-Za-z0-9_-]{1,50}$/.test(String(b.id || ''))) msg.url = (b.kind === 'ncrreply' ? '#ncr/' : '#enq/') + b.id;
       if (!msg.body) return out({ error: 'Message is empty' }, 400);
 
       /* who gets it */
