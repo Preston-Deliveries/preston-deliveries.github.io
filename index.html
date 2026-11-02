@@ -10947,7 +10947,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021430';
+const VERSION='1202611021450';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13112,5 +13112,24 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root
 @media (max-width:899px) and (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .b b,.cpm-r small.b){color:#FF8A80}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .w b,.cpm-r small.w){color:#FFB547}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .g b,.cpm-r small.g){color:#5CCB8E}}
 @media (max-width:899px){html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .b b,.cpm-r small.b){color:#FF8A80}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .w b,.cpm-r small.w){color:#FFB547}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .g b,.cpm-r small.g){color:#5CCB8E}}
 </style>
+<script id="keep-place">
+/* After a tap redraws the page, keep the tapped button where it was on screen, so the page does not jump.
+   Code that moves the page on purpose (back to the top for a form, or scrolling to an item) is left alone. */
+(()=>{let rec=null;
+  const sTo=window.scrollTo.bind(window),sBy=window.scrollBy.bind(window),sIV=Element.prototype.scrollIntoView;
+  window.scrollTo=function(){if(rec&&!rec.mine)rec.reset=true;return sTo.apply(window,arguments)};
+  Element.prototype.scrollIntoView=function(){if(rec)rec.reset=true;return sIV.apply(this,arguments)};
+  const esc=v=>window.CSS&&CSS.escape?CSS.escape(v):String(v).replace(/"/g,'\\"');
+  document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('button,summary,[role=button],[data-lv],[data-cv],[data-cpe]');
+    if(!el||el.closest('.sh-nav,#sh-tabs,.sh-sheet,[role=dialog],.pu-sheet,#cp_edit'))return;
+    const sec=document.querySelector('#sh-main .sh-sec:not([hidden])');if(!sec||!sec.contains(el))return;
+    const sel=el.tagName.toLowerCase()+Object.entries(el.dataset||{}).filter(([k])=>k!=='jt').map(([k,v])=>`[data-${k.replace(/[A-Z]/g,m=>'-'+m.toLowerCase())}="${esc(v)}"]`).join('')+(el.id?'#'+esc(el.id):'');
+    const r={sel,top:el.getBoundingClientRect().top,txt:(el.textContent||'').trim().slice(0,40),reset:false,sec,el};rec=r;
+    const fix=()=>{if(rec!==r||r.reset)return;const cur=document.querySelector('#sh-main .sh-sec:not([hidden])');if(cur!==r.sec)return;
+      let n=r.el.isConnected?r.el:null;if(!n){try{const L=[...cur.querySelectorAll(r.sel)];n=L.find(x=>(x.textContent||'').trim().slice(0,40)===r.txt)||(L.length===1?L[0]:null)}catch(x){}}
+      if(!n||!n.isConnected||!n.offsetParent)return;const d=n.getBoundingClientRect().top-r.top;if(Math.abs(d)>24){r.mine=true;sBy(0,d);r.mine=false}};
+    requestAnimationFrame(()=>{fix();setTimeout(fix,150);setTimeout(()=>{fix();if(rec===r)rec=null},450)})},true);
+})();
+</script>
 </body>
 </html>
