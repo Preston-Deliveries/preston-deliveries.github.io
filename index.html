@@ -10680,7 +10680,7 @@ const MAXPH=6;
 
 let mode='wait',db=null,items={},staff={},me=null,meTried=false,msg=null,busy=false;
 let kind=null,f=null,photos=[],sent=null;
-let tab='open',kf='all',q='',open=null,imgs={},arm=false,edit=null,filing=false;
+let tab='all',kf='all',q='',open=null,imgs={},arm=false,edit=null,filing=false;
 
 function blank(k){return{kind:k,date:isoD(new Date()),time:nowT(),whereType:'',where:'',type:'',desc:'',action:'',witness:'',told:[],
   hurt:null,who:'',inj:'',part:'',treat:'',police:null,policeRef:'',
@@ -10796,8 +10796,7 @@ function mgrListHTML(){
   const cnt=k=>L.filter(r=>k==='open'?r.status!=='closed':k==='new'?r.status==='new':true).length;
   const show=L.filter(r=>(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))&&(kf==='all'||r.kind===kf)&&(!t||[person(r).name,r.f&&r.f.where,r.f&&r.f.type,r.f&&r.f.desc,KINDS[r.kind].t].join(' ').toLowerCase().includes(t)));
   const yr=new Date().getFullYear()+'';const Y=L.filter(r=>(r.f&&r.f.date||'').startsWith(yr));
-  return `<div class="tabs" role="group" aria-label="Show">${[['new','New'],['open','Open'],['all','All']].map(([k,l])=>`<button type="button" data-rp="tab" data-v="${k}" aria-pressed="${tab===k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
-   <div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file"><span class="ix ix-add" aria-hidden="true"></span>Report</button></div></div>
+  return `<div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file"><span class="ix ix-add" aria-hidden="true"></span>Report</button></div></div>
    <div class="tiles trow vcf" style="--tn:3">${(()=>{const T=(a,v,cls,n,l,on,ti)=>`<button type="button" class="tile ct ct-${cls}${n?'':' z'}" data-rp="${a}" data-v="${v}" aria-pressed="${on}" ${!n&&!on?'disabled':''}${ti?` title="${ti}"`:''}><b>${n}</b><span>${l}</span></button>`;
      return Object.entries(KINDS).map(([k,o])=>{const n=L.filter(r=>r.kind===k&&(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))).length;return T('kf',kf===k?'all':k,k==='hazard'?'warn':'bad',n,({incident:'Incidents',vehicle:'Accidents',hazard:'Hazards'})[k]||o.t,kf===k)}).join('')})()}</div>
    <div class="bar onesrch">
@@ -10976,7 +10975,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611022040';
+const VERSION='1202611022043';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
