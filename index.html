@@ -80,8 +80,11 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-myenq .my-q{grid-template-columns:repeat(3,minmax(0,1fr))}
 #mod-enquiries .eq-need button,#mod-myenq .my-q button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;border:1px solid var(--sh-line);border-radius:12px;padding:10px 12px;background:var(--sh-surface);text-align:left}
 #mod-myenq .my-q button{text-align:center;justify-content:center;font-weight:700;font-size:.88rem;min-height:52px}
-#mod-enquiries .eq-need button small{color:var(--sh-muted);font-size:.8rem}
-#mod-enquiries .eq-need button[aria-pressed=true]{border-color:#F2782D;box-shadow:0 0 0 2px rgba(242,120,45,.35)}
+#sh-main #mod-enquiries .eq-need .eq-nb{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px;border:1px solid var(--sh-line)!important;border-radius:12px!important;padding:10px 12px!important;background:var(--sh-surface)!important;color:var(--sh-ink)!important;min-height:0!important;height:auto!important;text-align:left!important}
+#sh-main #mod-enquiries .eq-need .eq-nb .t1{font-weight:800;font-size:.98rem;background:none!important;color:inherit!important;padding:0!important}
+#sh-main #mod-enquiries .eq-need .eq-nb .t2{font-weight:500;font-size:.82rem;color:var(--sh-muted)!important;background:none!important;padding:0!important;border-radius:0!important;width:auto!important}
+#sh-main #mod-enquiries .eq-need .eq-nb[aria-pressed=true]{border-color:#F2782D!important;box-shadow:0 0 0 2px rgba(242,120,45,.35)!important;background:rgba(242,120,45,.08)!important}
+
 #mod-enquiries .eq-drv textarea,#mod-enquiries .eq-close textarea{width:100%;box-sizing:border-box;font:inherit;border-radius:10px;border:1px solid var(--sh-line);padding:10px;background:transparent;color:inherit;margin-top:6px}
 #mod-enquiries .eq-dh{display:flex;justify-content:space-between;align-items:center;gap:8px}
 #mod-enquiries .eq-need1{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--sh-sunk,rgba(127,127,127,.14))}
@@ -7814,7 +7817,7 @@ function threadHTML(D,me){return (D.msgs||[]).length?`<div class="eq-th">${D.msg
 function drvBox(id,kind){const D=convo(DRV[id]),r=recs[id]||{},p=byLogin(r.login);const fn=p?p.name.split(' ')[0]:'the driver';
   if(!D){if(!p||!p.id)return `<section class="card eq-drv"><span class="lbl">Driver</span><p class="sub">Pick a driver who is on the Drivers page to send it to them.</p></section>`;
     return `<section class="card eq-drv"><span class="lbl">Send to ${esc(fn)}</span>
-     <div class="eq-need" role="group" aria-label="What you need">${[['action','Needs action','They must reply'],['info','For your info','They tap I’ve read it']].map(([k,l,sm])=>`<button type="button" data-eq="need" data-v="${k}" aria-pressed="${sendOpt.need===k}"><b>${l}</b><small>${sm}</small></button>`).join('')}</div>
+     <div class="eq-need" role="group" aria-label="What you need">${[['action','Needs action','They must reply'],['info','For your info','They tap I’ve read it']].map(([k,l,sm])=>`<div role="button" tabindex="0" class="eq-nb" data-eq="need" data-v="${k}" aria-pressed="${sendOpt.need===k}"><span class="t1">${l}</span><span class="t2">${sm}</span></div>`).join('')}</div>
      <label class="f" for="eq_snote">Your note to ${esc(fn)} (optional)<textarea id="eq_snote" rows="2" placeholder="${sendOpt.need==='action'?'e.g. Please go back and recover this parcel today and let me know':'e.g. Just so you know, please knock louder at this address'}">${esc(sendOpt.note)}</textarea></label>
      <div class="b"><button type="button" class="sh-btn primary" data-eq="sendd" data-v="${esc(id)}" data-k="${kind}">Send to ${esc(fn)}</button></div>
      <p class="sub">Their phone dings and it opens straight to this ${kind==='ncr'?'NCR':'enquiry'}. You get a ding each time they reply.</p></section>`}
@@ -10775,7 +10778,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021053';
+const VERSION='1202611021102';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
