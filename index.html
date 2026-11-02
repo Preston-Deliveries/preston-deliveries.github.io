@@ -7844,8 +7844,7 @@ function render(){
     return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span>${n(k)?`<span class="c">${n(k)}</span>`:''}</div>`).join('')})()}</div>
   ${eqTab==='todo'?`<p class="sub eq-tabhint">Every enquiry still open, newest replies first: no outcome yet, or still talking with the driver. Close it with the outcome and it moves to Done.</p>`:perBar('enq',enqs().map(x=>x.date))}
   ${eqTab==='todo'?'':(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
-  <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off">
-   <label class="tog"><input type="checkbox" id="eq_of" ${onlyFault?'checked':''}> At fault only</label></div>
+  <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off"></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
   <div id="eq_res" class="eres">${resHTML(L)}</div>
   </div>`;
@@ -10904,7 +10903,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021226';
+const VERSION='1202611021230';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
