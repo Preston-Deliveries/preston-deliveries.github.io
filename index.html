@@ -10968,7 +10968,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021558';
+const VERSION='1202611021611';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12532,7 +12532,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 </style>
 <script>
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
-(()=>{const GAP=14;const vis=e=>!!(e&&e.getClientRects().length);
+(()=>{const GAP=12;const vis=e=>!!(e&&e.getClientRects().length);
  const paints=(n,cs)=>/^(BUTTON|INPUT|SELECT|TEXTAREA|IMG|SVG|CANVAS|VIDEO|TABLE)$/i.test(n.tagName)||parseFloat(cs.borderTopWidth)>0||(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor))||cs.backgroundImage!=='none'||cs.boxShadow!=='none'||[...n.childNodes].some(x=>x.nodeType===3&&x.textContent.trim());
  function norm(){const sec=[...document.querySelectorAll('#sh-main .sh-sec')].find(s=>!s.hidden&&vis(s));if(!sec||sec.id==='mod-home')return;
    const hs=[document.getElementById('sh-tabs'),document.getElementById('sh-ph')].filter(e=>vis(e)&&!sec.contains(e));if(!hs.length)return;
@@ -12541,7 +12541,8 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    /* cheap size and position check first; the slower style checks only for things that could be higher up */
    while(n=w.nextNode()){const r=n.getBoundingClientRect();if(r.height<2||r.width<2||r.top>=top)continue;if(n.closest('.ph-acts'))continue;const cs=getComputedStyle(n);if(cs.position==='fixed'||cs.position==='absolute'||cs.visibility==='hidden')continue;if(!paints(n,cs))continue;top=r.top}
    if(!isFinite(top))return;const gap=top-hb;if(Math.abs(gap-GAP)<1.5)return;
-   const cur=parseFloat(getComputedStyle(sec).paddingTop)||0;const want=Math.max(0,Math.min(60,cur+GAP-gap));
+   const cur=parseFloat(getComputedStyle(sec).paddingTop)||0;let want=Math.min(60,cur+GAP-gap);
+   if(want<0){const mt=parseFloat(getComputedStyle(sec).marginTop)||0;sec.style.setProperty('padding-top','0px','important');sec.style.setProperty('margin-top',(mt+want-cur)+'px','important');return}
    if(Math.abs(want-cur)>=1)sec.style.setProperty('padding-top',want+'px','important')}
  let t=null;const kick=()=>{if(t)return;t=requestAnimationFrame(()=>{t=null;try{norm()}catch(e){}})};
  const go=()=>{const m=document.getElementById('sh-main');if(!m){setTimeout(go,300);return}
@@ -13421,5 +13422,31 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm
 :root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.vcf,.nstf,.cpm-t,.rb-tot,.pcm-t,.ivct,.fbt){margin-top:0!important;margin-bottom:8px!important}
 :root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.eq-pcs,.modes.pcs){margin-bottom:8px!important}
 </style>
+<style id="even-stack">
+@media (max-width:899px){
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs.sh-hubtabs{padding:12px 16px 0!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec [data-stk]{display:flex!important;flex-direction:column!important;gap:12px!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec [data-stk][data-stk][data-stk]>*,:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec [data-stk][data-stk][data-stk]>:is(.tabs,.seg)[role=group][role=group]{margin-top:0!important;margin-bottom:0!important}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec [data-stk]>[data-stk0]{display:none!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec [data-stk]>*{min-width:0}
+}
+</style>
+<script id="even-stack-js">
+/* one even gap between the blocks on each page (phones): the page's own stack, and plain wrappers inside it */
+(()=>{let q=0;const W=()=>innerWidth<900;
+  const shown=c=>{const cs=getComputedStyle(c);if(cs.display==='none'||cs.position==='absolute'||cs.position==='fixed'||c.matches('script,style,datalist,template'))return false;return c.getBoundingClientRect().height>2};
+  const plain=c=>{const cs=getComputedStyle(c);return (cs.backgroundColor==='rgba(0, 0, 0, 0)'||cs.backgroundColor==='transparent')&&parseFloat(cs.borderTopWidth)===0&&cs.display!=='grid'&&cs.display!=='inline-flex'&&!(cs.display==='flex'&&cs.flexDirection==='row')};
+  const SKIP='form,label,.tabs,.seg,.bar,.tiles,.trow,.pcm-t,.cpm-t,.nstat,.rb-tot,.eq-pcs,.modes,.cal,.lvkey,.lvnav,.dmc,table,ul,ol,p,.hd,.head,.top,.srch';
+  function mark(el,depth){const k=[...el.children].filter(shown);if(k.length<2)return;
+    if(!el.hasAttribute('data-stk'))el.setAttribute('data-stk',depth?'':'top');
+    for(const c of el.children){if(c.hasAttribute('data-stk0'))continue;const r=c.getBoundingClientRect(),cs=getComputedStyle(c);if(cs.display!=='none'&&cs.position!=='absolute'&&cs.position!=='fixed'&&r.height<1&&!c.matches('script,style,datalist,template,[role=status]')){c.setAttribute('data-stk0','');new MutationObserver((m,o)=>{c.removeAttribute('data-stk0');o.disconnect()}).observe(c,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden','class','style']})}}
+    if(depth<2)for(const c of k){if(plain(c)&&!c.matches(SKIP)&&[...c.children].filter(shown).length>=2)mark(c,depth+1)}}
+  function run(){q=0;if(!W())return;const sec=document.querySelector('#sh-main .sh-sec:not([hidden])');if(!sec||sec.id==='mod-home')return;
+    let el=sec;for(let i=0;i<8;i++){const k=[...el.children].filter(shown);if(k.length===1&&plain(k[0])){el=k[0];continue}break}
+    mark(el,0)}
+  const soon=()=>{if(!q)q=requestAnimationFrame(run)};
+  try{new MutationObserver(soon).observe(document.body,{childList:true,subtree:true})}catch(e){}
+  addEventListener('resize',soon);addEventListener('sh:go',()=>setTimeout(soon,50));setTimeout(run,400);
+})();
+</script>
 </body>
 </html>
