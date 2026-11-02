@@ -7460,7 +7460,10 @@ const due=x=>{x=cv(x);if(x.closedAt)return false;return x.need==='info'?!x.ack&&
 const stOf=x=>{x=cv(x);return x.closedAt?['Closed'+(x.outcome?' · '+OUT[x.outcome]:''),'ok']:due(x)?['Still to action','due']:x.need==='info'&&x.ack&&x.lastFrom!=='d'?['Read','ok']:['Waiting for the office','wait']};
 const items=()=>Object.values(L).map(cv).sort((a,b)=>String(b.lastAt||b.sentAt).localeCompare(String(a.lastAt||a.sentAt)));
 const todo=()=>items().filter(due);
-window.__myEnqTodo=()=>todo().map(x=>({ic:'brief',t:x.need==='info'?(x.kind==='ncr'?'An NCR to read':'An enquiry to read'):(x.kind==='ncr'?'An NCR needs your reply':'An enquiry needs your reply'),s:[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ')||'Tap to read it',nav:'myenq',id:x.id}));
+/* Home shows every enquiry until the office closes it: ones that need the driver first, then ones waiting on the office */
+window.__myEnqTodo=()=>{const A=items().filter(x=>!x.closedAt),where=x=>[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ');
+  return A.filter(due).map(x=>({ic:'brief',t:x.need==='info'?(x.kind==='ncr'?'An NCR to read':'An enquiry to read'):(x.kind==='ncr'?'An NCR needs your reply':'An enquiry needs your reply'),s:where(x)||'Tap to read it',nav:'myenq',id:x.id}))
+   .concat(A.filter(x=>!due(x)).map(x=>({ic:'brief',t:(x.kind==='ncr'?'NCR':'Enquiry')+' still open',s:'Waiting for the office'+(where(x)?' · '+where(x):''),nav:'myenq',id:x.id})))};
 window.__myEnqN=()=>todo().length;
 const lab=x=>{x=cv(x);if(x.closedAt)return ['Closed'+(x.outcome?' · '+OUT[x.outcome]:''),'ok'];if(due(x))return x.need==='info'?['Tap Got it','due']:['Reply needed','due'];return x.need==='info'&&x.ack?['Read','ok']:['Waiting for the office','wait']};
 function card(x){const [st,c]=lab(x);return `<button type="button" class="card my-i ${c}" data-my="open" data-v="${esc(x.id)}"><div class="t"><b>${esc(x.address||(x.kind==='ncr'?'NCR':'Enquiry'))}</b><span class="my-st ${c}">${esc(st)}</span></div><small>${esc(niceD(x.date))}${x.caseNo?' · Case '+esc(x.caseNo):''}</small></button>`}
@@ -7531,7 +7534,7 @@ document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open
 function fromHash(){const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;if(window.APP&&APP.role==='mgr'&&window.parent===window)return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
 window.addEventListener('hashchange',fromHash);
 /* Home: when only one enquiry needs them, the To do card opens it directly */
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.dh-do[data-nav="myenq"]');if(!b)return;const T=todo();if(T.length===1)window.__myEnqOpen=T[0].id},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.dh-do[data-nav="myenq"]');if(!b)return;const box=b.parentNode,all=[...box.querySelectorAll('.dh-do[data-nav="myenq"]')],T=window.__myEnqTodo();const it=T[all.indexOf(b)];if(it)window.__myEnqOpen=it.id},true);
 async function start(role){
   if(role==='mgr'&&window.parent===window){state='none';return}
   sid=meStaff();if(!sid){state='none';render();return}
@@ -10888,7 +10891,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021200';
+const VERSION='1202611021204';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
