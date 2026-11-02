@@ -6655,8 +6655,8 @@ function totTable(){
 function totHTML(){
   const ps=periods();if(!ps.find(x=>x.v===tper))tper=ps[0].v;
   return `<div class="tbar"><label class="f srch" for="lv_tq"><input type="search" id="lv_tq" value="${esc(tq)}" placeholder="Name or run, like D21" autocomplete="off"></label>
-   <label class="f" for="lv_tper">Period<select id="lv_tper">${ps.map(x=>`<option value="${x.v}" ${x.v===tper?'selected':''}>${esc(x.t)}</option>`).join('')}</select></label>
-   <label class="f" for="lv_tsort">Sort<select id="lv_tsort"><option value="days" ${tsort==='days'?'selected':''}>Most days off</option><option value="name" ${tsort==='name'?'selected':''}>Name</option></select></label></div>
+   <label class="f" for="lv_tper">Period<select id="lv_tper" aria-label="Period">${ps.map(x=>`<option value="${x.v}" ${x.v===tper?'selected':''}>${esc(x.t)}</option>`).join('')}</select></label>
+   <label class="f" for="lv_tsort">Sort<select id="lv_tsort" aria-label="Sort"><option value="days" ${tsort==='days'?'selected':''}>Most days</option><option value="name" ${tsort==='name'?'selected':''}>A to Z</option></select></label></div>
    <div id="lv_tt">${totTable()}</div>`;
 }
 function editHTML(){
@@ -10947,7 +10947,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021455';
+const VERSION='1202611021505';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13154,5 +13154,13 @@ html:root body input[type=search].has-x{padding-right:46px!important}
   setInterval(soon,1000);
 })();
 </script>
+<style id="rd-lvtot">
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave .tbar{display:grid!important;grid-template-columns:1.35fr 1fr!important;gap:8px!important;align-items:end}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave .tbar .srch{grid-column:1/-1}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave .tbar label.f:not(.srch){font-size:0!important;margin:0!important;gap:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave .tbar label.f select{font-size:.95rem!important;width:100%!important;margin:0!important;padding-left:10px!important;padding-right:26px!important;background-position:right 8px center!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true],html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true] td,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr.exp,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr.exp td{background:transparent!important;box-shadow:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true]{border-color:#F2782D!important}
+</style>
 </body>
 </html>
