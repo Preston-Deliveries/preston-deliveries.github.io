@@ -10568,7 +10568,14 @@ function compliance(){const el=$('cp_root');if(!el)return;if(!CP.data||Date.now(
      const list=rows,lev=r=>COLS.some(([c])=>r[c].c==='bad')?'bad':COLS.some(([c])=>r[c].c==='warn')?'warn':'';
      const why=r=>{const b=COLS.filter(([c])=>r[c].c==='bad'&&c!=='ind').map(([,l])=>l),w=COLS.filter(([c])=>r[c].c==='warn').map(([,l])=>l);const parts=[];if(b.length)parts.push(b.join(', ')+' expired or missing');if(r.ind.c==='bad')parts.push('no site induction');if(w.length)parts.push(w.join(', ')+' due soon');return parts.join(' · ')};
      const gc=k=>/^\d{4}$/.test(k)?'g'+k:k==='SUPERVISOR'?'gsup':/PRINCIP|MANAGER/.test(k)?'gman':/XL|RELIEF/.test(k)?'gxl':'goth';
-     return `${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
+     /* phones: four counts, then one line per person saying what is wrong, worst first */
+     const LB={ind:'Induction',lic:'Licence',rego:'Rego',visa:'Visa',agr:'Agreement',f2w:'Fit2Work'};
+     const say=(c,x)=>c==='ind'?'Induction not done':c==='agr'?'Agreement not signed':c==='f2w'?'Fit2Work '+x.t.toLowerCase():c==='visa'&&/No expiry/.test(x.t)?'Visa has no expiry date':LB[c]+(x.c==='bad'?' '+x.t.replace(/^Expired/,'expired'):' due '+x.t.split(' (')[0].replace(/ \d{4}$/,''));
+     const mr=rows.map(r=>{const b=COLS.filter(([c])=>r[c].c==='bad'),w=COLS.filter(([c])=>r[c].c==='warn'),n=COLS.filter(([c])=>r[c].c==='none'&&c!=='agr');return{r,b,w,n,lv:b.length?3:w.length?2:n.length?1:0}}).sort((a,b)=>b.lv-a.lv||b.b.length-a.b.length||nameOf(a.r.p).localeCompare(nameOf(b.r.p)));
+     const nc=k=>mr.filter(x=>x.lv===k).length;
+     const mob=`<div class="cpm"><div class="cpm-t"><span class="b"><b>${nc(3)}</b><small>Action needed</small></span><span class="w"><b>${nc(2)}</b><small>Due soon</small></span><span class="n"><b>${nc(1)}</b><small>Missing info</small></span><span class="g"><b>${nc(0)}</b><small>All good</small></span></div>
+       <div class="cpm-l">${mr.map(x=>`<button type="button" class="cpm-r l${x.lv}" data-cpe="${esc(x.r.p.id)}"><i></i><span class="tx"><b>${esc(nameOf(x.r.p))} <em>${esc(label(roleOf(x.r.p)))}</em></b>${x.b.map(([c])=>`<small class="b">${esc(say(c,x.r[c]))}</small>`).join('')}${x.w.map(([c])=>`<small class="w">${esc(say(c,x.r[c]))}</small>`).join('')}${x.n.length?`<small class="n">Not entered: ${esc(x.n.map(([c])=>LB[c]).join(', '))}</small>`:''}${x.lv===0?'<small class="g">All up to date</small>':''}</span><span class="go">›</span></button>`).join('')}</div></div>`;
+     return `${mob}${nN?`<p class="cp-att">⚠ <b>${nN}</b> ${nN===1?'person needs':'people need'} attention. Their names are highlighted.</p>`:`<p class="cp-att ok">✓ Nobody needs attention right now.</p>`}
      ${list.length?`<div class="tw"><table class="tb cp-tb2"><thead><tr><th>Driver</th>${['Induction','Licence','Rego','Visa','Agreement','F2W'].map(l=>`<th>${l}</th>`).join('')}</tr></thead><tbody>
      ${keys.map(k=>{const g=groups[k].filter(r=>list.includes(r));if(!g.length)return '';return `<tr class="cp-gr ${gc(k)}"><th colspan="${COLS.length+1}"><span class="cp-gl"><i></i>${esc(label(k))} <span>${g.length}</span></span></th></tr>`+g.sort((a,b)=>score(b)-score(a)||nameOf(a.p).localeCompare(nameOf(b.p))).map(r=>`<tr class="cp-row ${lev(r)?'cp-n '+lev(r):''}" data-cpe="${esc(r.p.id)}" tabindex="0"><td class="cp-nm" title="${esc(lev(r)?why(r):'')}"><b>${esc(shortName(r.p))}</b><i class="cp-ed" aria-hidden="true">✎</i></td>${COLS.map(([c])=>`<td><span class="cp-d ${r[c].c}" title="${esc(r[c].t)}">${esc(short(c,r[c]))}</span></td>`).join('')}</tr>`).join('')}).join('')}</tbody></table></div>`:''}`})()}
    <p class="mt-note">Tap a driver to update their dates and checks here.</p>
@@ -13079,6 +13086,31 @@ html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn{width:100%!important;min-
 html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn.primary{background:#F2782D!important;border-color:#F2782D!important;color:#fff!important}
 html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn:not(.primary){background:transparent!important;border:1px solid var(--sh-line)!important;color:var(--sh-ink)!important}
 html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn:disabled{opacity:.6}
+</style>
+<style id="rd-comp">
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm{display:none}
+@media (max-width:899px){
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm{display:block}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cp-t,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cp-att,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .tw,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cp-top{display:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t span{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:10px 4px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t b{font-size:1.4rem;font-weight:800;line-height:1.1;color:var(--sh-ink)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t small{font-size:.72rem;font-weight:700;color:var(--sh-muted);line-height:1.15}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t .b b{color:#C62828}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t .w b{color:#B26A00}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-t .g b{color:#1E8A4C}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-l{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:0 12px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:flex-start;gap:10px;width:100%;padding:11px 0;border-top:1px solid var(--sh-line)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r:first-child{border-top:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r>i{flex:none;width:10px;height:10px;border-radius:50%;margin-top:6px;background:#1E8A4C}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r.l3>i{background:#C62828}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r.l2>i{background:#E0A100}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r.l1>i{background:var(--sh-muted)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r .tx b{font-size:1rem;color:var(--sh-ink)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r .tx b em{font-style:normal;font-size:.75rem;font-weight:700;color:var(--sh-muted);margin-left:4px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r small{font-size:.86rem;font-weight:600;line-height:1.3}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r small.b{color:#C62828}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r small.w{color:#B26A00}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r small.n{color:var(--sh-muted);font-weight:500}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r small.g{color:#1E8A4C}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root .cpm-r .go{color:var(--sh-muted);font-size:1.2rem;align-self:center}
+}
+@media (max-width:899px) and (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .b b,.cpm-r small.b){color:#FF8A80}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .w b,.cpm-r small.w){color:#FFB547}html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .g b,.cpm-r small.g){color:#5CCB8E}}
+@media (max-width:899px){html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .b b,.cpm-r small.b){color:#FF8A80}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .w b,.cpm-r small.w){color:#FFB547}html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root :is(.cpm-t .g b,.cpm-r small.g){color:#5CCB8E}}
 </style>
 </body>
 </html>
