@@ -1431,6 +1431,8 @@ function alHtml(){const today=window.__qISO();const hid=alHid();const L=AL.list.
 window.__placeFind=function(){const home=document.getElementById('sh-home');if(!home)return null;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');if(!hero)return null;
   let fw=home.querySelector(':scope>.fd-wrap');const f=home.querySelector(':scope>.dh-cards:not(.fd-wrap)>.ah-find');
   if(f){if(!fw){fw=document.createElement('div');fw.className='dh-cards fd-wrap'}if(fw.firstElementChild!==f){fw.textContent='';fw.appendChild(f)}}
+  /* the quick add buttons (Alert / Task, Enquiry, Update, Leave) sit right under the search bar */
+  const qa=home.querySelector(':scope>.dh-cards:not(.fd-wrap)>.ah-qa');if(qa&&fw){const old=fw.querySelector('.ah-qa');if(old&&old!==qa)old.remove();fw.appendChild(qa)}
   if(fw&&fw.previousElementSibling!==hero)hero.after(fw);return fw||hero};
 function alPaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.al-wrap');const h=hero?alHtml():'';
   if(!h){if(w)w.remove();return}
@@ -10912,7 +10914,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021255';
+const VERSION='1202611021258';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
