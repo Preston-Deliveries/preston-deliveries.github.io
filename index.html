@@ -13074,8 +13074,10 @@ html:root body:not(.x) .pu-sec.pu-sec .pu-ck{display:flex!important;align-items:
 html:root body:not(.x) .pu-sec.pu-sec .pu-ck input{appearance:none;-webkit-appearance:none;flex:none;width:48px!important;height:28px!important;margin:0!important;border-radius:99px;background:var(--sh-line);position:relative;cursor:pointer;transition:background .15s;border:0!important}
 html:root body:not(.x) .pu-sec.pu-sec .pu-ck input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .15s}
 html:root body:not(.x) .pu-sec.pu-sec .pu-ck input:checked{background:#F2782D}html:root body:not(.x) .pu-sec.pu-sec .pu-ck input:checked::after{left:23px}
-html:root body:not(.x) .pu-sec.pu-sec .pu-acts{display:block!important}
-html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn{width:100%!important;min-height:52px!important;border-radius:14px!important;background:#F2782D!important;border-color:#F2782D!important;color:#fff!important;font-size:1.05rem!important;font-weight:800!important}
+html:root body:not(.x) .pu-sec.pu-sec .pu-acts{display:flex!important;flex-direction:column;gap:8px}
+html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn{width:100%!important;min-height:52px!important;border-radius:14px!important;font-size:1.05rem!important;font-weight:800!important;margin:0!important}
+html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn.primary{background:#F2782D!important;border-color:#F2782D!important;color:#fff!important}
+html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn:not(.primary){background:transparent!important;border:1px solid var(--sh-line)!important;color:var(--sh-ink)!important}
 html:root body:not(.x) .pu-sec.pu-sec .pu-acts .sh-btn:disabled{opacity:.6}
 </style>
 </body>
