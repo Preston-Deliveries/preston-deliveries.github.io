@@ -7946,8 +7946,12 @@ async function officeSay(id,text,extra,title,body){const D=convo(DRV[id]);if(!D)
 const OLDOPEN={};
 async function loadOldOpen(){try{const add=d=>{if(!d)return;const v=Object.assign({id:d.id},clone(__D(d)));if(!recs[d.id]){OLDOPEN[d.id]=v;recs[d.id]=v}};
   const q=await db.collection('enqlog').where('fault','==','').get();for(const d of q.docs)add(d);
-  for(const [id,D] of Object.entries(DRV)){if(D.closedAt||recs[id])continue;try{const g=await db.doc('enqlog/'+id).get();if(g&&g.exists!==false&&__D(g))add(Object.assign(g,{id}))}catch(x){}}
+  /* driver copies whose enquiry or NCR was deleted earlier are removed, so they leave the driver's phone too */
+  for(const [id,D] of Object.entries(DRV)){if(recs[id])continue;try{const g=await db.doc('enqlog/'+id).get();const v=g&&g.exists!==false?__D(g):null;if(v){if(!D.closedAt)add(Object.assign(g,{id}))}else await dropAll(id)}catch(x){}}
   render()}catch(x){}}
+/* deleting an enquiry or NCR also removes the driver's copy (so it disappears from their phone) and its pictures and files */
+async function dropAll(id){try{await db.doc('drvenq/'+id).delete()}catch(x){}delete DRV[id];delete eImgs[id];
+  for(const f of ['enq','ncr']){try{const q=await db.collection('enqimg').where(f,'==',id).get();for(const d of q.docs)try{await db.doc('enqimg/'+d.id).delete()}catch(x){}}catch(x){}}}
 /* pictures older than 12 months are removed to save space; the enquiry itself stays */
 async function cleanPics(){try{const k='eqclean',t=today();if(localStorage.getItem(k)===t)return;localStorage.setItem(k,t)}catch(x){}
   try{const d=new Date();d.setMonth(d.getMonth()-12);const q=await db.collection('enqimg').where('eat','<',d.toISOString()).get();for(const x of q.docs)await db.doc('enqimg/'+x.id).delete()}catch(x){}}
@@ -8001,7 +8005,7 @@ document.addEventListener('click',async ev=>{
   if(a==='nclose'){patchN(nOpen,{closed:today()},'NCR closed.');return}
   if(a==='nreopen'){patchN(nOpen,{closed:''},'NCR reopened.');return}
   if(a==='ndel'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
-    try{const id=nOpen;await db.doc('enqlog/'+id).delete();for(const f of (nFiles[id]||[]))void 0;delete recs[id];nOpen=null;arm=false;msg={t:'NCR deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
+    try{const id=nOpen;await db.doc('enqlog/'+id).delete();await dropAll(id);delete recs[id];nOpen=null;arm=false;msg={t:'NCR deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='new'){window.__eqY=scrollY;draft={fault:''};view='form';msg=null;render();window.scrollTo(0,0);return}
   if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;closing=null;const D=DRV[v];if(D&&unread(D)){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
   if(a==='need'){if(view==='form')readForm();sendOpt.need=v;sendOpt.note=String(($('snote')||{}).value||'');render();return}
@@ -8052,7 +8056,7 @@ document.addEventListener('click',async ev=>{
       recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Nothing has gone to the driver yet. Send it from here when you are ready.')}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
     if(andSend&&!DRV[id])await sendDrv(id,'enq',false);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
-    try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
+    try{const id0=open;await db.doc('enqlog/'+id0).delete();await dropAll(id0);delete recs[id0];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
 document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_rtxt'){const k=tab==='ncr'?nOpen:open;if(k)replyTxt[k]=el.value;return}if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
@@ -10879,7 +10883,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021144';
+const VERSION='1202611021152';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
