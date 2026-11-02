@@ -3256,6 +3256,7 @@ function icon(g,kind,cx,cy,color){
 }
 function fit(g,text,maxW){if(g.measureText(text).width<=maxW)return text;let t=text;while(t.length>1&&g.measureText(t+"…").width>maxW)t=t.slice(0,-1);return t+"…"}
 function renderRTAdmin(){const b=$("rtAdmin");if(b&&!LIVE)mountBoard(b,liveRows())}
+window.__rbRedraw=()=>{try{renderRTAdmin()}catch(e){}};
 /* the board is only drawn while the Results page is open; when it opens, any change made meanwhile is drawn then */
 window.addEventListener('sh:go',e=>{if(e.detail==='results'&&drawBoard.__dirty)requestAnimationFrame(()=>{if(drawBoard.__dirty){drawBoard.__dirty=false;drawBoard()}})});
 function drawBoard(force){{const sec=document.getElementById('mod-results');if(!force&&sec&&sec.hidden){drawBoard.__dirty=true;return}}queueMicrotask(()=>{if(!$("tool").hidden)renderRTAdmin()});
@@ -3533,11 +3534,11 @@ function mountBoard(box,rows){
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><div class="rb-dl rb-dl2"><button type="button" class="sh-btn rb-pdf" data-rb="pdf" aria-label="Download PDF" title="Download PDF">PDF</button></div></div><p class="rb-msg" id="r_boardMsg" hidden></p>
-  ${(()=>{const n=a=>a.filter(v=>v!=null&&v!==""&&!isNaN(+v)).map(Number),av=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null},sm=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0):null};
+  ${((rows)=>{const P=window.__rbPc,MM=window.__rbPcMap||{};if(P&&P!=="all")rows=rows.filter(r=>MM[String(r.login).toUpperCase()]===P);return (()=>{const n=a=>a.filter(v=>v!=null&&v!==""&&!isNaN(+v)).map(Number),av=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null},sm=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0):null};
     const pc=sm(rows.map(r=>r.pc)),eta=av(rows.map(r=>r.eta)),cp=av(rows.map(r=>r.cp)),eq=sm(rows.map(r=>(+r.enq||0)));const tg=(window.SCORE&&window.SCORE.targets&&window.SCORE.targets())||{};
     const cE=eta==null?"n":eta*100>=(tg.etaG||98)-1e-9?"g":"b",cC=cp==null?"n":cp*100>=(tg.cpG||99)-1e-9?"g":"b";
     const S=window.__rbS||"",tb=(k,v,c,l)=>`<button type="button" class="ct ct-${c==="b"?"bad":c==="g"||c==="gd"?"good":"none"}" data-rbs="${k}" aria-pressed="${S===k}"><b class="v-${c}">${v}</b><small>${l}${S===k?" ▾":""}</small></button>`;
-    return `<div class="rb-tot">${tb("pc",pc==null?"–":Math.round(pc).toLocaleString("en-AU"),"n","Parcels")}${tb("eta",eta==null?"–":p1(eta),cE,"2 hr ETA")}${tb("cp",cp==null?"–":p1(cp),cC,"Scan")}${tb("enq",eq==null?"0":Math.round(eq),eq?"b":"g","Enquiries")}</div>`})()}
+    return `<div class="rb-tot">${tb("pc",pc==null?"–":Math.round(pc).toLocaleString("en-AU"),"n","Parcels")}${tb("eta",eta==null?"–":p1(eta),cE,"2 hr ETA")}${tb("cp",cp==null?"–":p1(cp),cC,"Scan")}${tb("enq",eq==null?"0":Math.round(eq),eq?"b":"g","Enquiries")}</div>`})()})(rows)}
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
@@ -10961,7 +10962,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021516';
+const VERSION='1202611021517';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12373,6 +12374,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
    const rows=[...tool.querySelectorAll('#r_rtAdmin .rb-r:not(.rb-h)')];const L=[];
    rows.forEach(r=>{const b=r.querySelector('[data-rbk]');if(!b)return;const k=String(b.dataset.rbk).toUpperCase(),p=M[k]||'';
      const show=pc==='all'||p===pc;if(r.hidden!==!show)r.hidden=!show;if(show)L.push({k,n:(b.querySelector('.nm b')||b).textContent.trim(),pc:p})});
+   window.__rbPcMap=M;if(window.__rbPc!==pc){window.__rbPc=pc;if(window.__rbRedraw)setTimeout(window.__rbRedraw,0)}
    fixBox(box,'r',L,'',pc);topBar(tool,box,'r')}
  function doV(){const tool=document.getElementById('v_tool');if(!tool)return;if(!tool.classList.contains('pfx'))tool.classList.add('pfx');
    const box=document.getElementById('v_pk');const pc=ST.v.pc;const L=[];const seen=new Set();
@@ -13274,5 +13276,6 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm
 </style>
 <style>@media (prefers-color-scheme:dark){:root:root:root:root:root:root:root:root:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-bad:not(.z)>b{color:#FF8A80!important}:root:root:root:root:root:root:root:root:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-warn:not(.z)>b{color:#FFC14D!important}:root:root:root:root:root:root:root:root:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-good:not(.z)>b{color:#5CCB8E!important}}:root:root:root:root:root:root:root:root[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-bad:not(.z)>b{color:#FF8A80!important}:root:root:root:root:root:root:root:root[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-warn:not(.z)>b{color:#FFC14D!important}:root:root:root:root:root:root:root:root[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec button.ct.ct-good:not(.z)>b{color:#5CCB8E!important}</style>
 
+<style id="rb-hidden">:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rb-r[hidden],:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .rb .rb-r[hidden]{display:none!important}</style>
 </body>
 </html>
