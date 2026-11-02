@@ -7497,15 +7497,15 @@ function oneHTML(x){x=cv(x);const E=x.events||[];const P=pics[x.id];const [st,c]
    <h2>${esc(x.address||'')}</h2><p class="my-when">${esc(niceD(x.date))}${x.caseNo?' · Case '+esc(x.caseNo):''}</p>
    ${x.details?`<p class="my-says">${x.kind==='ncr'?'':'Customer says: '}“${esc(firstLine(x.details))}”</p>`:''}
    ${(x.flags||[]).length?`<div class="eq-flags">${x.flags.map(f=>`<p>⚠️ ${esc(f)}</p>`).join('')}</div>`:''}</section>
-  <section class="card my-ask"><span class="lbl">${x.closedAt?'From the office':'The office needs'}</span><p class="my-asktxt">${esc(ask||(x.need==='info'?'Please read this.':'Please tell us what happened.'))}</p></section>
-  ${showThread?`<section class="card"><span class="lbl">Messages</span><div class="eq-th">${x.msgs.map(m=>`<div class="eq-m ${m.c?'sys':m.f==='d'?'me':'them'}"><p>${esc(m.t).replace(/\n/g,'<br>')}</p><small>${m.c?'':m.f==='o'?'Office · ':'You · '}${esc(whenT(m.at))}</small></div>`).join('')}</div></section>`:''}
-  <section class="card my-act">${act}</section>
   <details class="card my-more" ${moreOpen[x.id]?'open':''} data-mymore="${esc(x.id)}"><summary>More details</summary>
    ${x.details?`<span class="lbl">${x.kind==='ncr'?'What happened':'What the customer said'}</span><p class="my-p">${esc(x.details).replace(/\n/g,'<br>')}</p>`:''}
    <dl class="kv">${x.enqType?`<dt>Type</dt><dd>${esc(x.enqType)}</dd>`:''}${x.issue?`<dt>Issue</dt><dd>${esc(x.issue)}</dd>`:''}${x.scanAddr?`<dt>Where you scanned it</dt><dd>${esc(x.scanAddr)}</dd>`:''}${x.deliveredAt?`<dt>Your scan</dt><dd>${esc(x.deliveredAt)}</dd>`:''}${x.delivered?`<dt>Delivered</dt><dd>${esc(x.delivered)}</dd>`:''}${x.tracking||x.article?`<dt>Tracking</dt><dd class="brk">${esc(x.tracking||x.article)}</dd>`:''}</dl>
    ${(x.pics||[]).length?`<span class="lbl">Maps and photo</span>${!P?'<p class="sub">Loading pictures…</p>':P.length?`<div class="eq-pg">${P.map((p,k)=>`<button type="button" data-my="pic" data-k="${k}"><img src="${p.data}" alt="${esc(p.name)}" loading="lazy"><small>${esc(p.name)}</small></button>`).join('')}</div>`:'<p class="sub">Pictures could not be loaded.</p>'}`:''}
    ${E.length?`<span class="lbl">Scan events</span><ol class="my-ev">${E.map(e=>`<li class="${x.keyEv===e.e+', '+e.d?'key':''}${/^y/i.test(e.o||'')?' out':''}"><b>${esc(e.e)}</b><small>${esc(e.d)}${e.w?' · '+esc(tc(e.w)):''}${/^y/i.test(e.o||'')?' · <em>Outside delivery radius</em>':''}</small></li>`).join('')}</ol>`:''}
   </details>
+  <section class="card my-ask"><span class="lbl">${x.closedAt?'From the office':'The office needs'}</span><p class="my-asktxt">${esc(ask||(x.need==='info'?'Please read this.':'Please tell us what happened.'))}</p></section>
+  ${showThread?`<section class="card"><span class="lbl">Messages</span><div class="eq-th">${x.msgs.map(m=>`<div class="eq-m ${m.c?'sys':m.f==='d'?'me':'them'}"><p>${esc(m.t).replace(/\n/g,'<br>')}</p><small>${m.c?'':m.f==='o'?'Office · ':'You · '}${esc(whenT(m.at))}</small></div>`).join('')}</div></section>`:''}
+  <section class="card my-act">${act}</section>
   ${lb!=null&&P&&P[lb]?`<div class="eq-lb" data-my="lbclose" role="dialog"><img src="${P[lb].data}" alt="${esc(P[lb].name)}"><p>${esc(P[lb].name)}</p><button type="button" class="sh-btn" data-my="lbclose">Close</button></div>`:''}
   </div>`}
 /* More details opens on tap; pictures only download then */
@@ -10899,7 +10899,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021207';
+const VERSION='1202611021212';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
