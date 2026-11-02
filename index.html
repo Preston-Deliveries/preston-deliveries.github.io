@@ -120,6 +120,14 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-myenq .my-closed{border-radius:12px;padding:10px 12px;background:rgba(30,138,76,.10);margin-top:6px}#mod-myenq .my-closed p{margin:4px 0 0}
 #mod-myenq .my-closed .o-yes{color:#B91C1C}#mod-myenq .my-closed .o-partly{color:#B45309}#mod-myenq .my-closed .o-no{color:#15703D}
 #mod-myenq .my-ack{font-size:1.05rem;min-height:48px}
+:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .dh-todo .dh-do.dh-enq-due{border:2px solid #D93025!important;box-shadow:0 0 0 3px rgba(217,48,37,.12)!important;background:rgba(217,48,37,.08)!important;border-radius:14px!important;margin:6px 0!important;position:relative}
+#sh-main .dh-todo .dh-do.dh-enq-due .tx b{color:#B91C1C!important}
+#sh-main .dh-todo .dh-do.dh-enq-due .tx b::before{content:'ACTION NEEDED';display:block;width:max-content;font-size:.68rem;letter-spacing:.06em;font-weight:800;color:#fff;background:#D93025;border-radius:999px;padding:2px 8px;margin-bottom:4px}
+#sh-main .dh-todo .dh-do.dh-enq-due .ic{background:#D93025!important;color:#fff!important}
+#sh-main .dh-todo .dh-do.dh-enq-due .ic svg{stroke:#fff!important}
+:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .dh-todo .dh-do.dh-enq-wait{border:1px solid var(--sh-line)!important;border-left:5px solid #E0A526!important;border-radius:14px!important;margin:6px 0!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #sh-main .dh-todo .dh-do.dh-enq-due{background:rgba(217,48,37,.16)!important}:root:not([data-theme=light]) #sh-main .dh-todo .dh-do.dh-enq-due .tx b{color:#FCA5A5!important}}
+:root[data-theme=dark] #sh-main .dh-todo .dh-do.dh-enq-due{background:rgba(217,48,37,.16)!important}:root[data-theme=dark] #sh-main .dh-todo .dh-do.dh-enq-due .tx b{color:#FCA5A5!important}
 #mod-myenq .my-top h2{margin:6px 0 2px;font-size:1.2rem;line-height:1.25}
 #mod-myenq .my-k{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sh-muted);font-weight:800}
 #mod-myenq .my-when{margin:0;color:var(--sh-muted);font-size:.9rem}
@@ -6246,7 +6254,7 @@ async function homeCards(){
   const T=tiles4(x,sv,false).filter(z=>z[0]!=='NPS'),hit=T.filter(z=>z[2]===true).length,have=T.filter(z=>z[2]!=null).length;
   const wins=streaks();
   const news=(S().notices||[]).slice().sort((a,c)=>String(c.postedAt||'').localeCompare(String(a.postedAt||''))).slice(0,2);
-  box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do" ${z.login?`data-me="run" data-login="${esc(z.login)}"`:`data-nav="${z.nav}"`}><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
+  box.innerHTML=`${todo.length?`<section class="dh-card dh-todo"><h2>To do</h2>${todo.map(z=>`<button type="button" class="dh-do ${z.cls||''}" ${z.login?`data-me="run" data-login="${esc(z.login)}"`:`data-nav="${z.nav}"`}><span class="ic">${ICON[z.ic]||''}</span><span class="tx"><b>${esc(z.t)}</b><small>${esc(z.s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`
      :`<section class="dh-card dh-done"><b>✓ All done</b><span>Nothing to do right now.</span></section>`}
    ${(()=>{try{const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();const d=all[all.length-1];if(!d)return '';const x=statsFor([d]);if(!x)return '';const rk=resultsRank([d]);
      return window.__dayCard({title:'My last results',date:d,name:tc(me.name||''),sub:rk&&rk.of?'out of '+rk.of+' drivers':'',rank:rk&&rk.rank,score:x.sc?x.sc.score:null,pc:x.pc,eta:x.eta,cp:x.cp,enq:x.enq,enqP:x.enqP,tg:targets(),nav:'me'})}catch(e){return ''}})()}
@@ -7462,8 +7470,8 @@ const items=()=>Object.values(L).map(cv).sort((a,b)=>String(b.lastAt||b.sentAt).
 const todo=()=>items().filter(due);
 /* Home shows every enquiry until the office closes it: ones that need the driver first, then ones waiting on the office */
 window.__myEnqTodo=()=>{const A=items().filter(x=>!x.closedAt),where=x=>[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ');
-  return A.filter(due).map(x=>({ic:'brief',t:x.need==='info'?(x.kind==='ncr'?'An NCR to read':'An enquiry to read'):(x.kind==='ncr'?'An NCR needs your reply':'An enquiry needs your reply'),s:where(x)||'Tap to read it',nav:'myenq',id:x.id}))
-   .concat(A.filter(x=>!due(x)).map(x=>({ic:'brief',t:(x.kind==='ncr'?'NCR':'Enquiry')+' still open',s:'Waiting for the office'+(where(x)?' · '+where(x):''),nav:'myenq',id:x.id})))};
+  return A.filter(due).map(x=>({ic:'brief',t:x.need==='info'?(x.kind==='ncr'?'An NCR to read':'An enquiry to read'):(x.kind==='ncr'?'An NCR needs your reply':'An enquiry needs your reply'),s:where(x)||'Tap to read it',nav:'myenq',id:x.id,cls:'dh-enq-due'}))
+   .concat(A.filter(x=>!due(x)).map(x=>({ic:'brief',t:(x.kind==='ncr'?'NCR':'Enquiry')+' still open',s:'Waiting for the office'+(where(x)?' · '+where(x):''),nav:'myenq',id:x.id,cls:'dh-enq-wait'})))};
 window.__myEnqN=()=>todo().length;
 const lab=x=>{x=cv(x);if(x.closedAt)return ['Closed'+(x.outcome?' · '+OUT[x.outcome]:''),'ok'];if(due(x))return x.need==='info'?['Tap Got it','due']:['Reply needed','due'];return x.need==='info'&&x.ack?['Read','ok']:['Waiting for the office','wait']};
 function card(x){const [st,c]=lab(x);return `<button type="button" class="card my-i ${c}" data-my="open" data-v="${esc(x.id)}"><div class="t"><b>${esc(x.address||(x.kind==='ncr'?'NCR':'Enquiry'))}</b><span class="my-st ${c}">${esc(st)}</span></div><small>${esc(niceD(x.date))}${x.caseNo?' · Case '+esc(x.caseNo):''}</small></button>`}
@@ -10891,7 +10899,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021204';
+const VERSION='1202611021207';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
