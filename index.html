@@ -5093,6 +5093,8 @@ function render(){
 </div>
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
+   ${l.length?(()=>{const G={};for(const p of l){const k=String(p.postcode||'').trim()||'Other';(G[k]=G[k]||[]).push(p)}const ks=Object.keys(G).sort();
+     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<span class="pc-${k}"><b>${(G[k]||[]).length}</b><small>${k}</small></span>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-pc="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.address)}</b><small>${esc(p.suburb||'')}${p.date?' · '+esc(fmtDate(p.date)):''}</small>${p.reason?`<em>${esc(p.reason)}</em>`:''}</span><span class="dv">${badge(p.driver)}<small>${esc(driverName(p.driver)||'')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
    ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
@@ -5241,6 +5243,8 @@ function render(){
 </div>
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
+   ${l.length?(()=>{const G={};for(const p of l){const k=String(p.postcode||'').trim()||'Other';(G[k]=G[k]||[]).push(p)}const ks=Object.keys(G).sort();
+     return `<div class="pcm"><div class="pcm-t">${['4214','4215','4217','4218'].map(k=>`<span class="pc-${k}"><b>${(G[k]||[]).length}</b><small>${k}</small></span>`).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-lk="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.name||p.address)}</b><small>${esc([p.name?p.address:'',p.location].filter(Boolean).join(' · '))}</small>${p.description?`<em>${desc(p.description)}</em>`:'<small class="nd">No details yet</small>'}</span><span class="dv">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}<small>${dnames(p).map(n=>esc(n)).join(', ')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
    ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Building</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Where to find it</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-lk="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address||p.name)}</b></td><td class="aa">${p.address?esc(p.name):''}</td><td class="sb">${esc(p.location)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${dlist(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}</td><td class="dn">${dnames(p).map(n=>`<span class="nl">${esc(n)}</span>`).join('')}</td><td class="rs">${p.description?desc(p.description):'<span class="sub">No details yet</span>'}</td></tr>`).join('')}
@@ -10947,7 +10951,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021505';
+const VERSION='1202611021515';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13161,6 +13165,35 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-l
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave .tbar label.f select{font-size:.95rem!important;width:100%!important;margin:0!important;padding-left:10px!important;padding-right:26px!important;background-position:right 8px center!important}
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true],html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true] td,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr.exp,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr.exp td{background:transparent!important;box-shadow:none!important}
 html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave#mod-leave table.tot tr[aria-expanded=true]{border-color:#F2782D!important}
+</style>
+<style id="rd-pclk">
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm{display:none}
+@media (max-width:899px){
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm{display:block}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcx>.tw{display:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-t{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:2px 0 10px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-t span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line);position:relative}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-t span::before{content:"";position:absolute;top:8px;left:8px;width:8px;height:8px;border-radius:50%}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-t b{font-size:1.35rem;font-weight:800;line-height:1.1;color:var(--sh-ink)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-t small{font-size:.75rem;font-weight:700;color:var(--sh-muted)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h{display:flex;align-items:center;gap:8px;margin:14px 2px 6px;font-size:.78rem!important;font-weight:800!important;letter-spacing:.1em;text-transform:uppercase;color:var(--sh-muted)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i{width:9px;height:9px;border-radius:50%;flex:none}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h span{font-size:.72rem;padding:1px 8px;border-radius:99px;background:var(--sh-sunk);letter-spacing:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-l{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:0 12px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r{all:unset;box-sizing:border-box;display:flex;align-items:flex-start;gap:10px;width:100%;padding:11px 0;border-top:1px solid var(--sh-line);cursor:pointer}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) div.pcm-r{cursor:default}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r:first-child{border-top:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx b{font-size:1rem;color:var(--sh-ink)}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx small{font-size:.84rem;color:var(--sh-muted);font-weight:500}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{font-style:normal;font-size:.88rem;font-weight:600;color:#C2570C;line-height:1.35}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx small.nd{font-style:italic}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .dv{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:3px;max-width:40%;text-align:right}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .dv small{font-size:.78rem;color:var(--sh-muted);font-weight:600;line-height:1.25}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4214::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4214{background:#2F6FDB}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4215::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4215{background:#D4A20B}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4217::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4217{background:#1E8A4C}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm .pc-4218::before,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-h i.pc-4218{background:#C62828}
+}
+@media (max-width:899px) and (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{color:#FFB27A}}
+@media (max-width:899px){html[data-theme=dark] body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{color:#FFB27A}}
 </style>
 </body>
 </html>
