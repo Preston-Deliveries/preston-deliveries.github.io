@@ -85,7 +85,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-enquiries .eq-pcs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 10px}
 #sh-main #mod-enquiries .eq-pcs .eq-pc{all:unset;cursor:pointer;box-sizing:border-box;display:flex!important;align-items:center;justify-content:center;gap:5px;padding:9px 2px;border-radius:12px;border:1px solid var(--sh-line)!important;background:var(--sh-surface)!important;color:var(--sh-ink)!important;min-width:0;text-align:center}
 #sh-main #mod-enquiries .eq-pcs .eq-pc .l{font-weight:800;font-size:.95rem;background:none!important;color:inherit!important;padding:0!important}
-#sh-main #mod-enquiries .eq-pcs .eq-pc .c{font-weight:800;font-size:.7rem;line-height:1.5;background:#D93025!important;color:#fff!important;border-radius:999px;min-width:1.5em;padding:0 4px;text-align:center}
+#sh-main #mod-enquiries .eq-pcs .eq-pc .c{font-weight:800;font-size:.7rem;line-height:1.5;background:rgba(127,127,127,.22)!important;color:inherit!important;border-radius:999px;min-width:1.5em;padding:0 4px;text-align:center}
 #sh-main #mod-enquiries .eq-pcs .eq-pc[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.3)}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
 #sh-main #mod-enquiries select.need{border-color:#D93025!important;box-shadow:0 0 0 2px rgba(217,48,37,.2)}
 #sh-home>.dh-cards:empty{display:none!important}
@@ -928,7 +928,7 @@ const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','ncr','summary','vchecks','timesheets','precards','lockers','sort','cover','review','boss','compliance','tasks'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
-const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform','myenq'];
+const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
  {t:'Driver Results',s:[['results','Results'],['survey','NPS'],['summary','Summary']]},
@@ -944,7 +944,7 @@ const HUBS={mgr:[
  drv:[{t:'Updates',s:[['updates','Updates'],['briefs','Team brief']]},{t:'Reports',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
 const hubT=s=>{const h=hubOf(s);return h&&h.s[0][0]===s?h.t:''};
-const DRV_TILES=['myenq','guide','reports','runs','leave','invoices','directory','uniform'];
+const DRV_TILES=['guide','reports','runs','leave','invoices','directory','uniform'];
 const DNAMES={myenq:'My enquiries',home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'Invoices',leave:'Leave Calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Guide',runs:'Run Sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'NPS results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
@@ -994,7 +994,7 @@ let cur='home', role='loading', stats={}, homeMsg=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
-function visible(){return SECS.filter(s=>s!=='alerts'&&(role==='mgr'?s!=='myenq':!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
+function visible(){return SECS.filter(s=>s!=='alerts'&&s!=='myenq'&&(role==='mgr'?true:!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
 function tabSecs(){return role==='mgr'?['home','results','updates','menu']:['home','me','updates','menu']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
@@ -1216,7 +1216,7 @@ setInterval(()=>{try{if(document.visibilityState==='visible')newsBadge()}catch(e
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nav="updates"]'))window.__uvTapped=true},true);
 function applyNavBadges(){try{newsBadge()}catch(e){}try{adminGlance()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries','enqresp','dec','ind'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;if(on)setBell(tot);document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0):0;document.querySelectorAll(`[data-nav="${k}"]:not([data-hubn])`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}document.querySelectorAll('[data-hubn]').forEach(b=>{const n=on?b.dataset.hubn.split(',').reduce((a,k)=>a+(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0),0):0;let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t})}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
-  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>{const me=window.__webMe||{},mid=String(me.ownStaff||me.staff||'');if(v.handlerStaff&&mid&&v.handlerStaff!==mid)return false;const s=String(v.offSeen||'');const lf=v.lastFrom||(v.respAt?'d':'o'),la=String(v.lastAt||v.respAt||'');return !v.closedAt&&((lf==='d'&&s<la)||(!!v.ack&&s<String(v.ack)))}]];
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['__none','enqresp',v=>{const me=window.__webMe||{},mid=String(me.ownStaff||me.staff||'');if(v.handlerStaff&&mid&&v.handlerStaff!==mid)return false;const s=String(v.offSeen||'');const lf=v.lastFrom||(v.respAt?'d':'o'),la=String(v.lastAt||v.respAt||'');return !v.closedAt&&((lf==='d'&&s<la)||(!!v.ack&&s<String(v.ack)))}]];
   try{db.collection('staff').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&(v.onbCopiedAt||v.onboard==='done')&&!v.indAt)ids.push(d.id)}window.__indIds=ids;window.__navN.ind=ids.length;applyNavBadges()},()=>{})}catch(e){}
   try{db.collection('onboard').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(!v)continue;
       const a=v.d&&v.d.apSig&&v.status==='submitted'?{at:v.d.apAt||v.submittedAt,rep:v.repSig}:null,b=v.dec&&v.dec.sig?{at:v.dec.at,rep:v.dec.repSig}:null;const c=b&&(!a||String(b.at)>String(a.at))?b:a;
@@ -1823,7 +1823,7 @@ window.WX=(()=>{
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
-  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enqresp,'driver reply to read','driver replies to read','on enquiries and NCRs',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
+  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
   const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act,k])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}" data-k="${k||''}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Home: one box to find a street (whose it is) or a page of the app */
@@ -2222,7 +2222,7 @@ let first='home';
 if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
 else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
-else if(/^myenq\//.test(h)){first='myenq';window.__myEnqOpen=h.slice(6);window.__deepOpen=h.slice(6)}
+else if(/^myenq\//.test(h)){first='home'}
 else if(/^(enq|ncr)\//.test(h)){first=h.startsWith('ncr')?'ncr':'enquiries';window.__deepOpen=h.replace(/^(enq|ncr)\//,'')}
 else if(h) first='runs';
 else if(previewChild){try{const v=sessionStorage.getItem('uv1161')||window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
@@ -6258,7 +6258,6 @@ async function homeCards(){
   for(const c of (data&&data.cv)||[]){for(const it of c.items||[]){const mine=it.by===me.staff,help=(it.help||[]).some(x=>x.id===me.staff);if(!mine&&!help)continue;const when=c.date===t?'today':niceDay(c.date);
     todo.push({ic:'clock',t:(help?'You are helping on ':'You are covering ')+(it.run||'a run')+(c.date===t?' today':' on '+niceDay(c.date)),s:(it.offName||'The driver')+' is off. Tap to open the run sheet.',login:it.login||'',nav:'runs'})}}
   for(const v of (data&&data.lv)||[]){if(!v.from||!v.to)continue;const sp=Math.round((fromIso(v.to)-fromIso(v.from))/864e5)+1;if(sp<7)continue;let ev=addD(v.from,-1);while(fromIso(ev).getDay()===0||(fromIso(ev).getDay()===6&&fromIso(ev).getMonth()!==11))ev=addD(ev,-1);if(ev!==t)continue;todo.push({ic:'brief',t:'Hand in your scanner today',s:'Your holiday starts '+niceDay(v.from)+'. Give your scanner to the office or a supervisor before you go.',nav:'leave'});break}
-  try{for(const z of (window.__myEnqTodo?window.__myEnqTodo():[]))todo.push(z)}catch(e){}
   const b=data&&data.briefs[0];if(b&&data.sigs[b.id]===false)todo.push({ic:'brief',t:'Sign the team brief',s:'Read it, then tap Sign.',nav:'briefs'});
   for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
   const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
@@ -7553,12 +7552,13 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
 });
 document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open]=e.target.value});
 /* a ding opens straight to that enquiry: #myenq/<id> */
-function fromHash(){const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;if(window.APP&&APP.role==='mgr'&&window.parent===window)return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
+function fromHash(){return false;const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;if(window.APP&&APP.role==='mgr'&&window.parent===window)return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
 window.addEventListener('hashchange',fromHash);
 /* Home: when only one enquiry needs them, the To do card opens it directly */
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.dh-do[data-nav="myenq"]');if(!b)return;const box=b.parentNode,all=[...box.querySelectorAll('.dh-do[data-nav="myenq"]')],T=window.__myEnqTodo();const it=T[all.indexOf(b)];if(it)window.__myEnqOpen=it.id},true);
 async function start(role){
-  if(role==='mgr'&&window.parent===window){state='none';return}
+  /* enquiries are office only now: drivers no longer get them in the app */
+  state='none';return;
   sid=meStaff();if(!sid){state='none';render();return}
   try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}if(!db){state='none';render();return}
   db.collection('drvenq').where('sid','==',sid).onSnapshot(sn=>{const o={};for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v)o[d.id]=Object.assign({id:d.id},v)}
@@ -7723,7 +7723,7 @@ const dots=k=>`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=k?'on':''}"><
 function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim().toLowerCase();const F=L.filter(n=>!d||[n.driver,n.login,dno(n.login),n.address,pcOf(n),n.caseNo].join(' ').toLowerCase().includes(d));
   return `<div class="rh"><span class="sub">${F.length} of ${L.length} NCR${L.length===1?'':'s'}</span></div>${F.length?F.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
      <small>${pcTag(pcOf(n))} ${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
-     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}${DRV[n.id]?`<small>${drvChip(n.id)}</small>`:''}</button>`}).join('')
+     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
      :`<div class="empty">${L.length?'Nothing matches that search.':'No NCRs recorded. When the facility manager sends one, press + NCR.'}</div>`}`}
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
   return `${perBar('ncr',L.map(n=>n.issued))}<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>inPer(n.issued,'ncr')).length}</b><small>${esc(perLab('ncr'))}</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
@@ -7762,7 +7762,6 @@ function ncrOneHTML(n){const st=nState(n),k=strikeOf(n),F=nFiles[n.id],since=sin
    <div class="sp ${st==='closed'?'ok':''}"><i>${st==='closed'?'✓':''}</i><div>Monitoring for ${MONDAYS} days<small>${n.closed?'Closed '+esc(nice(n.closed)):!(n.spokeAt&&n.signAt&&n.respAt)?'Starts once the steps above are done':st==='closed'?'Finished '+esc(nice(end))+' with no new at fault enquiry':'Until '+esc(nice(end))}</small></div></div></div></section>
   <section class="card"><span class="lbl">Monitoring</span><p class="sub">For ${MONDAYS} days after your response, any enquiry you record for ${esc((n.driver||'this driver').split(' ')[0])} in the Enquiries tab shows here. If one is at fault the NCR stays open. If the ${MONDAYS} days pass clean, it closes by itself.</p>${since.length?`<p class="${since.some(e=>e.fault==='yes')?'wt':''}">Enquiries since the NCR:</p><ul class="nl">${since.map(e=>`<li>${esc(nice(e.date))} · ${esc(e.address||'')} · ${e.fault==='yes'?'<b class="r3">At fault</b>':e.fault==='partly'?'<b>Partly at fault</b>':e.fault==='no'?'Not at fault':'No outcome yet'}</li>`).join('')}</ul>`:`<p>No new enquiries for ${esc((n.driver||'this driver').split(' ')[0])} since ${esc(nice(monFrom(n)))}.</p>`}</section>
   <section class="card"><span class="lbl">Files</span>${F==null?'<p class="sub">Loading…</p>':F.length?`<div class="nfiles">${F.map(f=>/^image\//.test(f.type)?`<a href="${f.data}" download="${esc(f.name)}" target="_blank" rel="noopener"><img src="${f.data}" alt="${esc(f.name)}"></a>`:`<a class="nf" href="${f.data}" download="${esc(f.name)}">${esc(f.name)}</a>`).join('')}</div>`:'<p class="sub">No files attached.</p>'}</section>
-  ${drvBox(n.id,'ncr')}
   <div class="foot nfoot"><button type="button" class="sh-btn" data-eq="nedit">Edit</button>${n.closed?'<button type="button" class="sh-btn" data-eq="nreopen">Reopen</button>':'<button type="button" class="sh-btn" data-eq="nclose">Close NCR now</button>'}<span class="gap"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="ndel">${arm?'Tap again to delete':'Delete'}</button></div></div>`}
 async function loadFiles(id){if(nFiles[id]!=null)return;nFiles[id]=null;try{const c=db.collection('enqimg');const q=c.where?await c.where('ncr','==',id).get():await c.get();nFiles[id]=q.docs.map(d=>clone(__D(d))).filter(f=>f&&f.ncr===id)}catch(e){nFiles[id]=[]}render()}
 /* read the facility's NCR Word form and pull out the details */
@@ -7826,9 +7825,8 @@ const actRank=r=>{const D=DRV[r.id];if(D&&unread(D))return 0;if(!D)return r.faul
 function filtered(){
   const d=qDriver.trim().toLowerCase();
   const pc=getPc();
-  const L=enqs().filter(r=>(!pc||pcOf(r)===pc)&&(eqTab==='todo'?!isDone(r):(inPer(r.date,'enq')&&(eqTab==='all'||isDone(r))))&&(!onlyFault||r.fault==='yes')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
-  const by=(x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt));
-  return eqTab==='todo'?L.sort((x,y)=>actRank(x)-actRank(y)||by(x,y)):L.sort(by);
+  const L=enqs().filter(r=>(!pc||pcOf(r)===pc)&&inPer(r.date,'enq')&&(!d||[r.driver,r.login,r.address,pcOf(r),r.caseNo,r.case].join(' ').toLowerCase().includes(d)));
+  return L.sort((x,y)=>String(y.date).localeCompare(String(x.date))||String(y.createdAt).localeCompare(String(x.createdAt)));
 }
 function sumHTML(L){if(!qDriver.trim())return '';const by={};for(const r of L){const k=r.driver||r.login||'Unknown';(by[k]=by[k]||{n:0,f:0}).n++;if(r.fault==='yes')by[k].f++}
   return `<div class="sum">${Object.entries(by).map(([k,v])=>`<div><b>${esc(k)}</b><span>${v.n} enquir${v.n===1?'y':'ies'}</span><span class="fc">${v.f} at fault</span></div>`).join('')||'<div><span>No enquiries found.</span></div>'}</div>`}
@@ -7853,11 +7851,10 @@ function render(){
       <div class="b"><button type="button" class="sh-btn primary" data-eq="plgo" ${pList.rows.length&&pList.rows.every(x=>x.login)?'':'disabled'}>+ ${pList.rows.reduce((a,x)=>a+x.n,0)} enquiries</button><button type="button" class="sh-btn" data-eq="plback">Edit the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`
     :`<p>One line each: day, driver, how many, at fault. For example <i>TUE 6/10 NATHAN INGRAM 1 at fault</i>.</p><textarea id="eq_pltxt" rows="8" placeholder="TUE 6/10 NATHAN INGRAM 1 at fault">${esc(pList.text||'')}</textarea><div class="b"><button type="button" class="sh-btn primary" data-eq="plcheck">Check the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`}</section>`
   :''}
-  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const pc=getPc(),inPc=r=>!pc||pcOf(r)===pc;const T=enqs().filter(r=>inPc(r)&&!isDone(r)).length,N=enqs().filter(r=>inPc(r)&&!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
-  <div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>!isDone(r));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
+  <div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>inPer(r.date,'enq'));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
     return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span>${n(k)?`<span class="c">${n(k)}</span>`:''}</div>`).join('')})()}</div>
-  ${eqTab==='todo'?`<p class="sub eq-tabhint">Every enquiry still open, newest replies first: no outcome yet, or still talking with the driver. Close it with the outcome and it moves to Done.</p>`:perBar('enq',enqs().map(x=>x.date))}
-  ${eqTab==='todo'?'':(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>!x.fault).length}</b><small>No outcome yet</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')))}
+  ${perBar('enq',enqs().map(x=>x.date))}
+  ${(P=>`<div class="nstat"><div><b>${P.length}</b><small>Enquiries</small></div><div class="${P.some(x=>x.fault==='yes')?'r':''}"><b>${P.filter(x=>x.fault==='yes').length}</b><small>At fault</small></div><div><b>${P.filter(x=>x.fault==='partly').length}</b><small>Partly at fault</small></div></div>`)(enqs().filter(x=>inPer(x.date,'enq')&&(!getPc()||pcOf(x)===getPc())))}
   <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off"></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
   <div id="eq_res" class="eres">${resHTML(L)}</div>
@@ -7865,10 +7862,10 @@ function render(){
 }
 const tabsHTML=no=>''&&`<div class="tabs" role="group" aria-label="Show"><button type="button" data-eq="tab" data-v="enq" aria-pressed="${tab==='enq'}">Enquiries</button><button type="button" data-eq="tab" data-v="ncr" aria-pressed="${tab==='ncr'}">NCRs${no?` <span class="n">${no}</span>`:''}</button></div>`;
 function resHTML(L){const total=enqs().length;
-  return `${sumHTML(L)}<div class="rh"><span class="sub">${eqTab==='todo'?L.length+' still open':L.length+' of '+total+' enquir'+(total===1?'y':'ies')}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
+  return `${sumHTML(L)}<div class="rh"><span class="sub">${L.length} enquir${L.length===1?'y':'ies'}${getPc()?' in '+getPc():''}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
   ${L.length?L.map(r=>`<button type="button" class="card ncr fo-${r.fault||'none'}" data-eq="open" data-v="${esc(r.id)}"><div class="t"><b>${esc(r.driver||(byLogin(r.login)||{}).name||r.login||'')}${dnTag(r.login)}</b>${chip(r.fault)}</div>
-     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}${r.outside?'<small class="wt">Outside delivery radius</small>':''}${DRV[r.id]?`<small>${drvChip(r.id)}</small>`:!r.fault?'<small><span class="eq-st wait">Not sent to driver · no outcome yet</span></small>':''}</button>`).join('')
-   :`<div class="empty">${eqTab==='todo'&&!qDriver.trim()?'✓ Nothing needs action. Every enquiry has an outcome and no conversations are open.':qDriver.trim()||onlyFault?'Nothing matches that search.':!total?'No enquiries recorded yet. Press + Enquiry.':eqTab==='done'?'No finished enquiries in this period. Pick another month, or All.':'No enquiries in this period.'}</div>`}`;
+     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}${r.outside?'<small class="wt">Outside delivery radius</small>':''}</button>`).join('')
+   :`<div class="empty">${qDriver.trim()?'Nothing matches that search.':!total?'No enquiries recorded yet. Press + to add one.':'No enquiries in this period'+(getPc()?' for '+getPc():'')+'.'}</div>`}`;
 }
 function formHTML(){
   const r=draft;const isNew=!r.id;if(!r.supervisor){const o=PCOWN.find(([k])=>k===pcOf(r));if(o)r.supervisor=o[1]}
@@ -7878,7 +7875,7 @@ function formHTML(){
   ${busy?`<p class="msg">${esc(busy)}</p>`:''}
   <label class="sh-btn primary up">Fill in from the case PDF<input type="file" id="eq_pdf" accept="application/pdf" hidden></label>
   <div class="grid">
-   <label class="f" for="eq_sup">Handled by<select id="eq_sup" class="${r.supervisor?'':'need'}"><option value="">Pick who is handling it</option>${handlerNames().map(n=>`<option ${r.supervisor===n?'selected':''}>${esc(n)}</option>`).join('')}${r.supervisor&&!handlerNames().includes(r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
+   <label class="f" for="eq_sup">Supervisor<select id="eq_sup"><option value="">Pick</option>${handlerNames().map(n=>`<option ${r.supervisor===n?'selected':''}>${esc(n)}</option>`).join('')}${r.supervisor&&!handlerNames().includes(r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
    <label class="f" for="eq_drv">Driver<select id="eq_drv"><option value="">Pick the driver</option>${staff.filter(p=>p.login).map(p=>`<option value="${esc(p.login)}" ${r.login===p.login?'selected':''}>${esc(p.name)}</option>`).join('')}${r.login&&!byLogin(r.login)?`<option value="${esc(r.login)}" selected>${esc(r.driver||r.login)}</option>`:''}</select></label>
    <label class="f" for="eq_date">Date<input type="date" id="eq_date" value="${esc(r.date||today())}"></label>
    <label class="f" for="eq_case">Case number<input type="text" id="eq_case" value="${esc(r.caseNo||'')}" inputmode="numeric"></label>
@@ -7897,14 +7894,9 @@ function formHTML(){
   ${(r.events||[]).length?eventsHTML(r):''}
   ${lboxHTML()}
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
-  <span class="lbl">Was the driver at fault? You can decide later, after the driver replies.</span>
-  <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button><button type="button" class="ob later" data-eq="f" data-v="" aria-pressed="${!r.fault}">Decide later</button></div>
-  ${(()=>{if(r.id&&DRV[r.id])return `<div class="foot"><button type="button" class="sh-btn primary" data-eq="save">Save changes</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>`;
-    const p=byLogin(r.login),fn=p?p.name.split(' ')[0]:'the driver';
-    return `<div class="eq-fsend"><span class="lbl">Send to ${esc(fn)}</span>
-    <div class="eq-need" role="group" aria-label="What you need">${[['action','Needs action','They must reply'],['info','For your info','They tap I’ve read it']].map(([k,l,sm])=>`<div role="button" tabindex="0" class="eq-nb" data-eq="need" data-v="${k}" aria-pressed="${sendOpt.need===k}"><span class="t1">${l}</span><span class="t2">${sm}</span></div>`).join('')}</div>
-    <label class="f" for="eq_snote">Your note to ${esc(fn)} (optional)<textarea id="eq_snote" rows="2" placeholder="${sendOpt.need==='action'?'e.g. Please go back and recover this parcel today and let me know':'e.g. Just so you know, please knock louder at this address'}">${esc(sendOpt.note)}</textarea></label></div>
-    <div class="foot eq-ffoot"><button type="button" class="sh-btn primary" data-eq="savesend">Save and send to ${esc(fn)}</button><button type="button" class="sh-btn" data-eq="save">Save, don’t send yet</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>`})()}
+  <span class="lbl">Outcome</span>
+  <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button>${r.fault==='no'?`<button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="true">Not at fault</button>`:''}</div>
+  <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
   </section></div>`;
 }
 /* ---------- what the case PDF showed: warning flags, scan events and pictures ---------- */
@@ -7992,7 +7984,6 @@ function oneHTML(r){
   return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="back">‹ Enquiries</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <section class="card"><div class="t2"><h2>${esc(r.driver||r.login||'')}</h2>${chip(r.fault)}</div><p class="sub">${[dno(r.login),r.login].filter(Boolean).map(esc).join(' · ')}${prev?` · ${prev} other at fault enquir${prev===1?'y':'ies'}`:''}</p></section>
-  ${drvBox(r.id,'enq')}
   ${flagsHTML(r)}
   ${r.details?`<div class="nwhat ${r.fault==='yes'?'':'neu'}"><b>What happened</b><p>${esc(r.details).replace(/\n/g,'<br>')}</p></div>`:''}
   <section class="card"><span class="lbl">Details</span><dl class="kv"><dt>Date</dt><dd>${esc(nice(r.date))}</dd>${r.caseNo?`<dt>Case</dt><dd>${esc(r.caseNo)}</dd>`:''}${r.enqType?`<dt>Type</dt><dd>${esc(r.enqType)}</dd>`:''}${r.category?`<dt>Parcel category</dt><dd>${esc(r.category)}</dd>`:''}${r.customer?`<dt>Customer</dt><dd>${esc(r.customer)}</dd>`:''}${r.tracking?`<dt>Tracking</dt><dd class="brk">${esc(r.tracking)}</dd>`:''}${r.address?`<dt>Addressee address</dt><dd>${pcTag(pcOf(r))} ${esc(r.address)}</dd>`:''}${r.scanAddr?`<dt>Delivered delivery address</dt><dd class="${normA(r.scanAddr)!==normA(r.address)?'wt':''}">${esc(r.scanAddr)}${normA(r.scanAddr)!==normA(r.address)?'<br><small>Not the addressee address</small>':''}</dd>`:''}${r.deliveredAt?`<dt>Delivered</dt><dd>${esc(r.deliveredAt)}</dd>`:''}<dt>Outcome</dt><dd>${r.fault==='yes'?'At fault':r.fault==='partly'?'Partly at fault':r.fault==='no'?'Not at fault':'No outcome yet'}</dd>${r.supervisor?`<dt>Supervisor</dt><dd>${esc(r.supervisor)}</dd>`:''}${r.note?`<dt>Note</dt><dd>${esc(r.note)}</dd>`:''}</dl></section>
@@ -8078,7 +8069,7 @@ document.addEventListener('click',async ev=>{
   if(a==='print'){printList();return}
   if(a==='save'||a==='savesend'){const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
-    if(!r.supervisor){msg={err:true,t:'Pick who is handling this enquiry. Driver replies only ding them.'};render();window.scrollTo(0,0);return}
+    if(!r.fault){msg={err:true,t:'Choose At fault or Partly at fault.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
       events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
@@ -8087,7 +8078,7 @@ document.addEventListener('click',async ev=>{
       if(r._imgs){try{const old=await db.collection('enqimg').where('enq','==',id).get();for(const d of old.docs)await db.doc('enqimg/'+d.id).delete()}catch(x){}
         let k=0;for(const im of r._imgs){if(String(im.data).length>900000)continue;try{await db.doc('enqimg/'+id+'_p'+(k++)).set({enq:id,name:im.name,type:'image/jpeg',data:im.data,eat:now})}catch(x){}}delete eImgs[id]}
       if(DRV[id]){const h=handlerOf(doc);if(DRV[id].handlerStaff!==h.handlerStaff||DRV[id].handler!==h.handler){try{await db.doc('drvenq/'+id).update(h);Object.assign(DRV[id],h)}catch(x){}}}
-      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Nothing has gone to the driver yet. Send it from here when you are ready.')}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
+      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
     if(andSend&&!DRV[id])await sendDrv(id,'enq',false);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{const id0=open;await db.doc('enqlog/'+id0).delete();await dropAll(id0);delete recs[id0];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
@@ -8170,8 +8161,7 @@ async function start(role){
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(x){db=null}
   if(!db){msg={err:true,t:'Could not connect. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>Object.assign({id:d.id},clone(__D(d)))))}catch(x){}
-  db.collection('drvenq').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));DRV=o;const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{});
-  setTimeout(cleanPics,8000);setTimeout(loadOldOpen,3000);
+  setTimeout(cleanPics,8000);
   db.collection('enqlog').onSnapshot(snap=>{const o={};for(const[k,v]of Object.entries(OLDOPEN))o[k]=v;for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();if(window.__deepOpen&&deepGo())return;
     const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{msg={err:true,t:'Could not load enquiries.'};render()});
   render();
@@ -10918,7 +10908,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021239';
+const VERSION='1202611021246';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12603,7 +12593,7 @@ const A={ /* office */
  'mod-results':'Results come from the daily performance reports. Use the date bar to pick a day, week or pay period, and tap How the Contract Score works to see how each score is worked out.',
  'mod-survey':'Scores from the customer survey. A 9 or 10 is a promoter and 0 to 6 is a detractor. Tap How the NPS score works to see how the team score is worked out.',
  'mod-summary':'The whole contract at a glance for the period you pick, built from the same results as the Results tab.',
- 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Needs action lists every enquiry still open, newest driver replies first. Press + to add one from the case PDF and send it to the driver. When you have everything, tap the green Close button with the outcome and it moves to Done.',
+ 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver.':'Only at fault and partly at fault enquiries are recorded, and they count in the driver results. Pick a postcode and a month to see them. Press + to add one from the case PDF.',
  'mod-runs':t=>/sort/i.test(t)?'Which driver each street goes to, by postcode. Use it at the depot to redirect missorts. Drivers get changes after you press Send latest to drivers.':'Each driver’s streets in delivery order, with customer and access notes. Pick a postcode at the top. Drivers get changes after you press Send latest to drivers.',
  'mod-precards':'Precards are split into Approved and Under review. Check the ones under review and approve them once they are right.',
  'mod-lockers':'Parcel lockers on the contract, with the building and Australia Post details for each one.',
