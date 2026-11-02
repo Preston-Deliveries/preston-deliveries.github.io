@@ -5502,7 +5502,7 @@ function briefHTML(b){
   return `<div class="tbx"><div class="topbar"><button type="button" class="sh-btn back" data-tb="back">\u2039 All team briefs</button>${isMgr()?`<button type="button" class="sh-btn primary" data-tb="sheet" data-v="${esc(b.id)}"><span class="ix ix-print" aria-hidden="true"></span>Sign off sheet</button>`:''}</div>
    ${isMgr()&&msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>${msg.wa?window.__waBtn(msg.wa):''}`:''}
    <article class="brief">
-    <header class="band"><div><small>Team brief and training</small><h2>${esc(b.title||'Team brief')}</h2><p>${esc(b.facility||'')}</p></div><div class="stamp"><b>${esc(fmt(b.date))}</b></div></header>
+    <header class="band" data-tb="back" role="button" tabindex="0" title="Close"><div><small>Team brief and training</small><h2>${esc(b.title||'Team brief')}</h2><p>${esc(b.facility||'')}</p></div><div class="stamp"><b>${esc(fmt(b.date))}</b></div></header>
     ${(b.topics||[]).length?`<div class="topics"><h3>In this brief</h3><ol>${b.topics.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></div>`:''}
     <div class="doc">${clean(b.html)}</div>
     ${(b.files||[]).length?`<section class="files"><h3>Attachments</h3>${b.files.map((f,fi)=>`<div class="file"><h4>${esc(f.name)}</h4><p class="sub">${f.archived?'The page images were cleared after 12 months to save space. The sign off record is kept.':`${f.pages.length} page${f.pages.length===1?'':'s'}. Tap a page to see it bigger.`}</p>
@@ -7069,7 +7069,7 @@ function cardHTML(n){
   return fullCardHTML(n)}
 function fullCardHTML(n){
   const d=n.date?fromIso(n.date):null;
-  return `<article class="nt ${n.important?'imp':''} ${n.live?'':'draft'} ${isPast(n)?'done':''}" id="nt_n_${esc(n.id)}">
+  return `<article class="nt ${n.important?'imp':''} ${n.live?'':'draft'} ${isPast(n)?'done':''}" id="nt_n_${esc(n.id)}" data-nt="row" data-v="${esc(n.id)}">
    ${d?`<div class="cal" aria-hidden="true"><span>${MON[d.getMonth()].slice(0,3)}</span><b>${d.getDate()}</b><span>${DOW[d.getDay()].slice(0,3)}</span></div>`:''}
    <div class="bd"><div class="tags">${n.important?'<span class="tag imp">Important</span>':''}${n.pinned?'<span class="tag">Pinned</span>':''}${isMgr()&&!n.live?'<span class="tag dr">Draft, drivers can’t see</span>':''}${isPast(n)?'<span class="tag">Finished</span>':''}</div>
    <h2>${esc(n.title)}${n.date?`<span class="dt"> ${esc(longDate(n.date))}</span>`:''}</h2>
@@ -7141,7 +7141,7 @@ async function save(){
 }
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-nt]');if(!el||!document.getElementById('mod-updates').contains(el))return;
-  const a=el.dataset.nt,v=el.dataset.v;if(a==='row'){if(openN.has(v))openN.delete(v);else openN.add(v);render();return}if(a!=='del')armDel=false;
+  const a=el.dataset.nt,v=el.dataset.v;if(a==='row'&&el.tagName==='ARTICLE'&&(e.target.closest('a,input,textarea,select,img,video,iframe')||String(getSelection&&getSelection()||'').length))return;if(a==='row'){if(openN.has(v))openN.delete(v);else openN.add(v);render();return}if(a!=='del')armDel=false;
   if(a==='new'){window.__edY={y:scrollY,s:window.APP&&APP.section};editing='new';msg=null;render();window.scrollTo(0,0);setTimeout(()=>$('title')?.focus(),0);return}
   if(a==='edit'){window.__edY={y:scrollY,s:window.APP&&APP.section};editing=v;msg=null;render();window.scrollTo(0,0);return}
   if(a==='cancel'){editing=null;msg=null;render();{const E=window.__edY;if(E&&E.s===(window.APP&&APP.section)){window.scrollTo(0,E.y)}window.__edY=null}return}
@@ -10975,7 +10975,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021908';
+const VERSION='1202611021914';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13647,6 +13647,8 @@ html[data-theme=dark]:root:root:root:root:root:root:root:root:root:root body #sh
 :root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs #pcs.modes>button{display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;padding:8px 0!important;margin:0!important;width:100%!important;min-width:0!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(:is(.pf-chips,.sc-chips):has(>.pcbtn),#mod-runs #pcs.modes){background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;border-radius:0!important;gap:6px!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(:is(.pf-chips,.sc-chips):has(>.pcbtn),#mod-runs #pcs.modes)>button{border-radius:14px!important;min-height:46px!important;padding:0 4px!important;font-size:1rem!important;font-weight:800!important;display:flex!important;align-items:center!important;justify-content:center!important}
+:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-updates article.nt[data-nt=row]{cursor:pointer}
+:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-briefs .brief>header.band[data-tb=back]{cursor:pointer}
 </style>
 <script id="lv-week-js">(()=>{let q=0;function mark(){q=0;document.querySelectorAll('#mod-leave .cal').forEach(c=>{const D=[...c.querySelectorAll(':scope>.day')];const i=D.findIndex(d=>d.classList.contains('now'));const want=i<0?-1:Math.floor(i/5);if(c.dataset.wk===String(want)&&(want<0||c.querySelector(':scope>.wk-tag')))return;c.dataset.wk=String(want);c.querySelectorAll(':scope>.wk-tag').forEach(t=>t.remove());D.forEach((d,k)=>{const r=Math.floor(k/5);d.classList.toggle('wk-now',r===want);d.classList.toggle('wk-past',want>=0&&r<want)});if(want>=0){const t=document.createElement('div');t.className='wk-tag';t.textContent='This week';c.insertBefore(t,D[want*5])}})}
 const soon=()=>{if(!q)q=requestAnimationFrame(mark)};try{new MutationObserver(soon).observe(document.body,{childList:true,subtree:true})}catch(e){}setTimeout(mark,400)})();</script>
