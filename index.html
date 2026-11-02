@@ -2869,8 +2869,8 @@ function renderResults(){
   res.sort((a,b)=>((b.pc===S.pc)-(a.pc===S.pc))||(b.n.startsWith(t)-a.n.startsWith(t))||a.n.localeCompare(b.n));
   const shown=res.slice(0,60);
   cnt.textContent=[drv.length?`${drv.length} driver${drv.length===1?'':'s'}`:'',res.length?`${res.length} street${res.length===1?'':'s'}${S.allPc?' across all postcodes':' in '+S.pc}${res.length>60?', showing the first 60':''}`:''].filter(Boolean).join(' and ');
-  box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res">${shown.map(g=>`<div class="lk-st"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="go edst" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}">Edit</button>`:''}</div>
-    ${g.parts.map(p=>`<div class="lk-part"><i class="cdot" style="background:${p.col}"></i><span class="who">${esc(p.driver)}</span>${p.rg?`<span class="rg">${esc(p.rg)}</span>`:''}<button type="button" class="go" data-act="openRun" data-v="${esc(p.id)}">Run sheet</button></div>`).join('')}</div>`).join('')}</div>`
+  box.innerHTML=drvHTML+(shown.length?`${drv.length?'<h3 class="lk-h">Streets</h3>':''}<div class="lk-res lk2">${shown.map((g,gi)=>`<div class="lk-st${gi===0?' top':''}"><div class="lk-top"><span class="lk-name">${esc(g.name)}</span><span class="lk-pc">${esc(g.pc)}</span>${canWrite?`<button type="button" class="lk2-ed" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}" aria-label="Edit ${esc(g.name)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>`:''}</div>
+    ${g.parts.map(p=>{const R=S.runs[p.id]||{};return `<button type="button" class="lk2-p" data-act="openRun" data-v="${esc(p.id)}"><i class="cdot" style="background:${p.col}"></i><span class="tx"><b>${R.login?'Run '+esc(R.login)+' · ':''}${esc(p.driver)}</b><small>${p.rg?esc(p.rg):'Whole street'}</small></span>${R.bay?`<span class="bay"><small>Bay</small><b>${esc(R.bay)}</b></span>`:'<span class="go2">›</span>'}</button>`}).join('')}</div>`).join('')}</div>`
     :drv.length?'':`<div class="state"><h2>No street or driver matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Check the spelling, or try the first few letters.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`);
 }
 function sortPrintDoc(pc){
@@ -12952,6 +12952,56 @@ html body #sh-main#sh-main#sh-main .pfx .pv-nv{display:flex;align-items:baseline
 html body #sh-main#sh-main#sh-main .pfx .pv-c p.q{padding:7px 0 0;border-top:1px solid var(--sh-line);display:flex;gap:10px;align-items:flex-start;font-style:italic;color:var(--sh-ink)}
 html body #sh-main#sh-main#sh-main .pfx .pv-c p.q i{font-style:normal;flex:none;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:800;font-size:.85rem;background:var(--sh-sunk);color:var(--sh-ink)}
 html body #sh-main#sh-main#sh-main .pfx .pv-c p.q i.g{background:#1E8A4C;color:#fff}html body #sh-main#sh-main#sh-main .pfx .pv-c p.q i.w{background:#D98B00;color:#fff}html body #sh-main#sh-main#sh-main .pfx .pv-c p.q i.b{background:#C62828;color:#fff}
+</style>
+<style id="rd-sort">
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2{display:flex;flex-direction:column;gap:10px}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk-st{background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;padding:12px 14px!important;box-shadow:none!important;display:flex;flex-direction:column;gap:6px}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk-st.top{border-color:#F2782D!important;box-shadow:0 0 0 1px #F2782D inset!important}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk-top{display:flex;align-items:center;gap:8px;margin:0!important}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk-name{font:800 1.2rem/1.2 var(--sh-body)!important;color:var(--sh-ink)!important;flex:0 1 auto;min-width:0}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-ed{all:unset;cursor:pointer;margin-left:auto;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;color:var(--sh-muted)}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-ed svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:8px 0 2px;border-top:1px solid var(--sh-line)}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .cdot{flex:none;width:10px;height:10px;border-radius:50%}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .tx b{font-size:1rem;color:var(--sh-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .tx small{font-size:.85rem;color:var(--sh-muted);font-weight:600}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .bay{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;padding:5px 8px;border-radius:12px;background:#F2782D;color:#fff;line-height:1}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .bay small{font:800 .62rem var(--sh-body);letter-spacing:.1em;text-transform:uppercase;opacity:.9}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .bay b{font:800 1.5rem/1.05 var(--sh-body)}
+html body #sh-main#sh-main#sh-main #mod-runs#mod-runs .lk2 .lk2-p .go2{color:var(--sh-muted);font-size:1.3rem}
+</style>
+<style id="rd-run">
+@media (max-width:899px){
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet{padding:14px!important;border-radius:14px!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec{margin:14px 0 0!important;padding:0!important;border:0!important;background:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec-head{display:flex!important;align-items:center;gap:8px;margin:0 0 6px!important;padding:0!important;border:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec-head .sh-no{width:22px!important;height:22px!important;min-width:0!important;border-radius:6px!important;font-size:.8rem!important;font-weight:800!important;line-height:22px!important;text-align:center;display:block!important;padding:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec-head>div{display:flex!important;align-items:baseline;gap:8px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec-head h2{font-size:.8rem!important;font-weight:800!important;line-height:1.2!important;letter-spacing:.1em;text-transform:uppercase;margin:0!important;color:var(--sh-muted)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-sec-head p{margin:0!important;font-size:.8rem!important;color:var(--sh-muted)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-tablewrap{border:1px solid var(--sh-line)!important;border-radius:12px!important;overflow:hidden;background:var(--sh-surface)!important;padding:0 12px!important;margin:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t,html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t tbody{display:block!important;width:100%!important;border:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t thead{display:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t tr{display:grid!important;grid-template-columns:28px max-content max-content 1fr;grid-template-areas:"n s s s" "n e o x" "n i i i";column-gap:10px;row-gap:1px;padding:9px 0!important;border:0!important;border-top:1px solid var(--sh-line)!important;background:none!important;margin:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t tr:first-child{border-top:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t tr.hv{background:rgba(245,192,74,.12)!important;margin:0 -12px!important;padding:9px 12px!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td{display:block!important;padding:0!important;background:none!important;border:0!important;text-align:left!important;min-width:0}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.n{grid-area:n;font-weight:800!important;color:var(--sh-muted)!important;font-size:.95rem!important;padding-top:1px!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.s{grid-area:s;font-weight:800!important;font-size:1.05rem!important;color:var(--sh-ink)!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.r{font-size:.84rem!important;color:var(--sh-muted)!important;font-weight:600!important;white-space:nowrap}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.r::before{content:attr(data-l) " "!important;display:inline!important;font:inherit!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;margin:0!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.r[data-l="Evens"]{grid-area:e}html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.r[data-l="Odds"]{grid-area:o}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td.r:empty{display:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t td:last-child{grid-area:i}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-info{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-info:empty{display:none}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-line{font-size:.88rem!important;color:#C2570C!important;font-weight:600;line-height:1.35}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-line b{color:inherit!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-line .tag{font-size:.66rem!important;padding:1px 6px!important;vertical-align:1px}
+}
+@media (max-width:899px) and (prefers-color-scheme:dark){html:not([data-theme=light]) body #sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-line{color:#FFB27A!important}}
+@media (max-width:899px){html[data-theme=dark] body #sh-main#sh-main#sh-main #mod-runs#mod-runs#mod-runs .sheet.sheet .sh-t .sh-line{color:#FFB27A!important}}
 </style>
 </body>
 </html>
