@@ -1474,6 +1474,7 @@ function adminGlance0(){const el=$('ah_glance');if(!el||role!=='mgr')return;cons
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gl]');if(b&&window.APP)APP.go(b.dataset.gl)});
 /* admin Home: one short list of what needs attention; tap a line to open the full card under it */
 const sumOpen=new Set();
+{const st=document.createElement('style');st.textContent='#ah_sum>#ah_todo,#ah_sum>#ah_off,#ah_sum>#ah_morn,#ah_sum>#ah_fu{margin:4px 0 10px!important;order:0!important}#ah_sum>div>.dh-card,#ah_sum>div>section{margin:0!important;box-shadow:none!important}';document.head.appendChild(st)}
 function adminSum(){if(adminSum.q)return;adminSum.q=1;queueMicrotask(()=>{adminSum.q=0;adminSum0()})}
 function adminSum0(){const el=$('ah_sum');if(!el||role!=='mgr')return;
   const td=$('ah_todo'),mn=$('ah_morn');
@@ -1489,7 +1490,11 @@ function adminSum0(){const el=$('ah_sum');if(!el||role!=='mgr')return;
   const html=row('todo',todo.length?todo[0]+(todo.length>1?' and '+(todo.length-1)+' more':''):'All caught up',todo.length?'Needs you':'Nothing waiting on you',todo.length)
     +row('off','Who’s off',offT,0)+row('morn','Morning check',mt.replace(/^✓\s*/,''),0)
     +(hasFu?row('fu','Follow ups',FU.left?FU.left+' driver'+(FU.left===1?'':'s')+' to follow up from '+FU.day:'All done for '+FU.day,FU.left):'');
+  /* an opened row shows its details right underneath it: the block moves up under the row, and back when closed */
+  const SECS={todo:'ah_todo',off:'ah_off',morn:'ah_morn',fu:'ah_fu'};
+  for(const [k,id] of Object.entries(SECS)){const b=$(id);if(!b)continue;if(!b.__ph){b.__ph=document.createComment(id);b.parentNode.insertBefore(b.__ph,b)}if(el.contains(b)&&(el.__h!==html||!sumOpen.has(k)))b.__ph.parentNode.insertBefore(b,b.__ph.nextSibling)}
   if(el.__h!==html){el.__h=html;el.innerHTML=html}
+  for(const [k,id] of Object.entries(SECS)){if(!sumOpen.has(k))continue;const b=$(id),r=el.querySelector('[data-sum="'+k+'"]');if(b&&r&&r.nextElementSibling!==b)r.after(b)}
   const home=$('sh-home');if(home)['todo','off','morn','fu'].forEach(k=>home.classList.toggle('so-'+k,sumOpen.has(k)))}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#ah_sum [data-sum]');if(!b)return;const k=b.dataset.sum;if(sumOpen.has(k))sumOpen.delete(k);else sumOpen.add(k);adminSum();if(k==='fu'&&sumOpen.has(k)){const d=document.querySelector('#ah_fu details.fu-nd');if(d)d.open=true}});
 /* admin: who is off today, tomorrow and this week (from the leave calendar) */
@@ -10883,7 +10888,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021155';
+const VERSION='1202611021200';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
