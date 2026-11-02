@@ -4904,7 +4904,7 @@ function render(){
   const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   box.innerHTML=`<div class="dm">
     <div class="dm-head"><h1>Drivers</h1>
-      <div class="act dm-act1"><button type="button" class="sh-btn primary" data-dm="add"><span class="ix ix-add" aria-hidden="true"></span>Person</button></div><div class="dm-act2"><button type="button" class="sh-btn" data-dm="pdf" title="Download the driver list as a PDF">PDF</button></div></div>
+      <div class="act dm-act1"><button type="button" class="sh-btn primary" data-dm="add"><span class="ix ix-add" aria-hidden="true"></span>Person</button></div><div class="dm-act2"><button type="button" class="sh-btn" data-dm="pdf" title="Download the driver list as a PDF">PDF</button><button type="button" class="sh-btn" data-dm="logins" title="Print every driver's login and password">Logins</button></div></div>
     <div class="dm-lock">${lockIcon}<span>Only you can see this page. Driver details are never sent to the drivers’ view.</span></div>
     ${(()=>{const D=[];for(const p of Object.values(people))for(const[k,l]of EXP){const n=daysTo(p[k]);if(n!=null&&n<=RDAYS)D.push({p,k,l,n})}D.sort((a,b)=>a.n-b.n);return D.length?`<section class="card rgsoon"><h2>Expiring soon</h2>${D.map(z=>`<button type="button" class="rgrow" data-dm="open" data-v="${esc(z.p.id)}"><b>${esc(fullName(z.p))}</b><span>${esc(z.l)}${z.k==='regoDue'&&z.p.rego?' '+esc(z.p.rego):''}</span><span class="svb">${esc(expTxt(z.n,z.p[z.k]))}</span></button>`).join('')}</section>`:''})()}
     ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
@@ -4986,24 +4986,24 @@ async function exportLogins(btn){
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
-  const list=sorted(Object.values(people));
+  const list=sorted(Object.values(people)).filter(p=>String(p.login||'').trim()||String(p.pw||'').trim());
   const roleTxt=r=>r==='PRINCIPLE'?'Principal':r==='RELIEF'?'Relief':title(r);
-  const rows=list.map((p,i)=>[String(i+1),fullName(p),roleTxt(String(p.role||'')),p.login||'',p.pw||'']);
+  const rows=list.map((p,i)=>[String(i+1),fullName(p),roleTxt(String(p.role||'')),(Array.isArray(p.runs)?p.runs:String(p.runs||'').split(/[,\s]+/)).filter(Boolean).join(', '),p.login||'',p.pw||'']);
   const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
   const make=fs=>{const doc=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
     doc.setFillColor(19,32,44);doc.rect(0,0,W,19,'F');doc.setTextColor(242,120,45);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.text('PRESTON DELIVERY SERVICE PTY LTD',10,7.5);
-    doc.setTextColor(255,255,255);doc.setFontSize(15);doc.text('Contract 1161  ·  Scanner logins',10,15);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(201,214,210);doc.text(list.length+' people  ·  Printed '+today,W-10,15,{align:'right'});
+    doc.setTextColor(255,255,255);doc.setFontSize(15);doc.text('Contract 1161  ·  Driver logins and passwords',10,15);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(201,214,210);doc.text(list.length+' people  ·  Printed '+today,W-10,15,{align:'right'});
     const pad=Math.max(.6,fs*.2);
-    doc.autoTable({head:[['#','NAME','ROLE','SCANNER LOGIN','SCANNER PASSWORD']],body:rows,startY:24,margin:{top:24,left:10,right:10,bottom:11},theme:'plain',
+    doc.autoTable({head:[['#','NAME','ROLE','DRIVER NO.','LOGIN','PASSWORD']],body:rows,startY:24,margin:{top:24,left:10,right:10,bottom:11},theme:'plain',
       styles:{font:'helvetica',fontSize:fs,textColor:[20,32,29],cellPadding:{top:pad,bottom:pad,left:2,right:2},valign:'middle',lineColor:[211,220,216],lineWidth:{bottom:.15}},
       headStyles:{fontStyle:'bold',fontSize:Math.min(8,fs),textColor:[86,101,95],fillColor:[238,242,240]},alternateRowStyles:{fillColor:[246,248,247]},
-      columnStyles:{0:{halign:'right',textColor:[86,101,95],cellWidth:9},1:{fontStyle:'bold'},3:{font:'courier',fontStyle:'bold'},4:{font:'courier',fontStyle:'bold'}}});
-    doc.setFontSize(7);doc.setTextColor(86,101,95);doc.text('Confidential. Scanner logins and passwords. Keep in the office, do not share or post.',10,H-5);return doc};
+      columnStyles:{0:{halign:'right',textColor:[86,101,95],cellWidth:9},1:{fontStyle:'bold'},4:{font:'courier',fontStyle:'bold'},5:{font:'courier',fontStyle:'bold'}}});
+    doc.setFontSize(7);doc.setTextColor(86,101,95);doc.text('Confidential. Logins and passwords. Keep in the office, do not share or post.',10,H-5);return doc};
   let doc=null;for(let fs=11;fs>=5;fs-=.25){doc=make(fs);if(doc.internal.getNumberOfPages()===1)break}
   const blob=doc.output('blob');const dl=(window.__UVDL||(window.claude&&window.claude.use?await window.claude.use('downloads'):null)||window.__DLSHIM);
   btn.disabled=false;btn.textContent=old;
   if(!dl){msg={err:true,t:'Downloads are not available in this view.'};render();return}
-  try{await dl.save({filename:'1161 Scanner logins '+new Date().toLocaleDateString('en-AU').replace(/\//g,'.')+'.pdf',data:blob});msg={t:'PDF saved. Open it to print.'};render()}catch(e){const c=e&&e.code;msg=c==='declined'?null:{err:true,t:'Could not save the PDF. Try again.'};render()}
+  try{await dl.save({filename:'1161 Driver logins '+new Date().toLocaleDateString('en-AU').replace(/\//g,'.')+'.pdf',data:blob});msg={t:'PDF saved. Open it to print.'};render()}catch(e){const c=e&&e.code;msg=c==='declined'?null:{err:true,t:'Could not save the PDF. Try again.'};render()}
 }
 async function exportPdf(btn){
   btn.disabled=true;const old=btn.textContent;btn.textContent='Making PDF…';
@@ -11028,7 +11028,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611030630';
+const VERSION='1202611030739';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12466,13 +12466,14 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  const ACT=[
   ['dl','Download PDF','[data-scpdf],[data-sm="pdf"],[data-pc="pdf"],[data-lk="pdf"],[data-act="download"],[data-act="printSort"],[data-eq="print"],[data-dm="pdf"],[data-un="pdf"],[data-lv="pdf"],:is(#mod-compliance,#mod-boss,#mod-review,#mod-vchecks) [data-sh="print"]'],
   ['share','Save as image','[data-rb="share"]'],
+  ['print','Print logins and passwords','[data-dm="logins"]'],
  ];
  const LOADTAB='[data-rtab="import"],[data-vtab="import"]';
  const vis=e=>!!(e&&e.getClientRects().length);
  const secOf=()=>[...document.querySelectorAll('#sh-main .sh-sec')].find(x=>!x.hidden&&x.getClientRects().length);
  function acts(){const ph=document.getElementById('sh-ph');if(!ph||ph.hidden)return;const ttl=ph.querySelector('.ttl');if(!ttl)return;const sec=secOf();if(!sec)return;
    const want=[];
-   for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))));if(b)want.push({k,label,b})}
+   for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))||(!!x.closest('.dm-head')&&!x.closest('[hidden]'))));if(b)want.push({k,label,b})}
    for(const [tk,tsel,offL,onL] of [['load',LOADTAB,'Load new results','Back to results'],['edit','#modes [data-act="mode"][data-v="edit"]','Edit run sheet','Done editing']]){
      const lt=[...sec.querySelectorAll(tsel)].find(x=>!x.parentElement.hidden&&(vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement))));
      if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:tk,label:on?onL:offL,b:lt,grp,on})}}
@@ -13826,6 +13827,7 @@ html[data-theme=dark]:root:root:root:root:root:root:root:root:root:root body #sh
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs main#app>.state:only-child{margin-bottom:12px!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=view] header.top .weeknav,:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #r_tool[data-tab=view] #rl_fold{display:none!important}
 :root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .ah-fnum,:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-runs .lk2 .lk-num{margin:4px 0 2px!important;font-size:.85rem!important;font-weight:600!important;color:var(--sh-muted)!important;line-height:1.35!important}
+@media (max-width:600px){:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts:has(>:nth-child(3))>button{width:38px!important;min-width:38px!important;max-width:38px!important}:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root:root body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl:has(.ph-acts>:nth-child(3)) h1{font-size:1.2rem!important}}
 </style>
 <script id="cp-q-js">(()=>{const norm=t=>String(t||'').toLowerCase().replace(/\s+/g,' ');function apply(){const q=norm((window.__cpQ||'').trim());document.querySelectorAll('#mod-compliance .cpm-r,#mod-compliance tr.cp-row').forEach(r=>{r.hidden=!!q&&!norm(r.textContent).includes(q)});document.querySelectorAll('#mod-compliance tr.cp-gr').forEach(g=>{let n=g.nextElementSibling,any=false;while(n&&!n.classList.contains('cp-gr')){if(!n.hidden)any=true;n=n.nextElementSibling}g.hidden=!!q&&!any});document.querySelectorAll('#mod-compliance .cp-q').forEach(i=>{if(document.activeElement!==i&&i.value!==(window.__cpQ||''))i.value=window.__cpQ||''})}
 document.addEventListener('input',e=>{const i=e.target;if(!i.classList||!i.classList.contains('cp-q'))return;window.__cpQ=i.value;apply()},true);
