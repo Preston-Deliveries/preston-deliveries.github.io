@@ -89,6 +89,14 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-enquiries .eq-pcs .eq-pc[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.3)}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
 #sh-main #mod-enquiries select.need{border-color:#D93025!important;box-shadow:0 0 0 2px rgba(217,48,37,.2)}
 #sh-home>.dh-cards:empty{display:none!important}
+#sh-main #mod-invoices .iw-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 14px}
+#sh-main #mod-invoices .iw-st{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 2px;border-radius:12px;background:var(--sh-surface);border:1px solid var(--sh-line);text-align:center;color:var(--sh-ink);min-width:0}
+#sh-main #mod-invoices .iw-st i{font-style:normal;font-size:.72rem;font-weight:800;color:var(--sh-muted)}
+#sh-main #mod-invoices .iw-st b{font-size:.92rem}
+#sh-main #mod-invoices .iw-st small{font-size:.72rem;font-weight:700;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;min-height:1em}
+#sh-main #mod-invoices .iw-st.warn small{color:#D93025}
+#sh-main #mod-invoices .iw-st[aria-pressed=true]{background:#F2782D;border-color:#F2782D;color:#fff}
+#sh-main #mod-invoices .iw-st[aria-pressed=true] i,#sh-main #mod-invoices .iw-st[aria-pressed=true] small{color:#fff}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -9808,7 +9816,8 @@ function html(){
        :ans.pay==='h'||ans.pay==='b'?`<label class="iw-rate"><span>$</span><input type="text" inputmode="decimal" autocomplete="off" id="im_rh" value="${esc(ans.rh)}" placeholder="0.00" aria-label="Hourly rate in dollars"><span>an hour</span></label>`:''))
     +(P.dates||'');
    const ix=ST.findIndex(x=>x[0]===istep);
-   const bar=`<nav class="iw-prog" aria-label="Steps">${ST.map(([k,l,c],i)=>`<button type="button" data-im="ist" data-v="${k}" aria-pressed="${istep===k}" aria-label="Step ${i+1}: ${l}" class="${i<=ix?'on':''} ${c==='!'?'warn':''}"></button>`).join('')}</nav><p class="iw-stepl">Step ${ix+1} of ${ST.length} · ${ST[ix]?ST[ix][1]:''}</p>`;
+   /* step boxes, the same look as the run sheet editor: number, name, and where it is up to */
+   const bar=`<nav class="iw-steps" aria-label="Steps">${ST.map(([k,l,c],i)=>`<div role="button" tabindex="0" class="iw-st ${c==='!'?'warn':''} ${i<ix?'done':''}" data-im="ist" data-v="${k}" aria-pressed="${istep===k}" aria-label="Step ${i+1}: ${l}"><i>${i+1}</i><b>${l}</b><small>${c==='!'?'Needs info':esc(c||'')}</small></div>`).join('')}</nav>`;
    const nav=`<div class="iw-stepnav">${ix>0?`<button type="button" class="sh-btn" data-im="ist" data-v="${ST[ix-1][0]}">‹ Back</button>`:'<span></span>'}${ix<ST.length-1?`<button type="button" class="sh-btn primary" data-im="ist" data-v="${ST[ix+1][0]}" ${istep==='dates'&&!startOk?'disabled':''}>Next ›</button>`:''}</div>`;
    const mh=msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:'';
    let body=(P[istep]||'').replace(mh,'');body=mh+body;if(istep==='det')body=body.replace('<details class="cfg iw-det"','<details class="cfg iw-det" open');
@@ -10909,7 +10918,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021236';
+const VERSION='1202611021239';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
