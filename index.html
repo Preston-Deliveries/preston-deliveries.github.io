@@ -7888,6 +7888,13 @@ async function officeSay(id,text,extra,title,body){const D=convo(DRV[id]);if(!D)
   try{await db.doc('drvenq/'+id).update(up);Object.assign(DRV[id],up)}catch(x){msg={err:true,t:'Could not send just now. Check your connection.'};render();return false}
   for(const k of ['rtxt','cnote']){const e=$(k);if(e){e.value='';e.blur()}}
   const t=await dingDrv(p,title,body,id);msg={t:'Sent. '+t};render();return true}
+/* Needs action shows every open enquiry, however old: the page normally only downloads recent months,
+   so open ones from further back (no outcome yet, or a conversation still open) are fetched on their own */
+const OLDOPEN={};
+async function loadOldOpen(){try{const add=d=>{if(!d)return;const v=Object.assign({id:d.id},clone(__D(d)));if(!recs[d.id]){OLDOPEN[d.id]=v;recs[d.id]=v}};
+  const q=await db.collection('enqlog').where('fault','==','').get();for(const d of q.docs)add(d);
+  for(const [id,D] of Object.entries(DRV)){if(D.closedAt||recs[id])continue;try{const g=await db.doc('enqlog/'+id).get();if(g&&g.exists!==false&&__D(g))add(Object.assign(g,{id}))}catch(x){}}
+  render()}catch(x){}}
 /* pictures older than 12 months are removed to save space; the enquiry itself stays */
 async function cleanPics(){try{const k='eqclean',t=today();if(localStorage.getItem(k)===t)return;localStorage.setItem(k,t)}catch(x){}
   try{const d=new Date();d.setMonth(d.getMonth()-12);const q=await db.collection('enqimg').where('eat','<',d.toISOString()).get();for(const x of q.docs)await db.doc('enqimg/'+x.id).delete()}catch(x){}}
@@ -8072,8 +8079,8 @@ async function start(role){
   if(!db){msg={err:true,t:'Could not connect. Reload the page.'};render();return}
   try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>Object.assign({id:d.id},clone(__D(d)))))}catch(x){}
   db.collection('drvenq').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));DRV=o;const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{});
-  setTimeout(cleanPics,8000);
-  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();if(window.__deepOpen&&deepGo())return;
+  setTimeout(cleanPics,8000);setTimeout(loadOldOpen,3000);
+  db.collection('enqlog').onSnapshot(snap=>{const o={};for(const[k,v]of Object.entries(OLDOPEN))o[k]=v;for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();if(window.__deepOpen&&deepGo())return;
     const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{msg={err:true,t:'Could not load enquiries.'};render()});
   render();
 }
@@ -10818,7 +10825,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021127';
+const VERSION='1202611021129';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
