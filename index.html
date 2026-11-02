@@ -6616,7 +6616,7 @@ function listHTML(){
   if(!L.length)return '<div class="empty">No upcoming leave.</div>';
   const sd=x=>{const d=fromIso(x);return d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]};
   const ini=n=>String(n||'').trim().split(/\s+/).map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
-  return `<div class="lvl">${L.map(b=>{const n=(b.days||[]).length;return `<button type="button" class="lvr" data-lv="edit" data-v="${esc(b.id)}"><span class="av" aria-hidden="true">${esc(ini(b.name))}</span><span class="tx"><b>${esc(b.name)}</b><small>${esc(b.from===b.to?sd(b.from):sd(b.from)+' to '+sd(b.to))}${OFFICE.includes(roleOf(b.name))?' · Office':''}${b.note?' · '+esc(b.note):''}</small></span><em>${n} day${n===1?'':'s'}</em></button>`}).join('')}</div>`;
+  return `<div class="lvl">${L.map(b=>{const n=(b.days||[]).length;return `<button type="button" class="lvr" data-lv="edit" data-v="${esc(b.id)}"><span class="av${avCls(b.name)}" aria-hidden="true">${esc(ini(b.name))}</span><span class="tx"><b>${esc(b.name)} ${grpTag(b.name)}</b><small>${esc(b.from===b.to?sd(b.from):sd(b.from)+' to '+sd(b.to))}${OFFICE.includes(roleOf(b.name))?' · Office':''}${b.note?' · '+esc(b.note):''}</small></span><em>${n} day${n===1?'':'s'}</em></button>`}).join('')}</div>`;
 }
 function setHTML(){
   return `<section class="card"><h2>Limit</h2><label class="f" for="lv_lim">Most drivers off on the same day<input type="number" id="lv_lim" min="1" max="20" value="${cfg.limit||3}"></label>
@@ -6635,6 +6635,12 @@ function periods(){
   return out;
 }
 function runOf(name){const p=staff[name.toUpperCase()];return p&&p.runs&&p.runs.length?p.runs.join(', '):''}
+/* postcode (or group) for a name, for the coloured badge */
+function grpOf(name){const p=staff[String(name||'').toUpperCase()];if(!p)return '';const r=String(p.role||'').toUpperCase().trim();if(/^42\d\d$/.test(r))return r;
+  const G=window.__runGrp||{};for(const k of [p.login].concat((p.runs||[]).join(',').split(/[,\s]+/))){const g=G[String(k||'').toUpperCase().replace(/\s+/g,'')];if(g&&/^42\d\d$/.test(String(g)))return String(g)}
+  return OFFICE.includes(r)?'Office':/RELIEF/.test(r)?'Relief':/XL/.test(r)?'XL':/SUPERVISOR/.test(r)?'Supervisor':''}
+const grpTag=n=>{const g=grpOf(n);return g?`<span class="lvg ${/^42/.test(g)?'pcz-'+g:'lvg-o'}">${esc(g)}</span>`:''};
+const avCls=n=>{const g=grpOf(n);return /^42/.test(g)?' pcz-'+g:''};
 function totals(){
   const P=periods().find(x=>x.v===tper)||periods()[0];const by={};
   for(const p of Object.values(staff)){const n=tc([p.first,p.last].filter(Boolean).join(' '));if(n)by[n]={name:n,taken:0,booked:0,list:[]}}
@@ -6655,7 +6661,7 @@ function totTable(){
   return `
   <div class="tw"><table class="tot"><thead><tr><th>#</th><th>Who</th><th class="r">Taken</th><th class="r">Booked</th><th class="r">Total days</th><th>Next leave</th></tr></thead><tbody>
   ${R.map((o,i)=>{const nxd=nextOf(o.name);const open=topen===o.name;
-    return `<tr data-lv="tot" data-v="${esc(o.name)}" tabindex="0" aria-expanded="${open}" class="${o.total?'':'zero'}"><td class="no">${i+1}</td><td><b>${esc(o.name)}</b>${o.office?'<span class="sub">Office</span>':o.run?`<span class="sub">${esc(o.run)}</span>`:''}</td><td class="no">${o.taken}</td><td class="no">${o.booked}</td><td class="no big">${o.total}</td><td class="dt">${nxd?esc(nice(nxd)):'<span class="sub">None booked</span>'}</td></tr>
+    return `<tr data-lv="tot" data-v="${esc(o.name)}" tabindex="0" aria-expanded="${open}" class="${o.total?'':'zero'}"><td class="no">${i+1}</td><td><b>${esc(o.name)}</b> ${grpTag(o.name)}${o.office?'':o.run?`<span class="sub">${esc(o.run)}</span>`:''}</td><td class="no">${o.taken}</td><td class="no">${o.booked}</td><td class="no big">${o.total}</td><td class="dt">${nxd?esc(nice(nxd)):'<span class="sub">None booked</span>'}</td></tr>
     ${open?`<tr class="exp"><td></td><td colspan="5">${o.list.length?`<ul class="hist">${o.list.map(x=>`<li><button type="button" class="lnk" data-lv="edit" data-v="${esc(x.b.id)}">${esc(nice(x.ds[0]))}${x.ds.length>1?' to '+esc(nice(x.ds[x.ds.length-1])):''}</button><span class="pill ${x.ds[x.ds.length-1]<today?'past':'fut'}">${x.ds.length} day${x.ds.length===1?'':'s'}${x.ds[x.ds.length-1]<today?' taken':x.ds[0]<today?' (on leave now)':' booked'}</span>${x.b.note?`<span class="sub">${esc(x.b.note)}</span>`:''}</li>`).join('')}</ul>`:'<p class="sub">No leave in this period.</p>'}
       <button type="button" class="sh-btn sm2" data-lv="addfor" data-v="${esc(o.name)}"><span class="ix ix-add" aria-hidden="true"></span>Leave for ${esc(o.name.split(' ')[0])}</button></td></tr>`:''}`}).join('')}
   </tbody></table></div>`;
@@ -10780,12 +10786,12 @@ function flags(r){const out=[];const F=r.f||{};
 function mgrListHTML(){
   const L=list();const t=q.trim().toLowerCase();
   const cnt=k=>L.filter(r=>k==='open'?r.status!=='closed':k==='new'?r.status==='new':true).length;
-  const show=L.filter(r=>(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))&&(!t||[person(r).name,r.f&&r.f.where,r.f&&r.f.type,r.f&&r.f.desc,KINDS[r.kind].t].join(' ').toLowerCase().includes(t)));
+  const show=L.filter(r=>(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))&&(kf==='all'||r.kind===kf)&&(!t||[person(r).name,r.f&&r.f.where,r.f&&r.f.type,r.f&&r.f.desc,KINDS[r.kind].t].join(' ').toLowerCase().includes(t)));
   const yr=new Date().getFullYear()+'';const Y=L.filter(r=>(r.f&&r.f.date||'').startsWith(yr));
   return `<div class="tabs" role="group" aria-label="Show">${[['new','New'],['open','Open'],['all','All']].map(([k,l])=>`<button type="button" data-rp="tab" data-v="${k}" aria-pressed="${tab===k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
    <div class="head"><div class="act"><button type="button" class="sh-btn primary" data-rp="file"><span class="ix ix-add" aria-hidden="true"></span>Report</button></div></div>
-   <div class="tiles trow" style="--tn:5"><div class="tile ${cnt('new')?'warn':''}"><span>New</span><b>${cnt('new')}</b></div><div class="tile"><span>Open</span><b>${cnt('open')}</b></div>
-   ${Object.entries(KINDS).map(([k,o])=>`<div class="tile ${o.c}" title="${o.t}s this year"><span>${({incident:'Incidents',vehicle:'Accidents',hazard:'Hazards'})[k]||o.t}</span><b>${Y.filter(r=>r.kind===k).length}</b></div>`).join('')}</div>
+   <div class="tiles trow vcf" style="--tn:5">${(()=>{const T=(a,v,cls,n,l,on,ti)=>`<button type="button" class="tile ct ct-${cls}${n?'':' z'}" data-rp="${a}" data-v="${v}" aria-pressed="${on}" ${!n&&!on?'disabled':''}${ti?` title="${ti}"`:''}><b>${n}</b><span>${l}</span></button>`;
+     return T('tab','new','warn',cnt('new'),'New',tab==='new')+T('tab','open','none',cnt('open'),'Open',tab==='open')+Object.entries(KINDS).map(([k,o])=>{const n=L.filter(r=>r.kind===k&&(tab==='all'||(tab==='open'?r.status!=='closed':r.status==='new'))).length;return T('kf',kf===k?'all':k,k==='hazard'?'warn':'bad',n,({incident:'Incidents',vehicle:'Accidents',hazard:'Hazards'})[k]||o.t,kf===k)}).join('')})()}</div>
    <div class="bar onesrch">
    <input type="search" id="rp_q" placeholder="Name, place or words" value="${esc(q)}" autocomplete="off" aria-label="Search"></div>
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
@@ -10913,7 +10919,7 @@ document.addEventListener('click',async e=>{
   if(a==='send'){send();return}
   if(a==='again'){sent=null;filing=false;render();return}
   if(a==='mycopy'&&sent){makePdf(sent.copy,sent.imgs,el);return}
-  if(a==='tab'){tab=v;render();return}
+  if(a==='tab'){tab=v;render();return}if(a==='kf'){kf=v;render();return}
   if(a==='open'){window.__edY={y:scrollY,s:window.APP&&APP.section};open=v;edit=null;msg=null;const r=items[v];if(r&&r.status==='new'){items[v]={...r,status:'inv'};pushStat();db.doc('reports/'+v).update({status:'inv'}).catch(()=>{})}render();window.scrollTo(0,0);if(items[v])loadImgs({id:v,...items[v]});return}
   if(a==='file'){filing=true;sent=null;kind=null;f=null;photos=[];msg=null;if(!meTried)loadMe();render();window.scrollTo(0,0);return}
   if(a==='unfile'){filing=false;kind=null;f=null;photos=[];msg=null;render();return}
@@ -10962,7 +10968,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021521';
+const VERSION='1202611021531';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13285,8 +13291,14 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pcm-t>button.pcm-all[aria-pressed=true]{border-color:#F2782D!important;box-shadow:0 0 0 1px #F2782D inset!important}
 </style>
 <style id="rb-enq">
-:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i{font-style:normal}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.sh{display:none}
-@media (max-width:899px){:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.lg{display:none}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.sh{display:inline}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c sup{font-size:.65em;margin-left:1px}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c b.pt{color:#B26A00!important}}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c i{font-style:normal}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c i.sh{display:none}
+@media (max-width:899px){:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c i.lg{display:none}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c i.sh{display:inline}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c sup{font-size:.65em;margin-left:1px}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-results.sh-sec .rb-c b.pt{color:#B26A00!important}}
+</style>
+<style id="lv-grp">
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave.sh-sec .lvg{display:inline-block;vertical-align:2px;margin-left:4px;padding:1px 8px;border-radius:99px;font-size:.72rem!important;font-weight:800!important;letter-spacing:.02em;line-height:1.5;background:var(--ps);color:var(--p)!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave.sh-sec .lvg.lvg-o{background:var(--sh-sunk);color:var(--sh-muted)!important;border:1px solid var(--sh-line)}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave.sh-sec .lvr .av[class*=pcz-]{background:var(--ps)!important;color:var(--p)!important}
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave.sh-sec .lvr .tx b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </body>
 </html>
