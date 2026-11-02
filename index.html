@@ -7840,7 +7840,7 @@ function render(){
       <div class="b"><button type="button" class="sh-btn primary" data-eq="plgo" ${pList.rows.length&&pList.rows.every(x=>x.login)?'':'disabled'}>+ ${pList.rows.reduce((a,x)=>a+x.n,0)} enquiries</button><button type="button" class="sh-btn" data-eq="plback">Edit the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`
     :`<p>One line each: day, driver, how many, at fault. For example <i>TUE 6/10 NATHAN INGRAM 1 at fault</i>.</p><textarea id="eq_pltxt" rows="8" placeholder="TUE 6/10 NATHAN INGRAM 1 at fault">${esc(pList.text||'')}</textarea><div class="b"><button type="button" class="sh-btn primary" data-eq="plcheck">Check the list</button><button type="button" class="sh-btn" data-eq="plno">Cancel</button></div>`}</section>`
   :''}
-  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const pc=getPc(),inPc=r=>!pc||pcOf(r)===pc;const T=enqs().filter(r=>inPc(r)&&!isDone(r)).length,N=enqs().filter(r=>inPc(r)&&!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0],['all','All',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
+  <div class="eq-tabs" role="group" aria-label="Show">${(()=>{const pc=getPc(),inPc=r=>!pc||pcOf(r)===pc;const T=enqs().filter(r=>inPc(r)&&!isDone(r)).length,N=enqs().filter(r=>inPc(r)&&!isDone(r)&&DRV[r.id]&&unread(DRV[r.id])).length;return [['todo','Needs action',T,N],['done','Done',null,0]].map(([k,l,n,nn])=>`<button type="button" data-eq="eqtab" data-v="${k}" aria-pressed="${eqTab===k}">${l}${n!=null?` <span class="n ${nn?'hot':''}">${n}</span>`:''}</button>`).join('')})()}</div>
   <div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>!isDone(r));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
     return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span>${n(k)?`<span class="c">${n(k)}</span>`:''}</div>`).join('')})()}</div>
   ${eqTab==='todo'?`<p class="sub eq-tabhint">Every enquiry still open, newest replies first: no outcome yet, or still talking with the driver. Close it with the outcome and it moves to Done.</p>`:perBar('enq',enqs().map(x=>x.date))}
@@ -10905,7 +10905,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021218';
+const VERSION='1202611021219';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
