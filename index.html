@@ -10951,7 +10951,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021515';
+const VERSION='1202611021500';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11674,7 +11674,7 @@ window.__webVersion=VERSION;
    Older ones without the 1 were not real times, so they just show as an old build. */
 window.__verLabel=v=>{v=String(v||'');const m=/^1(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})$/.exec(v);if(!m)return /^\d{12}$/.test(v)?'Old version':v;let h=+m[4];const ap=h<12?'am':'pm';h=h%12||12;return (+m[3])+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m[2]-1]+', '+h+':'+m[5]+ap};
 /* Check for update button: 'latest', 'new' (it reloads) or 'offline' */
-window.__checkUpdate=async()=>{try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return 'offline';const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);if(m&&+m[1]>+VERSION){try{Object.keys(sessionStorage).filter(k=>k.startsWith('c1161_v_')).forEach(k=>sessionStorage.removeItem(k))}catch(e){}goNew(m[1]);return 'new'}return 'latest'}catch(e){return 'offline'}};
+window.__checkUpdate=async()=>{try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return 'offline';const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);if(m&&m[1]!==VERSION){try{Object.keys(sessionStorage).filter(k=>k.startsWith('c1161_v_')).forEach(k=>sessionStorage.removeItem(k))}catch(e){}goNew(m[1]);return 'new'}return 'latest'}catch(e){return 'offline'}};
 /* Each phone tells the office which version it is on: once a day, or when the version changes (about 1 write a day per phone) */
 async function reportVer(){try{const me=window.__webMe||{};const day=new Date().toISOString().slice(0,10),k='pds_av',want=VERSION+'|'+day;try{if(localStorage.getItem(k)===want)return}catch(e){}
   await fs.doc('appver/'+pushId()).set({uid:UID,email:EMAIL,staff:String(me.staff||me.ownStaff||''),name:String(NAME||me.name||''),role:ROLE==='admin'?'admin':'driver',ver:VERSION,device:pushKind(),at:new Date().toISOString()});
@@ -11685,7 +11685,7 @@ async function checkVersion(){
   if(Date.now()-vLast<3*60e3)return;vLast=Date.now();
   try{const h=await fetch(location.pathname,{method:'HEAD',cache:'no-store'});const tag=h.ok?(h.headers.get('etag')||h.headers.get('last-modified')||''):'';const first=vTag===null;if(tag&&vTag===tag)return;vTag=tag||null;if(first)return}catch(e){}
   try{const r=await fetch(location.pathname+'?check='+Date.now(),{cache:'no-store'});if(!r.ok)return;const t=await r.text();const m=t.match(/const VERSION='(\d+)'/);
-    if(m&&+m[1]>+VERSION){const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);if(!typing)goNew(m[1])}}catch(e){}
+    if(m&&m[1]!==VERSION){const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);if(!typing)goNew(m[1])}}catch(e){}
 }
 setTimeout(checkVersion,1500);
 /* The phone's saved copy opens first; if a newer version arrives in the background, refresh once */
