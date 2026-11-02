@@ -68,6 +68,8 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-enquiries .eq-st.new{background:#D93025;color:#fff}
 #mod-enquiries .eq-st.ok{background:rgba(30,138,76,.15);color:#15703D}
 #mod-enquiries .eq-fpics{margin:4px 0 12px}
+#mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
+#mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
 :is(#mod-enquiries,#mod-myenq) .eq-m{max-width:85%;border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
 :is(#mod-enquiries,#mod-myenq) .eq-m p{margin:0;line-height:1.4}
@@ -80,6 +82,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-myenq .my-q{grid-template-columns:repeat(3,minmax(0,1fr))}
 #mod-enquiries .eq-need button,#mod-myenq .my-q button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;border:1px solid var(--sh-line);border-radius:12px;padding:10px 12px;background:var(--sh-surface);text-align:left}
 #mod-myenq .my-q button{text-align:center;justify-content:center;font-weight:700;font-size:.88rem;min-height:52px}
+#mod-myenq .my-q button[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.35)}
 #sh-main #mod-enquiries .eq-need .eq-nb{all:unset;box-sizing:border-box;cursor:pointer;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:2px;border:1px solid var(--sh-line)!important;border-radius:12px!important;padding:10px 12px!important;background:var(--sh-surface)!important;color:var(--sh-ink)!important;min-height:0!important;height:auto!important;text-align:left!important}
 #sh-main #mod-enquiries .eq-need .eq-nb .t1{font-weight:800;font-size:.98rem;background:none!important;color:inherit!important;padding:0!important}
 #sh-main #mod-enquiries .eq-need .eq-nb .t2{font-weight:500;font-size:.82rem;color:var(--sh-muted)!important;background:none!important;padding:0!important;border-radius:0!important;width:auto!important}
@@ -7401,7 +7404,7 @@ const OUT={yes:'At fault',partly:'Partly at fault',no:'Not at fault'};
 const QUICK=[['On my way to fix it','I’m on my way to fix it.'],['Recovered and redelivered','Recovered the parcel and delivered it to the right address.'],['Couldn’t recover it','I went back but couldn’t recover the parcel.']];
 const niceD=s=>{if(!s)return '';const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);if(!m)return s;const d=new Date(+m[1],+m[2]-1,+m[3]);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
 const whenT=iso=>{if(!iso)return '';const d=new Date(iso);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+', '+(d.getHours()%12||12)+':'+pad(d.getMinutes())+(d.getHours()<12?'am':'pm')};
-let db=null,sid='',L={},open=null,msg=null,busy=false,pics={},lb=null,draft={},state='wait';
+let db=null,sid='',L={},open=null,msg=null,busy=false,pics={},lb=null,draft={},state='wait',qSel={};
 const meStaff=()=>{let m=window.__webMe;try{m=m||window.parent.__webMe}catch(e){}m=m||{};return String(m.staff||m.ownStaff||'')};
 /* older records had one response; read everything as a conversation */
 function cv(x){const m=Array.isArray(x.msgs)?x.msgs.slice():[];if(!m.length&&x.response)m.push({f:'d',t:x.response,at:x.respAt||''});return Object.assign({},x,{msgs:m,need:x.need||'action',lastFrom:x.lastFrom||(m.length?m[m.length-1].f:'o')})}
@@ -7422,10 +7425,10 @@ function threadHTML(x){return x.msgs.length?`<div class="eq-th">${x.msgs.map(m=>
 function oneHTML(x){x=cv(x);const E=x.events||[];const P=pics[x.id];if((x.pics||[]).length&&P===undefined)setTimeout(()=>loadPics(x),0);const [st,c]=stOf(x);
   const box=x.closedAt?`<div class="my-closed"><b>Closed by the office ${esc(whenT(x.closedAt))}</b>${x.outcome?`<p>Outcome: <b class="o-${x.outcome}">${esc(OUT[x.outcome])}</b></p>`:''}${x.closeNote?`<p>${esc(x.closeNote)}</p>`:''}</div>`
    :`${x.need==='info'&&!x.ack?`<div class="b"><button type="button" class="sh-btn primary my-ack" data-my="ack" ${busy?'disabled':''}>✓ I’ve read it</button></div><p class="sub">Want to say something about it? Write it below.</p>`:''}
-     ${x.need!=='info'?`<div class="my-q" role="group" aria-label="Quick replies">${QUICK.map(([l],k)=>`<button type="button" data-my="quick" data-k="${k}" ${busy?'disabled':''}>${esc(l)}</button>`).join('')}</div>`:''}
+     ${x.need!=='info'?`<div class="my-q" role="group" aria-label="Quick replies">${QUICK.map(([l],k)=>`<button type="button" data-my="quick" data-k="${k}" aria-pressed="${qSel[x.id]===k}" ${busy?'disabled':''}>${qSel[x.id]===k?'✓ ':''}${esc(l)}</button>`).join('')}</div>`:''}
      <textarea id="my_txt" rows="4" placeholder="${x.need==='info'?'Anything to add (optional)':'What happened, or an update for the office'}">${esc(draft[x.id]||'')}</textarea>
      <div class="b"><button type="button" class="sh-btn primary" data-my="send" ${busy?'disabled':''}>${busy?'Sending…':'Send to the office'}</button></div>
-     ${x.need!=='info'?'<p class="sub">Tap a quick reply to send it straight away. Anything you have typed in the box is sent with it.</p>':''}`;
+     ${x.need!=='info'?'<p class="sub">Pick a quick reply, add more in the box if you like, then tap Send to the office.</p>':''}`;
   return `<div class="my-x"><button type="button" class="sh-btn back" data-my="back">‹ My enquiries</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <section class="card"><div class="t"><h2>${esc(x.kind==='ncr'?'NCR':'Customer enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</h2><span class="my-st ${c}">${esc(st)}</span></div>
@@ -7445,12 +7448,16 @@ function render(){const box=document.getElementById('my_root');if(!box)return;
   box.innerHTML=`<div class="my-x"><div class="head"><h1>My enquiries</h1></div>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${listHTML()}</div>`}
 function openIt(id){open=id;msg=null;lb=null;const x=L[id];if(x&&!x.seenAt){x.seenAt=new Date().toISOString();db&&db.doc('drvenq/'+id).update({seenAt:x.seenAt}).catch(()=>{})}render();window.scrollTo(0,0)}
 async function say(x,text,ack){x=cv(L[x.id]);busy=true;render();const now=new Date().toISOString();const up={};
+  /* the same message twice within 2 minutes is a double tap: send it once */
+  const lm=x.msgs[x.msgs.length-1];if(text&&lm&&lm.f==='d'&&lm.t===text&&Date.now()-Date.parse(lm.at||0)<120e3)text='';
+  if(!text&&!ack){busy=false;msg={t:'Already sent.'};delete qSel[x.id];delete draft[x.id];render();return}
   if(text){up.msgs=x.msgs.concat([{f:'d',t:text,at:now}]);up.lastFrom='d';up.lastAt=now}
   if(ack)up.ack=now;
-  try{await db.doc('drvenq/'+x.id).update(up);Object.assign(L[x.id],up);delete draft[x.id];msg={t:ack&&!text?'Thanks. The office can see you have read it.':'Sent. The office has been told.'};
+  try{await db.doc('drvenq/'+x.id).update(up);Object.assign(L[x.id],up);delete draft[x.id];delete qSel[x.id];msg={t:ack&&!text?'Thanks. The office can see you have read it.':'Sent. The office has been told.'};
     try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{})}catch(z){}
     try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}}
-  catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'}}busy=false;render()}
+  catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'};busy=false;render();return}
+  busy=false;const tx=$('txt');if(tx){tx.value='';tx.blur()}render()}
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-my]');if(!el||!el.closest('#mod-myenq'))return;const a=el.dataset.my;
   if(a==='open'){openIt(el.dataset.v);return}
   if(a==='back'){open=null;msg=null;render();return}
@@ -7458,8 +7465,8 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
   if(a==='lbclose'){if(e.target.closest('img'))return;lb=null;render();return}
   const x=L[open];if(!x||busy)return;const typed=(($('txt')||{}).value||'').trim();
   if(a==='ack'){say(x,typed,true);return}
-  if(a==='quick'){const q=QUICK[+el.dataset.k];say(x,q[1]+(typed?' '+typed:''),false);return}
-  if(a==='send'){if(!typed){msg={err:true,t:'Write something first.'};render();return}say(x,typed,cv(x).need==='info'&&!x.ack);return}
+  if(a==='quick'){const k=+el.dataset.k;draft[x.id]=typed;qSel[x.id]=qSel[x.id]===k?undefined:k;msg=null;render();return}
+  if(a==='send'){const q=qSel[x.id]!=null?QUICK[qSel[x.id]][1]:'';const t=[q,typed].filter(Boolean).join(' ');if(!t){msg={err:true,t:cv(x).need==='info'?'Write something first, or tap I’ve read it.':'Pick a quick reply or write something first.'};render();return}say(x,t,cv(x).need==='info'&&!x.ack);return}
 });
 document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open]=e.target.value});
 /* a ding opens straight to that enquiry: #myenq/<id> */
@@ -7793,7 +7800,12 @@ function formHTML(){
   <span class="lbl">Was the driver at fault? You can decide later, after the driver replies.</span>
   <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button><button type="button" class="ob later" data-eq="f" data-v="" aria-pressed="${!r.fault}">Decide later</button></div>
   <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Why">${esc(r.note||'')}</textarea></label>
-  <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
+  ${(()=>{if(r.id&&DRV[r.id])return `<div class="foot"><button type="button" class="sh-btn primary" data-eq="save">Save changes</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>`;
+    const p=byLogin(r.login),fn=p?p.name.split(' ')[0]:'the driver';
+    return `<div class="eq-fsend"><span class="lbl">Send to ${esc(fn)}</span>
+    <div class="eq-need" role="group" aria-label="What you need">${[['action','Needs action','They must reply'],['info','For your info','They tap I’ve read it']].map(([k,l,sm])=>`<div role="button" tabindex="0" class="eq-nb" data-eq="need" data-v="${k}" aria-pressed="${sendOpt.need===k}"><span class="t1">${l}</span><span class="t2">${sm}</span></div>`).join('')}</div>
+    <label class="f" for="eq_snote">Your note to ${esc(fn)} (optional)<textarea id="eq_snote" rows="2" placeholder="${sendOpt.need==='action'?'e.g. Please go back and recover this parcel today and let me know':'e.g. Just so you know, please knock louder at this address'}">${esc(sendOpt.note)}</textarea></label></div>
+    <div class="foot eq-ffoot"><button type="button" class="sh-btn primary" data-eq="savesend">Save and send to ${esc(fn)}</button><button type="button" class="sh-btn" data-eq="save">Save, don’t send yet</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>`})()}
   </section></div>`;
 }
 /* ---------- what the case PDF showed: warning flags, scan events and pictures ---------- */
@@ -7848,6 +7860,7 @@ async function sendDrv(id,kind,remind){const r=recs[id];if(!r)return;const p=byL
   else{const note=String(sendOpt.note||'').trim();doc=Object.assign({kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',need:sendOpt.need,msgs:note?[{f:'o',t:note,at:now}]:[],lastFrom:'o',lastAt:now,ack:'',seenAt:'',offSeen:'',closedAt:'',outcome:''},snapOf(r,kind),{pics})}
   msg={t:'Sending…'};render();
   try{await db.doc('drvenq/'+id).set(doc);DRV[id]=Object.assign({id},doc)}catch(x){msg={err:true,t:'Could not send it just now. Check your connection.'};render();return}
+  {const e=$('snote');if(e){e.value='';e.blur()}}
   const need=doc.need||'action',info=need==='info';
   const title=remind?'Reminder from the office':info?(kind==='ncr'?'An NCR for you to read':'An enquiry for you to read'):(kind==='ncr'?'NCR to respond to':'Enquiry to respond to');
   const body=(remind?'Please look at the '+what:'A customer '+what)+(r.address?' about '+r.address:'')+(info&&!remind?'. Tap to read it.':'. Tap to read it and reply.');
@@ -7856,6 +7869,7 @@ async function sendDrv(id,kind,remind){const r=recs[id];if(!r)return;const p=byL
 async function officeSay(id,text,extra,title,body){const D=convo(DRV[id]);if(!D)return false;const r=recs[id]||{},p=byLogin(r.login)||{id:D.sid,name:D.name||'Driver'};const now=new Date().toISOString();
   const m=D.msgs.concat([Object.assign({f:'o',t:text,at:now},extra&&extra.c?{c:1}:{})]);const up=Object.assign({msgs:m,lastFrom:'o',lastAt:now,offSeen:now},extra&&extra.up||{});
   try{await db.doc('drvenq/'+id).update(up);Object.assign(DRV[id],up)}catch(x){msg={err:true,t:'Could not send just now. Check your connection.'};render();return false}
+  for(const k of ['rtxt','cnote']){const e=$(k);if(e){e.value='';e.blur()}}
   const t=await dingDrv(p,title,body,id);msg={t:'Sent. '+t};render();return true}
 /* pictures older than 12 months are removed to save space; the enquiry itself stays */
 async function cleanPics(){try{const k='eqclean',t=today();if(localStorage.getItem(k)===t)return;localStorage.setItem(k,t)}catch(x){}
@@ -7911,7 +7925,7 @@ document.addEventListener('click',async ev=>{
     try{const id=nOpen;await db.doc('enqlog/'+id).delete();for(const f of (nFiles[id]||[]))void 0;delete recs[id];nOpen=null;arm=false;msg={t:'NCR deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='new'){window.__eqY=scrollY;draft={fault:''};view='form';msg=null;render();window.scrollTo(0,0);return}
   if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;closing=null;const D=DRV[v];if(D&&unread(D)){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
-  if(a==='need'){sendOpt.need=v;sendOpt.note=String(($('snote')||{}).value||'');render();return}
+  if(a==='need'){if(view==='form')readForm();sendOpt.need=v;sendOpt.note=String(($('snote')||{}).value||'');render();return}
   if(a==='sendd'){sendOpt.note=String(($('snote')||{}).value||'');sendDrv(v,el.dataset.k,false);return}
   if(a==='remind'){sendDrv(v,el.dataset.k,true);return}
   if(a==='oreply'){const t=String(($('rtxt')||{}).value||'').trim();if(!t){msg={err:true,t:'Write your reply first.'};render();return}const r=recs[v]||{};delete replyTxt[v];if(!(await officeSay(v,t,null,'Reply from the office',(r.caseNo?'Case '+r.caseNo+': ':'')+t.slice(0,120))))replyTxt[v]=t;return}
@@ -7947,7 +7961,7 @@ document.addEventListener('click',async ev=>{
       msg={t:n+' at fault enquir'+(n===1?'y':'ies')+' added. They count in the results for those days.'}}catch(e){msg={err:true,t:'Could not save all of them just now ('+n+' added). Try again.'}}
     render();return}
   if(a==='print'){printList();return}
-  if(a==='save'){const r=readForm();
+  if(a==='save'||a==='savesend'){const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
@@ -7956,7 +7970,8 @@ document.addEventListener('click',async ev=>{
       /* pictures from the PDF (maps and scan photo) are kept beside the enquiry and only download when it is opened */
       if(r._imgs){try{const old=await db.collection('enqimg').where('enq','==',id).get();for(const d of old.docs)await db.doc('enqimg/'+d.id).delete()}catch(x){}
         let k=0;for(const im of r._imgs){if(String(im.data).length>900000)continue;try{await db.doc('enqimg/'+id+'_p'+(k++)).set({enq:id,name:im.name,type:'image/jpeg',data:im.data,eat:now})}catch(x){}}delete eImgs[id]}
-      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Tap Send to driver when you want them to see it and respond.')}}catch(x){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0);return}
+      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Nothing has gone to the driver yet. Send it from here when you are ready.')}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
+    if(andSend&&!DRV[id])await sendDrv(id,'enq',false);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
@@ -7989,6 +8004,7 @@ document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_nqp'){nqP=el.value;$('nres').innerHTML=ncrCards();return}
   if(el.id==='eq_qp'){qPc=el.value;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_of'){onlyFault=el.checked;$('res').innerHTML=resHTML(filtered());return}
+  if(el.id==='eq_drv'&&view==='form'){const sn=($('snote')||{}).value;readForm();if(sn!=null)sendOpt.note=sn;render();return}
   if(el.id==='eq_pdf'&&el.files[0]){readForm();busy='Reading the case PDF…';render();
     try{const PC=await pdfCase(el.files[0]);const o=fromCase(PC.text,PC.events);if(!o.caseNo&&!o.login)throw 0;draft._imgs=PC.imgs||[];draft.events=o.events||[];draft.outside=!!o.outside;draft.geo=o.geo||'';draft.keyEv=o.keyEv||'';
       draft.caseNo=o.caseNo||draft.caseNo;if(o.login){draft.login=o.login;const p=byLogin(o.login);draft.driver=p?p.name:o.login}draft.address=o.address||draft.address;draft.details=o.details||draft.details;for(const k of ['scanAddr','category','enqType','customer','tracking','deliveredAt'])if(o[k])draft[k]=o[k];if(o.date)draft.date=o.date;
@@ -10778,7 +10794,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021102';
+const VERSION='1202611021108';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
