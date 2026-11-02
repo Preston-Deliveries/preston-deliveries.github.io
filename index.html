@@ -88,6 +88,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-enquiries .eq-pcs .eq-pc .c{font-weight:800;font-size:.7rem;line-height:1.5;background:#D93025!important;color:#fff!important;border-radius:999px;min-width:1.5em;padding:0 4px;text-align:center}
 #sh-main #mod-enquiries .eq-pcs .eq-pc[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.3)}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
 #sh-main #mod-enquiries select.need{border-color:#D93025!important;box-shadow:0 0 0 2px rgba(217,48,37,.2)}
+#sh-home>.dh-cards:empty{display:none!important}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -1416,10 +1417,15 @@ function alHid(){try{return JSON.parse(localStorage.getItem('pds_alhide')||'[]')
 function alHtml(){const today=window.__qISO();const hid=alHid();const L=AL.list.filter(a=>a.day===today&&alMine(a)&&!hid.includes(a.id)).sort((a,b)=>String(b.at).localeCompare(String(a.at)));if(!L.length)return '';
   const adm=role==='mgr';
   return L.map(a=>`<section class="dh-card al-card"><div class="al-h"><b>📣 Alert</b><small>${esc(alTime(a.at))}${adm?' · '+esc(a.toName||'Everyone')+(a.ding?' · 🔔':''):''}</small>${adm?`<button type="button" class="al-x" data-al-del="${esc(a.id)}" aria-label="Remove alert for everyone">✕</button>`:`<button type="button" class="al-x" data-al-hide="${esc(a.id)}" aria-label="Hide this alert">✕</button>`}</div><p>${esc(a.body)}</p></section>`).join('')}
+/* Home order: greeting, then the search bar, then alerts, then tasks, then everything else */
+window.__placeFind=function(){const home=document.getElementById('sh-home');if(!home)return null;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');if(!hero)return null;
+  let fw=home.querySelector(':scope>.fd-wrap');const f=home.querySelector(':scope>.dh-cards:not(.fd-wrap)>.ah-find');
+  if(f){if(!fw){fw=document.createElement('div');fw.className='dh-cards fd-wrap'}if(fw.firstElementChild!==f){fw.textContent='';fw.appendChild(f)}}
+  if(fw&&fw.previousElementSibling!==hero)hero.after(fw);return fw||hero};
 function alPaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.al-wrap');const h=hero?alHtml():'';
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards al-wrap'}
-  if(w.previousElementSibling!==hero)hero.after(w);
+  const an=window.__placeFind()||hero;if(w.previousElementSibling!==an)an.after(w);
   if(w.__h!==h){w.__h=h;w.innerHTML=h}}
 async function alWatch(){if(AL.unsub||AL.busy)return;AL.busy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}AL.busy=false;if(!db||AL.unsub){if(!db)setTimeout(alWatch,5000);return}
   AL.day=window.__qISO();AL.unsub=db.collection('updates').where('day','==',AL.day).onSnapshot(q=>{AL.list=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.kind==='alert');alPaint()},()=>{try{AL.unsub&&AL.unsub()}catch(e){}AL.unsub=null;setTimeout(alWatch,30000)})}
@@ -10903,7 +10909,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021230';
+const VERSION='1202611021236';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12716,9 +12722,10 @@ function homeHtml(){const L=Object.values(TK.mine).filter(t=>t.status!=='done').
   const drow=t=>`<div class="tk-r tk-dn"><div class="tx"><b>${esc(t.title)}</b><small>✓ Done ${esc(t12(new Date(Date.parse(t.doneAt)+QLD).toISOString().slice(11,16)))}</small></div><button type="button" class="tk-un" data-tk-undo="${esc(t.id)}">Undo</button></div>`;
   return `<section class="dh-card tk-card"><div class="tk-ch"><b>✅ Your tasks</b><small>${L.length?L.length+' to do':'All done'}</small></div>${TK.err?`<p style="margin:0;color:#C8352B;font-weight:700;font-size:.9rem">${esc(TK.err)}</p>`:''}${showL.map(row).join('')}${showD.map(drow).join('')}${hidden||open&&(L.length>N||DT.length>recent.length)?`<button type="button" class="tk-more" data-tk-more="1" aria-expanded="${open}">${open?'Show less ▴':'Show '+hidden+' more ▾'}</button>`:''}</section>`}
 function homePaint(){const home=document.getElementById('sh-home');if(!home)return;const hero=home.querySelector(':scope>#ah_glance, :scope>.dh-hero');let w=home.querySelector(':scope>.tk-wrap');const h=hero?homeHtml():'';
+  if(window.__placeFind)window.__placeFind();
   if(!h){if(w)w.remove();return}
   if(!w){w=document.createElement('div');w.className='dh-cards tk-wrap'}
-  const anchor=home.querySelector(':scope>.al-wrap')||hero;if(w.previousElementSibling!==anchor)anchor.after(w);
+  const fw=window.__placeFind?window.__placeFind():null;const anchor=home.querySelector(':scope>.al-wrap')||fw||hero;if(w.previousElementSibling!==anchor)anchor.after(w);
   if(w.__h!==h){w.__h=h;w.innerHTML=h}}
 
 /* ---------- admin page ---------- */
