@@ -67,6 +67,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-enquiries .eq-st.wait{background:rgba(224,165,38,.18);color:#8A5A00}
 #mod-enquiries .eq-st.new{background:#D93025;color:#fff}
 #mod-enquiries .eq-st.ok{background:rgba(30,138,76,.15);color:#15703D}
+#mod-enquiries .eq-fpics{margin:4px 0 12px}
 #mod-myenq .my-x{display:flex;flex-direction:column;gap:12px;max-width:900px;margin:0 auto;padding:12px 16px 24px;box-sizing:border-box}
 #mod-myenq .my-x>.back{align-self:flex-start}
 #mod-myenq .my-x .head h1{margin:4px 0 0;font-size:1.4rem}
@@ -7741,6 +7742,10 @@ function formHTML(){
    <label class="f wide" for="eq_scan">Delivered delivery address (where it was scanned)<input type="text" id="eq_scan" value="${esc(r.scanAddr||'')}"></label>
    <label class="f wide" for="eq_dat">Delivered<input type="text" id="eq_dat" value="${esc(r.deliveredAt||'')}" placeholder="16/10/2026 12:47 pm, signed D Smith"></label>
   </div>
+  ${flagsHTML(r)}
+  ${(()=>{const L=r._imgs||(r.id&&r.pics?(eImgs[r.id]===undefined?(setTimeout(()=>loadPics(r.id),0),null):eImgs[r.id]):null);if(!L||!L.length)return '';return `<div class="eq-pics eq-fpics"><span class="lbl">Pictures from the case</span><div class="eq-pg">${L.map((x,k)=>`<button type="button" data-eq="fpic" data-k="${k}"><img src="${x.data}" alt="${esc(x.name)}" loading="lazy"><small>${esc(x.name)}</small></button>`).join('')}</div></div>`})()}
+  ${(r.events||[]).length?eventsHTML(r):''}
+  ${lboxHTML()}
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
   <span class="lbl">Was the driver at fault?</span>
   <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button></div>
@@ -7837,7 +7842,8 @@ document.addEventListener('click',async ev=>{
   if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;const D=DRV[v];if(D&&D.response&&!D.offSeen){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
   if(a==='sendd'){sendDrv(v,el.dataset.k);return}
   if(a==='pic'){lbox={id:v,k:+el.dataset.k};render();return}
-  if(a==='lbclose'){if(ev.target.closest('img'))return;lbox=null;render();return}
+  if(a==='fpic'){readForm();const L=draft._imgs||eImgs[draft.id]||[];eImgs['_draft']=L;lbox={id:'_draft',k:+el.dataset.k};render();return}
+  if(a==='lbclose'){if(ev.target.closest('img'))return;if(view==='form')readForm();lbox=null;render();return}
   if(a==='back'||a==='cancel'){view=draft&&draft.id&&a==='cancel'?'one':'list';draft=null;msg=null;render();if(view==='list'&&window.__eqY!=null){window.scrollTo(0,window.__eqY);window.__eqY=null}return}
   if(a==='edit'){draft=clone(recs[open]);view='form';msg=null;render();return}
   if(a==='f'){readForm();draft.fault=v;render();return}
@@ -10691,7 +10697,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021038';
+const VERSION='1202611021042';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
