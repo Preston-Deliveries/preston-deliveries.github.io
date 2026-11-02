@@ -6253,6 +6253,7 @@ function bestsHTML(b){if(!b)return '';const sh=s=>{const d=fromIso(s);return d.g
 function flame(){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();let n=0;
   for(let i=all.length-1;i>=0;i--){const s=dayP(myRow(data.days[all[i]].rows));if(s==null)continue;if(s<96-1e-9)break;n++}return n}
 window.addEventListener('sh:go',e=>{try{if(e.detail==='me'){const r=S().results;if(r&&r.updated)localStorage.setItem('pds_resSeen',String(r.updated))}
+  if(e.detail==='survey'){const v=S().survey;if(v&&v.updated)localStorage.setItem('pds_svSeen',String(v.updated))}
   if(e.detail==='leave'){const L=((data&&data.lvAll)||[]).filter(v=>v.decidedAt).map(v=>v._id+v.decidedAt);let sl=[];try{sl=JSON.parse(localStorage.getItem('pds_lvSeen')||'[]')}catch(x){}localStorage.setItem('pds_lvSeen',JSON.stringify([...new Set(sl.concat(L))].slice(-60)))}}catch(x){}});
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
@@ -6265,6 +6266,9 @@ async function homeCards(){
   /* new results sent: shows until they open My results */
   try{const r=S().results;if(r&&r.updated){let sn=null;try{sn=localStorage.getItem('pds_resSeen')}catch(e){}
     if(sn===null){try{localStorage.setItem('pds_resSeen',r.updated)}catch(e){}}else if(sn!==String(r.updated))todo.push({ic:'results',t:'Your new results are in',s:'Tap to see how you went.',nav:'me'})}}catch(e){}
+  /* new NPS sent: shows until they open NPS results */
+  try{const v=S().survey;if(v&&v.updated){let sn=null;try{sn=localStorage.getItem('pds_svSeen')}catch(e){}
+    if(sn===null){try{localStorage.setItem('pds_svSeen',v.updated)}catch(e){}}else if(sn!==String(v.updated)){const m=mySurvey();todo.push({ic:'survey',t:'Your new NPS results are in',s:m&&m.found?'You had '+m.n+' customer survey'+(m.n===1?'':'s')+'. Tap to see what they said.':'Tap to see what customers said.',nav:'survey'})}}}catch(e){}
   /* time off approved or declined in the last 2 weeks: shows until they open the Leave Calendar */
   try{let sl=[];try{sl=JSON.parse(localStorage.getItem('pds_lvSeen')||'[]')}catch(e){}
     for(const v of (data&&data.lvAll)||[]){if(v.status!=='approved'&&v.status!=='declined')continue;const at=v.decidedAt||'';if(!at||Date.now()-Date.parse(at)>14*864e5||sl.includes(v._id+at))continue;
