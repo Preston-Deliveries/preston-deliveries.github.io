@@ -6264,7 +6264,7 @@ function bestsHTML(b){if(!b)return '';const sh=s=>{const d=fromIso(s);return d.g
 function flame(){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();let n=0;
   for(let i=all.length-1;i>=0;i--){const s=dayP(myRow(data.days[all[i]].rows));if(s==null)continue;if(s<96-1e-9)break;n++}return n}
 window.addEventListener('sh:go',e=>{try{if(e.detail==='me'){const r=S().results;if(r&&r.updated)localStorage.setItem('pds_resSeen',String(r.updated))}
-  if(e.detail==='survey'){const v=S().survey;if(v&&v.updated)localStorage.setItem('pds_svSeen',String(v.updated))}
+  if(e.detail==='survey'||e.detail==='me'){const v=S().survey;if(v&&v.updated)localStorage.setItem('pds_svSeen',String(v.updated))}
   if(e.detail==='leave'){const L=((data&&data.lvAll)||[]).filter(v=>v.decidedAt).map(v=>v._id+v.decidedAt);let sl=[];try{sl=JSON.parse(localStorage.getItem('pds_lvSeen')||'[]')}catch(x){}localStorage.setItem('pds_lvSeen',JSON.stringify([...new Set(sl.concat(L))].slice(-60)))}}catch(x){}});
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
@@ -10975,7 +10975,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021836';
+const VERSION='1202611021838';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
