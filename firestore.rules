@@ -248,12 +248,19 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && id.matches(request.auth.uid + '(_.*)?'));
     }
 
+    // A driver can only add one new message of their own to the end, tick it as read, or mark it opened
+    function driverAddsOnly() {
+      let o = resource.data.get('msgs', []);
+      let n = request.resource.data.get('msgs', []);
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['msgs', 'lastFrom', 'lastAt', 'ack', 'seenAt'])
+        && (n == o || (n.size() == o.size() + 1 && n[o.size()].f == 'd' && (o.size() == 0 || n[0:o.size()] == o)))
+        && request.resource.data.get('lastFrom', 'd') in ['d', resource.data.get('lastFrom', 'o')];
+    }
     // Enquiries and NCRs the office sends to a driver. The driver can read only their own, and can only add their response.
     match /drvenq/{id} {
       allow read: if isAdmin() || (hasAccess() && resource.data.sid == myStaff());
       allow create, delete: if isAdmin();
-      allow update: if isAdmin() || (hasAccess() && resource.data.sid == myStaff()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['response', 'respAt', 'seenAt']));
+      allow update: if isAdmin() || (hasAccess() && resource.data.sid == myStaff() && driverAddsOnly());
     }
     // Pictures from enquiry case PDFs (maps, scan photos). A driver can see the ones on enquiries sent to them.
     match /enqimg/{id} {

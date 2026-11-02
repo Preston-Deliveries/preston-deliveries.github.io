@@ -68,6 +68,33 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #mod-enquiries .eq-st.new{background:#D93025;color:#fff}
 #mod-enquiries .eq-st.ok{background:rgba(30,138,76,.15);color:#15703D}
 #mod-enquiries .eq-fpics{margin:4px 0 12px}
+:is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
+:is(#mod-enquiries,#mod-myenq) .eq-m{max-width:85%;border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+:is(#mod-enquiries,#mod-myenq) .eq-m p{margin:0;line-height:1.4}
+:is(#mod-enquiries,#mod-myenq) .eq-m small{font-size:.75rem;color:var(--sh-muted)}
+:is(#mod-enquiries,#mod-myenq) .eq-m.me{align-self:flex-end;background:rgba(242,120,45,.16);border-bottom-right-radius:4px}
+:is(#mod-enquiries,#mod-myenq) .eq-m.them{align-self:flex-start;background:var(--sh-sunk,rgba(127,127,127,.14));border-bottom-left-radius:4px}
+:is(#mod-enquiries,#mod-myenq) .eq-m.sys{align-self:center;max-width:95%;background:none;text-align:center;font-weight:700;font-size:.9rem;padding:2px 8px}
+:is(#mod-enquiries,#mod-myenq) .eq-m.sys small{display:none}
+#mod-enquiries .eq-need,#mod-myenq .my-q{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+#mod-myenq .my-q{grid-template-columns:repeat(3,minmax(0,1fr))}
+#mod-enquiries .eq-need button,#mod-myenq .my-q button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;border:1px solid var(--sh-line);border-radius:12px;padding:10px 12px;background:var(--sh-surface);text-align:left}
+#mod-myenq .my-q button{text-align:center;justify-content:center;font-weight:700;font-size:.88rem;min-height:52px}
+#mod-enquiries .eq-need button small{color:var(--sh-muted);font-size:.8rem}
+#mod-enquiries .eq-need button[aria-pressed=true]{border-color:#F2782D;box-shadow:0 0 0 2px rgba(242,120,45,.35)}
+#mod-enquiries .eq-drv textarea,#mod-enquiries .eq-close textarea{width:100%;box-sizing:border-box;font:inherit;border-radius:10px;border:1px solid var(--sh-line);padding:10px;background:transparent;color:inherit;margin-top:6px}
+#mod-enquiries .eq-dh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#mod-enquiries .eq-need1{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 9px;background:var(--sh-sunk,rgba(127,127,127,.14))}
+#mod-enquiries .eq-dst{margin:4px 0 0;font-weight:700}#mod-enquiries .eq-dst.done{color:#15703D}
+#mod-enquiries .eq-close{border-top:1px solid var(--sh-line);margin-top:8px;padding-top:10px}
+#mod-enquiries .eq-close .oc{margin:8px 0}
+#mod-enquiries .ob.later[aria-pressed=true]{background:var(--sh-sunk,rgba(127,127,127,.2))!important;border-color:var(--sh-muted)!important;color:inherit!important}
+#mod-myenq .my-i.wait{border-left:4px solid #E0A526}#mod-myenq .my-st.wait{background:rgba(224,165,38,.2);color:#8A5A00}
+#mod-myenq .my-need{margin:6px 0 0;font-weight:700;color:var(--sh-muted)}#mod-myenq .my-need.act{color:#C2410C}
+#mod-myenq .my-closed{border-radius:12px;padding:10px 12px;background:rgba(30,138,76,.10);margin-top:6px}#mod-myenq .my-closed p{margin:4px 0 0}
+#mod-myenq .my-closed .o-yes{color:#B91C1C}#mod-myenq .my-closed .o-partly{color:#B45309}#mod-myenq .my-closed .o-no{color:#15703D}
+#mod-myenq .my-ack{font-size:1.05rem;min-height:48px}
+@media (max-width:420px){#mod-myenq .my-q{grid-template-columns:1fr}}
 #mod-myenq .my-x{display:flex;flex-direction:column;gap:12px;max-width:900px;margin:0 auto;padding:12px 16px 24px;box-sizing:border-box}
 #mod-myenq .my-x>.back{align-self:flex-start}
 #mod-myenq .my-x .head h1{margin:4px 0 0;font-size:1.4rem}
@@ -1123,7 +1150,7 @@ setInterval(()=>{try{if(document.visibilityState==='visible')newsBadge()}catch(e
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nav="updates"]'))window.__uvTapped=true},true);
 function applyNavBadges(){try{newsBadge()}catch(e){}try{adminGlance()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries','enqresp','dec','ind'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;if(on)setBell(tot);document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0):0;document.querySelectorAll(`[data-nav="${k}"]:not([data-hubn])`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}document.querySelectorAll('[data-hubn]').forEach(b=>{const n=on?b.dataset.hubn.split(',').reduce((a,k)=>a+(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0),0):0;let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t})}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
-  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>!!v.respAt&&!v.offSeen]];
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>{const s=String(v.offSeen||'');const lf=v.lastFrom||(v.respAt?'d':'o'),la=String(v.lastAt||v.respAt||'');return !v.closedAt&&((lf==='d'&&s<la)||(!!v.ack&&s<String(v.ack)))}]];
   try{db.collection('staff').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&(v.onbCopiedAt||v.onboard==='done')&&!v.indAt)ids.push(d.id)}window.__indIds=ids;window.__navN.ind=ids.length;applyNavBadges()},()=>{})}catch(e){}
   try{db.collection('onboard').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(!v)continue;
       const a=v.d&&v.d.apSig&&v.status==='submitted'?{at:v.d.apAt||v.submittedAt,rep:v.repSig}:null,b=v.dec&&v.dec.sig?{at:v.dec.at,rep:v.dec.repSig}:null;const c=b&&(!a||String(b.at)>String(a.at))?b:a;
@@ -1720,7 +1747,7 @@ window.WX=(()=>{
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
-  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enqresp,'driver response to an enquiry','driver responses to enquiries','to read',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
+  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enqresp,'driver reply to read','driver replies to read','on enquiries and NCRs',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
   const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act,k])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}" data-k="${k||''}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Home: one box to find a street (whose it is) or a page of the app */
@@ -7360,42 +7387,52 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 
 </script>
 <script type="text/x-mod" data-mod="myenq">
-/* Drivers: enquiries and NCRs the office has sent them. Read it, respond, and the office gets a ding. */
+/* Drivers: enquiries and NCRs the office has sent them, as a short conversation until the office closes it with an outcome */
 (()=>{
 const $=id=>document.getElementById('my_'+id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(,])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const pad=n=>String(n).padStart(2,'0');
+const OUT={yes:'At fault',partly:'Partly at fault',no:'Not at fault'};
+const QUICK=[['On my way to fix it','I’m on my way to fix it.'],['Recovered and redelivered','Recovered the parcel and delivered it to the right address.'],['Couldn’t recover it','I went back but couldn’t recover the parcel.']];
 const niceD=s=>{if(!s)return '';const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);if(!m)return s;const d=new Date(+m[1],+m[2]-1,+m[3]);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
 const whenT=iso=>{if(!iso)return '';const d=new Date(iso);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+', '+(d.getHours()%12||12)+':'+pad(d.getMinutes())+(d.getHours()<12?'am':'pm')};
-let db=null,sid='',L={},open=null,msg=null,busy=false,pics={},lb=null,draft={},state='wait',edit=false;
+let db=null,sid='',L={},open=null,msg=null,busy=false,pics={},lb=null,draft={},state='wait';
 const meStaff=()=>{let m=window.__webMe;try{m=m||window.parent.__webMe}catch(e){}m=m||{};return String(m.staff||m.ownStaff||'')};
-const items=()=>Object.values(L).sort((a,b)=>String(b.sentAt).localeCompare(String(a.sentAt)));
-const todo=()=>items().filter(x=>!x.response);
-window.__myEnqTodo=()=>todo().map(x=>({ic:'brief',t:x.kind==='ncr'?'Respond to an NCR':'Respond to an enquiry',s:[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ')||'Tap to read it',nav:'myenq',id:x.id}));
+/* older records had one response; read everything as a conversation */
+function cv(x){const m=Array.isArray(x.msgs)?x.msgs.slice():[];if(!m.length&&x.response)m.push({f:'d',t:x.response,at:x.respAt||''});return Object.assign({},x,{msgs:m,need:x.need||'action',lastFrom:x.lastFrom||(m.length?m[m.length-1].f:'o')})}
+const due=x=>{x=cv(x);if(x.closedAt)return false;return x.need==='info'?!x.ack&&x.lastFrom!=='d':x.lastFrom!=='d'};
+const stOf=x=>{x=cv(x);return x.closedAt?['Closed'+(x.outcome?' · '+OUT[x.outcome]:''),'ok']:due(x)?['Still to action','due']:x.need==='info'&&x.ack&&x.lastFrom!=='d'?['Read','ok']:['Waiting for the office','wait']};
+const items=()=>Object.values(L).map(cv).sort((a,b)=>String(b.lastAt||b.sentAt).localeCompare(String(a.lastAt||a.sentAt)));
+const todo=()=>items().filter(due);
+window.__myEnqTodo=()=>todo().map(x=>({ic:'brief',t:x.need==='info'?(x.kind==='ncr'?'Read an NCR':'Read an enquiry'):x.msgs.some(m=>m.f==='d')?'Reply to the office':(x.kind==='ncr'?'Respond to an NCR':'Respond to an enquiry'),s:[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ')||'Tap to read it',nav:'myenq',id:x.id}));
 window.__myEnqN=()=>todo().length;
-function card(x){const due=!x.response;return `<button type="button" class="card my-i ${due?'due':''}" data-my="open" data-v="${esc(x.id)}"><div class="t"><b>${esc(x.kind==='ncr'?'NCR':'Enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</b><span class="my-st ${due?'due':'ok'}">${due?'Still to action':'Responded'}</span></div><small>${esc(x.address||'')}</small><small>${esc(niceD(x.date))}${x.enqType?' · '+esc(x.enqType):x.issue?' · '+esc(x.issue):''}</small></button>`}
+function card(x){const [st,c]=stOf(x);const last=x.msgs[x.msgs.length-1];return `<button type="button" class="card my-i ${c}" data-my="open" data-v="${esc(x.id)}"><div class="t"><b>${esc(x.kind==='ncr'?'NCR':'Enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</b><span class="my-st ${c}">${esc(st)}</span></div><small>${esc(x.address||'')}</small><small>${esc(niceD(x.date))}${x.need==='info'?' · For your info':''}${last&&!last.c?' · '+(last.f==='o'?'Office: ':'You: ')+esc(last.t.slice(0,60))+(last.t.length>60?'…':''):''}</small></button>`}
 function listHTML(){const A=items();if(!A.length)return `<div class="empty">Nothing here. When the office sends you an enquiry or NCR, it shows here and your phone dings.</div>`;
-  const T=A.filter(x=>!x.response),wk=new Date(Date.now()-7*864e5).toISOString(),R=A.filter(x=>x.response),N=R.filter(x=>String(x.sentAt)>=wk),O=R.filter(x=>String(x.sentAt)<wk);
-  return `${T.length?`<h2 class="my-h">Still to action (${T.length})</h2>${T.map(card).join('')}`:'<div class="my-ok">✓ You have responded to everything.</div>'}
+  const T=A.filter(due),wk=new Date(Date.now()-7*864e5).toISOString(),R=A.filter(x=>!due(x)),N=R.filter(x=>String(x.lastAt||x.sentAt)>=wk),O=R.filter(x=>String(x.lastAt||x.sentAt)<wk);
+  return `${T.length?`<h2 class="my-h">Still to action (${T.length})</h2>${T.map(card).join('')}`:'<div class="my-ok">✓ Nothing waiting on you.</div>'}
    ${N.length?`<h2 class="my-h">This week</h2>${N.map(card).join('')}`:''}
    ${O.length?`<details class="my-old"><summary>Older (${O.length})</summary>${O.map(card).join('')}</details>`:''}`}
 async function loadPics(x){if(pics[x.id]!==undefined||!(x.pics||[]).length)return;pics[x.id]=null;const out=[];for(const p of x.pics){try{const d=await db.doc('enqimg/'+p.id).get();const v=d&&d.exists!==false?(window.__D?window.__D(d):d.data()):null;if(v&&v.data)out.push({name:v.name||p.name,data:v.data})}catch(e){}}pics[x.id]=out;render()}
-function oneHTML(x){const E=x.events||[];const P=pics[x.id];if((x.pics||[]).length&&P===undefined)setTimeout(()=>loadPics(x),0);
-  const D=x.response&&!edit;
+function threadHTML(x){return x.msgs.length?`<div class="eq-th">${x.msgs.map(m=>`<div class="eq-m ${m.c?'sys':m.f==='d'?'me':'them'}"><p>${esc(m.t).replace(/\n/g,'<br>')}</p><small>${m.c?'':m.f==='o'?'Office · ':'You · '}${esc(whenT(m.at))}</small></div>`).join('')}</div>`:''}
+function oneHTML(x){x=cv(x);const E=x.events||[];const P=pics[x.id];if((x.pics||[]).length&&P===undefined)setTimeout(()=>loadPics(x),0);const [st,c]=stOf(x);
+  const box=x.closedAt?`<div class="my-closed"><b>Closed by the office ${esc(whenT(x.closedAt))}</b>${x.outcome?`<p>Outcome: <b class="o-${x.outcome}">${esc(OUT[x.outcome])}</b></p>`:''}${x.closeNote?`<p>${esc(x.closeNote)}</p>`:''}</div>`
+   :`${x.need==='info'&&!x.ack?`<div class="b"><button type="button" class="sh-btn primary my-ack" data-my="ack" ${busy?'disabled':''}>✓ I’ve read it</button></div><p class="sub">Want to say something about it? Write it below.</p>`:''}
+     ${x.need!=='info'?`<div class="my-q" role="group" aria-label="Quick replies">${QUICK.map(([l],k)=>`<button type="button" data-my="quick" data-k="${k}" ${busy?'disabled':''}>${esc(l)}</button>`).join('')}</div>`:''}
+     <textarea id="my_txt" rows="4" placeholder="${x.need==='info'?'Anything to add (optional)':'What happened, or an update for the office'}">${esc(draft[x.id]||'')}</textarea>
+     <div class="b"><button type="button" class="sh-btn primary" data-my="send" ${busy?'disabled':''}>${busy?'Sending…':'Send to the office'}</button></div>
+     ${x.need!=='info'?'<p class="sub">Tap a quick reply to send it straight away. Anything you have typed in the box is sent with it.</p>':''}`;
   return `<div class="my-x"><button type="button" class="sh-btn back" data-my="back">‹ My enquiries</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
-  <section class="card"><div class="t"><h2>${esc(x.kind==='ncr'?'NCR':'Customer enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</h2><span class="my-st ${x.response?'ok':'due'}">${x.response?'Responded':'Still to action'}</span></div>
+  <section class="card"><div class="t"><h2>${esc(x.kind==='ncr'?'NCR':'Customer enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</h2><span class="my-st ${c}">${esc(st)}</span></div>
+   ${x.need==='info'?'<p class="my-need">For your info</p>':'<p class="my-need act">Needs action: please reply</p>'}
    <dl class="kv">${x.date?`<dt>Date</dt><dd>${esc(niceD(x.date))}</dd>`:''}${x.enqType?`<dt>Type</dt><dd>${esc(x.enqType)}</dd>`:''}${x.issue?`<dt>Issue</dt><dd>${esc(x.issue)}</dd>`:''}${x.address?`<dt>Address</dt><dd>${esc(x.address)}</dd>`:''}${x.scanAddr?`<dt>Where you scanned it</dt><dd>${esc(x.scanAddr)}</dd>`:''}${x.deliveredAt?`<dt>Your scan</dt><dd>${esc(x.deliveredAt)}</dd>`:''}${x.delivered?`<dt>Delivered</dt><dd>${esc(x.delivered)}</dd>`:''}${x.tracking||x.article?`<dt>Tracking</dt><dd class="brk">${esc(x.tracking||x.article)}</dd>`:''}</dl></section>
   ${(x.flags||[]).length?`<div class="eq-flags">${x.flags.map(f=>`<p>⚠️ ${esc(f)}</p>`).join('')}</div>`:''}
   ${x.details?`<section class="card"><span class="lbl">${x.kind==='ncr'?'What happened':'What the customer said'}</span><p class="my-p">${esc(x.details).replace(/\n/g,'<br>')}</p></section>`:''}
+  <section class="card my-r"><span class="lbl">Messages with the office</span>${threadHTML(x)||'<p class="sub">No messages yet.</p>'}${x.need==='info'&&x.ack?`<p class="sub">You ticked it as read ${esc(whenT(x.ack))}.</p>`:''}${box}</section>
   ${(x.pics||[]).length?`<section class="card"><span class="lbl">Pictures</span>${!P?'<p class="sub">Loading pictures…</p>':P.length?`<div class="eq-pg">${P.map((p,k)=>`<button type="button" data-my="pic" data-k="${k}"><img src="${p.data}" alt="${esc(p.name)}" loading="lazy"><small>${esc(p.name)}</small></button>`).join('')}</div>`:'<p class="sub">Pictures could not be loaded.</p>'}</section>`:''}
   ${E.length?`<details class="card eq-ev"><summary><b>Scan events (${E.length})</b><small>Your scan is highlighted.</small></summary><ol>${E.map(e=>`<li class="${x.keyEv===e.e+', '+e.d?'key':''}${/^y/i.test(e.o||'')?' out':''}"><b>${esc(e.e)}</b><small>${esc(e.d)}${e.w?' · '+esc(tc(e.w)):''}${/^y/i.test(e.o||'')?' · <em>Outside delivery radius</em>':''}</small></li>`).join('')}</ol></details>`:''}
-  <section class="card my-r"><span class="lbl">Your response</span>
-   ${D?`<div class="eq-resp"><p>${esc(x.response).replace(/\n/g,'<br>')}</p><small>Sent ${esc(whenT(x.respAt))}</small></div><button type="button" class="sh-btn" data-my="edit">Change my response</button>`
-   :`<p class="sub">Tell the office what happened: where you left it, who you gave it to, or why you couldn't deliver it.</p><textarea id="my_txt" rows="5" placeholder="What happened">${esc(draft[x.id]!=null?draft[x.id]:(x.response||''))}</textarea><div class="b"><button type="button" class="sh-btn primary" data-my="send" ${busy?'disabled':''}>${busy?'Sending…':'Send to the office'}</button>${edit?'<button type="button" class="sh-btn" data-my="noedit">Cancel</button>':''}</div>`}
-  </section>
   ${lb!=null&&P&&P[lb]?`<div class="eq-lb" data-my="lbclose" role="dialog"><img src="${P[lb].data}" alt="${esc(P[lb].name)}"><p>${esc(P[lb].name)}</p><button type="button" class="sh-btn" data-my="lbclose">Close</button></div>`:''}
   </div>`}
 function render(){const box=document.getElementById('my_root');if(!box)return;
@@ -7403,20 +7440,23 @@ function render(){const box=document.getElementById('my_root');if(!box)return;
   if(state==='none'){box.innerHTML='<div class="my-x"><div class="empty">Your driver record is not linked yet. Ask the office.</div></div>';return}
   if(open&&L[open]){box.innerHTML=oneHTML(L[open]);return}
   box.innerHTML=`<div class="my-x"><div class="head"><h1>My enquiries</h1></div>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${listHTML()}</div>`}
-function openIt(id){open=id;msg=null;edit=false;lb=null;const x=L[id];if(x&&!x.seenAt){x.seenAt=new Date().toISOString();db&&db.doc('drvenq/'+id).update({seenAt:x.seenAt}).catch(()=>{})}render();window.scrollTo(0,0)}
+function openIt(id){open=id;msg=null;lb=null;const x=L[id];if(x&&!x.seenAt){x.seenAt=new Date().toISOString();db&&db.doc('drvenq/'+id).update({seenAt:x.seenAt}).catch(()=>{})}render();window.scrollTo(0,0)}
+async function say(x,text,ack){x=cv(L[x.id]);busy=true;render();const now=new Date().toISOString();const up={};
+  if(text){up.msgs=x.msgs.concat([{f:'d',t:text,at:now}]);up.lastFrom='d';up.lastAt=now}
+  if(ack)up.ack=now;
+  try{await db.doc('drvenq/'+x.id).update(up);Object.assign(L[x.id],up);delete draft[x.id];msg={t:ack&&!text?'Thanks. The office can see you have read it.':'Sent. The office has been told.'};
+    try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{})}catch(z){}
+    try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}}
+  catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'}}busy=false;render()}
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-my]');if(!el||!el.closest('#mod-myenq'))return;const a=el.dataset.my;
   if(a==='open'){openIt(el.dataset.v);return}
   if(a==='back'){open=null;msg=null;render();return}
   if(a==='pic'){lb=+el.dataset.k;render();return}
   if(a==='lbclose'){if(e.target.closest('img'))return;lb=null;render();return}
-  if(a==='edit'){edit=true;render();return}
-  if(a==='noedit'){edit=false;render();return}
-  if(a==='send'){const x=L[open];const t=(($('txt')||{}).value||'').trim();if(!x)return;if(!t){msg={err:true,t:'Write what happened first.'};render();return}
-    busy=true;draft[x.id]=t;render();const now=new Date().toISOString();
-    try{await db.doc('drvenq/'+x.id).update({response:t,respAt:now});x.response=t;x.respAt=now;delete draft[x.id];edit=false;msg={t:'Sent. The office has been told.'};
-      try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{})}catch(z){}
-      try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}}
-    catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'}}busy=false;render();return}
+  const x=L[open];if(!x||busy)return;const typed=(($('txt')||{}).value||'').trim();
+  if(a==='ack'){say(x,typed,true);return}
+  if(a==='quick'){const q=QUICK[+el.dataset.k];say(x,q[1]+(typed?' '+typed:''),false);return}
+  if(a==='send'){if(!typed){msg={err:true,t:'Write something first.'};render();return}say(x,typed,cv(x).need==='info'&&!x.ack);return}
 });
 document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open]=e.target.value});
 /* a ding opens straight to that enquiry: #myenq/<id> */
@@ -7427,7 +7467,7 @@ async function start(role){
   sid=meStaff();if(!sid){state='none';render();return}
   try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}if(!db){state='none';render();return}
   db.collection('drvenq').where('sid','==',sid).onSnapshot(sn=>{const o={};for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v)o[d.id]=Object.assign({id:d.id},v)}
-    for(const id in o)if(L[id]&&draft[id]!=null){}L=o;state='ok';
+    L=o;state='ok';
     if(window.__myEnqOpen&&L[window.__myEnqOpen]){const id=window.__myEnqOpen;window.__myEnqOpen=null;openIt(id)}
     const a=document.activeElement;if(!(a&&a.id==='my_txt'))render();
     try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}try{window.__myEnqMenu&&window.__myEnqMenu()}catch(z){}},()=>{state='none';render()});
@@ -7747,8 +7787,8 @@ function formHTML(){
   ${(r.events||[]).length?eventsHTML(r):''}
   ${lboxHTML()}
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
-  <span class="lbl">Was the driver at fault?</span>
-  <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button></div>
+  <span class="lbl">Was the driver at fault? You can decide later, after the driver replies.</span>
+  <div class="oc" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button><button type="button" class="ob later" data-eq="f" data-v="" aria-pressed="${!r.fault}">Decide later</button></div>
   <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Why">${esc(r.note||'')}</textarea></label>
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
   </section></div>`;
@@ -7762,30 +7802,58 @@ async function loadPics(id){if(eImgs[id]!==undefined)return;eImgs[id]=null;try{c
 function picsHTML(r){if(!r.pics)return '';const L=eImgs[r.id];if(L===undefined){setTimeout(()=>loadPics(r.id),0)}
   return `<section class="card eq-pics"><span class="lbl">Pictures from the case</span>${!L?'<p class="sub">Loading pictures…</p>':L.length?`<div class="eq-pg">${L.map((x,k)=>`<button type="button" data-eq="pic" data-v="${esc(r.id)}" data-k="${k}"><img src="${x.data}" alt="${esc(x.name)}" loading="lazy"><small>${esc(x.name)}</small></button>`).join('')}</div>`:'<p class="sub">No pictures saved.</p>'}</section>`}
 function lboxHTML(){if(!lbox)return '';const L=eImgs[lbox.id]||[],x=L[lbox.k];if(!x)return '';return `<div class="eq-lb" data-eq="lbclose" role="dialog" aria-label="${esc(x.name)}"><img src="${x.data}" alt="${esc(x.name)}"><p>${esc(x.name)}</p><button type="button" class="sh-btn" data-eq="lbclose">Close</button></div>`}
-/* ---------- sending it to the driver, and their response ---------- */
+/* ---------- sending it to the driver: a short conversation until the office closes it with an outcome ---------- */
 const whenT=iso=>{if(!iso)return '';const d=new Date(iso);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+', '+(d.getHours()%12||12)+':'+pad(d.getMinutes())+(d.getHours()<12?'am':'pm')};
-function drvBox(id,kind){const D=DRV[id],p=byLogin((recs[id]||{}).login);
-  const btn=`<button type="button" class="sh-btn ${D?'':'primary'}" data-eq="sendd" data-v="${esc(id)}" data-k="${kind}" ${p&&p.id?'':'disabled'}>${D?'Send again':'Send to driver'}</button>`;
-  return `<section class="card eq-drv"><span class="lbl">Driver's response</span>
-   ${!D?`<p class="sub">${p&&p.id?`Not sent yet. Send it to ${esc(p.name.split(' ')[0])} and their phone will ding. They can read it in the app and reply, and you'll get a ding when they do.`:'Pick a driver who is on the Drivers page to send it to them.'}</p>`
-   :D.response?`<div class="eq-resp"><p>${esc(D.response).replace(/\n/g,'<br>')}</p><small>${esc(whenT(D.respAt))}</small></div><p class="sub">Sent to them ${esc(whenT(D.sentAt))}.</p>`
-   :`<p class="sub">Sent ${esc(whenT(D.sentAt))}. ${D.seenAt?'They opened it '+esc(whenT(D.seenAt))+' but have not responded yet.':'Waiting for them to open it.'}</p>`}
-   <div class="b">${btn}</div></section>`}
-function drvChip(id){const D=DRV[id];if(!D)return '';return D.response?`<span class="eq-st ${D.offSeen?'ok':'new'}">${D.offSeen?'Driver responded':'New response'}</span>`:`<span class="eq-st wait">Waiting for driver</span>`}
-async function sendDrv(id,kind){const r=recs[id];if(!r)return;const p=byLogin(r.login);if(!p||!p.id){msg={err:true,t:'That driver is not on the Drivers page, so the app can’t send it to them.'};render();return}
-  const now=new Date().toISOString(),old=DRV[id]||{};
-  const base={kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',response:old.response||'',respAt:old.respAt||'',seenAt:old.seenAt||'',offSeen:old.offSeen||''};
+const OUT={yes:'At fault',partly:'Partly at fault',no:'Not at fault'};
+let sendOpt={need:'action',note:'',out:''},closing=null,replyTxt={};
+/* older records had one response field; read them as a conversation */
+function convo(D){if(!D)return null;const m=Array.isArray(D.msgs)?D.msgs.slice():[];if(!m.length&&D.response)m.push({f:'d',t:D.response,at:D.respAt||''});
+  return Object.assign({},D,{msgs:m,need:D.need||'action',lastFrom:D.lastFrom||(m.length?m[m.length-1].f:'o'),lastAt:D.lastAt||(m.length?m[m.length-1].at:D.sentAt)})}
+const unread=D=>{D=convo(D);if(!D)return false;const seen=String(D.offSeen||'');return (D.lastFrom==='d'&&seen<String(D.lastAt||''))||(!!D.ack&&seen<String(D.ack))};
+function threadHTML(D,me){return (D.msgs||[]).length?`<div class="eq-th">${D.msgs.map(m=>`<div class="eq-m ${m.c?'sys':m.f===me?'me':'them'}"><p>${esc(m.t).replace(/\n/g,'<br>')}</p><small>${m.c?'':m.f==='o'?'Office · ':'Driver · '}${esc(whenT(m.at))}</small></div>`).join('')}</div>`:''}
+function drvBox(id,kind){const D=convo(DRV[id]),r=recs[id]||{},p=byLogin(r.login);const fn=p?p.name.split(' ')[0]:'the driver';
+  if(!D){if(!p||!p.id)return `<section class="card eq-drv"><span class="lbl">Driver</span><p class="sub">Pick a driver who is on the Drivers page to send it to them.</p></section>`;
+    return `<section class="card eq-drv"><span class="lbl">Send to ${esc(fn)}</span>
+     <div class="eq-need" role="group" aria-label="What you need">${[['action','Needs action','They must reply'],['info','For your info','They tap I’ve read it']].map(([k,l,sm])=>`<button type="button" data-eq="need" data-v="${k}" aria-pressed="${sendOpt.need===k}"><b>${l}</b><small>${sm}</small></button>`).join('')}</div>
+     <label class="f" for="eq_snote">Your note to ${esc(fn)} (optional)<textarea id="eq_snote" rows="2" placeholder="${sendOpt.need==='action'?'e.g. Please go back and recover this parcel today and let me know':'e.g. Just so you know, please knock louder at this address'}">${esc(sendOpt.note)}</textarea></label>
+     <div class="b"><button type="button" class="sh-btn primary" data-eq="sendd" data-v="${esc(id)}" data-k="${kind}">Send to ${esc(fn)}</button></div>
+     <p class="sub">Their phone dings and it opens straight to this ${kind==='ncr'?'NCR':'enquiry'}. You get a ding each time they reply.</p></section>`}
+  const st=D.closedAt?`Closed ${esc(whenT(D.closedAt))}${D.outcome?' · '+esc(OUT[D.outcome]||D.outcome):''}`:D.need==='info'?(D.ack?`${esc(fn)} read it ${esc(whenT(D.ack))}`:`Sent ${esc(whenT(D.sentAt))} for their info. ${D.seenAt?'Opened, not yet ticked as read.':'Not opened yet.'}`):D.lastFrom==='d'?`${esc(fn)} replied ${esc(whenT(D.lastAt))}`:`Waiting for ${esc(fn)} to reply${D.seenAt?' (they have opened it)':''}`;
+  const cl=closing===id,co=sendOpt.out||r.fault||'';
+  return `<section class="card eq-drv"><div class="eq-dh"><span class="lbl">Conversation with ${esc(fn)}</span><span class="eq-need1">${D.need==='info'?'For your info':'Needs action'}</span></div>
+   <p class="eq-dst ${D.closedAt?'done':''}">${st}</p>
+   ${threadHTML(D,'o')}
+   ${D.closedAt?`<div class="b"><button type="button" class="sh-btn" data-eq="reopen" data-v="${esc(id)}">Reopen</button></div>`
+   :cl?`<div class="eq-close"><b>Close it with the outcome</b>${kind==='ncr'?'':`<div class="oc" role="group" aria-label="Outcome">${['yes','partly','no'].map(k=>`<button type="button" class="ob ${k==='yes'?'yes':k==='partly'?'part':'no'}" data-eq="cout" data-v="${k}" aria-pressed="${co===k}">${OUT[k]}</button>`).join('')}</div>`}
+      <textarea id="eq_cnote" rows="2" placeholder="Note to ${esc(fn)} (optional)"></textarea>
+      <div class="b"><button type="button" class="sh-btn primary" data-eq="closeok" data-v="${esc(id)}" data-k="${kind}">Close and tell ${esc(fn)}</button><button type="button" class="sh-btn" data-eq="closeno">Cancel</button></div><p class="sub">${esc(fn)} sees the ${kind==='ncr'?'note':'outcome'}${kind==='ncr'?'':', and it is saved on the enquiry'}.</p></div>`
+   :`<textarea id="eq_rtxt" rows="2" placeholder="Reply to ${esc(fn)}">${esc(replyTxt[id]||'')}</textarea>
+     <div class="b"><button type="button" class="sh-btn primary" data-eq="oreply" data-v="${esc(id)}">Send reply</button>${D.lastFrom!=='d'&&!(D.need==='info'&&D.ack)?`<button type="button" class="sh-btn" data-eq="remind" data-v="${esc(id)}" data-k="${kind}">Remind ${esc(fn)}</button>`:''}<button type="button" class="sh-btn" data-eq="closeit" data-v="${esc(id)}">Close…</button></div>`}
+  </section>`}
+function drvChip(id){const D=convo(DRV[id]);if(!D)return '';if(D.closedAt)return `<span class="eq-st ok">Closed${D.outcome?' · '+(OUT[D.outcome]||''):''}</span>`;if(unread(D))return `<span class="eq-st new">${D.need==='info'&&D.ack&&D.lastFrom!=='d'?'Read by driver':'New reply'}</span>`;
+  if(D.need==='info')return D.ack?'<span class="eq-st ok">Read by driver</span>':'<span class="eq-st wait">Sent for info</span>';return D.lastFrom==='d'?'<span class="eq-st ok">Driver replied</span>':'<span class="eq-st wait">Waiting for driver</span>'}
+function snapOf(r,kind){if(kind==='ncr')return{title:'NCR'+(r.caseNo?' '+r.caseNo:''),date:r.issued||'',caseNo:r.caseNo||'',address:r.address||'',article:r.article||'',delivered:r.delivered||'',issue:ISS[r.issue]||r.issue||'',details:r.what||'',actions:r.actions||''};
+  return{title:'Enquiry'+(r.caseNo?' '+r.caseNo:''),date:r.date||'',caseNo:r.caseNo||'',enqType:r.enqType||'',category:r.category||'',tracking:r.tracking||'',address:r.address||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',details:r.details||'',flags:flagsOf(r),events:(r.events||[]).slice(-60),keyEv:r.keyEv||''}}
+async function dingDrv(p,title,body,id){let j=null;try{j=window.PUSH?await PUSH.send('urgent',{staff:p.id,staffName:p.name,title,body,url:'#myenq/'+id}):null}catch(x){}const fn=String(p.name||'The driver').split(' ')[0];
+  return j&&j.sent?fn+'’s phone got a ding.':j&&j.skipped&&/quiet/i.test(j.skipped)?'It is quiet hours, so no ding; '+fn+' will see it next time they open the app.':j&&j.skipped?fn+'’s phone does not have notifications on, so let them know.':fn+' will see it in the app.'}
+async function sendDrv(id,kind,remind){const r=recs[id];if(!r)return;const p=byLogin(r.login);if(!p||!p.id){msg={err:true,t:'That driver is not on the Drivers page, so the app can’t send it to them.'};render();return}
+  const now=new Date().toISOString(),old=DRV[id];const what=kind==='ncr'?'NCR':'enquiry';
+  let pics=[];if(kind!=='ncr'&&r.pics){if(!eImgs[id]){try{const q=await db.collection('enqimg').where('enq','==',id).get();eImgs[id]=q.docs.map(d=>Object.assign({id:d.id},__D(d))).filter(x=>x&&x.data)}catch(x){eImgs[id]=[]}}
+    pics=(eImgs[id]||[]).map(x=>({id:x.id,name:x.name}));for(const x of pics){try{await db.doc('enqimg/'+x.id).update({sid:p.id})}catch(e){}}}
   let doc;
-  if(kind==='ncr')doc=Object.assign(base,{title:'NCR'+(r.caseNo?' '+r.caseNo:''),date:r.issued||'',caseNo:r.caseNo||'',address:r.address||'',article:r.article||'',delivered:r.delivered||'',issue:ISS[r.issue]||r.issue||'',details:r.what||'',actions:r.actions||''});
-  else{let pics=[];if(r.pics){if(eImgs[id]===undefined||eImgs[id]===null){try{const q=await db.collection('enqimg').where('enq','==',id).get();eImgs[id]=q.docs.map(d=>Object.assign({id:d.id},__D(d))).filter(x=>x&&x.data)}catch(x){eImgs[id]=[]}}
-      pics=(eImgs[id]||[]).map(x=>({id:x.id,name:x.name}));for(const x of pics){try{await db.doc('enqimg/'+x.id).update({sid:p.id})}catch(e){}}}
-    doc=Object.assign(base,{title:'Enquiry'+(r.caseNo?' '+r.caseNo:''),date:r.date||'',caseNo:r.caseNo||'',enqType:r.enqType||'',category:r.category||'',tracking:r.tracking||'',address:r.address||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',details:r.details||'',flags:flagsOf(r),events:(r.events||[]).slice(-60),keyEv:r.keyEv||'',pics})}
+  if(old){doc=Object.assign(clone(old),snapOf(r,kind),{pics});delete doc.id}
+  else{const note=String(sendOpt.note||'').trim();doc=Object.assign({kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',need:sendOpt.need,msgs:note?[{f:'o',t:note,at:now}]:[],lastFrom:'o',lastAt:now,ack:'',seenAt:'',offSeen:'',closedAt:'',outcome:''},snapOf(r,kind),{pics})}
   msg={t:'Sending…'};render();
   try{await db.doc('drvenq/'+id).set(doc);DRV[id]=Object.assign({id},doc)}catch(x){msg={err:true,t:'Could not send it just now. Check your connection.'};render();return}
-  let j=null;try{j=window.PUSH?await PUSH.send('urgent',{staff:p.id,staffName:p.name,title:kind==='ncr'?'NCR to respond to':'Enquiry to respond to',body:(kind==='ncr'?'An NCR':'A customer enquiry')+(r.address?' about '+r.address:'')+'. Tap to read it and respond.',url:'#myenq/'+id}):null}catch(x){}
-  const fn=p.name.split(' ')[0];
-  msg=j&&j.sent?{t:'Sent to '+fn+'. Their phone got a ding.'}:j&&j.skipped&&/quiet/i.test(j.skipped)?{t:'Sent to '+fn+'. It is quiet hours, so no ding; they will see it next time they open the app.'}:{t:'Sent to '+fn+'. '+(j&&j.skipped?'Their phone does not have notifications on, so let them know it is there.':'They will see it in the app.')};
-  render()}
+  const need=doc.need||'action',info=need==='info';
+  const title=remind?'Reminder from the office':info?(kind==='ncr'?'An NCR for you to read':'An enquiry for you to read'):(kind==='ncr'?'NCR to respond to':'Enquiry to respond to');
+  const body=(remind?'Please look at the '+what:'A customer '+what)+(r.address?' about '+r.address:'')+(info&&!remind?'. Tap to read it.':'. Tap to read it and reply.');
+  const t=await dingDrv(p,title,body,id);
+  sendOpt={need:'action',note:'',out:''};msg={t:(remind?'Reminder sent. ':'Sent. ')+t};render()}
+async function officeSay(id,text,extra,title,body){const D=convo(DRV[id]);if(!D)return false;const r=recs[id]||{},p=byLogin(r.login)||{id:D.sid,name:D.name||'Driver'};const now=new Date().toISOString();
+  const m=D.msgs.concat([Object.assign({f:'o',t:text,at:now},extra&&extra.c?{c:1}:{})]);const up=Object.assign({msgs:m,lastFrom:'o',lastAt:now,offSeen:now},extra&&extra.up||{});
+  try{await db.doc('drvenq/'+id).update(up);Object.assign(DRV[id],up)}catch(x){msg={err:true,t:'Could not send just now. Check your connection.'};render();return false}
+  const t=await dingDrv(p,title,body,id);msg={t:'Sent. '+t};render();return true}
 /* pictures older than 12 months are removed to save space; the enquiry itself stays */
 async function cleanPics(){try{const k='eqclean',t=today();if(localStorage.getItem(k)===t)return;localStorage.setItem(k,t)}catch(x){}
   try{const d=new Date();d.setMonth(d.getMonth()-12);const q=await db.collection('enqimg').where('eat','<',d.toISOString()).get();for(const x of q.docs)await db.doc('enqimg/'+x.id).delete()}catch(x){}}
@@ -7827,7 +7895,7 @@ document.addEventListener('click',async ev=>{
   if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
   if(a==='nnew'){nDraft={issue:'sig'};nNew=[];msg=null;render();window.scrollTo(0,0);return}
-  if(a==='nopen'){window.__nqY=scrollY;nOpen=v;msg=null;const D=DRV[v];if(D&&D.response&&!D.offSeen){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
+  if(a==='nopen'){window.__nqY=scrollY;nOpen=v;msg=null;closing=null;const D=DRV[v];if(D&&unread(D)){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
   if(a==='nback'){nOpen=null;msg=null;render();if(window.__nqY!=null){window.scrollTo(0,window.__nqY);window.__nqY=null}return}
   if(a==='ncancel'){nDraft=null;nNew=[];msg=null;render();return}
   if(a==='nedit'){nDraft=clone(recs[nOpen]);nNew=[];msg=null;render();return}
@@ -7839,8 +7907,19 @@ document.addEventListener('click',async ev=>{
   if(a==='ndel'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{const id=nOpen;await db.doc('enqlog/'+id).delete();for(const f of (nFiles[id]||[]))void 0;delete recs[id];nOpen=null;arm=false;msg={t:'NCR deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='new'){window.__eqY=scrollY;draft={fault:''};view='form';msg=null;render();window.scrollTo(0,0);return}
-  if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;const D=DRV[v];if(D&&D.response&&!D.offSeen){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
-  if(a==='sendd'){sendDrv(v,el.dataset.k);return}
+  if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;closing=null;const D=DRV[v];if(D&&unread(D)){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
+  if(a==='need'){sendOpt.need=v;sendOpt.note=String(($('snote')||{}).value||'');render();return}
+  if(a==='sendd'){sendOpt.note=String(($('snote')||{}).value||'');sendDrv(v,el.dataset.k,false);return}
+  if(a==='remind'){sendDrv(v,el.dataset.k,true);return}
+  if(a==='oreply'){const t=String(($('rtxt')||{}).value||'').trim();if(!t){msg={err:true,t:'Write your reply first.'};render();return}const r=recs[v]||{};delete replyTxt[v];if(!(await officeSay(v,t,null,'Reply from the office',(r.caseNo?'Case '+r.caseNo+': ':'')+t.slice(0,120))))replyTxt[v]=t;return}
+  if(a==='closeit'){closing=v;sendOpt.out=(recs[v]||{}).fault||'';render();return}
+  if(a==='closeno'){closing=null;render();return}
+  if(a==='cout'){sendOpt.out=v;const n=($('cnote')||{}).value||'';render();if($('cnote'))$('cnote').value=n;return}
+  if(a==='closeok'){const kind=el.dataset.k,out=kind==='ncr'?'':(sendOpt.out||'');if(kind!=='ncr'&&!out){msg={err:true,t:'Pick the outcome first.'};render();return}const note=String(($('cnote')||{}).value||'').trim();const now=new Date().toISOString();
+    const txt='Closed'+(out?': '+OUT[out]:'')+'.'+(note?' '+note:'');
+    const ok=await officeSay(v,txt,{c:1,up:{closedAt:now,outcome:out,closeNote:note}},(kind==='ncr'?'NCR':'Enquiry')+' closed',out?'Outcome: '+OUT[out]+'. Tap to view.':'Tap to view.');
+    if(ok){closing=null;sendOpt.out='';if(out&&recs[v]&&recs[v].fault!==out){try{await db.doc('enqlog/'+v).update({fault:out,updatedAt:now});recs[v].fault=out}catch(x){}}render()}return}
+  if(a==='reopen'){await officeSay(v,'Reopened.',{c:1,up:{closedAt:'',outcome:''}},'Reopened by the office','Please have another look. Tap to view.');return}
   if(a==='pic'){lbox={id:v,k:+el.dataset.k};render();return}
   if(a==='fpic'){readForm();const L=draft._imgs||eImgs[draft.id]||[];eImgs['_draft']=L;lbox={id:'_draft',k:+el.dataset.k};render();return}
   if(a==='lbclose'){if(ev.target.closest('img'))return;if(view==='form')readForm();lbox=null;render();return}
@@ -7867,7 +7946,6 @@ document.addEventListener('click',async ev=>{
   if(a==='print'){printList();return}
   if(a==='save'){const r=readForm();
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
-    if(!r.fault){msg={err:true,t:'Choose Yes, at fault or No, not at fault.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
       events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
@@ -7879,7 +7957,7 @@ document.addEventListener('click',async ev=>{
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
-document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
+document.addEventListener('input',ev=>{const el=ev.target;if(el.id==='eq_rtxt'){const k=tab==='ncr'?nOpen:open;if(k)replyTxt[k]=el.value;return}if(el.id==='eq_nqd'||el.id==='eq_nqa'){if(el.id==='eq_nqd')nqD=el.value;else nqA=el.value;$('nres').innerHTML=ncrCards();return}if(el.id!=='eq_qd'&&el.id!=='eq_qa')return;if(el.id==='eq_qd')qDriver=el.value;else qAddr=el.value;$('res').innerHTML=resHTML(filtered())});
 document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_nimp'&&el.files.length){const F=[...el.files];el.value='';importOld(F);return}
   if(el.dataset&&el.dataset.pl!=null&&pList&&pList.rows){const r=pList.rows[+el.dataset.pl];if(r){r.login=el.value;render()}return}
@@ -10697,7 +10775,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021042';
+const VERSION='1202611021053';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12382,7 +12460,7 @@ const A={ /* office */
  'mod-results':'Results come from the daily performance reports. Use the date bar to pick a day, week or pay period, and tap How the Contract Score works to see how each score is worked out.',
  'mod-survey':'Scores from the customer survey. A 9 or 10 is a promoter and 0 to 6 is a detractor. Tap How the NPS score works to see how the team score is worked out.',
  'mod-summary':'The whole contract at a glance for the period you pick, built from the same results as the Results tab.',
- 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Press + Enquiry and use Fill in from the case PDF: it brings in the scan events, the maps and the scan photo. Open an enquiry and tap Send to driver so they can respond; you get a ding when they do.',
+ 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Press + Enquiry and use Fill in from the case PDF: it brings in the scan events, the maps and the scan photo. Open it and send it to the driver as Needs action or For your info. Reply back and forth, then Close it with the outcome when you have everything.',
  'mod-runs':t=>/sort/i.test(t)?'Which driver each street goes to, by postcode. Use it at the depot to redirect missorts. Drivers get changes after you press Send latest to drivers.':'Each driver’s streets in delivery order, with customer and access notes. Pick a postcode at the top. Drivers get changes after you press Send latest to drivers.',
  'mod-precards':'Precards are split into Approved and Under review. Check the ones under review and approve them once they are right.',
  'mod-lockers':'Parcel lockers on the contract, with the building and Australia Post details for each one.',
@@ -12399,7 +12477,7 @@ const A={ /* office */
  'mod-uniform':t=>({'order settings':'Choose which items drivers can order and how many of each.',order:'Place a uniform order for someone.',completed:'Orders that have been handed out.'})[t.toLowerCase()]||'Uniform orders from drivers. Mark each one done once it has been handed out and it moves to Completed.'
 };
 const D={ /* drivers */
- 'mod-myenq':'Enquiries and NCRs the office sends you show here, and your phone dings. Open one, read what happened, and send your response. The office is told straight away.',
+ 'mod-myenq':'Enquiries and NCRs the office sends you show here, and your phone dings. Open one, read what happened, and reply or tap I’ve read it. Keep the office updated until they close it; you will see the outcome here.',
  'mod-me':'Your own results for the week. Tap How the Contract Score works to see how your score is worked out.',
  'mod-updates':'News from the office. You get a ding on your phone when a new one is posted.',
  'mod-briefs':'The weekly team brief. Read it all the way through and sign it so the office knows you have seen it.',
