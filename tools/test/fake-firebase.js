@@ -7,7 +7,7 @@ function mk(path){const f=function(){return mk(path)};return new Proxy(f,{get(t,
  if(p==='then')return undefined;
  if(p==='collection')return n=>mk({col:n});if(p==='doc')return n=>{if(path&&path.col&&n!==undefined)return mk({col:path.col,doc:n});const s=String(n||'').split('/');return s.length>=2?mk({col:s[0],doc:s[1]}):mk(path)};
  if(p==='get')return ()=>Promise.resolve(path&&path.doc!==undefined?snapDoc(path.doc,(SEED()[path.col]||{})[path.doc]):path&&path.col?colSnap(path.col):Object.assign(snapQ(),snapDoc()));
- if(p==='onSnapshot')return (a,b)=>{const cb=typeof a==='function'?a:b;setTimeout(()=>{try{cb(path&&path.doc!==undefined?snapDoc(path.doc,(SEED()[path.col]||{})[path.doc]):path&&path.col?colSnap(path.col):Object.assign(snapQ(),snapDoc()))}catch(e){console.log('snap err',e.message)}},10);return ()=>{}};
+ if(p==='onSnapshot')return (a,b)=>{const cb=typeof a==='function'?a:b;const fire=()=>{try{cb(path&&path.doc!==undefined?snapDoc(path.doc,(SEED()[path.col]||{})[path.doc]):path&&path.col?colSnap(path.col):Object.assign(snapQ(),snapDoc()))}catch(e){}};(window.__SNAPS=window.__SNAPS||[]).push(fire);setTimeout(()=>{try{cb(path&&path.doc!==undefined?snapDoc(path.doc,(SEED()[path.col]||{})[path.doc]):path&&path.col?colSnap(path.col):Object.assign(snapQ(),snapDoc()))}catch(e){console.log('snap err',e.message)}},10);return ()=>{}};
  if(['where','orderBy','limit','startAt','startAfter','endAt','endBefore','limitToLast'].includes(p))return ()=>mk(path);
  if(['set','update','delete','add','commit','enablePersistence','activate','settings'].includes(p))return ()=>Promise.resolve(mk());
  if(p===Symbol.toPrimitive)return ()=>'';
