@@ -13,6 +13,7 @@ from playwright.sync_api import sync_playwright
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 STUB = open(os.path.join(HERE, 'fake-firebase.js')).read()
+SEEDJS = open(os.path.join(HERE, 'seed.js')).read()
 ADMIN = ['home','menu','results','survey','summary','enquiries','ncr','runs','sort','precards','lockers','guide','leave','cover','updates','briefs','reports','feedback','directory','invoices','timesheets','staff','compliance','vchecks','uniform','tasks','clock','alerts']
 DRIVER = ['home','me','menu','updates','briefs','runs','guide','leave','invoices','directory','reports','feedback','myenq','clock','alerts']
 VOICE = {"load new results":"mod-results","load the nps results":"mod-survey","who hasn't clocked in":"mod-timesheets","compliance for adam":"mod-compliance",
@@ -22,11 +23,12 @@ PAGE_CHECK = open(os.path.join(HERE, 'page-check.js')).read()
 CLICKABLE = "#sh-tabs .sh-hubtabs>button, .sh-sec:not([hidden]) :is(.tabs,.seg,.pseg2,.pvseg,.modes,.pf-chips,.eq-pcs,.tiles,.nstat,.rb-tot,.cpm-t,.pcm-t,.thseg)>:is(button,[role=button]):not([disabled]), .sh-sec:not([hidden]) .fold-bar, .sh-sec:not([hidden]) details>summary"
 SKIP = "[data-sh=uv],[data-sh=mv],[data-rp=file],[data-pc=open],[data-sh=signout]"
 
-def page(b, html, theme='dark', W=390, lang='en', mic=False, freeze=False):
+def page(b, html, theme='dark', W=390, lang='en', mic=False, freeze=False, data=False):
     pg = b.new_page(viewport={'width': W, 'height': 900}, color_scheme=theme)
     init = f"try{{localStorage.setItem('theme1161','{theme}');localStorage.setItem('lang1161','{lang}')}}catch(e){{}};"
     if freeze: init += "Date.now=(()=>{const t=Date.UTC(2026,10,2,1,0,0);return()=>t})();"
     if mic: init += FAKE_MIC
+    if data: init += SEEDJS
     pg.add_init_script(init)
     pg.route('**/firebasejs/**', lambda r: r.fulfill(body=STUB if 'app-compat' in r.request.url else '', content_type='application/javascript'))
     pg.route('https://**', lambda r: r.fulfill(body='', status=200) if 'firebasejs' not in r.request.url else r.fallback())
