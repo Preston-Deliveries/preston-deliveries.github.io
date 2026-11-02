@@ -3543,7 +3543,7 @@ function mountBoard(box,rows){
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
      return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR(r.name||r.login)}</b><small>${r.days} day${r.days===1?"":"s"}${r.rank?"":" · not ranked"}</small></span></button>
-     ${V.map(([l,v,c],j)=>`<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`).join("")}
+     ${V.map(([l,v,c],j)=>{if(j===3){const f=Math.round(+r.enq||0),pp=Math.round(+r.enqP||0);return `<span class="rb-c" role="cell"><small>Enquiries</small><b class="v-${c}${pp&&!f?" pt":""}"><i class="lg">${escR(v)}</i><i class="sh">${f+pp}</i></b></span>`}return `<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`}).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b class="v-${(r.avg||0)>=96-1e-9?"g":"b"}">${scTxt(r)}</b></span></div>`}).join("")}
   </div>
 `;
@@ -13283,6 +13283,10 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pcm-t>button.pcm-all{background:var(--sh-surface)!important;border:2px solid var(--sh-line)!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pcm-t>button.pcm-all>:is(b,small){color:var(--sh-ink)!important}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .pcm-t>button.pcm-all[aria-pressed=true]{border-color:#F2782D!important;box-shadow:0 0 0 1px #F2782D inset!important}
+</style>
+<style id="rb-enq">
+:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i{font-style:normal}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.sh{display:none}
+@media (max-width:899px){:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.lg{display:none}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c i.sh{display:inline}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c sup{font-size:.65em;margin-left:1px}:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec #mod-results .rb-c b.pt{color:#B26A00!important}}
 </style>
 </body>
 </html>
