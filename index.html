@@ -5784,7 +5784,7 @@ async function fetchData(m){
         await Promise.all(d.briefs.slice(0,3).map(b=>db.doc('briefsigs/'+b.id+'_'+m.staff).get().then(s=>{d.sigs[b.id]=s.exists}).catch(()=>{d.sigs[b.id]=null})))}).catch(()=>{}));
       {const t0=dayOf(now);let nx=addD(t0,1);while(fromIso(nx).getDay()===0||(fromIso(nx).getDay()===6&&fromIso(nx).getMonth()!==11))nx=addD(nx,1);
        tasks.push(Promise.all([t0,nx].map(x=>db.doc('cover/'+x).get().then(s=>s.exists?window.__D(s):null).catch(()=>null))).then(a=>{d.cv=a.filter(Boolean)}))}
-      tasks.push(db.collection('leavereq').where('staff','==',m.staff).get().then(sn=>{d.lv=sn.docs.map(x=>window.__D(x)).filter(v=>v&&v.staff===m.staff&&v.status==='approved')}).catch(()=>{}));
+      tasks.push(db.collection('leavereq').where('staff','==',m.staff).get().then(sn=>{const A=sn.docs.map(x=>Object.assign({_id:x.id},window.__D(x))).filter(v=>v&&v.staff===m.staff);d.lvAll=A;d.lv=A.filter(v=>v.status==='approved')}).catch(()=>{}));
       tasks.push((async()=>{try{const q=db.collection('invlog').where('sid','==',m.staff);const sn=await q.get();d.inv=sn.docs.map(x=>Object.assign({id:x.id},window.__D(x))).filter(v=>!v.sid||v.sid===m.staff).sort((a,b)=>String(b.from).localeCompare(String(a.from)))}catch(e){}})());
     }
     await Promise.all(tasks);
@@ -6252,6 +6252,8 @@ function bestsHTML(b){if(!b)return '';const sh=s=>{const d=fromIso(s);return d.g
 /* good streak: days worked in a row with a Contract Score of 96 or more, counting back from the last day worked */
 function flame(){const all=Object.keys((data&&data.days)||{}).filter(k=>myRow(data.days[k].rows)).sort();let n=0;
   for(let i=all.length-1;i>=0;i--){const s=dayP(myRow(data.days[all[i]].rows));if(s==null)continue;if(s<96-1e-9)break;n++}return n}
+window.addEventListener('sh:go',e=>{try{if(e.detail==='me'){const r=S().results;if(r&&r.updated)localStorage.setItem('pds_resSeen',String(r.updated))}
+  if(e.detail==='leave'){const L=((data&&data.lvAll)||[]).filter(v=>v.decidedAt).map(v=>v._id+v.decidedAt);let sl=[];try{sl=JSON.parse(localStorage.getItem('pds_lvSeen')||'[]')}catch(x){}localStorage.setItem('pds_lvSeen',JSON.stringify([...new Set(sl.concat(L))].slice(-60)))}}catch(x){}});
 async function homeCards(){
   const box0=document.getElementById('dh_cards');if(!box0)return;
   try{await load()}catch(e){}
@@ -6260,6 +6262,14 @@ async function homeCards(){
   const box=document.getElementById('dh_cards');if(!box||!me)return;
   const L=build();badge(unread(L));
   const todo=[],t=dayOf(new Date());
+  /* new results sent: shows until they open My results */
+  try{const r=S().results;if(r&&r.updated){let sn=null;try{sn=localStorage.getItem('pds_resSeen')}catch(e){}
+    if(sn===null){try{localStorage.setItem('pds_resSeen',r.updated)}catch(e){}}else if(sn!==String(r.updated))todo.push({ic:'results',t:'Your new results are in',s:'Tap to see how you went.',nav:'me'})}}catch(e){}
+  /* time off approved or declined in the last 2 weeks: shows until they open the Leave Calendar */
+  try{let sl=[];try{sl=JSON.parse(localStorage.getItem('pds_lvSeen')||'[]')}catch(e){}
+    for(const v of (data&&data.lvAll)||[]){if(v.status!=='approved'&&v.status!=='declined')continue;const at=v.decidedAt||'';if(!at||Date.now()-Date.parse(at)>14*864e5||sl.includes(v._id+at))continue;
+      const when=v.to&&v.to!==v.from?niceDay(v.from)+' to '+niceDay(v.to):niceDay(v.from);
+      todo.push(v.status==='approved'?{ic:'clock',t:'Your time off is approved',s:when+'.',nav:'leave'}:{ic:'clock',t:'Your time off was declined',s:when+'. Tap to see why.',nav:'leave'})}}catch(e){}
   try{const un=window.__ntUnread?window.__ntUnread():[];if(un.length)todo.push({ic:'brief',t:un.length>1?'Read '+un.length+' new updates':'Read the new update',s:String(un[0].title||''),nav:'updates'})}catch(e){}
   for(const c of (data&&data.cv)||[]){for(const it of c.items||[]){const mine=it.by===me.staff,help=(it.help||[]).some(x=>x.id===me.staff);if(!mine&&!help)continue;const when=c.date===t?'today':niceDay(c.date);
     todo.push({ic:'clock',t:(help?'You are helping on ':'You are covering ')+(it.run||'a run')+(c.date===t?' today':' on '+niceDay(c.date)),s:(it.offName||'The driver')+' is off. Tap to open the run sheet.',login:it.login||'',nav:'runs'})}}
