@@ -10968,7 +10968,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021535';
+const VERSION='1202611021555';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13150,7 +13150,7 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #cp_root#cp_root
     const fix=()=>{if(rec!==r||r.reset)return;const cur=document.querySelector('#sh-main .sh-sec:not([hidden])');if(cur!==r.sec)return;
       let n=r.el.isConnected?r.el:null;if(!n){try{const L=[...cur.querySelectorAll(r.sel)];n=L.find(x=>(x.textContent||'').trim().slice(0,40)===r.txt)||(L.length===1?L[0]:null)}catch(x){}}
       if(!n||!n.isConnected||!n.offsetParent)return;const d=n.getBoundingClientRect().top-r.top;if(Math.abs(d)>24){r.mine=true;sBy(0,d);r.mine=false}};
-    requestAnimationFrame(()=>{fix();setTimeout(fix,150);setTimeout(()=>{fix();if(rec===r)rec=null},450)})},true);
+    requestAnimationFrame(()=>{fix();setTimeout(fix,150);setTimeout(fix,450);setTimeout(()=>{fix();if(rec===r)rec=null},900)})},true);
 })();
 </script>
 <style id="clear-x">input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
@@ -13341,6 +13341,77 @@ html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.rb-tot,.cpm
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff.sh-sec .dmc-b[aria-pressed=true]{background:color-mix(in srgb,var(--cc) 16%,transparent);border:2px solid var(--cc)}
 :root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff.sh-sec .dmc-b[aria-pressed=true] span{color:var(--sh-ink)}
 @media (prefers-color-scheme:dark){html:not([data-theme=light]) body #mod-staff .dmc-b svg{filter:brightness(1.45)}}html[data-theme=dark] body #mod-staff .dmc-b svg{filter:brightness(1.45)}
+</style>
+<style id="tabcards-css">
+/* tab rows as cards: subheadings under the page name, and the tabs inside each page */
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs{display:grid!important;grid-template-columns:repeat(var(--tc,3),minmax(0,1fr))!important;gap:8px!important;padding:10px 16px!important;overflow:visible!important;background:transparent!important;border:0!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button{height:auto!important;width:auto!important;all:unset;box-sizing:border-box!important;cursor:pointer!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-height:64px!important;padding:8px 4px!important;border-radius:14px!important;background:var(--sh-surface)!important;border:1px solid var(--sh-line)!important;color:var(--sh-muted)!important;font-weight:800!important;font-size:.86rem!important;text-align:center!important;line-height:1.15!important;position:relative!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button[aria-current=page],:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button.on,:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button[aria-pressed=true]{background:rgba(242,120,45,.14)!important;border:2px solid #F2782D!important;color:var(--sh-ink)!important}
+:root.tabcards body .tcx-i{display:block!important;width:24px!important;height:24px!important;flex:none!important}
+:root.tabcards body .tcx-i svg{width:100%!important;height:100%!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linejoin:round!important;stroke-linecap:round!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button .tcx-i{color:var(--sh-muted)!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button:is([aria-current=page],.on,[aria-pressed=true]) .tcx-i{color:#F2782D!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button :is(.bdg,.nb){position:absolute!important;top:-7px!important;right:-3px!important;min-width:20px!important;height:20px!important;padding:0 5px!important;border-radius:99px!important;background:#E5484D!important;color:#fff!important;font-size:.7rem!important;line-height:20px!important;margin:0!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-utrow{display:block!important;width:100%!important}:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs{width:100%!important;box-sizing:border-box!important;margin:0!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #sh-tabs#sh-tabs .sh-hubtabs>button>:is(.bdg,.nb){left:auto!important;width:auto!important;max-width:none!important;inset:-7px -3px auto auto!important;display:block!important}
+
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]{display:flex!important;gap:4px!important;padding:4px!important;margin:4px 0 12px!important;background:var(--sh-sunk)!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;overflow:visible!important;flex-wrap:nowrap!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]>button{all:unset;box-sizing:border-box!important;cursor:pointer!important;flex:1 1 0!important;min-width:0!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;height:38px!important;padding:0 4px!important;border-radius:10px!important;font-weight:800!important;font-size:.84rem!important;color:var(--sh-muted)!important;background:transparent!important;border:0!important;box-shadow:none!important;white-space:nowrap!important;position:relative!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]>button[aria-pressed=true]{background:#F2782D!important;color:#fff!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]>button .tcx-i{display:none!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]>button :is(.n,small,span:not(.tcx-i)){position:static!important;min-width:18px!important;height:18px!important;padding:0 5px!important;border-radius:99px!important;background:#E5484D!important;color:#fff!important;font-size:.68rem!important;font-weight:800!important;line-height:18px!important;text-align:center!important;margin:0!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]>button[aria-pressed=true] :is(.n,small,span:not(.tcx-i)){background:rgba(255,255,255,.28)!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]:has(>button:nth-of-type(5)){flex-wrap:wrap!important}:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .tabs[role=group]:has(>button:nth-of-type(5))>button{flex:1 1 30%!important}
+</style>
+<script id="tabcards-js">
+(()=>{document.documentElement.classList.add('tabcards');const I={
+ enq:'<path d="M21 12a8 8 0 01-11.7 7.1L4 20l1-4.6A8 8 0 1121 12z"/><path d="M12 8v4M12 15.5v.5"/>',
+ ncr:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',
+ cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+ req:'<path d="M5 4h14v16l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 9h6M9 13h4"/>',
+ up:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+ tot:'<path d="M4 20V10M10 20V5M16 20v-8M21 20H3"/>',
+ lim:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+ cover:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 8h5M18.5 5.5v5"/>',
+ leave:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4"/>',
+ det:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 3.8-6 7-6s6 2 7 6"/>',
+ comp:'<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+ van:'<path d="M3 16V7h11v9M14 10h4l3 3v3h-7"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>',
+ due:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/>',
+ hist:'<path d="M4 12a8 8 0 108-8 8 8 0 00-6 2.7"/><path d="M4 4v4h4M12 8v4l3 2"/>',
+ inv:'<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+ ts:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 4v16"/>',
+ my:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+ sub:'<path d="M5 12l4 4 10-10"/>',
+ tpl:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+ pc:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 8l9 6 9-6"/>',
+ lk:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M15 6h2M15 12h2M15 18h2"/>',
+ ok:'<path d="M5 12l4 4 10-10"/>',
+ rev:'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/>',
+ bld:'<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/>',
+ ap:'<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 9h16M8 13h3"/>',
+ res:'<path d="M4 20V10M10 20V5M16 20v-8M21 20H3"/>',
+ nps:'<path d="M12 21s-7-4.4-9.3-9A5.2 5.2 0 0112 6.3 5.2 5.2 0 0121.3 12C19 16.6 12 21 12 21z"/>',
+ sum:'<path d="M4 19h16M6 15l4-4 3 3 5-6"/>',
+ rep:'<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/>',
+ fb:'<path d="M4 5h16v11H9l-5 4z"/>',
+ new:'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>',
+ open:'<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 9h16"/>',
+ runs:'<path d="M9 4l-5 2v14l5-2 6 2 5-2V4l-5 2z"/><path d="M9 4v14M15 6v14"/>',
+ sorts:'<path d="M4 6h16M4 12h10M4 18h6"/><path d="M18 14v6M15 17l3 3 3-3"/>',
+ upd:'<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M8 10h8M8 14h5"/>',
+ brief:'<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16l1.5 1.5L13 15"/>',
+ all:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>'};
+ const K=[[/^run sheets?/i,'runs'],[/^sort sheets?/i,'sorts'],[/^updates?/i,'upd'],[/brief/i,'brief'],[/^enquir/i,'enq'],[/^ncr/i,'ncr'],[/^calendar/i,'cal'],[/^requests?/i,'req'],[/^upcoming/i,'up'],[/^totals?/i,'tot'],[/^limits?/i,'lim'],[/cover/i,'cover'],[/^leave/i,'leave'],[/^details/i,'det'],[/^compliance/i,'comp'],[/^van/i,'van'],[/who.?s due/i,'due'],[/history/i,'hist'],[/^invoices?/i,'inv'],[/^timesheets?/i,'ts'],[/^my times/i,'my'],[/^submitted/i,'sub'],[/^templates?/i,'tpl'],[/^precards?/i,'pc'],[/locker/i,'lk'],[/^approved/i,'ok'],[/under review/i,'rev'],[/^building/i,'bld'],[/australia post/i,'ap'],[/^results?/i,'res'],[/^nps/i,'nps'],[/^summary/i,'sum'],[/^reports?/i,'rep'],[/^feedback/i,'fb'],[/^new/i,'new'],[/^open/i,'open'],[/^all/i,'all']];
+ let q=0;function run(){q=0;document.documentElement.classList.add('tabcards');
+  document.querySelectorAll('#sh-tabs .sh-hubtabs, #sh-main .sh-sec .tabs[role=group]').forEach(g=>{const bs=[...g.children].filter(x=>x.tagName==='BUTTON');g.style.setProperty('--tc',Math.min(bs.length,5));
+   bs.forEach(b=>{if(b.querySelector(':scope>.tcx-i'))return;const t=(b.textContent||'').trim();const k=(K.find(([r])=>r.test(t))||[])[1];if(!k)return;const s=document.createElement('span');s.className='tcx-i';s.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+I[k]+'</svg>';b.prepend(s)})})}
+ const soon=()=>{if(!q)q=requestAnimationFrame(run)};try{new MutationObserver(soon).observe(document.body,{childList:true,subtree:true});new MutationObserver(soon).observe(document.documentElement,{attributes:true,attributeFilter:['class']})}catch(e){}setTimeout(run,300)})();
+</script>
+<style id="seg-bar">
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .seg[role=group]{display:flex!important;gap:4px!important;padding:4px!important;margin:4px 0 12px!important;background:var(--sh-sunk)!important;border:1px solid var(--sh-line)!important;border-radius:14px!important;width:100%!important;box-sizing:border-box!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .seg[role=group]>button{all:unset;box-sizing:border-box!important;cursor:pointer!important;flex:1 1 0!important;display:flex!important;align-items:center!important;justify-content:center!important;height:38px!important;border-radius:10px!important;font-weight:800!important;font-size:.88rem!important;color:var(--sh-muted)!important;background:transparent!important;border:0!important;box-shadow:none!important}
+:root:root:root:root:root:root:root:root.tabcards body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .seg[role=group]>button[aria-pressed=true]{background:#F2782D!important;color:#fff!important}
 </style>
 </body>
 </html>
