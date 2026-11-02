@@ -87,6 +87,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 #sh-main #mod-enquiries .eq-pcs .eq-pc .l{font-weight:800;font-size:.95rem;background:none!important;color:inherit!important;padding:0!important}
 #sh-main #mod-enquiries .eq-pcs .eq-pc .c{font-weight:800;font-size:.7rem;line-height:1.5;background:#D93025!important;color:#fff!important;border-radius:999px;min-width:1.5em;padding:0 4px;text-align:center}
 #sh-main #mod-enquiries .eq-pcs .eq-pc[aria-pressed=true]{border-color:#F2782D!important;background:rgba(242,120,45,.14)!important;box-shadow:0 0 0 2px rgba(242,120,45,.3)}#sh-main #mod-enquiries .eqx.nx>.eq-tabhint{order:1}
+#sh-main #mod-enquiries select.need{border-color:#D93025!important;box-shadow:0 0 0 2px rgba(217,48,37,.2)}
 #mod-enquiries .eq-fsend{border-top:1px solid var(--sh-line);margin-top:14px;padding-top:12px}
 #mod-enquiries .eq-ffoot{flex-wrap:wrap}
 :is(#mod-enquiries,#mod-myenq) .eq-th{display:flex;flex-direction:column;gap:8px;margin:8px 0 10px}
@@ -1206,7 +1207,7 @@ setInterval(()=>{try{if(document.visibilityState==='visible')newsBadge()}catch(e
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nav="updates"]'))window.__uvTapped=true},true);
 function applyNavBadges(){try{newsBadge()}catch(e){}try{adminGlance()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries','enqresp','dec','ind'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;if(on)setBell(tot);document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0):0;document.querySelectorAll(`[data-nav="${k}"]:not([data-hubn])`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}document.querySelectorAll('[data-hubn]').forEach(b=>{const n=on?b.dataset.hubn.split(',').reduce((a,k)=>a+(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0),0):0;let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t})}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
-  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>{const s=String(v.offSeen||'');const lf=v.lastFrom||(v.respAt?'d':'o'),la=String(v.lastAt||v.respAt||'');return !v.closedAt&&((lf==='d'&&s<la)||(!!v.ack&&s<String(v.ack)))}]];
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>{const me=window.__webMe||{},mid=String(me.ownStaff||me.staff||'');if(v.handlerStaff&&mid&&v.handlerStaff!==mid)return false;const s=String(v.offSeen||'');const lf=v.lastFrom||(v.respAt?'d':'o'),la=String(v.lastAt||v.respAt||'');return !v.closedAt&&((lf==='d'&&s<la)||(!!v.ack&&s<String(v.ack)))}]];
   try{db.collection('staff').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&(v.onbCopiedAt||v.onboard==='done')&&!v.indAt)ids.push(d.id)}window.__indIds=ids;window.__navN.ind=ids.length;applyNavBadges()},()=>{})}catch(e){}
   try{db.collection('onboard').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(!v)continue;
       const a=v.d&&v.d.apSig&&v.status==='submitted'?{at:v.d.apAt||v.submittedAt,rep:v.repSig}:null,b=v.dec&&v.dec.sig?{at:v.dec.at,rep:v.dec.repSig}:null;const c=b&&(!a||String(b.at)>String(a.at))?b:a;
@@ -7858,20 +7859,20 @@ function resHTML(L){const total=enqs().length;
    :`<div class="empty">${eqTab==='todo'&&!qDriver.trim()?'✓ Nothing needs action. Every enquiry has an outcome and no conversations are open.':qDriver.trim()||onlyFault?'Nothing matches that search.':!total?'No enquiries recorded yet. Press + Enquiry.':eqTab==='done'?'No finished enquiries in this period. Pick another month, or All.':'No enquiries in this period.'}</div>`}`;
 }
 function formHTML(){
-  const r=draft;const isNew=!r.id;
+  const r=draft;const isNew=!r.id;if(!r.supervisor){const o=PCOWN.find(([k])=>k===pcOf(r));if(o)r.supervisor=o[1]}
   return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="cancel">‹ Enquiries</button>
   <section class="card"><h2>${isNew?'+ Enquiry':'Edit enquiry'}</h2>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   ${busy?`<p class="msg">${esc(busy)}</p>`:''}
   <label class="sh-btn primary up">Fill in from the case PDF<input type="file" id="eq_pdf" accept="application/pdf" hidden></label>
   <div class="grid">
+   <label class="f" for="eq_sup">Handled by<select id="eq_sup" class="${r.supervisor?'':'need'}"><option value="">Pick who is handling it</option>${handlerNames().map(n=>`<option ${r.supervisor===n?'selected':''}>${esc(n)}</option>`).join('')}${r.supervisor&&!handlerNames().includes(r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
    <label class="f" for="eq_drv">Driver<select id="eq_drv"><option value="">Pick the driver</option>${staff.filter(p=>p.login).map(p=>`<option value="${esc(p.login)}" ${r.login===p.login?'selected':''}>${esc(p.name)}</option>`).join('')}${r.login&&!byLogin(r.login)?`<option value="${esc(r.login)}" selected>${esc(r.driver||r.login)}</option>`:''}</select></label>
    <label class="f" for="eq_date">Date<input type="date" id="eq_date" value="${esc(r.date||today())}"></label>
    <label class="f" for="eq_case">Case number<input type="text" id="eq_case" value="${esc(r.caseNo||'')}" inputmode="numeric"></label>
    <label class="f wide" for="eq_addr">Addressee address<input type="text" id="eq_addr" value="${esc(r.address||'')}" placeholder="16 Barnett Place, Molendinar 4214"></label>
   </div>
   <details class="eq-more" ${r.id||r.caseNo?'':''}><summary>More details <small>(the PDF fills these in)</small></summary><div class="grid">
-   <label class="f" for="eq_sup">Supervisor<select id="eq_sup"><option value="">Pick</option>${supervisors().map(p=>`<option ${r.supervisor===p.name?'selected':''}>${esc(p.name)}</option>`).join('')}${r.supervisor&&!supervisors().some(p=>p.name===r.supervisor)?`<option selected>${esc(r.supervisor)}</option>`:''}</select></label>
    <label class="f" for="eq_type">Enquiry type<input type="text" id="eq_type" value="${esc(r.enqType||'')}" placeholder="Disputed delivery scan"></label>
    <label class="f" for="eq_cat">Parcel category<input type="text" id="eq_cat" value="${esc(r.category||'')}" placeholder="Parcel Post"></label>
    <label class="f" for="eq_cust">Customer<input type="text" id="eq_cust" value="${esc(r.customer||'')}"></label>
@@ -7942,8 +7943,8 @@ async function sendDrv(id,kind,remind){const r=recs[id];if(!r)return;const p=byL
   let pics=[];if(kind!=='ncr'&&r.pics){if(!eImgs[id]){try{const q=await db.collection('enqimg').where('enq','==',id).get();eImgs[id]=q.docs.map(d=>Object.assign({id:d.id},__D(d))).filter(x=>x&&x.data)}catch(x){eImgs[id]=[]}}
     pics=(eImgs[id]||[]).map(x=>({id:x.id,name:x.name}));for(const x of pics){try{await db.doc('enqimg/'+x.id).update({sid:p.id})}catch(e){}}}
   let doc;
-  if(old){doc=Object.assign(clone(old),snapOf(r,kind),{pics});delete doc.id}
-  else{const note=String(sendOpt.note||'').trim();doc=Object.assign({kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',need:sendOpt.need,msgs:note?[{f:'o',t:note,at:now}]:[],lastFrom:'o',lastAt:now,ack:'',seenAt:'',offSeen:'',closedAt:'',outcome:''},snapOf(r,kind),{pics})}
+  if(old){doc=Object.assign(clone(old),snapOf(r,kind),{pics},handlerOf(r));delete doc.id}
+  else{const note=String(sendOpt.note||'').trim();doc=Object.assign({kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',need:sendOpt.need,msgs:note?[{f:'o',t:note,at:now}]:[],lastFrom:'o',lastAt:now,ack:'',seenAt:'',offSeen:'',closedAt:'',outcome:''},snapOf(r,kind),{pics},handlerOf(r))}
   msg={t:'Sending…'};render();
   try{await db.doc('drvenq/'+id).set(doc);DRV[id]=Object.assign({id},doc)}catch(x){msg={err:true,t:'Could not send it just now. Check your connection.'};render();return}
   {const e=$('snote');if(e){e.value='';e.blur()}}
@@ -7965,6 +7966,9 @@ async function loadOldOpen(){try{const add=d=>{if(!d)return;const v=Object.assig
   /* driver copies whose enquiry or NCR was deleted earlier are removed, so they leave the driver's phone too */
   for(const [id,D] of Object.entries(DRV)){if(recs[id])continue;try{const g=await db.doc('enqlog/'+id).get();const v=g&&g.exists!==false?__D(g):null;if(v){if(!D.closedAt)add(Object.assign(g,{id}))}else await dropAll(id)}catch(x){}}
   render()}catch(x){}}
+/* who handles an enquiry or NCR: chosen on the form, or the owner of its postcode. Driver replies only ding that person. */
+const handlerNames=()=>[...new Set(PCOWN.map(x=>x[1]).concat(supervisors().map(p=>p.name)))];
+function handlerOf(r){const name=r.supervisor||((PCOWN.find(([k])=>k===pcOf(r))||[])[1])||'';const p=staff.find(x=>x.name.toLowerCase()===name.toLowerCase());return{handler:name,handlerStaff:p?p.id:''}}
 /* deleting an enquiry or NCR also removes the driver's copy (so it disappears from their phone) and its pictures and files */
 async function dropAll(id){try{await db.doc('drvenq/'+id).delete()}catch(x){}delete DRV[id];delete eImgs[id];
   for(const f of ['enq','ncr']){try{const q=await db.collection('enqimg').where(f,'==',id).get();for(const d of q.docs)try{await db.doc('enqimg/'+d.id).delete()}catch(x){}}catch(x){}}}
@@ -8062,6 +8066,7 @@ document.addEventListener('click',async ev=>{
   if(a==='print'){printList();return}
   if(a==='save'||a==='savesend'){const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
+    if(!r.supervisor){msg={err:true,t:'Pick who is handling this enquiry. Driver replies only ding them.'};render();window.scrollTo(0,0);return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
       events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
@@ -8069,6 +8074,7 @@ document.addEventListener('click',async ev=>{
       /* pictures from the PDF (maps and scan photo) are kept beside the enquiry and only download when it is opened */
       if(r._imgs){try{const old=await db.collection('enqimg').where('enq','==',id).get();for(const d of old.docs)await db.doc('enqimg/'+d.id).delete()}catch(x){}
         let k=0;for(const im of r._imgs){if(String(im.data).length>900000)continue;try{await db.doc('enqimg/'+id+'_p'+(k++)).set({enq:id,name:im.name,type:'image/jpeg',data:im.data,eat:now})}catch(x){}}delete eImgs[id]}
+      if(DRV[id]){const h=handlerOf(doc);if(DRV[id].handlerStaff!==h.handlerStaff||DRV[id].handler!==h.handler){try{await db.doc('drvenq/'+id).update(h);Object.assign(DRV[id],h)}catch(x){}}}
       recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Nothing has gone to the driver yet. Send it from here when you are ready.')}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
     if(andSend&&!DRV[id])await sendDrv(id,'enq',false);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
@@ -10899,7 +10905,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611021212';
+const VERSION='1202611021218';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();

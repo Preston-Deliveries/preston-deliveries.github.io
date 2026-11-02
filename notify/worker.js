@@ -117,6 +117,11 @@ export default {
         else filter = null; // everyone
       }
       let phones = await findPhones(filter, idToken);
+      /* a driver's reply to an enquiry or NCR only dings the person handling it (everyone in the office if they have no phone set up) */
+      if ((b.kind === 'enqreply' || b.kind === 'ncrreply') && /^[A-Za-z0-9_-]{1,50}$/.test(String(b.id || ''))) {
+        const d = await getDoc('drvenq/' + b.id, idToken).catch(() => null);
+        if (d && d.handlerStaff) { const ph = await findPhones(eq('staff', String(d.handlerStaff)), idToken).catch(() => []); if (ph.length) phones = ph; }
+      }
       if (K.notMe) phones = phones.filter(p => p.email !== me.email);
       if (!phones.length) return out({ ok: true, sent: 0, skipped: 'Nobody has notifications turned on yet' });
 
