@@ -32,7 +32,9 @@ const KINDS = {
   leave:    { who: 'member', to: 'admins', title: 'Day off request', body: 'A driver has asked for time off. Tap to view.', url: '#leave' },
   invoice:  { who: 'member', to: 'admins', title: 'New invoice', body: 'A driver has submitted an invoice. Tap to view.', url: '#invoices' },
   clockon:  { who: 'member', to: 'admins', title: 'Clocked on', body: 'A driver has clocked on.', url: '#timesheets', notMe: true },
-  clockoff: { who: 'member', to: 'admins', title: 'Clocked off', body: 'A driver has clocked off.', url: '#timesheets', notMe: true }
+  clockoff: { who: 'member', to: 'admins', title: 'Clocked off', body: 'A driver has clocked off.', url: '#timesheets', notMe: true },
+  enqreply: { who: 'member', to: 'admins', title: 'Enquiry response', body: 'A driver has responded to an enquiry. Tap to view.', url: '#enquiries' },
+  ncrreply: { who: 'member', to: 'admins', title: 'NCR response', body: 'A driver has responded to an NCR. Tap to view.', url: '#ncr' }
 };
 /* what each driver message says when we know who sent it (drivers can never write the words themselves) */
 const WHO_SAYS = {
@@ -40,7 +42,9 @@ const WHO_SAYS = {
   feedback: n => n + ' has sent feedback. Tap to view.',
   uniform: n => n + ' has ordered uniform. Tap to view.',
   leave: n => n + ' has asked for time off. Tap to view.',
-  invoice: n => n + ' has submitted an invoice. Tap to view.'
+  invoice: n => n + ' has submitted an invoice. Tap to view.',
+  enqreply: n => n + ' has responded to an enquiry. Tap to view.',
+  ncrreply: n => n + ' has responded to an NCR. Tap to view.'
 };
 const DN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const niceDay = s => { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(s || ''))) return ''; const d = new Date(s + 'T12:00:00Z'); return DN[d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + MN[d.getUTCMonth()]; };

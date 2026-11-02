@@ -41,6 +41,59 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 @media (max-width:600px){#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn{min-width:0!important;padding-left:6px!important;padding-right:6px!important}#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:has(.ix-print),#sh-main #mod-invoices .ivk .sv-r .bt .iv-del{flex:0 0 42px!important}#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:not(.iv-del):not(:has(.ix-print)) .ix,#sh-main #mod-invoices .ivk .sv-r .bt .sh-btn:not(.iv-del):not(:has(.ix-print))::before{display:none!important}#sh-main #mod-invoices .ivk .iv-tabs .iv-t{display:inline-flex!important;flex-wrap:nowrap!important;align-items:center;justify-content:center;gap:4px;white-space:nowrap!important;padding-left:4px!important;padding-right:4px!important;min-width:0}}
 #mod-staff .av-ok{color:#15803D;font-weight:700}#mod-staff .av-old{color:#C2410C;font-weight:700}#mod-staff .av-none{color:var(--sh-muted)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .av-ok{color:#4ADE80}:root:not([data-theme=light]) #mod-staff .av-old{color:#FB923C}}:root[data-theme=dark] #mod-staff .av-ok{color:#4ADE80}:root[data-theme=dark] #mod-staff .av-old{color:#FB923C}</style>
+<style id="enq-drv">
+:is(#mod-enquiries,#mod-myenq) .eq-flags{border:1px solid #F5B7A8;background:#FDECE8;color:#8A2A12;border-radius:12px;padding:10px 12px;margin:0 0 12px}
+:is(#mod-enquiries,#mod-myenq) .eq-flags p{margin:2px 0;font-weight:700;font-size:.95rem}
+:is(#mod-enquiries,#mod-myenq) .eq-ev summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;list-style:none}
+:is(#mod-enquiries,#mod-myenq) .eq-ev summary small{color:var(--sh-muted);font-weight:500}
+:is(#mod-enquiries,#mod-myenq) .eq-ev ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+:is(#mod-enquiries,#mod-myenq) .eq-ev li{display:flex;flex-direction:column;padding:7px 10px;border-left:3px solid var(--sh-line);border-radius:4px}
+:is(#mod-enquiries,#mod-myenq) .eq-ev li b{font-size:.92rem}
+:is(#mod-enquiries,#mod-myenq) .eq-ev li small{color:var(--sh-muted);font-size:.82rem}
+:is(#mod-enquiries,#mod-myenq) .eq-ev li.key{border-left-color:#F2782D;background:rgba(242,120,45,.10)}
+:is(#mod-enquiries,#mod-myenq) .eq-ev li.out em{color:#C2410C;font-style:normal;font-weight:700}
+:is(#mod-enquiries,#mod-myenq) .eq-pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+:is(#mod-enquiries,#mod-myenq) .eq-pg button{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:4px;border:1px solid var(--sh-line);border-radius:10px;overflow:hidden;background:var(--sh-surface)}
+:is(#mod-enquiries,#mod-myenq) .eq-pg img{width:100%;height:120px;object-fit:cover;display:block}
+:is(#mod-enquiries,#mod-myenq) .eq-pg small{padding:0 8px 8px;font-size:.8rem;color:var(--sh-muted);line-height:1.3}
+.eq-lb{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px}
+.eq-lb img{max-width:100%;max-height:78vh;border-radius:8px;object-fit:contain}
+.eq-lb p{color:#fff;margin:0;text-align:center;font-size:.9rem}
+:is(#mod-enquiries,#mod-myenq) .eq-resp{border-left:4px solid #1E8A4C;background:rgba(30,138,76,.08);border-radius:6px;padding:10px 12px;margin:6px 0 8px}
+:is(#mod-enquiries,#mod-myenq) .eq-resp p{margin:0 0 4px;white-space:normal}
+:is(#mod-enquiries,#mod-myenq) .eq-resp small{color:var(--sh-muted)}
+:is(#mod-enquiries,#mod-myenq) .eq-drv .b,#mod-myenq .my-r .b{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+#mod-enquiries .eq-st{display:inline-block;border-radius:999px;padding:1px 9px;font-weight:700;font-size:.78rem}
+#mod-enquiries .eq-st.wait{background:rgba(224,165,38,.18);color:#8A5A00}
+#mod-enquiries .eq-st.new{background:#D93025;color:#fff}
+#mod-enquiries .eq-st.ok{background:rgba(30,138,76,.15);color:#15703D}
+#mod-myenq .my-x{display:flex;flex-direction:column;gap:12px;max-width:900px;margin:0 auto;padding:12px 16px 24px;box-sizing:border-box}
+#mod-myenq .my-x>.back{align-self:flex-start}
+#mod-myenq .my-x .head h1{margin:4px 0 0;font-size:1.4rem}
+#mod-myenq .card{background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:14px;box-sizing:border-box;width:100%}
+#mod-myenq .my-i{all:unset;cursor:pointer;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:14px;padding:12px 14px;width:100%}
+#mod-myenq .my-i.due{border-left:4px solid #D93025}
+#mod-myenq .my-i .t,#mod-myenq .card .t{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#mod-myenq .my-i small{color:var(--sh-muted)}
+#mod-myenq .card h2{margin:0;font-size:1.1rem}
+#mod-myenq .my-st{flex:none;border-radius:999px;padding:2px 10px;font-weight:700;font-size:.78rem}
+#mod-myenq .my-st.due{background:#D93025;color:#fff}
+#mod-myenq .my-st.ok{background:rgba(30,138,76,.15);color:#15703D}
+#mod-myenq .my-h{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sh-muted);margin:8px 2px 0}
+#mod-myenq .my-ok{background:rgba(30,138,76,.1);color:#15703D;border-radius:12px;padding:12px 14px;font-weight:700}
+#mod-myenq .my-old summary{cursor:pointer;font-weight:700;padding:10px 2px;color:var(--sh-muted)}
+#mod-myenq .my-old .my-i{margin-top:8px}
+#mod-myenq .kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:10px 0 0}
+#mod-myenq .kv dt{color:var(--sh-muted);font-size:.88rem}#mod-myenq .kv dd{margin:0}
+#mod-myenq .lbl{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--sh-muted);font-weight:700;margin-bottom:4px}
+#mod-myenq .my-p{margin:0;line-height:1.5}
+#mod-myenq textarea{width:100%;box-sizing:border-box;font:inherit;border-radius:10px;border:1px solid var(--sh-line);padding:10px;background:var(--sh-bg,transparent);color:inherit;margin-top:6px}
+#mod-myenq .brk{word-break:break-all}
+#mod-myenq .empty{padding:24px 12px;text-align:center;color:var(--sh-muted)}
+#mod-myenq .msg{margin:0;padding:10px 12px;border-radius:10px;background:rgba(30,138,76,.12)}#mod-myenq .msg.err{background:rgba(217,48,37,.12)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) :is(#mod-enquiries,#mod-myenq) .eq-flags{background:rgba(217,48,37,.15);border-color:rgba(217,48,37,.45);color:#FCA5A5}:root:not([data-theme=light]) #mod-myenq .my-st.ok,:root:not([data-theme=light]) #mod-enquiries .eq-st.ok,:root:not([data-theme=light]) #mod-myenq .my-ok{color:#4ADE80}:root:not([data-theme=light]) #mod-enquiries .eq-st.wait{color:#FCD34D}}
+:root[data-theme=dark] :is(#mod-enquiries,#mod-myenq) .eq-flags{background:rgba(217,48,37,.15);border-color:rgba(217,48,37,.45);color:#FCA5A5}:root[data-theme=dark] #mod-myenq .my-st.ok,:root[data-theme=dark] #mod-enquiries .eq-st.ok,:root[data-theme=dark] #mod-myenq .my-ok{color:#4ADE80}:root[data-theme=dark] #mod-enquiries .eq-st.wait{color:#FCD34D}
+</style>
 </head>
 <body><style id="onb-admin">#mod-staff .dm-onbck>span{flex:1;min-width:0}#mod-staff .dm-tk{display:block;margin-top:3px;font-size:.82em;opacity:.7}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .dm-onbst{background:rgba(240,160,112,.16);color:#F5A97A}}:root[data-theme=dark] #mod-staff .dm-onbst{background:rgba(240,160,112,.16);color:#F5A97A}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .dm-onbst.ok{background:rgba(111,212,154,.16);color:#7FE0A8}}:root[data-theme=dark] #mod-staff .dm-onbst.ok{background:rgba(111,212,154,.16);color:#7FE0A8}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .dm-onbst.go{background:rgba(141,184,240,.16);color:#A9C8F5}}:root[data-theme=dark] #mod-staff .dm-onbst.go{background:rgba(141,184,240,.16);color:#A9C8F5}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #mod-staff .dm-apw{background:rgba(240,160,112,.14);color:#F5B48C}}:root[data-theme=dark] #mod-staff .dm-apw{background:rgba(240,160,112,.14);color:#F5B48C}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #onb .ob-pv{background:rgba(245,169,122,.16);color:#F5B48C}}:root[data-theme=dark] #onb .ob-pv{background:rgba(245,169,122,.16);color:#F5B48C}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) #onb .ob-note{background:rgba(245,169,122,.1)}}:root[data-theme=dark] #onb .ob-note{background:rgba(245,169,122,.1)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ps-gst.on{background:rgba(111,212,154,.16);color:#7FE0A8}}:root[data-theme=dark] .ps-gst.on{background:rgba(111,212,154,.16);color:#7FE0A8}#mod-staff .dm-up{cursor:pointer}#mod-staff .dm-agn{background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer;font:inherit}#mod-staff .dm-indd{margin:8px 0 12px;border:1px solid rgba(127,127,127,.3);border-radius:12px;padding:0 12px}#mod-staff .dm-indd>summary{cursor:pointer;font-weight:700;padding:12px 0;list-style:none;display:flex;align-items:center;gap:8px}#mod-staff .dm-indd>summary::-webkit-details-marker{display:none}#mod-staff .dm-indd>summary::before{content:'▸';transition:transform .15s}#mod-staff .dm-indd[open]>summary::before{transform:rotate(90deg)}#mod-staff .dm-indn2{font-weight:400;opacity:.75}.ps-gst{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;font-weight:700;padding:4px 10px;border-radius:999px;margin-top:6px;vertical-align:middle}.ps-gst.on{background:rgba(30,142,78,.16);color:#2FB36A}.ps-gst.off{background:rgba(127,127,127,.16);color:inherit}#iv_sum .ps .hd .ps-gst,.who .ps-gst{display:inline-flex;width:max-content;align-self:flex-start}.iw-gst{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:rgba(30,142,78,.12);border-radius:10px;padding:8px 12px;margin:4px 0 12px;font-size:.95rem}#mod-staff .dm-indg{margin:12px 0 2px;font-size:.92rem}#mod-staff .dm-indsig canvas{display:block;width:100%;max-width:520px;aspect-ratio:3/1;border:2px dashed rgba(127,127,127,.5);border-radius:10px;background:#fff;touch-action:none;margin:6px 0 4px}#mod-staff .dm-indsig b{display:block;margin-top:12px}#mod-staff .dm-inddec{font-size:.92rem;background:rgba(127,127,127,.08);border-radius:10px;padding:10px 12px;margin:8px 0}#mod-staff .dm-lnk{background:none;border:0;color:#C2410C;text-decoration:underline;padding:4px 0;cursor:pointer;font:inherit;font-size:.9rem}#mod-staff .dm-ap{border:1px solid rgba(127,127,127,.3);border-radius:14px;padding:14px;margin:14px 0}#mod-staff .dm-ap h3{margin:0 0 8px;font-size:1.05rem;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#mod-staff .dm-apw{background:rgba(194,65,12,.12);color:#9A3412;padding:8px 10px;border-radius:10px}#mod-staff .dm-appad canvas{display:block;width:100%;max-width:520px;aspect-ratio:3/1;border:2px dashed rgba(127,127,127,.5);border-radius:10px;background:#fff;touch-action:none;margin:6px 0 10px}#mod-staff .dm-onba a.sh-btn{text-decoration:none}#mod-staff .dm-newh{background:rgba(26,74,143,.08);border-radius:12px;padding:12px 14px;margin:6px 0 4px;line-height:1.45}#mod-staff .dm-onb,#mod-staff .dm-ind{border:1px solid rgba(127,127,127,.3);border-radius:14px;padding:14px;margin:14px 0}#mod-staff .dm-onb h3,#mod-staff .dm-ind h3{margin:0 0 8px;font-size:1.05rem;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#mod-staff .dm-onbst{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(194,65,12,.12);color:#C2410C}#mod-staff .dm-onbst.ok{background:rgba(30,142,78,.14);color:#1E8E4E}#mod-staff .dm-onbst.go{background:rgba(26,74,143,.14);color:#1A4A8F}#mod-staff .dm-onba{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}#mod-staff .dm-onbt{margin:8px 0 12px;font-size:.95rem}#mod-staff .dm-onbr{padding:7px 0;border-bottom:1px solid rgba(127,127,127,.15)}#mod-staff .dm-onbr span{display:block;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.6}#mod-staff .dm-onbr b{font-weight:500}#mod-staff .dm-onbi{display:flex;flex-wrap:wrap;gap:10px}#mod-staff .dm-onbi figure{margin:0;width:150px}#mod-staff .dm-onbi img{width:150px;height:110px;object-fit:cover;border-radius:8px;border:1px solid rgba(127,127,127,.3);background:#fff;cursor:zoom-in}#mod-staff .dm-onbi figcaption{font-size:.78rem;opacity:.75;margin-top:2px}#mod-staff .dm-onbm pre{white-space:pre-wrap;font:inherit;font-size:.9rem;background:rgba(127,127,127,.1);padding:10px;border-radius:10px}#mod-staff .dm-indl{list-style:none;padding:0;margin:8px 0 12px}#mod-staff .dm-indl li{padding:6px 0;border-bottom:1px solid rgba(127,127,127,.15)}#mod-staff .dm-indl label{display:flex;gap:10px;align-items:flex-start;font-size:.95rem;cursor:pointer}#mod-staff .dm-indl input{width:20px;height:20px;flex:0 0 auto}#mod-staff .dm-onbck{display:flex;gap:10px;align-items:flex-start;margin:12px 0;font-size:.95rem}#mod-staff .dm-onbck input{width:20px;height:20px;flex:0 0 auto}</style><style id="onb-css">#onb .ob-ok{color:#1E8E4E;font-weight:700}#onb input[disabled]+*{opacity:.6}#onb .ob-fd{width:100%;margin:6px 0 16px}#onb .ob-tip{font-size:.88rem;margin:6px 0 0}#onb .ob-note{background:rgba(194,65,12,.1);border-left:4px solid #C2410C;border-radius:8px;padding:10px 12px;margin:10px 0 14px;line-height:1.45}#onb .ob-bring{list-style:none;padding:0;margin:8px 0 14px}#onb .ob-bring li{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(127,127,127,.18);line-height:1.4}#onb .ob-bring li>span{font-size:1.4rem;line-height:1.2}#onb .ob-dec{border:1px solid rgba(127,127,127,.35);border-radius:12px;padding:12px 14px;margin:10px 0 16px;font-size:.9rem;line-height:1.45;max-height:46vh;overflow:auto;background:rgba(127,127,127,.06)}#onb .ob-dec h2{font-size:1rem;margin:0 0 8px}#onb .ob-dec p{margin:0 0 8px}#onb .ob-dec ul{margin:0 0 8px;padding-left:20px}#onb .ob-dec li{margin:0 0 5px}#onb [data-obx=push]{margin:4px 0 16px}#onb .ob-top{position:relative}#onb .ob-x{margin-left:auto;background:none;border:0;color:inherit;font-size:1.3rem;line-height:1;padding:6px 10px;cursor:pointer}#onb .ob-pv{background:#FFF4E5;color:#9A3412;font-weight:600;font-size:.9rem;text-align:center;padding:8px 12px;border-radius:10px;margin:8px 12px 0}body.onb-on{overflow:hidden}#onb{position:fixed;inset:0;z-index:100000;background:var(--sh-bg,#F2F4F7);color:var(--sh-ink,#14201D);display:flex;justify-content:center;font-family:var(--sh-body,system-ui,sans-serif)}
 #onb .ob-pn{width:100%;max-width:640px;display:flex;flex-direction:column;height:100%;background:var(--sh-surface,#fff)}
@@ -364,6 +417,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 <section class="sh-sec" id="mod-clock" hidden><div class="ckx" id="ck_page"></div></section>
 <section class="sh-sec" id="mod-summary" hidden><div id="sm_root"></div></section>
 <section class="sh-sec" id="mod-vchecks" hidden><div id="vc_root"></div></section>
+<section class="sh-sec" id="mod-myenq" hidden><div id="my_root"></div></section>
 <section class="sh-sec" id="mod-feedback" hidden><div id="fb_root"></div></section>
 <section class="sh-sec" id="mod-cover" hidden><div id="cv_root"></div></section>
 <section class="sh-sec" id="mod-review" hidden><div id="rv_root"></div></section>
@@ -769,7 +823,7 @@ try{localStorage.removeItem('uv1161')}catch(e){}
 let SNAP={};
 try{SNAP=JSON.parse(document.getElementById('snapshot').textContent)||{}}catch(e){SNAP={}}
 SNAP.updated=SNAP.updated||{};
-const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'Updates and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','ncr','clock']},{k:'team',name:'Team',secs:['leave','cover','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices','reports','review','boss','compliance','tasks']}];
+const GROUPS=[{k:'start',name:'Start',secs:['home','alerts','me','summary','menu']},{k:'road',name:'On the road',secs:['sort','runs','precards','lockers']},{k:'news',name:'Updates and guides',secs:['updates','briefs','guide']},{k:'perf',name:'Performance',secs:['results','survey','enquiries','ncr','myenq','clock']},{k:'team',name:'Team',secs:['leave','cover','directory','feedback','vchecks']},{k:'admin',get name(){return role==='mgr'?'Admin':'Orders and pay'},secs:['staff','timesheets','uniform','invoices','reports','review','boss','compliance','tasks']}];
 const SECS=GROUPS.flatMap(g=>g.secs);
 /* Run sheets follow the Drivers page: driver number (and login) -> the person on it now */
 window.__runGrpFrom=list=>{const m={};for(const p of list||[]){if(!p.grp)continue;String(p.no||'').split(/[,\s]+/).concat([p.login]).forEach(k=>{k=String(k||'').toUpperCase().replace(/\s+/g,'');if(k)m[k]=p.grp})}return m};
@@ -780,7 +834,7 @@ const GROUP_OF=Object.fromEntries(GROUPS.flatMap(g=>g.secs.map(s=>[s,g.k])));
 const MGR_ONLY=['staff','enquiries','ncr','summary','vchecks','timesheets','precards','lockers','sort','cover','review','boss','compliance','tasks'];
 /* drivers get a simpler app: their own results only, and a Menu page instead of the long list */
 const DRV_HIDE=['results','survey'];
-const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform'];
+const DRV_MENU=['runs','reports','guide','feedback','leave','invoices','directory','uniform','myenq'];
 /* Pages that belong together share one heading with tabs across the top */
 const HUBS={mgr:[
  {t:'Driver Results',s:[['results','Results'],['survey','NPS'],['summary','Summary']]},
@@ -796,12 +850,12 @@ const HUBS={mgr:[
  drv:[{t:'Updates',s:[['updates','Updates'],['briefs','Team brief']]},{t:'Reports',s:[['reports','Report a problem'],['feedback','Feedback']]}]};
 const hubOf=s=>(HUBS[role==='mgr'?'mgr':'drv']||[]).find(h=>h.s.some(x=>x[0]===s))||null;
 const hubT=s=>{const h=hubOf(s);return h&&h.s[0][0]===s?h.t:''};
-const DRV_TILES=['guide','reports','runs','leave','invoices','directory','uniform'];
-const DNAMES={home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'Invoices',leave:'Leave Calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Guide',runs:'Run Sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'NPS results',clock:'My times',uniform:'Uniform'};
+const DRV_TILES=['myenq','guide','reports','runs','leave','invoices','directory','uniform'];
+const DNAMES={myenq:'My enquiries',home:'Home',me:'My results',alerts:'Updates',menu:'Menu',invoices:'Invoices',leave:'Leave Calendar',reports:'Report a problem',feedback:'Feedback',directory:'Contacts',guide:'Guide',runs:'Run Sheet',updates:'Updates',briefs:'Team brief',results:'Driver results',survey:'NPS results',clock:'My times',uniform:'Uniform'};
 const nm=s=>(role!=='mgr'&&DNAMES[s])||NAMES[s];
 let hist=[];
-const NAMES={menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'NPS',guide:'Driver Guide',staff:'Driver Management',precards:'Precards',lockers:'Parcel Lockers',briefs:'Team Briefs',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',ncr:'NCRs',summary:'Contract Summary',vchecks:'Van Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Driver Compliance',tasks:'Tasks'};
-const MOD={menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',ncr:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance',tasks:'mod-tasks'};
+const NAMES={myenq:'My enquiries',menu:'Menu',home:'Home',me:'Profile',alerts:'Notifications',reports:'Reports',feedback:'Feedback',clock:'Clock In',sort:'Sort Sheets',runs:'Run Sheets',results:'Driver Results',survey:'NPS',guide:'Driver Guide',staff:'Driver Management',precards:'Precards',lockers:'Parcel Lockers',briefs:'Team Briefs',leave:'Leave Calendar',invoices:'Invoices',directory:'Contacts',updates:'Updates',uniform:'Uniform',enquiries:'Enquiries',ncr:'NCRs',summary:'Contract Summary',vchecks:'Van Checks',timesheets:'Timesheets',cover:'Cover Planner',review:'Performance Review',boss:'Monthly Report',compliance:'Driver Compliance',tasks:'Tasks'};
+const MOD={myenq:'mod-myenq',menu:'mod-menu',home:'mod-home',me:'mod-me',alerts:'mod-alerts',reports:'mod-reports',feedback:'mod-feedback',clock:'mod-clock',sort:'mod-runs',runs:'mod-runs',results:'mod-results',survey:'mod-survey',guide:'mod-guide',staff:'mod-staff',precards:'mod-precards',lockers:'mod-lockers',briefs:'mod-briefs',leave:'mod-leave',invoices:'mod-invoices',directory:'mod-directory',updates:'mod-updates',uniform:'mod-uniform',enquiries:'mod-enquiries',ncr:'mod-enquiries',summary:'mod-summary',vchecks:'mod-vchecks',timesheets:'mod-timesheets',cover:'mod-cover',review:'mod-review',boss:'mod-boss',compliance:'mod-compliance',tasks:'mod-tasks'};
 const ICONS={
  cover:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 8h5M18.5 5.5v5"/></svg>',
  review:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
@@ -826,6 +880,7 @@ const ICONS={
  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
  summary:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
  enquiries:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v3.5M12 14h.01"/></svg>',
+ myenq:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M12 8v3.5M12 14h.01"/></svg>',
  ncr:'<svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M9.5 10l5 5M14.5 10l-5 5"/></svg>',
  uniform:'<svg viewBox="0 0 24 24"><path d="M8.5 3.5 4 6l-1.5 5 3 1V20.5h13V12l3-1L20 6l-4.5-2.5a3.5 3.5 0 0 1-7 0z"/></svg>',
  directory:'<svg viewBox="0 0 24 24"><path d="M5 3.5h13a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H5z"/><path d="M5 7.5H3M5 12H3M5 16.5H3"/><circle cx="12" cy="10" r="2.6"/><path d="M7.8 16.5c.8-2 2.4-3 4.2-3s3.4 1 4.2 3"/></svg>',
@@ -845,7 +900,7 @@ let cur='home', role='loading', stats={}, homeMsg=null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
-function visible(){return SECS.filter(s=>s!=='alerts'&&(role==='mgr'?true:!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
+function visible(){return SECS.filter(s=>s!=='alerts'&&(role==='mgr'?s!=='myenq':!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
 function tabSecs(){return role==='mgr'?['home','results','updates','menu']:['home','me','updates','menu']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
@@ -1065,9 +1120,9 @@ window.addEventListener('notices:live',()=>{try{newsBadge()}catch(e){}});
 /* new updates also arrive by the notices:live event; this is only a safety net */
 setInterval(()=>{try{if(document.visibilityState==='visible')newsBadge()}catch(e){}},20000);
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nav="updates"]'))window.__uvTapped=true},true);
-function applyNavBadges(){try{newsBadge()}catch(e){}try{adminGlance()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries','dec','ind'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;if(on)setBell(tot);document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0):0;document.querySelectorAll(`[data-nav="${k}"]:not([data-hubn])`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}document.querySelectorAll('[data-hubn]').forEach(b=>{const n=on?b.dataset.hubn.split(',').reduce((a,k)=>a+(window.__navN[k]||0),0):0;let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t})}
+function applyNavBadges(){try{newsBadge()}catch(e){}try{adminGlance()}catch(e){}const on=role==='mgr';{const tot=on?['feedback','uniform','reports','leave','enquiries','enqresp','dec','ind'].reduce((a,k)=>a+(window.__navN[k]||0),0):0;if(on)setBell(tot);document.querySelectorAll('.sh-links [data-nav="menu"]').forEach(b=>{const sm=b.querySelector('.sm')||b;let x=sm.querySelector('.bdg');if(!tot){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg';sm.prepend(x)}{const t=tot>9?'9+':String(tot);if(x.textContent!==t)x.textContent=t}})}try{if(on&&cur==='home')adminTodo()}catch(e){}for(const k of ['feedback','uniform','reports','leave','enquiries']){const n=on?(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0):0;document.querySelectorAll(`[data-nav="${k}"]:not([data-hubn])`).forEach(b=>{let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t;x.title=n+' new'})}document.querySelectorAll('[data-hubn]').forEach(b=>{const n=on?b.dataset.hubn.split(',').reduce((a,k)=>a+(window.__navN[k]||0)+(k==='enquiries'?(window.__navN.enqresp||0):0),0):0;let x=b.querySelector('.bdg.nb');if(!n){if(x)x.remove();return}if(!x){x=document.createElement('span');x.className='bdg nb';const c=b.querySelector('.chev');c?b.insertBefore(x,c):b.appendChild(x)}const t=n>9?'9+':String(n);if(x.textContent!==t)x.textContent=t})}
 async function startNavWatch(){if(window.__navWatch)return;window.__navWatch=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}if(!db){window.__navWatch=false;return}
-  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)]];
+  const W=[['feedback','feedback',v=>(v.status||'new')==='new'],['reports','reports',v=>(v.status||'new')==='new'],['uniorders','uniform',v=>(v.status||'requested')==='requested'],['leavereq','leave',v=>v.status==='pending'],['enqlog','enquiries',v=>v.kind==='ncr'&&!v.closed&&!(v.spokeAt&&v.signAt&&v.respAt)],['drvenq','enqresp',v=>!!v.respAt&&!v.offSeen]];
   try{db.collection('staff').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v&&(v.onbCopiedAt||v.onboard==='done')&&!v.indAt)ids.push(d.id)}window.__indIds=ids;window.__navN.ind=ids.length;applyNavBadges()},()=>{})}catch(e){}
   try{db.collection('onboard').onSnapshot(sn=>{const ids=[];for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(!v)continue;
       const a=v.d&&v.d.apSig&&v.status==='submitted'?{at:v.d.apAt||v.submittedAt,rep:v.repSig}:null,b=v.dec&&v.dec.sig?{at:v.dec.at,rep:v.dec.repSig}:null;const c=b&&(!a||String(b.at)>String(a.at))?b:a;
@@ -1315,9 +1370,10 @@ function appCard(){return `<div class="dh-cards am-app"><section class="dh-card 
     <button type="button" class="sh-btn primary" data-sh="shareAll">Send latest to drivers</button><p class="sh-sendwhat" style="margin:8px 0 0;font-size:.85rem;color:var(--sh-muted);line-height:1.4">Sends: run and sort sheets, driver results, NPS, leave calendar, precards, lockers and contacts. Updates, briefs, alerts and tasks go out by themselves.</p>${window.__backup&&!previewChild?`<div class="sh-bk"><button type="button" class="sh-btn" data-sh="backup">Download backup</button><span id="sh-bkinfo">Checking when the last backup was…</span></div>`:""}
     ${homeMsg?`<span class="sh-msg ${homeMsg.err?'err':''}" role="status">${esc(homeMsg.t)}</span>`:''}</section></div>`}
 function msgRender(){if(cur==='menu')renderMenu();else renderHome()}
+window.__myEnqMenu=()=>{try{if(cur==='menu')renderMenu()}catch(e){}};
 function renderMenu(){const box=$('sh-menu');if(!box)return;const v=new Set(visible());
   if(role==='mgr'){box.innerHTML=AMENU.map(([t,k,L])=>`<section class="am-g am-${k}${t?'':' am-flat'}">${t?`<h2>${esc(t)}</h2>`:''}<div class="am-list">${L.filter(([x])=>v.has(x)).map(([x,sub])=>`<button type="button" class="dm-t am-row t-${x}" data-nav="${x}" ${hubOf(x)?`data-hubn="${esc(hubOf(x).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[x]||''}</span><span class="tx"><b>${esc(hubT(x)||NAMES[x])}</b><small>${esc(sub)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div></section>`).join('')+appCard();bkInfo();setTimeout(applyNavBadges,0);return}
-  const SUB={results:'Everyone\'s results',survey:'NPS',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'See who is off and ask for leave',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
+  const SUB={myenq:(()=>{const n=window.__myEnqN?window.__myEnqN():0;return n?n+' to respond to':'Enquiries and NCRs sent to you'})(),results:'Everyone\'s results',survey:'NPS',briefs:'Weekly brief and rules',runs:'Your streets and notes',leave:'See who is off and ask for leave',invoices:'Earnings and invoice',reports:'Accident, problem or feedback',feedback:'A private message to the manager',guide:'How we do things',directory:'Call the team',uniform:'Order shirts'};
   box.innerHTML=`<section class="am-g am-drv"><div class="am-list">${DRV_TILES.filter(x=>v.has(x)).map(s=>`<button type="button" class="dm-t am-row t-${s}" data-nav="${s}" ${hubOf(s)?`data-hubn="${esc(hubOf(s).s.map(z=>z[0]).join(','))}"`:''}><span class="ic">${ICONS[s]}</span><span class="tx"><b>${esc(hubT(s)||nm(s))}</b><small>${esc(SUB[s]||'')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div></section>
   `}
 /* admin Home header: greeting, date and today at a glance; each number opens its page */
@@ -1663,7 +1719,7 @@ window.WX=(()=>{
  return{render}})();
 /* admin To do: what is waiting for you, from the live counts */
 function adminTodo(){const el=$('ah_todo');if(!el||role!=='mgr')return;const N=window.__navN||{};
-  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
+  const T=[['leave',N.leave,'leave request','leave requests','to answer','[data-lv="view"][data-v="req"]'],['feedback',N.feedback,'new driver message','new driver messages','',''],['reports',N.reports,'new report','new reports','to look at',''],['uniform',N.uniform,'uniform order','uniform orders','to fill',''],['enquiries',N.enqresp,'driver response to an enquiry','driver responses to enquiries','to read',''],['staff',N.dec,'Australia Post declaration','Australia Post declarations','to sign and send to management','','dec'],['staff',N.ind,'site induction to do','site inductions to do','do it with them at the depot','','ind']].filter(x=>x[1]>0);
   const html=T.length?`<section class="dh-card dh-todo"><h2>Needs you</h2>${T.map(([sec,n,one,many,tail,act,k])=>`<button type="button" class="dh-do t-${sec}" data-qa="${sec}" data-act="${esc(act)}" data-k="${k||''}"><span class="ic">${ICONS[sec]}</span><span class="tx"><b>${n} ${esc(n===1?one:many)}</b><small>${esc(tail||'Tap to open')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</section>`:`<section class="dh-card dh-done"><b>✓ All caught up</b><span>No requests, messages, reports or orders waiting.</span></section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
 /* Home: one box to find a street (whose it is) or a page of the app */
@@ -1977,7 +2033,7 @@ function pageHtml(snap){
   const RESET=':root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}';
   const th=document.getElementById('thm-js');const thm=th&&!/id="thm-js"/.test(body)?th.outerHTML:'';
   /* newer add-ons the driver view also needs: page help lines, the app version on Home, the NPS maths and dark dropdowns */
-  const xtra=['nps-js','pg-help','dark-select','pgh-js'].map(id=>{const e=document.getElementById(id);return e&&!new RegExp('id="'+id+'"').test(body)?e.outerHTML:''}).join('');
+  const xtra=['nps-js','pg-help','dark-select','enq-drv','pgh-js'].map(id=>{const e=document.getElementById(id);return e&&!new RegExp('id="'+id+'"').test(body)?e.outerHTML:''}).join('');
   /* the Queensland date helper the modules use (the user view page doesn't get the main page's head) */
   const qh='<script>window.__qISO=window.__qISO||function(d){var t=(d||new Date()).getTime();if(isNaN(t))t=Date.now();return new Date(t+36e6).toISOString().slice(0,10)};window.__qDate=window.__qDate||function(){var p=window.__qISO().split("-");return new Date(+p[0],p[1]-1,+p[2],12)};<\/script>';
   const early=qh+'<script>try{var t=localStorage.getItem("theme1161");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var z=localStorage.getItem("ts1161");if(z==="l"||z==="xl")document.documentElement.setAttribute("data-ts",z)}catch(e){}<\/script>';
@@ -2062,6 +2118,7 @@ let first='home';
 if(SECS.includes(h)) first=h;
 else if(/^\d{4}$/.test(h)) first='sort';
 else if(/^guide\//.test(h)||(Array.isArray(SNAP.guide)&&SNAP.guide.some(t=>t.id===h))) first='guide';
+else if(/^myenq\//.test(h)){first='myenq';window.__myEnqOpen=h.slice(6)}
 else if(h) first='runs';
 else if(previewChild){try{const v=sessionStorage.getItem('uv1161')||window.parent.__uvStart;if(SECS.includes(v)&&!MGR_ONLY.includes(v))first=v}catch(e){}}
 /* the app always opens on Home; if it sat in the background for 15 minutes or more, it goes back to Home too */
@@ -6096,6 +6153,7 @@ async function homeCards(){
   for(const c of (data&&data.cv)||[]){for(const it of c.items||[]){const mine=it.by===me.staff,help=(it.help||[]).some(x=>x.id===me.staff);if(!mine&&!help)continue;const when=c.date===t?'today':niceDay(c.date);
     todo.push({ic:'clock',t:(help?'You are helping on ':'You are covering ')+(it.run||'a run')+(c.date===t?' today':' on '+niceDay(c.date)),s:(it.offName||'The driver')+' is off. Tap to open the run sheet.',login:it.login||'',nav:'runs'})}}
   for(const v of (data&&data.lv)||[]){if(!v.from||!v.to)continue;const sp=Math.round((fromIso(v.to)-fromIso(v.from))/864e5)+1;if(sp<7)continue;let ev=addD(v.from,-1);while(fromIso(ev).getDay()===0||(fromIso(ev).getDay()===6&&fromIso(ev).getMonth()!==11))ev=addD(ev,-1);if(ev!==t)continue;todo.push({ic:'brief',t:'Hand in your scanner today',s:'Your holiday starts '+niceDay(v.from)+'. Give your scanner to the office or a supervisor before you go.',nav:'leave'});break}
+  try{for(const z of (window.__myEnqTodo?window.__myEnqTodo():[]))todo.push(z)}catch(e){}
   const b=data&&data.briefs[0];if(b&&data.sigs[b.id]===false)todo.push({ic:'brief',t:'Sign the team brief',s:'Read it, then tap Sign.',nav:'briefs'});
   for(const c of (data&&data.clock)||[]){if(c.date<t&&c.start&&!c.finish){todo.push({ic:'clock',t:'Add your finish time',s:niceDay(c.date)+'. You started at '+nice(c.start)+'.',nav:'clock'});break}}
   const due=(S().invoices||{}).due;if(due){const dd=Math.round((fromIso(due)-fromIso(t))/864e5);const sent=data&&data.inv.some(v=>String(v.submittedAt||v.at||'').slice(0,10)>=addD(due,-14));
@@ -7300,6 +7358,86 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 })();
 
 </script>
+<script type="text/x-mod" data-mod="myenq">
+/* Drivers: enquiries and NCRs the office has sent them. Read it, respond, and the office gets a ding. */
+(()=>{
+const $=id=>document.getElementById('my_'+id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(,])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const pad=n=>String(n).padStart(2,'0');
+const niceD=s=>{if(!s)return '';const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);if(!m)return s;const d=new Date(+m[1],+m[2]-1,+m[3]);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]};
+const whenT=iso=>{if(!iso)return '';const d=new Date(iso);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+', '+(d.getHours()%12||12)+':'+pad(d.getMinutes())+(d.getHours()<12?'am':'pm')};
+let db=null,sid='',L={},open=null,msg=null,busy=false,pics={},lb=null,draft={},state='wait',edit=false;
+const meStaff=()=>{let m=window.__webMe;try{m=m||window.parent.__webMe}catch(e){}m=m||{};return String(m.staff||m.ownStaff||'')};
+const items=()=>Object.values(L).sort((a,b)=>String(b.sentAt).localeCompare(String(a.sentAt)));
+const todo=()=>items().filter(x=>!x.response);
+window.__myEnqTodo=()=>todo().map(x=>({ic:'brief',t:x.kind==='ncr'?'Respond to an NCR':'Respond to an enquiry',s:[x.address,x.caseNo?'Case '+x.caseNo:''].filter(Boolean).join(' · ')||'Tap to read it',nav:'myenq',id:x.id}));
+window.__myEnqN=()=>todo().length;
+function card(x){const due=!x.response;return `<button type="button" class="card my-i ${due?'due':''}" data-my="open" data-v="${esc(x.id)}"><div class="t"><b>${esc(x.kind==='ncr'?'NCR':'Enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</b><span class="my-st ${due?'due':'ok'}">${due?'Still to action':'Responded'}</span></div><small>${esc(x.address||'')}</small><small>${esc(niceD(x.date))}${x.enqType?' · '+esc(x.enqType):x.issue?' · '+esc(x.issue):''}</small></button>`}
+function listHTML(){const A=items();if(!A.length)return `<div class="empty">Nothing here. When the office sends you an enquiry or NCR, it shows here and your phone dings.</div>`;
+  const T=A.filter(x=>!x.response),wk=new Date(Date.now()-7*864e5).toISOString(),R=A.filter(x=>x.response),N=R.filter(x=>String(x.sentAt)>=wk),O=R.filter(x=>String(x.sentAt)<wk);
+  return `${T.length?`<h2 class="my-h">Still to action (${T.length})</h2>${T.map(card).join('')}`:'<div class="my-ok">✓ You have responded to everything.</div>'}
+   ${N.length?`<h2 class="my-h">This week</h2>${N.map(card).join('')}`:''}
+   ${O.length?`<details class="my-old"><summary>Older (${O.length})</summary>${O.map(card).join('')}</details>`:''}`}
+async function loadPics(x){if(pics[x.id]!==undefined||!(x.pics||[]).length)return;pics[x.id]=null;const out=[];for(const p of x.pics){try{const d=await db.doc('enqimg/'+p.id).get();const v=d&&d.exists!==false?(window.__D?window.__D(d):d.data()):null;if(v&&v.data)out.push({name:v.name||p.name,data:v.data})}catch(e){}}pics[x.id]=out;render()}
+function oneHTML(x){const E=x.events||[];const P=pics[x.id];if((x.pics||[]).length&&P===undefined)setTimeout(()=>loadPics(x),0);
+  const D=x.response&&!edit;
+  return `<div class="my-x"><button type="button" class="sh-btn back" data-my="back">‹ My enquiries</button>
+  ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
+  <section class="card"><div class="t"><h2>${esc(x.kind==='ncr'?'NCR':'Customer enquiry')}${x.caseNo?' · Case '+esc(x.caseNo):''}</h2><span class="my-st ${x.response?'ok':'due'}">${x.response?'Responded':'Still to action'}</span></div>
+   <dl class="kv">${x.date?`<dt>Date</dt><dd>${esc(niceD(x.date))}</dd>`:''}${x.enqType?`<dt>Type</dt><dd>${esc(x.enqType)}</dd>`:''}${x.issue?`<dt>Issue</dt><dd>${esc(x.issue)}</dd>`:''}${x.address?`<dt>Address</dt><dd>${esc(x.address)}</dd>`:''}${x.scanAddr?`<dt>Where you scanned it</dt><dd>${esc(x.scanAddr)}</dd>`:''}${x.deliveredAt?`<dt>Your scan</dt><dd>${esc(x.deliveredAt)}</dd>`:''}${x.delivered?`<dt>Delivered</dt><dd>${esc(x.delivered)}</dd>`:''}${x.tracking||x.article?`<dt>Tracking</dt><dd class="brk">${esc(x.tracking||x.article)}</dd>`:''}</dl></section>
+  ${(x.flags||[]).length?`<div class="eq-flags">${x.flags.map(f=>`<p>⚠️ ${esc(f)}</p>`).join('')}</div>`:''}
+  ${x.details?`<section class="card"><span class="lbl">${x.kind==='ncr'?'What happened':'What the customer said'}</span><p class="my-p">${esc(x.details).replace(/\n/g,'<br>')}</p></section>`:''}
+  ${(x.pics||[]).length?`<section class="card"><span class="lbl">Pictures</span>${!P?'<p class="sub">Loading pictures…</p>':P.length?`<div class="eq-pg">${P.map((p,k)=>`<button type="button" data-my="pic" data-k="${k}"><img src="${p.data}" alt="${esc(p.name)}" loading="lazy"><small>${esc(p.name)}</small></button>`).join('')}</div>`:'<p class="sub">Pictures could not be loaded.</p>'}</section>`:''}
+  ${E.length?`<details class="card eq-ev"><summary><b>Scan events (${E.length})</b><small>Your scan is highlighted.</small></summary><ol>${E.map(e=>`<li class="${x.keyEv===e.e+', '+e.d?'key':''}${/^y/i.test(e.o||'')?' out':''}"><b>${esc(e.e)}</b><small>${esc(e.d)}${e.w?' · '+esc(tc(e.w)):''}${/^y/i.test(e.o||'')?' · <em>Outside delivery radius</em>':''}</small></li>`).join('')}</ol></details>`:''}
+  <section class="card my-r"><span class="lbl">Your response</span>
+   ${D?`<div class="eq-resp"><p>${esc(x.response).replace(/\n/g,'<br>')}</p><small>Sent ${esc(whenT(x.respAt))}</small></div><button type="button" class="sh-btn" data-my="edit">Change my response</button>`
+   :`<p class="sub">Tell the office what happened: where you left it, who you gave it to, or why you couldn't deliver it.</p><textarea id="my_txt" rows="5" placeholder="What happened">${esc(draft[x.id]!=null?draft[x.id]:(x.response||''))}</textarea><div class="b"><button type="button" class="sh-btn primary" data-my="send" ${busy?'disabled':''}>${busy?'Sending…':'Send to the office'}</button>${edit?'<button type="button" class="sh-btn" data-my="noedit">Cancel</button>':''}</div>`}
+  </section>
+  ${lb!=null&&P&&P[lb]?`<div class="eq-lb" data-my="lbclose" role="dialog"><img src="${P[lb].data}" alt="${esc(P[lb].name)}"><p>${esc(P[lb].name)}</p><button type="button" class="sh-btn" data-my="lbclose">Close</button></div>`:''}
+  </div>`}
+function render(){const box=document.getElementById('my_root');if(!box)return;
+  if(state==='wait'){box.innerHTML='<div class="my-x"><div class="empty">Loading…</div></div>';return}
+  if(state==='none'){box.innerHTML='<div class="my-x"><div class="empty">Your driver record is not linked yet. Ask the office.</div></div>';return}
+  if(open&&L[open]){box.innerHTML=oneHTML(L[open]);return}
+  box.innerHTML=`<div class="my-x"><div class="head"><h1>My enquiries</h1></div>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${listHTML()}</div>`}
+function openIt(id){open=id;msg=null;edit=false;lb=null;const x=L[id];if(x&&!x.seenAt){x.seenAt=new Date().toISOString();db&&db.doc('drvenq/'+id).update({seenAt:x.seenAt}).catch(()=>{})}render();window.scrollTo(0,0)}
+document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-my]');if(!el||!el.closest('#mod-myenq'))return;const a=el.dataset.my;
+  if(a==='open'){openIt(el.dataset.v);return}
+  if(a==='back'){open=null;msg=null;render();return}
+  if(a==='pic'){lb=+el.dataset.k;render();return}
+  if(a==='lbclose'){if(e.target.closest('img'))return;lb=null;render();return}
+  if(a==='edit'){edit=true;render();return}
+  if(a==='noedit'){edit=false;render();return}
+  if(a==='send'){const x=L[open];const t=(($('txt')||{}).value||'').trim();if(!x)return;if(!t){msg={err:true,t:'Write what happened first.'};render();return}
+    busy=true;draft[x.id]=t;render();const now=new Date().toISOString();
+    try{await db.doc('drvenq/'+x.id).update({response:t,respAt:now});x.response=t;x.respAt=now;delete draft[x.id];edit=false;msg={t:'Sent. The office has been told.'};
+      try{window.__officePing&&window.__officePing(x.kind==='ncr'?'ncrreply':'enqreply',{})}catch(z){}
+      try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}}
+    catch(z){msg={err:true,t:'Could not send just now. Check your internet and try again.'}}busy=false;render();return}
+});
+document.addEventListener('input',e=>{if(e.target.id==='my_txt'&&open)draft[open]=e.target.value});
+/* a ding opens straight to that enquiry: #myenq/<id> */
+function fromHash(){const h=decodeURIComponent((location.hash||'').slice(1));if(!/^myenq\//.test(h))return false;const id=h.slice(6);window.__myEnqOpen=id;if(window.APP&&APP.section!=='myenq')APP.go('myenq');if(L[id])openIt(id);return true}
+window.addEventListener('hashchange',fromHash);
+async function start(role){
+  if(role==='mgr'&&window.parent===window){state='none';return}
+  sid=meStaff();if(!sid){state='none';render();return}
+  try{db=window.__getDb?await window.__getDb():null}catch(e){db=null}if(!db){state='none';render();return}
+  db.collection('drvenq').where('sid','==',sid).onSnapshot(sn=>{const o={};for(const d of sn.docs){const v=window.__D?window.__D(d):d.data();if(v)o[d.id]=Object.assign({id:d.id},v)}
+    for(const id in o)if(L[id]&&draft[id]!=null){}L=o;state='ok';
+    if(window.__myEnqOpen&&L[window.__myEnqOpen]){const id=window.__myEnqOpen;window.__myEnqOpen=null;openIt(id)}
+    const a=document.activeElement;if(!(a&&a.id==='my_txt'))render();
+    try{window.ME&&window.ME.home&&window.ME.home()}catch(z){}try{window.__myEnqMenu&&window.__myEnqMenu()}catch(z){}},()=>{state='none';render()});
+  render()}
+window.addEventListener('sh:go',e=>{if(e.detail==='myenq'){if(window.__myEnqOpen&&L[window.__myEnqOpen]){const id=window.__myEnqOpen;window.__myEnqOpen=null;openIt(id)}else render()}});
+render();
+let started=false;const go=r=>{if(started||!r||r==='loading')return;started=true;start(r)};
+window.addEventListener('app:role',e=>go(e.detail));if(window.APP&&APP.role)go(APP.role);
+fromHash();
+})();
+</script>
 <script type="text/x-mod" data-mod="enquiries">
 (()=>{
 const $=id=>document.getElementById('eq_'+id);
@@ -7328,23 +7466,68 @@ function matchName(nm){const w=String(nm||'').toLowerCase().split(/\s+/).filter(
   if(c.length!==1)c=L.filter(x=>w.every(t=>x.t.some(z=>t.length===1?z[0]===t:z===t)));
   if(c.length!==1){const lg=w.join('').toUpperCase();c=L.filter(x=>x.p.login===lg)}
   return c.length===1?c[0].p.login:''}
-let nOpen=null;
+let nOpen=null,DRV={},eImgs={},lbox=null;
 let nqD='',nqA='',nqP='',qPc='',tab=(window.APP&&APP.section==='ncr')?'ncr':'enq',nDraft=null,nFiles={},nNew=[],mode='wait',db=null,recs={},staff=[],view='list',open=null,draft=null,qDriver='',qAddr='',onlyFault=false,msg=null,busy=null,arm=false;
 const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
 /* ---------- people ---------- */
-function loadStaff(docs){staff=docs.map(p=>({name:tc([p.first,p.last].filter(Boolean).join(' ')),login:String(p.login||'').toUpperCase(),role:String(p.role||'').toUpperCase(),runs:(p.runs||[]).join(', ')})).filter(p=>p.name).sort((a,b)=>a.name.localeCompare(b.name))}
+function loadStaff(docs){staff=docs.map(p=>({id:p.id||'',name:tc([p.first,p.last].filter(Boolean).join(' ')),login:String(p.login||'').toUpperCase(),role:String(p.role||'').toUpperCase(),runs:(p.runs||[]).join(', ')})).filter(p=>p.name).sort((a,b)=>a.name.localeCompare(b.name))}
 const byLogin=l=>staff.find(p=>p.login===String(l||'').toUpperCase());
 const supervisors=()=>staff.filter(p=>['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'].includes(p.role));
 /* ---------- optional: fill from the case PDF ---------- */
 function loadScript(src){return new Promise((res,rej)=>{if([...document.scripts].some(s=>s.src===src))return res();const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
-async function pdfText(file){
+/* Read an Australia Post case PDF: all the text, the scan events table, and the pictures (maps and scan photos) */
+async function pdfCase(file){
   if(!window.pdfjsWorker)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-  const doc=await window.pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;let text='';
-  for(let i=1;i<=doc.numPages;i++){const pg=await doc.getPage(i);const tcn=await pg.getTextContent();let last=null,t='';for(const it of tcn.items){const y=Math.round(it.transform[5]);if(last!==null&&Math.abs(y-last)>2)t+='\n';else if(last!==null)t+=' ';t+=it.str;last=y}text+=t+'\n'}
-  return text;
+  const P=window.pdfjsLib;const doc=await P.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+  let text='',cols=null;const events=[],imgs=[];
+  for(let i=1;i<=doc.numPages;i++){const pg=await doc.getPage(i);const tcn=await pg.getTextContent();
+    const its=tcn.items.filter(it=>it.str&&it.str.trim()).map(it=>({s:it.str.trim(),x:it.transform[4],y:it.transform[5],w:it.width}));
+    /* plain text, line by line (same as before) */
+    {let last=null,t='';for(const it of tcn.items){const y=Math.round(it.transform[5]);if(last!==null&&Math.abs(y-last)>2)t+='\n';else if(last!==null)t+=' ';t+=it.str;last=y}text+=t+'\n'}
+    /* the events table: the heading row sets the columns (it only shows on the first page of the table) */
+    let top=1e9;const hd=its.find(it=>it.s==='Date/Time');
+    if(hd){const H=its.filter(it=>Math.abs(it.y-hd.y)<=16&&it.x>=40).sort((a,b)=>a.x-b.x);const G=[];
+      for(const it of H){const g=G.find(g=>it.x<g.r&&it.x+it.w>g.l);if(g){g.l=Math.min(g.l,it.x);g.r=Math.max(g.r,it.x+it.w);g.t.push(it)}else G.push({l:it.x,r:it.x+it.w,t:[it]})}
+      G.sort((a,b)=>a.l-b.l);if(G.length>=8){cols=G.map((g,k)=>k?((G[k-1].l+G[k-1].r)/2+g.l)/2:0);top=Math.min(...H.map(h=>h.y))-2}}
+    if(!cols)continue;
+    const colOf=x=>{let c=0;for(let k=0;k<cols.length;k++)if(x>=cols[k])c=k;return c};
+    const dates=its.filter(it=>/^\d{1,2}\/\d{1,2}\/\d{4},?$/.test(it.s)&&colOf(it.x)===1&&it.y<top);
+    if(!dates.length)continue;
+    const rows=dates.map(d=>{const tm=its.find(it=>colOf(it.x)===1&&it.y<d.y&&d.y-it.y<16&&/\d:\d\d/.test(it.s));return{c:tm?(d.y+tm.y)/2:d.y,cells:[]}}).sort((a,b)=>b.c-a.c);
+    /* the table's own row lines (thin bars across the first column) split the rows exactly; without them, use the nearest row */
+    let hy=[];try{const ops=await pg.getOperatorList();for(let k=0;k<ops.fnArray.length;k++){if(ops.fnArray[k]!==P.OPS.constructPath)continue;const mm=ops.argsArray[k][2];if(mm&&mm[3]-mm[2]<1.6&&mm[1]-mm[0]>25&&mm[0]<cols[1])hy.push((mm[2]+mm[3])/2)}}catch(e){}
+    hy=[...new Set(hy.map(v=>Math.round(v*2)/2))].sort((a,b)=>b-a).filter((v,k,A)=>!k||A[k-1]-v>2);
+    const band=y=>{for(let k=0;k+1<hy.length;k++)if(y<=hy[k]&&y>hy[k+1])return k;return -1};
+    const useB=hy.length>=2&&rows.every(r=>band(r.c)>=0);if(useB)rows.forEach(r=>r.b=band(r.c));
+    for(const it of its){if(it.y>=top)continue;let best=null;
+      if(useB){const b=band(it.y+3);best=rows.find(r=>r.b===b)||null}
+      else{let bd=1e9;for(const r of rows){const dd=Math.abs(r.c-it.y);if(dd<bd){bd=dd;best=r}}if(bd>40)best=null}
+      if(best)best.cells.push(it)}
+    for(const r of rows){const C=Array.from({length:cols.length},()=>[]);for(const it of r.cells.sort((a,b)=>b.y-a.y||a.x-b.x))C[colOf(it.x)].push(it.s);
+      const j=(k,sep)=>C[k]?C[k].join(sep==null?' ':sep).replace(/\s+/g,' ').trim():'';
+      events.push({e:j(0),d:j(1),w:j(2),c:j(3).slice(0,240),s:j(4),u:j(5,''),r:j(6,''),o:j(7),g:j(8)})}
+  }
+  /* pictures: maps of the addressee and delivery spots, and photos the driver took with the scan */
+  for(let i=1;i<=doc.numPages;i++){const pg=await doc.getPage(i);let ops;try{ops=await pg.getOperatorList()}catch(e){continue}
+    const names=[];for(let k=0;k<ops.fnArray.length;k++){if(ops.fnArray[k]===P.OPS.paintImageXObject)names.push(ops.argsArray[k][0])}
+    if(!names.length)continue;
+    const ptxt=(await pg.getTextContent()).items.map(x=>x.str).join('\n');
+    const maps=[...ptxt.matchAll(/^(.*?) address location on map$/gim)].map(m=>m[1].trim());
+    const caps=[...ptxt.matchAll(/^([A-Z]{2}-[A-Z0-9]+ - .+)$/gm)].map(m=>m[1].trim());
+    let mi=0,ci=0;
+    for(const nm of names){const o=await new Promise(res=>{try{pg.objs.get(nm,res)}catch(e){res(null)}});if(!o)continue;
+      const w=o.width,h=o.height;if(!w||!h||w<120||h<120)continue;
+      const cv=document.createElement('canvas');const k=Math.min(1,1000/Math.max(w,h));cv.width=Math.round(w*k);cv.height=Math.round(h*k);const g=cv.getContext('2d');
+      if(o.bitmap){g.drawImage(o.bitmap,0,0,cv.width,cv.height)}
+      else if(o.data){const src=document.createElement('canvas');src.width=w;src.height=h;const sg=src.getContext('2d');const id=sg.createImageData(w,h);const D=o.data,O=id.data;
+        if(o.kind===3||D.length===w*h*4)O.set(D);else if(o.kind===2||D.length===w*h*3){for(let p=0,q=0;p<w*h;p++,q+=3){O[p*4]=D[q];O[p*4+1]=D[q+1];O[p*4+2]=D[q+2];O[p*4+3]=255}}else continue;
+        sg.putImageData(id,0,0);g.drawImage(src,0,0,cv.width,cv.height)}else continue;
+      const isMap=maps.length&&mi<maps.length;const label=isMap?(maps[mi++]+' address on map'):('Scan photo'+(caps[ci]?': '+caps[ci++].replace(/^[A-Z]{2}-[A-Z0-9]+ - /,''):''));
+      imgs.push({name:label,data:cv.toDataURL('image/jpeg',isMap?.72:.7)})}}
+  return{text,events,imgs};
 }
 function field(t,label){const m=t.match(new RegExp('^\\s*'+label+'\\s*:\\s*(.*)$','im'));return m?m[1].trim():''}
-function fromCase(T){
+function fromCase(T,EV){
   const flat=T.replace(/\s+/g,' ');const o={};
   o.caseNo=(T.match(/CASE:\s*(\d{5,})/)||T.match(/^\s*Case\s+(\d{5,})/m)||[])[1]||'';
   o.login=((T.match(/LOGON ID:\s*([A-Z0-9]+)/i)||[])[1]||'').toUpperCase();
@@ -7359,6 +7542,13 @@ function fromCase(T){
   o.category=field(T,'Product Sub Category')||field(T,'Sub Product')||field(T,'Product Category');o.enqType=field(T,'Enquiry Sub Type')||field(T,'Type');
   o.customer=tc(cust);o.tracking=field(T,'Article Number')||field(T,'Reference ID');
   const sg=field(T,'Signatory Name');const dv=[...flat.matchAll(/(Delivered[^\/]{0,70}?)\s(\d{1,2}\/\d{1,2}\/\d{4}),\s*(\d{1,2}:\d{2}\s*[ap]m)/gi)].filter(m=>!/address/i.test(m[1])).pop();o.deliveredAt=dv?`${dv[2]} ${dv[3]}${/signature/i.test(dv[1])||sg?', signed '+tc(sg||(dv[1].match(/from\s+(.+)$/i)||[])[1]||''):/safe ?drop|left/i.test(dv[1])?', safe dropped':''}`.replace(/, signed $/,''):'';
+  /* the scan events: the driver's delivery or attempt scan says who scanned it, when, and if it was outside the delivery radius */
+  const ev=[];for(const e of EV||[]){const x={e:e.e,d:e.d,w:e.w,u:e.u,r:e.r,o:e.o,g:e.g};Object.keys(x).forEach(k=>{if(!x[k])delete x[k]});if(!x.e||!x.d)continue;const L=ev[ev.length-1];if(L&&L.e===x.e&&L.d===x.d&&(L.w||'')===(x.w||''))continue;ev.push(x)}
+  o.events=ev.slice(-60);
+  const key=ev.filter(x=>x.u&&/deliver|attempt|card|safe ?drop|left in|signed/i.test(x.e)&&!/onboard|eta prediction|scan list/i.test(x.e)).pop()||null;
+  if(key){o.keyEv=key.e+', '+key.d;o.outside=/^y/i.test(key.o||'');o.geo=key.g||'';if(!o.login&&/^[A-Z0-9]{4,}$/i.test(key.u))o.login=key.u.toUpperCase()}
+  if(!o.scanAddr){const m=T.match(/^\s*(\w+) Delivery address:\s*(.+)$/im);if(m)o.scanAddr=tidy(m[2])}
+  if(!o.deliveredAt&&key)o.deliveredAt=key.d.replace(',','')+', '+key.e.toLowerCase();
   o.details=desc?desc.replace(/^Hey Team,?\s*/i,'').replace(/^This is a direct message from the customer[^:]*:\s*/i,'').replace(/\\n/g,' ').replace(/\s*(Please review GPS|When replying, please include|Please assist with article recovery)[\s\S]*$/i,'').trim():lines.join('\n');const cr=field(T,'Created Date').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(cr)o.date=`${cr[3]}-${pad(cr[2])}-${pad(cr[1])}`;
   return o;
 }
@@ -7397,7 +7587,7 @@ const dots=k=>`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=k?'on':''}"><
 function ncrCards(){const L=ncrs().filter(n=>inPer(n.issued,'ncr')),d=nqD.trim().toLowerCase();const F=L.filter(n=>!d||[n.driver,n.login,dno(n.login),n.address,pcOf(n),n.caseNo].join(' ').toLowerCase().includes(d));
   return `<div class="rh"><span class="sub">${F.length} of ${L.length} NCR${L.length===1?'':'s'}</span></div>${F.length?F.map(n=>{const w=waiting(n),st=nState(n);return `<button type="button" class="card ncr" data-eq="nopen" data-v="${esc(n.id)}"><div class="t"><b>${esc(n.driver||n.login)}${dnTag(n.login)}</b>${pill(n)}</div>
      <small>${pcTag(pcOf(n))} ${esc(n.address||'')}${n.caseNo?' · Case '+esc(n.caseNo):''}</small><small>${esc(nice(n.issued))} · ${esc(ISS[n.issue]||'NCR')}</small>
-     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}</button>`}).join('')
+     ${st==='open'&&w.length?`<small class="wt">Waiting on: ${esc(w.join(', '))}</small>`:st==='mon'?`<small class="mt">Monitoring until ${esc(nice(addD(monFrom(n),MONDAYS)))}</small>`:st==='flag'?'<small class="wt">At fault enquiry since the NCR</small>':''}${DRV[n.id]?`<small>${drvChip(n.id)}</small>`:''}</button>`}).join('')
      :`<div class="empty">${L.length?'Nothing matches that search.':'No NCRs recorded. When the facility manager sends one, press + NCR.'}</div>`}`}
 function ncrListHTML(){const L=ncrs(),open=L.filter(n=>nState(n)!=='closed'),yr=String(new Date().getFullYear()),T=tracker(),at3=T.filter(d=>d.max>=3);
   return `${perBar('ncr',L.map(n=>n.issued))}<div class="nstat"><div class="${open.length?'r':''}"><b>${open.length}</b><small>Open NCRs</small></div><div><b>${L.filter(n=>inPer(n.issued,'ncr')).length}</b><small>${esc(perLab('ncr'))}</small></div><div class="${at3.length?'r':''}"><b>${at3.length}</b><small>Drivers at 3</small></div></div>
@@ -7436,6 +7626,7 @@ function ncrOneHTML(n){const st=nState(n),k=strikeOf(n),F=nFiles[n.id],since=sin
    <div class="sp ${st==='closed'?'ok':''}"><i>${st==='closed'?'✓':''}</i><div>Monitoring for ${MONDAYS} days<small>${n.closed?'Closed '+esc(nice(n.closed)):!(n.spokeAt&&n.signAt&&n.respAt)?'Starts once the steps above are done':st==='closed'?'Finished '+esc(nice(end))+' with no new at fault enquiry':'Until '+esc(nice(end))}</small></div></div></div></section>
   <section class="card"><span class="lbl">Monitoring</span><p class="sub">For ${MONDAYS} days after your response, any enquiry you record for ${esc((n.driver||'this driver').split(' ')[0])} in the Enquiries tab shows here. If one is at fault the NCR stays open. If the ${MONDAYS} days pass clean, it closes by itself.</p>${since.length?`<p class="${since.some(e=>e.fault==='yes')?'wt':''}">Enquiries since the NCR:</p><ul class="nl">${since.map(e=>`<li>${esc(nice(e.date))} · ${esc(e.address||'')} · ${e.fault==='yes'?'<b class="r3">At fault</b>':e.fault==='partly'?'<b>Partly at fault</b>':e.fault==='no'?'Not at fault':'No outcome yet'}</li>`).join('')}</ul>`:`<p>No new enquiries for ${esc((n.driver||'this driver').split(' ')[0])} since ${esc(nice(monFrom(n)))}.</p>`}</section>
   <section class="card"><span class="lbl">Files</span>${F==null?'<p class="sub">Loading…</p>':F.length?`<div class="nfiles">${F.map(f=>/^image\//.test(f.type)?`<a href="${f.data}" download="${esc(f.name)}" target="_blank" rel="noopener"><img src="${f.data}" alt="${esc(f.name)}"></a>`:`<a class="nf" href="${f.data}" download="${esc(f.name)}">${esc(f.name)}</a>`).join('')}</div>`:'<p class="sub">No files attached.</p>'}</section>
+  ${drvBox(n.id,'ncr')}
   <div class="foot nfoot"><button type="button" class="sh-btn" data-eq="nedit">Edit</button>${n.closed?'<button type="button" class="sh-btn" data-eq="nreopen">Reopen</button>':'<button type="button" class="sh-btn" data-eq="nclose">Close NCR now</button>'}<span class="gap"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="ndel">${arm?'Tap again to delete':'Delete'}</button></div></div>`}
 async function loadFiles(id){if(nFiles[id]!=null)return;nFiles[id]=null;try{const c=db.collection('enqimg');const q=c.where?await c.where('ncr','==',id).get():await c.get();nFiles[id]=q.docs.map(d=>clone(__D(d))).filter(f=>f&&f.ncr===id)}catch(e){nFiles[id]=[]}render()}
 /* read the facility's NCR Word form and pull out the details */
@@ -7527,7 +7718,7 @@ const tabsHTML=no=>''&&`<div class="tabs" role="group" aria-label="Show"><button
 function resHTML(L){const total=enqs().length;
   return `${sumHTML(L)}<div class="rh"><span class="sub">${L.length} of ${total} enquir${total===1?'y':'ies'}</span>${L.length?'<button type="button" class="sh-btn" data-eq="print">Print this list</button>':''}</div>
   ${L.length?L.map(r=>`<button type="button" class="card ncr fo-${r.fault||'none'}" data-eq="open" data-v="${esc(r.id)}"><div class="t"><b>${esc(r.driver||(byLogin(r.login)||{}).name||r.login||'')}${dnTag(r.login)}</b>${chip(r.fault)}</div>
-     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}</button>`).join('')
+     <small>${pcTag(pcOf(r))} ${esc(r.address||'')}${r.caseNo?' · Case '+esc(r.caseNo):''}</small><small>${esc(nice(r.date))}${r.category?' · '+esc(r.category):''}${r.supervisor?' · '+esc(r.supervisor):''}</small>${r.scanAddr&&normA(r.scanAddr)!==normA(r.address)?`<small class="wt">Delivered to ${esc(r.scanAddr)}</small>`:''}${r.outside?'<small class="wt">Outside delivery radius</small>':''}${DRV[r.id]?`<small>${drvChip(r.id)}</small>`:''}</button>`).join('')
    :`<div class="empty">${total?'Nothing matches that search.':'No enquiries recorded yet. Press + Enquiry.'}</div>`}`;
 }
 function formHTML(){
@@ -7557,13 +7748,52 @@ function formHTML(){
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
   </section></div>`;
 }
+/* ---------- what the case PDF showed: warning flags, scan events and pictures ---------- */
+function flagsOf(r){const F=[];if(r.scanAddr&&r.address&&normA(r.scanAddr)!==normA(r.address))F.push('Scanned at a different address: '+r.scanAddr);if(r.outside)F.push('Scan was outside the delivery radius'+(r.geo?' (geo precision '+r.geo+')':''));return F}
+function flagsHTML(r){const F=flagsOf(r);return F.length?`<div class="eq-flags">${F.map(f=>`<p>⚠️ ${esc(f)}</p>`).join('')}</div>`:''}
+function eventsHTML(r,open0){const E=r.events||[];if(!E.length)return '';const key=e=>r.keyEv&&r.keyEv===e.e+', '+e.d;
+  return `<details class="card eq-ev" ${open0?'open':''}><summary><b>Scan events (${E.length})</b><small>Newest at the bottom. The driver's scan is highlighted.</small></summary><ol>${E.map(e=>`<li class="${key(e)?'key':''}${/^y/i.test(e.o||'')?' out':''}"><b>${esc(e.e)}</b><small>${esc(e.d)}${e.w?' · '+esc(tc(e.w)):''}${e.u?' · '+esc(e.u):''}${/^y/i.test(e.o||'')?' · <em>Outside delivery radius</em>':''}${e.g?' · geo '+esc(e.g):''}</small></li>`).join('')}</ol></details>`}
+async function loadPics(id){if(eImgs[id]!==undefined)return;eImgs[id]=null;try{const q=await db.collection('enqimg').where('enq','==',id).get();eImgs[id]=q.docs.map(d=>Object.assign({id:d.id},__D(d))).filter(x=>x&&x.data).sort((a,b)=>a.id.localeCompare(b.id))}catch(x){eImgs[id]=[]}render()}
+function picsHTML(r){if(!r.pics)return '';const L=eImgs[r.id];if(L===undefined){setTimeout(()=>loadPics(r.id),0)}
+  return `<section class="card eq-pics"><span class="lbl">Pictures from the case</span>${!L?'<p class="sub">Loading pictures…</p>':L.length?`<div class="eq-pg">${L.map((x,k)=>`<button type="button" data-eq="pic" data-v="${esc(r.id)}" data-k="${k}"><img src="${x.data}" alt="${esc(x.name)}" loading="lazy"><small>${esc(x.name)}</small></button>`).join('')}</div>`:'<p class="sub">No pictures saved.</p>'}</section>`}
+function lboxHTML(){if(!lbox)return '';const L=eImgs[lbox.id]||[],x=L[lbox.k];if(!x)return '';return `<div class="eq-lb" data-eq="lbclose" role="dialog" aria-label="${esc(x.name)}"><img src="${x.data}" alt="${esc(x.name)}"><p>${esc(x.name)}</p><button type="button" class="sh-btn" data-eq="lbclose">Close</button></div>`}
+/* ---------- sending it to the driver, and their response ---------- */
+const whenT=iso=>{if(!iso)return '';const d=new Date(iso);return DOW[d.getDay()]+' '+d.getDate()+' '+MON[d.getMonth()]+', '+(d.getHours()%12||12)+':'+pad(d.getMinutes())+(d.getHours()<12?'am':'pm')};
+function drvBox(id,kind){const D=DRV[id],p=byLogin((recs[id]||{}).login);
+  const btn=`<button type="button" class="sh-btn ${D?'':'primary'}" data-eq="sendd" data-v="${esc(id)}" data-k="${kind}" ${p&&p.id?'':'disabled'}>${D?'Send again':'Send to driver'}</button>`;
+  return `<section class="card eq-drv"><span class="lbl">Driver's response</span>
+   ${!D?`<p class="sub">${p&&p.id?`Not sent yet. Send it to ${esc(p.name.split(' ')[0])} and their phone will ding. They can read it in the app and reply, and you'll get a ding when they do.`:'Pick a driver who is on the Drivers page to send it to them.'}</p>`
+   :D.response?`<div class="eq-resp"><p>${esc(D.response).replace(/\n/g,'<br>')}</p><small>${esc(whenT(D.respAt))}</small></div><p class="sub">Sent to them ${esc(whenT(D.sentAt))}.</p>`
+   :`<p class="sub">Sent ${esc(whenT(D.sentAt))}. ${D.seenAt?'They opened it '+esc(whenT(D.seenAt))+' but have not responded yet.':'Waiting for them to open it.'}</p>`}
+   <div class="b">${btn}</div></section>`}
+function drvChip(id){const D=DRV[id];if(!D)return '';return D.response?`<span class="eq-st ${D.offSeen?'ok':'new'}">${D.offSeen?'Driver responded':'New response'}</span>`:`<span class="eq-st wait">Waiting for driver</span>`}
+async function sendDrv(id,kind){const r=recs[id];if(!r)return;const p=byLogin(r.login);if(!p||!p.id){msg={err:true,t:'That driver is not on the Drivers page, so the app can’t send it to them.'};render();return}
+  const now=new Date().toISOString(),old=DRV[id]||{};
+  const base={kind,sid:p.id,login:p.login,name:p.name,sentAt:now,sentBy:(window.__webMe&&window.__webMe.email)||'',response:old.response||'',respAt:old.respAt||'',seenAt:old.seenAt||'',offSeen:old.offSeen||''};
+  let doc;
+  if(kind==='ncr')doc=Object.assign(base,{title:'NCR'+(r.caseNo?' '+r.caseNo:''),date:r.issued||'',caseNo:r.caseNo||'',address:r.address||'',article:r.article||'',delivered:r.delivered||'',issue:ISS[r.issue]||r.issue||'',details:r.what||'',actions:r.actions||''});
+  else{let pics=[];if(r.pics){if(eImgs[id]===undefined||eImgs[id]===null){try{const q=await db.collection('enqimg').where('enq','==',id).get();eImgs[id]=q.docs.map(d=>Object.assign({id:d.id},__D(d))).filter(x=>x&&x.data)}catch(x){eImgs[id]=[]}}
+      pics=(eImgs[id]||[]).map(x=>({id:x.id,name:x.name}));for(const x of pics){try{await db.doc('enqimg/'+x.id).update({sid:p.id})}catch(e){}}}
+    doc=Object.assign(base,{title:'Enquiry'+(r.caseNo?' '+r.caseNo:''),date:r.date||'',caseNo:r.caseNo||'',enqType:r.enqType||'',category:r.category||'',tracking:r.tracking||'',address:r.address||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',details:r.details||'',flags:flagsOf(r),events:(r.events||[]).slice(-60),keyEv:r.keyEv||'',pics})}
+  msg={t:'Sending…'};render();
+  try{await db.doc('drvenq/'+id).set(doc);DRV[id]=Object.assign({id},doc)}catch(x){msg={err:true,t:'Could not send it just now. Check your connection.'};render();return}
+  let j=null;try{j=window.PUSH?await PUSH.send('urgent',{staff:p.id,staffName:p.name,title:kind==='ncr'?'NCR to respond to':'Enquiry to respond to',body:(kind==='ncr'?'An NCR':'A customer enquiry')+(r.address?' about '+r.address:'')+'. Tap to read it and respond.',url:'#myenq/'+id}):null}catch(x){}
+  const fn=p.name.split(' ')[0];
+  msg=j&&j.sent?{t:'Sent to '+fn+'. Their phone got a ding.'}:j&&j.skipped&&/quiet/i.test(j.skipped)?{t:'Sent to '+fn+'. It is quiet hours, so no ding; they will see it next time they open the app.'}:{t:'Sent to '+fn+'. '+(j&&j.skipped?'Their phone does not have notifications on, so let them know it is there.':'They will see it in the app.')};
+  render()}
+/* pictures older than 12 months are removed to save space; the enquiry itself stays */
+async function cleanPics(){try{const k='eqclean',t=today();if(localStorage.getItem(k)===t)return;localStorage.setItem(k,t)}catch(x){}
+  try{const d=new Date();d.setMonth(d.getMonth()-12);const q=await db.collection('enqimg').where('eat','<',d.toISOString()).get();for(const x of q.docs)await db.doc('enqimg/'+x.id).delete()}catch(x){}}
 function oneHTML(r){
   const prev=enqs().filter(x=>x.login===r.login&&x.id!==r.id&&x.fault==='yes').length;
   return `<div class="eqx nx"><button type="button" class="sh-btn back" data-eq="back">‹ Enquiries</button>
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <section class="card"><div class="t2"><h2>${esc(r.driver||r.login||'')}</h2>${chip(r.fault)}</div><p class="sub">${[dno(r.login),r.login].filter(Boolean).map(esc).join(' · ')}${prev?` · ${prev} other at fault enquir${prev===1?'y':'ies'}`:''}</p></section>
+  ${flagsHTML(r)}
   ${r.details?`<div class="nwhat ${r.fault==='yes'?'':'neu'}"><b>What happened</b><p>${esc(r.details).replace(/\n/g,'<br>')}</p></div>`:''}
+  ${drvBox(r.id,'enq')}
   <section class="card"><span class="lbl">Details</span><dl class="kv"><dt>Date</dt><dd>${esc(nice(r.date))}</dd>${r.caseNo?`<dt>Case</dt><dd>${esc(r.caseNo)}</dd>`:''}${r.enqType?`<dt>Type</dt><dd>${esc(r.enqType)}</dd>`:''}${r.category?`<dt>Parcel category</dt><dd>${esc(r.category)}</dd>`:''}${r.customer?`<dt>Customer</dt><dd>${esc(r.customer)}</dd>`:''}${r.tracking?`<dt>Tracking</dt><dd class="brk">${esc(r.tracking)}</dd>`:''}${r.address?`<dt>Addressee address</dt><dd>${pcTag(pcOf(r))} ${esc(r.address)}</dd>`:''}${r.scanAddr?`<dt>Delivered delivery address</dt><dd class="${normA(r.scanAddr)!==normA(r.address)?'wt':''}">${esc(r.scanAddr)}${normA(r.scanAddr)!==normA(r.address)?'<br><small>Not the addressee address</small>':''}</dd>`:''}${r.deliveredAt?`<dt>Delivered</dt><dd>${esc(r.deliveredAt)}</dd>`:''}<dt>Outcome</dt><dd>${r.fault==='yes'?'At fault':r.fault==='partly'?'Partly at fault':r.fault==='no'?'Not at fault':'No outcome yet'}</dd>${r.supervisor?`<dt>Supervisor</dt><dd>${esc(r.supervisor)}</dd>`:''}${r.note?`<dt>Note</dt><dd>${esc(r.note)}</dd>`:''}</dl></section>
+  ${eventsHTML(r)}${picsHTML(r)}${lboxHTML()}
   ${r.createdAt?`<p class="sub">Recorded ${esc(nice(r.createdAt.slice(0,10)))}${r.updatedAt&&r.updatedAt!==r.createdAt?', last changed '+esc(nice(r.updatedAt.slice(0,10))):''}.</p>`:''}
   <div class="foot nfoot"><button type="button" class="sh-btn" data-eq="edit">Edit</button><span class="gap"></span><button type="button" class="sh-btn danger ${arm?'arm':''}" data-eq="del">${arm?'Tap again to delete':'Delete'}</button></div></div>`;
 }
@@ -7592,7 +7822,7 @@ document.addEventListener('click',async ev=>{
   if(a==='pnv'){const P=PER[el.dataset.k],n=+v;if(P.mode==='year'){const y=String(+P.y+n);if(y<=PM0.slice(0,4))P.y=y}else{const d=new Date(+P.m.slice(0,4),+P.m.slice(5)-1+n,1);const m=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(m<=PM0)P.m=m}render();return}
   if(a==='tab'){tab=v;msg=null;nOpen=null;nDraft=null;view='list';render();return}
   if(a==='nnew'){nDraft={issue:'sig'};nNew=[];msg=null;render();window.scrollTo(0,0);return}
-  if(a==='nopen'){window.__nqY=scrollY;nOpen=v;msg=null;render();window.scrollTo(0,0);return}
+  if(a==='nopen'){window.__nqY=scrollY;nOpen=v;msg=null;const D=DRV[v];if(D&&D.response&&!D.offSeen){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
   if(a==='nback'){nOpen=null;msg=null;render();if(window.__nqY!=null){window.scrollTo(0,window.__nqY);window.__nqY=null}return}
   if(a==='ncancel'){nDraft=null;nNew=[];msg=null;render();return}
   if(a==='nedit'){nDraft=clone(recs[nOpen]);nNew=[];msg=null;render();return}
@@ -7604,7 +7834,10 @@ document.addEventListener('click',async ev=>{
   if(a==='ndel'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{const id=nOpen;await db.doc('enqlog/'+id).delete();for(const f of (nFiles[id]||[]))void 0;delete recs[id];nOpen=null;arm=false;msg={t:'NCR deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
   if(a==='new'){window.__eqY=scrollY;draft={fault:''};view='form';msg=null;render();window.scrollTo(0,0);return}
-  if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;render();window.scrollTo(0,0);return}
+  if(a==='open'){window.__eqY=scrollY;open=v;view='one';msg=null;lbox=null;const D=DRV[v];if(D&&D.response&&!D.offSeen){D.offSeen=new Date().toISOString();db.doc('drvenq/'+v).update({offSeen:D.offSeen}).catch(()=>{})}render();window.scrollTo(0,0);return}
+  if(a==='sendd'){sendDrv(v,el.dataset.k);return}
+  if(a==='pic'){lbox={id:v,k:+el.dataset.k};render();return}
+  if(a==='lbclose'){if(ev.target.closest('img'))return;lbox=null;render();return}
   if(a==='back'||a==='cancel'){view=draft&&draft.id&&a==='cancel'?'one':'list';draft=null;msg=null;render();if(view==='list'&&window.__eqY!=null){window.scrollTo(0,window.__eqY);window.__eqY=null}return}
   if(a==='edit'){draft=clone(recs[open]);view='form';msg=null;render();return}
   if(a==='f'){readForm();draft.fault=v;render();return}
@@ -7630,8 +7863,13 @@ document.addEventListener('click',async ev=>{
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
     if(!r.fault){msg={err:true,t:'Choose Yes, at fault or No, not at fault.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
-    const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now};
-    try{await db.doc('enqlog/'+id).set(doc);if(!r.id&&doc.login)try{window.PUSH&&PUSH.send('enquiry',{login:doc.login})}catch(x){}recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'}}catch(x){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0);return}
+    const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
+      events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
+    try{await db.doc('enqlog/'+id).set(doc);
+      /* pictures from the PDF (maps and scan photo) are kept beside the enquiry and only download when it is opened */
+      if(r._imgs){try{const old=await db.collection('enqimg').where('enq','==',id).get();for(const d of old.docs)await db.doc('enqimg/'+d.id).delete()}catch(x){}
+        let k=0;for(const im of r._imgs){if(String(im.data).length>900000)continue;try{await db.doc('enqimg/'+id+'_p'+(k++)).set({enq:id,name:im.name,type:'image/jpeg',data:im.data,eat:now})}catch(x){}}delete eImgs[id]}
+      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'+(DRV[id]?'':' Tap Send to driver when you want them to see it and respond.')}}catch(x){msg={err:true,t:'Could not save just now.'}}render();window.scrollTo(0,0);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{await db.doc('enqlog/'+open).delete();delete recs[open];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
 });
@@ -7665,9 +7903,9 @@ document.addEventListener('change',async ev=>{const el=ev.target;
   if(el.id==='eq_qp'){qPc=el.value;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_of'){onlyFault=el.checked;$('res').innerHTML=resHTML(filtered());return}
   if(el.id==='eq_pdf'&&el.files[0]){readForm();busy='Reading the case PDF…';render();
-    try{const o=fromCase(await pdfText(el.files[0]));if(!o.caseNo&&!o.login)throw 0;
+    try{const PC=await pdfCase(el.files[0]);const o=fromCase(PC.text,PC.events);if(!o.caseNo&&!o.login)throw 0;draft._imgs=PC.imgs||[];draft.events=o.events||[];draft.outside=!!o.outside;draft.geo=o.geo||'';draft.keyEv=o.keyEv||'';
       draft.caseNo=o.caseNo||draft.caseNo;if(o.login){draft.login=o.login;const p=byLogin(o.login);draft.driver=p?p.name:o.login}draft.address=o.address||draft.address;draft.details=o.details||draft.details;for(const k of ['scanAddr','category','enqType','customer','tracking','deliveredAt'])if(o[k])draft[k]=o[k];if(o.date)draft.date=o.date;
-      busy=null;msg={t:'Filled in from the PDF. Check it, then choose the outcome.'}}catch(x){busy=null;msg={err:true,t:'Couldn’t read that PDF. Fill the details in by hand.'}}
+      busy=null;msg={t:'Filled in from the PDF'+(draft.events.length?', with '+draft.events.length+' scan events':'')+(draft._imgs.length?' and '+draft._imgs.length+' picture'+(draft._imgs.length===1?'':'s'):'')+'. Check it, then choose the outcome.'}}catch(x){busy=null;msg={err:true,t:'Couldn’t read that PDF. Fill the details in by hand.'}}
     el.value='';render();return}
 });
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.matches&&ev.target.matches('#mod-enquiries tr[data-eq=open]'))ev.target.click()});
@@ -7711,7 +7949,9 @@ async function start(role){
   mode=role==='mgr'?'mgr':'drv';if(mode!=='mgr'){render();return}
   try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(x){db=null}
   if(!db){msg={err:true,t:'Could not connect. Reload the page.'};render();return}
-  try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>clone(__D(d))))}catch(x){}
+  try{const s=await db.collection('staff').get();loadStaff(s.docs.map(d=>Object.assign({id:d.id},clone(__D(d)))))}catch(x){}
+  db.collection('drvenq').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));DRV=o;const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{});
+  setTimeout(cleanPics,8000);
   db.collection('enqlog').onSnapshot(snap=>{const o={};for(const d of snap.docs)o[d.id]=Object.assign({id:d.id},clone(__D(d)));recs=o;pushStat();seedOnce();
     const a=document.activeElement;if(view==='form'||(a&&a.closest&&a.closest('#mod-enquiries')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)))return;render()},()=>{msg={err:true,t:'Could not load enquiries.'};render()});
   render();
@@ -10451,7 +10691,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611020952';
+const VERSION='1202611021038';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12136,7 +12376,7 @@ const A={ /* office */
  'mod-results':'Results come from the daily performance reports. Use the date bar to pick a day, week or pay period, and tap How the Contract Score works to see how each score is worked out.',
  'mod-survey':'Scores from the customer survey. A 9 or 10 is a promoter and 0 to 6 is a detractor. Tap How the NPS score works to see how the team score is worked out.',
  'mod-summary':'The whole contract at a glance for the period you pick, built from the same results as the Results tab.',
- 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver. Use the date bar to look back over a month or the whole year.':'Every customer enquiry for the period you pick. Press + Enquiry to log a new one, and use At fault only to see just the ones that count against a driver.',
+ 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver, then open it and tap Send to driver so they can read it and respond. You get a ding when they do.':'Press + Enquiry and use Fill in from the case PDF: it brings in the scan events, the maps and the scan photo. Open an enquiry and tap Send to driver so they can respond; you get a ding when they do.',
  'mod-runs':t=>/sort/i.test(t)?'Which driver each street goes to, by postcode. Use it at the depot to redirect missorts. Drivers get changes after you press Send latest to drivers.':'Each driver’s streets in delivery order, with customer and access notes. Pick a postcode at the top. Drivers get changes after you press Send latest to drivers.',
  'mod-precards':'Precards are split into Approved and Under review. Check the ones under review and approve them once they are right.',
  'mod-lockers':'Parcel lockers on the contract, with the building and Australia Post details for each one.',
@@ -12153,6 +12393,7 @@ const A={ /* office */
  'mod-uniform':t=>({'order settings':'Choose which items drivers can order and how many of each.',order:'Place a uniform order for someone.',completed:'Orders that have been handed out.'})[t.toLowerCase()]||'Uniform orders from drivers. Mark each one done once it has been handed out and it moves to Completed.'
 };
 const D={ /* drivers */
+ 'mod-myenq':'Enquiries and NCRs the office sends you show here, and your phone dings. Open one, read what happened, and send your response. The office is told straight away.',
  'mod-me':'Your own results for the week. Tap How the Contract Score works to see how your score is worked out.',
  'mod-updates':'News from the office. You get a ding on your phone when a new one is posted.',
  'mod-briefs':'The weekly team brief. Read it all the way through and sign it so the office knows you have seen it.',
