@@ -1,0 +1,8 @@
+()=>{const out={};const W=document.documentElement.clientWidth;
+const sec=[...document.querySelectorAll('#sh-main .sh-sec')].find(s=>!s.hidden&&s.offsetParent);out.sec=sec?sec.id:'none';
+if(document.documentElement.scrollWidth>W+1)out.sideways=true;
+const wide=[...document.querySelectorAll('#sh-main *')].filter(e=>{if(!e.offsetParent)return false;const r=e.getBoundingClientRect();return r.width>0&&r.right>W+2&&getComputedStyle(e).position!=='fixed'&&!e.closest('.tw,table,[style*=overflow],.dmc,.chips,.lk-sts,.pchs')}).slice(0,3).map(e=>e.tagName+'.'+String(e.className).slice(0,30));if(wide.length)out.offScreen=wide;
+const lum=c=>{const m=c.match(/[\d.]+/g);if(!m)return null;if(m.length>3&&+m[3]<0.5)return null;const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(+m[0])+.7152*f(+m[1])+.0722*f(+m[2])};
+const bgOf=e=>{while(e&&e!==document.documentElement){const L=lum(getComputedStyle(e).backgroundColor);if(L!=null)return L;e=e.parentElement}return lum(getComputedStyle(document.body).backgroundColor)};
+const low=[];for(const e of document.querySelectorAll('#sh-main :is(b,span,small,em,h1,h2,h3,p,button,label,td,th,a)')){if(!e.offsetParent)continue;const t=[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();if(t.length<2)continue;const cs=getComputedStyle(e);if(+cs.opacity<.6||e.closest('[disabled],.z,.dim'))continue;const f=lum(cs.color),b=bgOf(e);if(f==null||b==null)continue;const r=(Math.max(f,b)+.05)/(Math.min(f,b)+.05);if(r<2.6)low.push(t.slice(0,22)+' '+r.toFixed(1))}
+if(low.length)out.hardToRead=[...new Set(low)].slice(0,5);return out}
