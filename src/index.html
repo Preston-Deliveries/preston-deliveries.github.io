@@ -1323,7 +1323,7 @@ function openSettings(){closeSettings();const drv=role!=='mgr',can=previewChild|
   const w=document.createElement('div');w.id='sh-set';w.setAttribute('role','dialog');w.setAttribute('aria-label','Settings');
   w.innerHTML=`<div class="bg" data-sh="setclose"></div><div class="pn"><div class="hd"><b>Settings</b><button type="button" class="x" data-sh="setclose" aria-label="Close">✕</button></div>
    ${can?`<div class="dm-row" data-notr><h3>View</h3><div class="thseg" role="group" aria-label="View"><button type="button" ${previewChild?'data-sh="mv"':'data-sh="setclose"'} aria-pressed="${!previewChild}">Admin</button><button type="button" ${previewChild?'data-sh="setclose"':'data-sh="uv"'} aria-pressed="${!!previewChild}">👁 Driver view</button></div></div>`:''}
-   ${setRows(drv)}${previewChild?'':pushRow()}<button type="button" class="dm-out" data-sh="signout">Sign out</button>${(()=>{let w=null;try{w=(window.__whoAmI||window.parent.__whoAmI)()}catch(e){}return w&&w.email?`<p class="who" data-notr>Signed in as ${esc(w.email)}<br>${w.role==='admin'?'Admin':'Driver'}${window.__swVersion?' · Alerts '+esc(String(window.__swVersion).replace('pds-app-','')):' · Alerts not ready'}<br>App version ${(()=>{let L=window.__verLabel,V=window.__webVersion;try{L=L||window.parent.__verLabel;V=V||window.parent.__webVersion}catch(e){}V=V||(typeof VERSION!=='undefined'?VERSION:'');return esc(L?L(V):String(V||''))})()}</p>`:''})()}</div>`;
+   ${setRows(drv)}${previewChild?'':pushRow()}<button type="button" class="dm-out" data-sh="signout">Sign out</button>${(()=>{let w=null;try{w=(window.__whoAmI||window.parent.__whoAmI)()}catch(e){}return w&&w.email?`<p class="who" data-notr>Signed in as ${esc(w.email)}<br>${w.role==='admin'?'Admin':'Driver'}${window.__swVersion?' · Alerts '+esc(String(window.__swVersion).replace('pds-app-','')):' · Alerts not ready'}<br>App version ${(()=>{let L=window.__verLabel,V=window.__webVersion;try{L=L||window.parent.__verLabel;V=V||window.parent.__webVersion}catch(e){}V=V||(typeof VERSION!=='undefined'?VERSION:'');return esc(L?L(V):String(V||''))})()}<br>${AL.err?'Live alerts: not connected ('+esc(AL.err)+')':AL.unsub&&AL.ok?'Live alerts: connected, '+AL.list.length+' today':'Live alerts: connecting'}</p>`:''})()}</div>`;
   document.body.appendChild(w);requestAnimationFrame(()=>w.classList.add('on'))}
 function closeSettings(){const w=document.getElementById('sh-set');if(w)w.remove()}
 /* ---------- Phone notifications: on/off for this phone, and the admin controls ---------- */
@@ -1435,7 +1435,7 @@ document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.c
     if(posted||(ding&&!j.error)){const bd=document.getElementById('pu_body');if(bd)bd.value='';const dg=document.getElementById('pu_ding');if(dg)dg.checked=false}
     puState.log=await P.log();puRefresh();return}});
 /* Alerts on Home: everyone sees them until midnight. Admins see all of them and can remove one. */
-const AL={list:[],day:'',unsub:null,busy:false};
+const AL={list:[],day:'',unsub:null,busy:false,err:'',ok:false};
 const alMine=a=>{if(role==='mgr')return true;const me=window.__webMe||{};const t=String(a.to||'');if(!t)return true;
   if(t.startsWith('pc:')){const pcs=(window.PUSH&&PUSH.pcs)?PUSH.pcs():[];return pcs.includes(t.slice(3))}
   if(t.startsWith('st:'))return String(me.staff||'')===t.slice(3);return false};
@@ -1457,7 +1457,8 @@ function alPaint(){const home=document.getElementById('sh-home');if(!home)return
   const an=window.__placeFind()||hero;if(w.previousElementSibling!==an)an.after(w);
   if(w.__h!==h){w.__h=h;w.innerHTML=h}}
 async function alWatch(){if(AL.unsub||AL.busy)return;AL.busy=true;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(e){}AL.busy=false;if(!db||AL.unsub){if(!db)setTimeout(alWatch,5000);return}
-  AL.day=window.__qISO();AL.unsub=db.collection('updates').where('day','==',AL.day).onSnapshot(q=>{AL.list=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.kind==='alert');alPaint()},()=>{try{AL.unsub&&AL.unsub()}catch(e){}AL.unsub=null;setTimeout(alWatch,30000)})}
+  AL.day=window.__qISO();AL.unsub=db.collection('updates').where('day','==',AL.day).onSnapshot(q=>{AL.ok=true;AL.err='';AL.list=q.docs.map(d=>Object.assign({id:d.id},d.data())).filter(a=>a.kind==='alert');alPaint()},x=>{AL.ok=false;AL.err=String(x&&(x.code||x.message)||'error').slice(0,60);try{AL.unsub&&AL.unsub()}catch(e){}AL.unsub=null;setTimeout(alWatch,30000)})}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible')return;if(AL.unsub&&AL.day!==window.__qISO()){try{AL.unsub()}catch(e){}AL.unsub=null;AL.list=[]}if(!AL.unsub)alWatch();alPaint()});
 setInterval(()=>{if(AL.unsub&&AL.day!==window.__qISO()){try{AL.unsub()}catch(e){}AL.unsub=null;AL.list=[];alPaint();alWatch()}else{alPaint();if(!AL.unsub)alWatch()}},60000);
 (()=>{const go=()=>{const home=document.getElementById('sh-home');if(!home){setTimeout(go,300);return}new MutationObserver(()=>alPaint()).observe(home,{childList:true});alWatch();alPaint()};go()})();
 function alHide(id){const ids=new Set(AL.list.map(a=>a.id));const h=alHid().filter(x=>ids.has(x));if(!h.includes(id))h.push(id);try{localStorage.setItem('pds_alhide',JSON.stringify(h))}catch(x){}}
@@ -11042,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611030950';
+const VERSION='1202611031050';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();

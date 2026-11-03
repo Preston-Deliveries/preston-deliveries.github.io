@@ -13,7 +13,7 @@ function mk(path){const f=function(){return mk(path)};return new Proxy(f,{get(t,
  if(p===Symbol.toPrimitive)return ()=>'';
  if(p==='id')return 'x';
  return mk(path)},apply(){return mk(path)}})}
-const user={uid:'u1',email:'jozza721@gmail.com',displayName:'Jonathan Simpson',emailVerified:true,getIdToken:()=>Promise.resolve('t'),getIdTokenResult:()=>Promise.resolve({claims:{}})};
+const user={uid:'u1',email:(window.__FAKE_EMAIL||'jozza721@gmail.com'),displayName:'Jonathan Simpson',emailVerified:true,getIdToken:()=>Promise.resolve('t'),getIdTokenResult:()=>Promise.resolve({claims:{}})};
 const auth=new Proxy({},{get(t,p){
  if(p==='onAuthStateChanged'||p==='onIdTokenChanged')return cb=>{setTimeout(()=>cb(user),20);return()=>{}};
  if(p==='currentUser')return user;
