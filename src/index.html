@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611041816';
+const VERSION='1202611041830';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13951,6 +13951,26 @@ html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .tx{display:block!important;
 html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .tx b{display:block!important;color:var(--cu-ink)!important;font-size:1rem!important;line-height:1.15!important}
 html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .tx small{display:block!important;color:var(--cu-mut)!important;font-size:.8rem!important;line-height:1.25!important;margin-top:3px!important;white-space:normal!important}
 html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .bdg{position:absolute!important;top:10px!important;right:10px!important;margin:0!important}
+
+/* Open titles, like Facebook */
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph{background:transparent!important;border:0!important;border-radius:0!important;margin:6px 16px 0!important;color:var(--cu-ink)!important;overflow:visible!important}
+html body:has(#sh-tabs .sh-utabs>button) html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph{border:0!important;border-radius:0!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in{padding:4px 0!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph h1{color:var(--cu-ink)!important;font-size:1.6rem!important;line-height:1.08!important;font-weight:800!important;letter-spacing:-.01em!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button{background:transparent!important;color:var(--cu-ink)!important;width:40px!important;min-width:40px!important;max-width:40px!important;height:40px!important;border-radius:50%!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back svg,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button svg{color:var(--cu-ink)!important;stroke:var(--cu-ink)!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back{margin-left:-8px!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button:is(:hover,:active),html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button:active,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back:active{background:var(--cu-line)!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button[aria-pressed=true]{background:transparent!important;color:var(--cu-or)!important}
+html body #sh-ph .cu-fb.cu-on::after{border:0!important;top:5px!important;right:5px!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-logo{border-radius:9px!important}
+html body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs:has(.sh-utabs>button){background:transparent!important;border:0!important;border-bottom:1px solid var(--cu-line)!important;border-radius:0!important;margin:0 16px 2px!important}
+html body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs.sh-utabs.sh-utabs>button{color:var(--cu-mut)!important;font-size:1rem!important}
+html body #sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs#sh-tabs .sh-utabs.sh-utabs.sh-utabs>button[aria-current=page]{color:var(--cu-ink)!important;border-bottom-color:var(--cu-or)!important}
+html body:not(.cu-hasph) .sh-mtop.sh-mtop.sh-mtop{background:transparent!important;border:0!important;border-radius:0!important;margin:6px 16px 0!important;padding:4px 0!important}
+html body .sh-mtop.sh-mtop.sh-mtop .sh-brand .bt b{color:var(--cu-ink)!important;font-size:1.75rem!important;font-weight:800!important}
+html body .sh-mtop.sh-mtop.sh-mtop .sh-tb>button{background:transparent!important;color:var(--cu-ink)!important;border-radius:50%!important;width:40px!important;height:40px!important}
+html body .sh-mtop.sh-mtop.sh-mtop .sh-tb>button svg{color:var(--cu-ink)!important;stroke:var(--cu-ink)!important}
 }
 </style>
 <script id="cardui-js">
