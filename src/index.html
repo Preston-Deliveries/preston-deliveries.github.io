@@ -4721,6 +4721,22 @@ Then check your email and tap the link to confirm it.
 5. Sign in and follow the welcome steps.
 
 Any problems, just message me.`}
+function appMsg(p){const first=title(String(p.first||'').split(' ')[0]);return `Hi${first?' '+first:''}, here's the Preston Delivery Service app. It has your run sheet, results, leave, updates and invoices.
+
+1. Open this link on your phone: https://preston-deliveries.github.io
+iPhone: open it in Safari. Android: open it in Chrome.
+
+2. Put it on your home screen
+iPhone: tap the Share button (the square with the arrow pointing up), tap "Add to Home Screen", then Add.
+Android: tap the 3 dots at the top right, then "Add to Home screen" or "Install app".
+
+3. Open the app from the PDS icon, tap "First time here? Set up your password" and use this email: ${p.email||'(the email we have for you)'}
+Then check your email and tap the link to confirm it.
+
+4. Sign in. That's it.
+
+Any problems, just message me.`}
+function appHTML(p){const m=appMsg(p);return `<section class="dm-onb dm-app"><h3>App link</h3><div class="dm-onba"><button type="button" class="sh-btn primary" data-dmx="appcopy">Copy app link message</button>${p.mobile?`<a class="sh-btn wab" href="https://wa.me/${esc(waOf(p.mobile))}?text=${encodeURIComponent(m)}" target="_blank" rel="noopener">${WAI}WhatsApp the app link</a>`:''}${p.email?`<a class="sh-btn" href="mailto:${esc(p.email)}?subject=${encodeURIComponent('Preston Delivery Service app')}&body=${encodeURIComponent(m)}">✉ Email the app link</a>`:''}</div>${p.email?'':`<p class="hint">Add their email first. They need it to set up their password.</p>`}<details class="dm-onbm"><summary>See the message</summary><pre>${esc(m)}</pre></details></section>`}
 function onbHTML(p){const id=p.id;if(!p.onboard)return `<section class="dm-onb"><h3>New driver welcome steps</h3><p class="hint">For new drivers: they fill in their details, work rights and document photos themselves in the app.</p><div class="dm-onba"><button type="button" class="sh-btn" data-dmx="onbstart">Send them the welcome steps</button><button type="button" class="sh-btn" data-dmp="1">See what they look like</button></div></section>`;
   onbLoad(id);const o=OBC[id];const st=p.onboard==='done'?'✓ Done':o===null||o===undefined?'Checking…':!o?'Waiting for them to start':o.status==='submitted'?'Sent in on '+niceD(o.submittedAt)+(p.onbCopiedAt?', added to their record':''):'In progress, step '+((o.step||0)+1)+' of 6';
   const msgTxt=onbMsg(p);
@@ -4906,7 +4922,7 @@ document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.
   if(a==='indundo'){await saveExtra(id,{indAt:'',indBy:'',indItems:[]},'Site induction cleared.');return}
   if(a==='onbstart'){await saveExtra(id,{onboard:'pending'},'Welcome steps turned on. Send them the app link.');return}
   if(a==='onbdone'){await saveExtra(id,{onboard:'done'},'Onboarding marked done.');return}
-  if(a==='onbcopymsg'){const t=el.closest('.dm-onb').querySelector('.dm-onbm pre');const txt=t?t.textContent:'';let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(x){try{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(y){}}const old=el.textContent;el.textContent=ok?'✓ Copied. Paste it into a text or message.':'Could not copy. Tap “See the message” below.';setTimeout(()=>{el.textContent=old},3000);return}
+  if(a==='appcopy'||a==='onbcopymsg'){const t=el.closest('.dm-onb').querySelector('.dm-onbm pre');const txt=t?t.textContent:'';let ok=false;try{await navigator.clipboard.writeText(txt);ok=true}catch(x){try{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ok=document.execCommand('copy');ta.remove()}catch(y){}}const old=el.textContent;el.textContent=ok?'✓ Copied. Paste it into a text or message.':'Could not copy. Tap “See the message” below.';setTimeout(()=>{el.textContent=old},3000);return}
   if(a==='onbview'){obView=!obView;if(obView&&!OBI[id]&&window.ONB)window.ONB.imgs(id).then(x=>{OBI[id]=x||[];const box=document.querySelector('#mod-staff .dm-onbi');if(openId===id&&box&&people[id]){const t=document.createElement('div');t.innerHTML=onbHTML(people[id]);const nb=t.querySelector('.dm-onbi');if(nb)box.replaceWith(nb)}});render();return}
   if(a==='onbcopy'){const o=OBC[id];if(!o)return;await saveExtra(id,Object.assign(onbPatch(o.d||{},people[id]),{onbCopiedAt:new Date().toISOString()}),'Their answers are now in this record. Check it over before you save.');return}});
 function render(){
@@ -4953,7 +4969,7 @@ function detailHTML(){
       <h2 id="dm_title">${isNew?(newFull?'+ Person':'+ Driver'):esc(fullName(p))}</h2>
       ${isNew?'':`<div class="quick">${roleTag(p.role)}${trolleys(p)?`<span class="sub">Driver bay ${esc(trolleys(p))} (from the run sheet)</span>`:''}${runsOf(p).map(d=>`<button type="button" class="sh-btn" data-dm="run" data-v="${esc(d)}">Open ${esc(d)} run sheet</button>`).join('')}
         ${p.mobile?`<span class="phone">${esc(p.mobile)}</span><a class="sh-btn wab" href="https://wa.me/${esc(waOf(p.mobile))}" target="_blank" rel="noopener">${WAI}WhatsApp</a><button type="button" class="sh-btn" data-dm="copy" data-v="${esc(p.mobile)}">Copy mobile</button>`:''}</div>`}
-      ${!isNew&&p.onboard==='pending'?onbHTML(p)+apHTML(p):''}
+      ${!isNew&&p.onboard==='pending'?onbHTML(p)+apHTML(p):''}${!isNew&&p.onboard!=='pending'?appHTML(p):''}
       ${isNew&&!newFull?`<p class="dm-newh">Just add their <b>email</b>, and their <b>mobile</b> if you want to WhatsApp them the app link. They fill in everything else themselves through the welcome steps, and it goes straight into their record for you to check.</p>
       <div class="grid">${grp('New driver',['email','mobile'])}</div><input type="checkbox" id="dm_f_onbnew" checked hidden>
       <div class="dm-onba"><button type="button" class="sh-btn" data-dmp="1">See what they look like</button><button type="button" class="sh-btn" data-dmn="1">Fill in all their details myself instead</button></div>`:`<div class="grid">${grp('Name and role',['first','last','role','runs','bay'])+grp('Scanner login',['login','pw'])}${grp('Contact',['mobile','email'])}${grp('Van',['van','rego'])+grp('Expiry dates and checks',['licDue','regoDue','tenDue','fit2work'])+grp('Work rights',['visa','visaType','visaDue','workRights','vevoAt'])+grp('Personal and business',['dob','address','abn','gst'])+grp('Pay and bank',['payFreq','bankName','bsb','acct'])+grp('App access',['appAccess'])}${grp('Emergency contact',['ecName','ecPhone'])}${grp('Other',['notes'])}</div>`}
@@ -11043,7 +11059,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611050642';
+const VERSION='1202611050647';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
