@@ -1014,7 +1014,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function stamp(){const n=new Date();return n.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'})+' at '+n.toLocaleTimeString('en-AU',{hour:'numeric',minute:'2-digit'})}
 function visible(){return SECS.filter(s=>s!=='alerts'&&s!=='myenq'&&(role==='mgr'?true:!MGR_ONLY.includes(s)&&!DRV_HIDE.includes(s)))}
-function tabSecs(){return role==='mgr'?['home','results','updates','menu']:['home','me','updates','menu']}
+function tabSecs(){return role==='mgr'?['home','results','enquiries','leave','menu']:['home','me','updates','menu']}
 function openMore(){closeMore();const v=new Set(visible());const T=tabSecs();
   const w=document.createElement('div');w.id='sh-more';w.setAttribute('role','dialog');w.setAttribute('aria-label','All sections');
   w.innerHTML=`<div class="sh-more-bg" data-sh="moreclose"></div><div class="sh-more-sheet"><div class="sh-more-top"><b>All sections</b><button type="button" class="sh-btn" data-sh="moreclose">Close</button></div><div class="sh-more-body">${GROUPS.map(g=>{const ss=g.secs.filter(x=>v.has(x)&&x!=='home');if(!ss.length)return'';return `<section class="sh-tgroup g-${g.k}"><h2>${esc(g.k==='start'?'Overview':g.name)}</h2><div class="sh-list">${ss.map(tile).join('')}</div></section>`}).join('')}</div></div>`;
@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611042135';
+const VERSION='1202611042209';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13956,7 +13956,7 @@ html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .bdg{position:absolute!impor
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph{background:transparent!important;border:0!important;border-radius:0!important;margin:6px 16px 0!important;color:var(--cu-ink)!important;overflow:visible!important}
 html body:has(#sh-tabs .sh-utabs>button) html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph{border:0!important;border-radius:0!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in{padding:4px 0!important}
-html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph h1{color:var(--cu-ink)!important;font-size:min(28px,calc((100vw - 252px) / 5.75))!important;line-height:1.15!important;font-weight:700!important;letter-spacing:0!important;font-family:'Barlow Semi Condensed','Barlow',system-ui,sans-serif!important;white-space:nowrap!important;-webkit-line-clamp:unset!important;display:block!important;text-overflow:ellipsis!important;overflow:hidden!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph h1{color:var(--cu-ink)!important;font-size:min(30px,calc((100vw - 120px) / 7.5))!important;line-height:1.15!important;font-weight:700!important;letter-spacing:0!important;font-family:'Barlow Semi Condensed','Barlow',system-ui,sans-serif!important;white-space:nowrap!important;-webkit-line-clamp:unset!important;display:block!important;text-overflow:ellipsis!important;overflow:hidden!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button{background:transparent!important;color:var(--cu-ink)!important;width:34px!important;min-width:34px!important;max-width:34px!important;height:40px!important;border-radius:50%!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl{gap:6px!important}html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb{gap:4px!important}html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button::before{width:22px!important;height:22px!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .sh-back svg,html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button svg{color:var(--cu-ink)!important;stroke:var(--cu-ink)!important}
@@ -14003,6 +14003,17 @@ html body .cu-burger svg{width:26px!important;height:26px!important;stroke:curre
 html body #sh-ph .cu-logo{display:none!important}
 
 html body .cu-sbox:not(.cu-sshow){display:none!important}
+html.appui:not(.drvui) body nav.sh-side .sh-links [data-nav=enquiries]{order:3!important}
+html.appui:not(.drvui) body nav.sh-side .sh-links [data-nav=leave]{order:4!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .sh-home>.dh-cards.fd-wrap{display:contents!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .sh-home>.sh-hero{order:1!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .ah-find{order:2!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .pu-strip{order:3!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .sh-home>.dh-cards:not(.fd-wrap){order:4!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .ah-qa{order:5!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .sh-home>.appver{order:6!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .ah-hero{padding-top:12px!important;padding-bottom:12px!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcm-r .tx em{color:var(--sh-ink)!important;font-weight:500!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .ah-fq{margin-top:0!important;margin-bottom:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-home .ah-frow{align-items:center!important}
 @media (min-width:900px){
@@ -14083,7 +14094,7 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
     if(!ph)return;
     var ttl=ph.querySelector('.ttl'),back=ph.querySelector('.sh-back'),noBack=!back;
     var lg=ph.querySelector('.cu-logo'),tb=ph.querySelector('.cu-tb'),src=mt&&mt.querySelector('.sh-tb');
-    if(!has||!ttl){if(lg)lg.remove();if(tb)tb.remove();return}
+    if(lg)lg.remove();if(tb)tb.remove();return;
     if(!lg){var im=mt&&mt.querySelector('.sh-logo');if(im){lg=im.cloneNode(true);lg.className='cu-logo';lg.removeAttribute('width');lg.removeAttribute('height');ttl.insertBefore(lg,ttl.firstChild)}}
     if(src){
       if(!tb){tb=document.createElement('span');tb.className='cu-tb';ttl.appendChild(tb)}
@@ -14092,7 +14103,7 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
     }else if(tb)tb.remove();
   }
   var SHORT={'Precards and Lockers':'Precards','Invoices and Timesheets':'Invoices','Driver Management':'Drivers','Enquiries and NCRs':'Enquiries','Updates and Team Briefs':'Updates','Reports and Feedback':'Reports','Run and Sort Sheets':'Run Sheets','Driver Results':'Results'};
-  function short(){var h=document.querySelector('#sh-ph h1');if(!h)return;var t=h.textContent.trim();if(SHORT[t]&&h.children.length===0)h.textContent=SHORT[t]}
+  function short(){var ls=document.querySelectorAll('nav.sh-side .lg');for(var i=0;i<ls.length;i++){var lt=ls[i].textContent.trim();if(SHORT[lt])ls[i].textContent=SHORT[lt]}var h=document.querySelector('#sh-ph h1');if(!h)return;var t=h.textContent.trim();if(SHORT[t]&&h.children.length===0)h.textContent=SHORT[t]}
   function hows(){
     var sec=act();if(!sec)return;var d=sec.querySelectorAll('details.sc-how');
     for(var i=0;i<d.length;i++){var p=d[i].parentNode;if(p&&p.lastElementChild!==d[i]){var x=d[i];while(x.nextElementSibling&&x.nextElementSibling.tagName==='DETAILS'&&x.nextElementSibling.classList.contains('sc-how'))x=x.nextElementSibling;if(x.nextElementSibling)p.appendChild(d[i])}d[i].classList.add('cu-how')}
