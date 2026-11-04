@@ -3597,16 +3597,16 @@ function rkClass(r,n){if(!r.rank)return "nr";if(r.rank===1)return "k1";if(r.rank
 const scTxt=r=>window.SCORE.fmt(r.avg||0);
 function mountBoard(box,rows){
   box.classList.remove("rt");
-  {const S=window.__rbS,num=v=>v==null||v===""||isNaN(+v)?null:+v,F={pc:[r=>num(r.pc),-1],eta:[r=>num(r.eta),1],cp:[r=>num(r.cp),1],enq:[r=>(+r.enq||0)+(+r.enqP||0),-1]}[S];
+  {const S=window.__rbS,num=v=>v==null||v===""||isNaN(+v)?null:+v,F={sc:[r=>num(r.avg),-1],pc:[r=>num(r.pc),-1],eta:[r=>num(r.eta),1],cp:[r=>num(r.cp),1],enq:[r=>(+r.enq||0)+(+r.enqP||0),-1]}[S];
    if(F){const [f,d]=F;rows=rows.slice().sort((a,b)=>{const x=f(a),y=f(b);if(x==null&&y==null)return 0;if(x==null)return 1;if(y==null)return -1;return (x-y)*d})}}
   if(!rows.length){box.innerHTML=`<div class="empty">No results for ${view==="day"?"this day":view==="week"?"this week":"this pay cycle"} yet. Load them in Import.</div>`;return}
   const nR=rows.filter(r=>r.rank).length;
   box.innerHTML=`<div class="rb-top"><div><b class="rb-t1">Driver results</b><span class="rb-t2">${escR(perLabel())}</span></div><div class="rb-dl rb-dl2"><button type="button" class="sh-btn rb-pdf" data-rb="pdf" aria-label="Download PDF" title="Download PDF">PDF</button></div></div><p class="rb-msg" id="r_boardMsg" hidden></p>
   ${((rows)=>{const P=window.__rbPc,MM=window.__rbPcMap||{};if(P&&P!=="all")rows=rows.filter(r=>MM[String(r.login).toUpperCase()]===P);return (()=>{const n=a=>a.filter(v=>v!=null&&v!==""&&!isNaN(+v)).map(Number),av=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null},sm=a=>{a=n(a);return a.length?a.reduce((x,y)=>x+y,0):null};
-    const pc=sm(rows.map(r=>r.pc)),eta=av(rows.map(r=>r.eta)),cp=av(rows.map(r=>r.cp)),eq=sm(rows.map(r=>(+r.enq||0)));const tg=(window.SCORE&&window.SCORE.targets&&window.SCORE.targets())||{};
+    const scD=rows.reduce((a,r)=>a+((+r.days||0)>0&&r.avg!=null?+r.days:0),0),scV=scD?rows.reduce((a,r)=>a+((+r.days||0)>0&&r.avg!=null?(+r.avg)*(+r.days):0),0)/scD:null,pc=sm(rows.map(r=>r.pc)),eta=av(rows.map(r=>r.eta)),cp=av(rows.map(r=>r.cp)),eq=sm(rows.map(r=>(+r.enq||0)));const tg=(window.SCORE&&window.SCORE.targets&&window.SCORE.targets())||{};
     const cE=eta==null?"n":eta*100>=(tg.etaG||98)-1e-9?"g":"b",cC=cp==null?"n":cp*100>=(tg.cpG||99)-1e-9?"g":"b";
     const S=window.__rbS||"",tb=(k,v,c,l)=>`<button type="button" class="ct ct-${c==="b"?"bad":c==="g"||c==="gd"?"good":"none"}" data-rbs="${k}" aria-pressed="${S===k}"><b class="v-${c}">${v}</b><small>${l}${S===k?" ▾":""}</small></button>`;
-    return `<div class="rb-tot">${tb("pc",pc==null?"–":Math.round(pc).toLocaleString("en-AU"),"n","Parcels")}${tb("eta",eta==null?"–":p1(eta),cE,"2 hr ETA")}${tb("cp",cp==null?"–":p1(cp),cC,"Scan")}${tb("enq",eq==null?"0":Math.round(eq),eq?"b":"g","Enquiries")}</div>`})()})(rows)}
+    return `<div class="rb-tot rb-tot5">${tb("sc",scV==null?"–":window.SCORE.fmt(scV),scV==null?"n":scV>=96-1e-9?"g":"b","Score")}${tb("pc",pc==null?"–":Math.round(pc).toLocaleString("en-AU"),"n","Parcels")}${tb("eta",eta==null?"–":p1(eta),cE,"2 hr ETA")}${tb("cp",cp==null?"–":p1(cp),cC,"Scan")}${tb("enq",eq==null?"0":Math.round(eq),eq?"b":"g","Enquiries")}</div>`})()})(rows)}
   ${window.SCORE&&window.SCORE.howHTML?window.SCORE.howHTML('sc-how rb-how'):''}
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611050617';
+const VERSION='1202611050642';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14003,6 +14003,9 @@ html body .cu-burger svg{width:26px!important;height:26px!important;stroke:curre
 html body #sh-ph .cu-logo{display:none!important}
 
 html body .cu-sbox:not(.cu-sshow){display:none!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5>button b{font-size:19px!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5>button small{font-size:12px!important}
 /* second level views: underline tabs like the title tabs */
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs.lk2,#mod-invoices .tabs:not(.cu-psrc),.tstabs){display:grid!important;grid-auto-flow:column!important;grid-auto-columns:1fr!important;gap:0!important;background:transparent!important;border:0!important;border-bottom:1px solid var(--sh-line)!important;border-radius:0!important;padding:0!important;box-shadow:none!important;width:100%!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.tabs.lk2,#mod-invoices .tabs:not(.cu-psrc),.tstabs)>button{background:transparent!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;margin:0 0 -1px!important;height:40px!important;min-height:40px!important;color:var(--sh-muted)!important;font-size:15px!important;font-weight:700!important;box-shadow:none!important}
