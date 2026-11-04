@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611041910';
+const VERSION='1202611041925';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14004,6 +14004,13 @@ html body #sh-ph .cu-logo{display:none!important}
 html body .cu-sbox:not(.cu-sshow){display:none!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button.cu-sb.cu-on2{color:var(--cu-or)!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in>p{display:none!important}
+@media (max-width:899.98px){
+html body nav.sh-side{display:none!important}
+html body #sh-main#sh-main,html body .sh-main,html body.has-fab #sh-main#sh-main{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important}
+html body #toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
+html body #nt-pop{bottom:calc(16px + env(safe-area-inset-bottom,0px))!important}
+html body #im_toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
+}
 }
 </style>
 <script id="cardui-js">
