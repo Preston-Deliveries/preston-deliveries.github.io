@@ -3611,7 +3611,7 @@ function mountBoard(box,rows){
   <div class="rb" role="table" aria-label="Driver results">
    <div class="rb-r rb-h" role="row"><span role="columnheader">Driver</span><span role="columnheader">Parcels</span><span role="columnheader">2 hr ETA</span><span role="columnheader"><i class="lg">Scan compliance</i><i class="sh">Scan</i></span><span role="columnheader"><i class="lg">Enquiries</i><i class="sh">Enq</i></span><span role="columnheader"><i class="lg">Contract Score</i><i class="sh">Score</i></span></div>
    ${rows.map(r=>{const V=bVals(r),k=rkClass(r,nR),full=r.avg>=99.995&&r.rank;
-     return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR(r.name||r.login)}</b><small>${r.days} day${r.days===1?"":"s"}${r.rank?"":" · not ranked"}</small></span></button>
+     return `<div class="rb-r ${k}" role="row"><button type="button" class="rb-d" data-rbk="${escR(r.login)}" role="cell"><span class="rk">${r.rank||"–"}</span><span class="nm"><b>${escR((n=>{const w=String(n).trim().split(/\s+/);return w.length>1?w[0]+" "+w[w.length-1][0].toUpperCase()+".":w[0]})(r.name||r.login))}</b><small>${r.days} day${r.days===1?"":"s"}${r.pc!=null?" · "+Number(r.pc).toLocaleString("en-AU")+" parcels":""}</small></span></button>
      ${V.map(([l,v,c],j)=>{if(j===3){const f=Math.round(+r.enq||0),pp=Math.round(+r.enqP||0);return `<span class="rb-c" role="cell"><small>Enquiries</small><b class="v-${c}${pp&&!f?" pt":""}"><i class="lg">${escR(v)}</i><i class="sh">${f+pp}</i></b></span>`}return `<span class="rb-c" role="cell"><small>${["Parcels","2 hr ETA","Scan","Enquiries"][j]}</small><b class="v-${c}">${escR(v)}</b></span>`}).join("")}
      <span class="rb-s${full?" v-gd":""}" role="cell"><b class="v-${(r.avg||0)>=96-1e-9?"g":"b"}">${scTxt(r)}</b></span></div>`}).join("")}
   </div>
@@ -5140,7 +5140,7 @@ function setStaff(o){const m={},opts=[];for(const p of Object.values(o)){const n
 const dnum=d=>parseInt(String(d||'').replace(/\D/g,''),10)||999;
 function list(){
   const t=q.toLowerCase().replace(/\s+/g,'');
-  let l=Object.values(items).filter(p=>(p.status||'approved')===tab&&(pcf==='all'||p.postcode===pcf)&&(!t||[p.address,p.suburb,p.driver,driverName(p.driver),p.reason,p.postcode].join(' ').toLowerCase().replace(/\s+/g,'').includes(t)));
+  let l=Object.values(items).filter(p=>(isMgr()||(p.status||'approved')===tab)&&(pcf==='all'||p.postcode===pcf)&&(!t||[p.address,p.suburb,p.driver,driverName(p.driver),p.reason,p.postcode].join(' ').toLowerCase().replace(/\s+/g,'').includes(t)));
   const byAddr=(a,b)=>String(a.address).replace(/^[\d\s,\/-]+/,'').localeCompare(String(b.address).replace(/^[\d\s,\/-]+/,''))||String(a.address).localeCompare(String(b.address),undefined,{numeric:true});
   if(sortBy==='driver')l.sort((a,b)=>dnum(a.driver)-dnum(b.driver)||byAddr(a,b));
   else if(sortBy==='street')l.sort(byAddr);
@@ -5161,13 +5161,13 @@ function render(){
    <div class="head"><h1>Precard list</h1>
      <div class="act">${isMgr()?`<button type="button" class="sh-btn primary" data-pc="add"><span class="ix ix-add" aria-hidden="true"></span>Address</button>`:''}${isMgr()?`<button type="button" class="sh-btn" data-pc="pdf">Download PDF</button>`:''}</div></div>
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the version from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-pc="share">Send latest to drivers</button></div>`:`<p class="lead">Card these addresses to the Post Office instead of attempting delivery. Tap an address for the reason.</p>`}
-   ${isMgr()?`<div class="tabs" role="group" aria-label="List"><button type="button" data-pc="tab" data-v="approved" aria-pressed="${tab==='approved'}">Approved <small>${cnt('approved')}</small></button><button type="button" data-pc="tab" data-v="review" aria-pressed="${tab==='review'}">Under review <small>${cnt('review')}</small></button></div>`:''}
+   
    <div class="bar"><input type="search" id="pc_q" class="q" placeholder="Address, suburb, driver or reason" value="${esc(q)}" autocomplete="off" aria-label="Search precards">
 </div>
    
    ${msg?`<span class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</span>`:''}
    ${l.length?(()=>{const G={};for(const p of l){const k=String(p.postcode||'').trim()||'Other';(G[k]=G[k]||[]).push(p)}const ks=Object.keys(G).sort();
-     return `<div class="pcm"><div class="pcm-t"><button type="button" class="pcm-all" data-pc="pcf" data-v="all" aria-pressed="${pcf==='all'}"><b>${Object.values(items).filter(p=>(p.status||'approved')===tab).length}</b><small>All</small></button>${['4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(p.status||'approved')===tab&&String(p.postcode||'').trim()===k).length;return `<button type="button" class="pcz-${k}${n?'':' z'}" data-pc="pcf" data-v="${pcf===k?'all':k}" aria-pressed="${pcf===k}" ${!n&&pcf!==k?'disabled':''}><b>${n}</b><small>${k}</small></button>`}).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-pc="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.address)}</b><small>${esc(p.suburb||'')}${p.date?' · '+esc(fmtDate(p.date)):''}</small>${p.reason?`<em>${esc(p.reason)}</em>`:''}</span><span class="dv">${badge(p.driver)}<small>${esc(driverName(p.driver)||'')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
+     return `<div class="pcm"><div class="pcm-t"><button type="button" class="pcm-all" data-pc="pcf" data-v="all" aria-pressed="${pcf==='all'}"><b>${Object.values(items).filter(p=>(isMgr()||(p.status||'approved')===tab)).length}</b><small>All</small></button>${['4214','4215','4217','4218'].map(k=>{const n=Object.values(items).filter(p=>(isMgr()||(p.status||'approved')===tab)&&String(p.postcode||'').trim()===k).length;return `<button type="button" class="pcz-${k}${n?'':' z'}" data-pc="pcf" data-v="${pcf===k?'all':k}" aria-pressed="${pcf===k}" ${!n&&pcf!==k?'disabled':''}><b>${n}</b><small>${k}</small></button>`}).join('')}</div>${ks.map(k=>`<h3 class="pcm-h"><i class="pc-${esc(k)}"></i>${esc(k)} <span>${G[k].length}</span></h3><div class="pcm-l">${G[k].map(p=>`<${isMgr()?`button type="button" data-pc="open" data-v="${esc(p.id)}"`:'div'} class="pcm-r"><span class="tx"><b>${esc(p.address)}</b>${isMgr()&&p.status==='review'?'<span class="pc-rv">Under review</span>':''}<small>${esc(p.suburb||'')}${p.date?' · '+esc(fmtDate(p.date)):''}</small>${p.reason?`<em>${esc(p.reason)}</em>`:''}</span><span class="dv">${badge(p.driver)}<small>${esc(driverName(p.driver)||'')}</small></span></${isMgr()?'button':'div'}>`).join('')}</div>`).join('')}</div>`})():''}
    ${l.length?`<div class="tw"><table class="${isMgr()?'slim':''}"><thead><tr><th class="no">#</th><th>Address</th><th>Suburb</th><th>Postcode</th><th>Driver no.</th><th>Driver name</th><th>Approved</th><th>Reason</th></tr></thead><tbody>
      ${l.map((p,i)=>`<tr class="pr-${esc(String(p.postcode||'').trim())}" ${isMgr()?`data-pc="open" data-v="${esc(p.id)}" tabindex="0"`:''}><td class="no">${i+1}</td><td class="ad"><b>${esc(p.address)}</b></td><td class="sb">${esc(p.suburb)}</td><td class="pcd">${p.postcode?`<span class="pcc pc-${esc(String(p.postcode).trim())}">${esc(p.postcode)}</span>`:''}</td>
      <td class="dr">${badge(p.driver)}</td><td class="dn">${esc(driverName(p.driver))}</td><td class="dt">${esc(fmtDate(p.date))}</td><td class="rs">${esc(p.reason)}</td></tr>`).join('')}
@@ -5210,7 +5210,7 @@ async function pdf(btn){
   btn.disabled=true;const old=btn.textContent;btn.textContent='Making PDF…';
   try{if(!window.jspdf)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');if(!window.jspdf.jsPDF.API.autoTable)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}
   catch(e){btn.disabled=false;btn.textContent=old;msg={err:true,t:'The PDF maker did not load. Check your connection and try again.'};render();return}
-  const l=list(),NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],INK=[20,32,29],LINE=[211,220,216],ALT=[246,248,247];
+  const l=list().filter(p=>(p.status||'approved')==='approved'),NAV=[19,32,28],SIG=[242,183,5],MUT=[86,101,95],INK=[20,32,29],LINE=[211,220,216],ALT=[246,248,247];
   const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'});
   const sub=`${l.length} ${tab==='review'?'under review':'approved'}${pcf!=='all'?'  ·  '+pcf:''}${q?'  ·  Search: '+q:''}  ·  Printed ${today}`;
   const rows=l.map((p,i)=>[String(i+1),p.address,p.suburb,p.postcode,p.driver,driverName(p.driver),fmtDate(p.date),p.reason]);
@@ -6588,7 +6588,7 @@ function render(){
    ${isMgr()?`<div class="share"><span>${shared?`Drivers see the calendar from ${esc(shared)}.`:'Not shared with drivers yet.'}</span><button type="button" class="sh-btn" data-lv="share">Send latest to drivers</button></div>`:''}
    ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}${busy?`<p class="msg" role="status">${esc(busy)}</p>`:''}
    ${armImport?`<div class="confirm"><p>Replace imported leave from <b>${esc(nice(armImport.range.from))}</b> to <b>${esc(nice(armImport.range.to))}</b> with <b>${armImport.blocks.length} bookings</b> from ${esc(armImport.file)}? Leave before or after those dates, and leave you added by hand, stays.</p><button type="button" class="sh-btn primary" data-lv="doimport">Replace</button><button type="button" class="sh-btn" data-lv="noimport">Cancel</button></div>`:''}
-   ${isMgr()?`<div class="tabs" role="group" aria-label="View"><button type="button" data-lv="view" data-v="cal" aria-pressed="${view==='cal'}">Calendar</button><button type="button" data-lv="view" data-v="req" aria-pressed="${view==='req'}">Requests${pendN()?` <span class="n">${pendN()}</span>`:''}</button><button type="button" data-lv="view" data-v="list" aria-pressed="${view==='list'}">Upcoming</button><button type="button" data-lv="view" data-v="tot" aria-pressed="${view==='tot'}">Totals</button><button type="button" data-lv="view" data-v="set" aria-pressed="${view==='set'}">Limits</button></div>`:''}
+   ${isMgr()?`<label class="mini lv-vsel" for="lv_view"><select id="lv_view" aria-label="View">${[['cal','Calendar'],['req','Requests'+(pendN()?' ('+pendN()+' waiting)':'')],['list','Upcoming'],['tot','Totals'],['set','Limits']].map(([k,l])=>`<option value="${k}" ${view===k?'selected':''}>${l}</option>`).join('')}</select></label>`:''}
    ${view==='req'&&isMgr()?mgrReqHTML():view==='tot'&&isMgr()?totHTML():view==='list'&&isMgr()?listHTML():view==='set'&&isMgr()?setHTML():calHTML()}
   </div>`;
 }
@@ -6842,7 +6842,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('#mod-leave tr[data-lv=edit],#mod-leave tr[data-lv=tot]'))e.target.click()});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='lv_rqn'){rq.note=t.value;return}if(t.id==='lv_rqc'){rq.cover=t.value;return}if(t.dataset&&t.dataset.rq){rqReply[t.dataset.rq]=t.value;return}
   if(e.target.id==='lv_tq'){tq=e.target.value;topen=null;$('tt').innerHTML=totTable()}});
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='lv_whosel'){const w=document.getElementById('lv_who');if(!w)return;if(t.value==='__other'){w.hidden=false;w.value='';w.focus()}else{w.hidden=true;w.value=t.value}return}if(t.id==='lv_rqf'){rq.from=t.value;if(rq.to&&rq.to<rq.from)rq.to=rq.from;if(!rq.to)rq.to=rq.from;render();return}if(t.id==='lv_rqt'){rq.to=t.value;render();return}if(t.id==='lv_rqa'){rq.ack=t.checked;render();return}
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='lv_view'){view=t.value;msg=null;render();return}if(t.id==='lv_whosel'){const w=document.getElementById('lv_who');if(!w)return;if(t.value==='__other'){w.hidden=false;w.value='';w.focus()}else{w.hidden=true;w.value=t.value}return}if(t.id==='lv_rqf'){rq.from=t.value;if(rq.to&&rq.to<rq.from)rq.to=rq.from;if(!rq.to)rq.to=rq.from;render();return}if(t.id==='lv_rqt'){rq.to=t.value;render();return}if(t.id==='lv_rqa'){rq.ack=t.checked;render();return}
   if(e.target.id==='lv_tper'){tper=e.target.value;topen=null;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_tsort'){tsort=e.target.value;$('tt').innerHTML=totTable();return}if(e.target.id==='lv_imp'&&e.target.files[0]){importFile(e.target.files[0]);e.target.value=''}});
 async function start(role){
   const n=new Date();month=new Date(n.getFullYear(),n.getMonth(),1);wk=monday(n);if((n.getDay()+6)%7>=5)wk.setDate(wk.getDate()+7);
@@ -8869,7 +8869,7 @@ function statusHTML(){
   const cnt={never:rows.filter(x=>!x.last).length,over:rows.filter(x=>x.last&&x.due<0).length,fail:rows.filter(x=>x.last&&x.last.outcome==='fail').length,fix:rows.filter(x=>x.last&&x.last.outcome==='minor').length,ok:rows.filter(x=>x.last&&x.due>=0&&x.last.outcome==='pass').length};
   if(vcF){const keep=rows.filter(x=>vcKey(x)===vcF);rows.length=0;rows.push(...keep)}
   return `<div class="tiles trow vcf" style="--tn:5">${vT('fail','bad','Failed',cnt.fail,'Failed, do not drive')}${vT('fix','warn','Fix',cnt.fix,'Fix needed')}${vT('over','warn','Overdue',cnt.over)}${vT('never','none','Not checked',cnt.never,'No check in 4 months')}${vT('ok','good','Up to date',cnt.ok)}</div>
-  <div class="bar vcbar"><input type="search" id="vc_q" placeholder="Driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"><label class="mini" for="vc_sorts"><select id="vc_sorts" aria-label="Sort">${[['urgent','Most urgent'],['newest','Newest check'],['oldest','Oldest check'],['name','Name A to Z']].map(([k,l])=>`<option value="${k}" ${k===sortS?'selected':''}>${l}</option>`).join('')}</select></label><label class="mini" for="vc_every"><select id="vc_every" aria-label="Check every">${[7,14,30,60,90].map(n=>`<option value="${n}" ${n===every?'selected':''}>Every ${n} days</option>`).join('')}</select></label></div>
+  <div class="bar vcbar"><input type="search" id="vc_q" placeholder="Driver, number, rego, checker or date" value="${esc(q)}" autocomplete="off" aria-label="Search"></div>
   <div class="tw"><table class="tb vc-drv"><thead><tr><th>Driver</th><th>No.</th><th>Vehicle</th><th>Last check</th><th>Checked by</th><th>Result</th><th>Next due</th></tr></thead><tbody>
   ${VGROUPS.map(([gk,gt])=>({gk,gt,L:rows.filter(x=>vgrp(x.p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<tr class="grow dg-${gk}"><th colspan="7" scope="rowgroup">${esc(gt)}<span>${L.length}</span></th></tr>`+L.map(({p,last,due})=>`<tr class="dg-${gk} ${!last||due<0||last.outcome==='fail'?'st-bad':last.outcome==='minor'||due<=7?'st-warn':'st-ok'}" data-vc="drv" data-v="${esc(p.id)}" tabindex="0"><td><b>${esc(p.name)}</b></td><td>${esc(p.no)}</td><td>${(last&&last.rego||p.rego||last&&last.vehicle||p.van)?`${esc(last&&last.rego||p.rego)}<span class="sub">${esc(last&&last.vehicle||p.van)}</span>`:''}</td><td>${last?esc(nice(last.date)):'<span class="sub">Over 4 months ago</span>'}</td><td>${esc(last&&last.checker||'')}</td><td>${last?badge(last.outcome):''}${last&&fails(last).length?`<span class="sub">${esc(fails(last).map(i=>i[1]).join(', '))}</span>`:''}</td>
    <td>${!last?'<span class="due bad">Check now</span>':due<0?`<span class="due bad">${-due} day${due===-1?'':'s'} overdue</span>`:due===0?'<span class="due warn">Today</span>':`<span class="due">${esc(nice(iso(new Date(fromIso(last.date).getTime()+every*864e5))))}</span>`}</td></tr>`).join('')).join('')||'<tr><td colspan="7" class="empty">No drivers match.</td></tr>'}
@@ -8928,7 +8928,7 @@ function render(){
   if(editing)body=formHTML();
   else if(open&&recs[open])body=detailHTML({id:open,...recs[open]});
   else if(view==='drv'&&open)body=driverHTML(open);
-  else body=`<div class="tabs" role="group" aria-label="View"><button type="button" data-vc="view" data-v="status" aria-pressed="${view==='status'}">Who's due</button><button type="button" data-vc="view" data-v="all" aria-pressed="${view==='all'}">Check history <small>${checks().length}</small></button></div>`+(view==='all'?allHTML():statusHTML());
+  else body=(view==='all'?allHTML():statusHTML());
   box.innerHTML=`<div class="vcx"><div class="head"><h1>Van Checks</h1><div class="act"><button type="button" class="sh-btn primary" data-vc="new"><span class="ix ix-add" aria-hidden="true"></span>Check</button></div></div>
    ${editing?'':`<p class="lead">Supervisors and managers check each driver's van and record it here. Drivers report any problem straight away on WhatsApp.</p>${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}${msg.pr&&open?' <button type="button" class="sh-btn vc-pr" data-vc="pdf1"><span class="ix ix-print" aria-hidden="true"></span>This check</button>':''}</p>`:''}`}
    ${body}</div>`;
@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611041955';
+const VERSION='1202611042050';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14002,6 +14002,13 @@ html body .cu-burger svg{width:26px!important;height:26px!important;stroke:curre
 html body #sh-ph .cu-logo{display:none!important}
 
 html body .cu-sbox:not(.cu-sshow){display:none!important}
+html body #sh-main .cu-psrc{display:none!important}
+html body #sh-main#sh-main#sh-main#sh-main :is(.sh-btn.primary,.ah-mic,button.on:not(.pcbtn):not([class*=pcz-]):not(.danger):not(.qx):not(.cd-r),button[aria-selected=true]:not(.pcbtn):not([class*=pcz-]):not(.danger):not(.qx)),html body :is(#pds-fab,#dl-ready .dlr-a .dlr-p,#sh-set button[aria-pressed=true],.pu-days button[aria-pressed=true],.pu-tos button[aria-pressed=true],.pu-when button[aria-pressed=true]){background:#F2782D!important;background-image:none!important;border-color:#F2782D!important;color:#fff!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dmc>button[aria-pressed=true]{--cc:#fff!important;background:#F2782D!important;border-color:#F2782D!important;color:#fff!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dmc>button[aria-pressed=true] :is(svg,svg *,span,i){color:#fff!important;stroke:#fff!important}
+html body #mod-precards .pc-rv{display:inline-block;align-self:flex-start;margin:2px 0;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(242,120,45,.16);color:var(--cu-ortx)}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave label.lv-vsel{display:block!important;width:100%!important;margin:0 0 4px!important;order:-100!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave label.lv-vsel select{width:100%!important;height:48px!important;min-height:48px!important;padding:0 44px 0 16px!important;border-radius:14px!important;border:1px solid var(--cu-line)!important;background:var(--cu-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F2782D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center/20px!important;color:var(--cu-ink)!important;font:700 17px 'Barlow',system-ui,sans-serif!important;-webkit-appearance:none!important;appearance:none!important;box-shadow:none!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button.cu-sb.cu-on2{color:var(--cu-or)!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in>p{display:none!important}
 @media (max-width:899.98px){
@@ -14178,6 +14185,36 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
   }
   var raf=0;function later(){if(!raf)raf=requestAnimationFrame(function(){raf=0;try{burgers()}catch(e){}})}
   function start(){ensure();new MutationObserver(function(l){for(var i=0;i<l.length;i++){var t=l[i].target;if(t.closest&&t.closest('#cu-drawer,.cu-burger'))continue;later();return}}).observe(document.getElementById('sh-main')||document.body,{childList:true,subtree:true});later()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+<script id="cardui-ptabs">
+(function(){
+  var PAGES={'mod-uniform':'Uniform','mod-invoices':'Invoices'};
+  function vis(e){return !!(e&&e.offsetParent)}
+  function sec(){var s=document.querySelectorAll('#sh-main .sh-sec');for(var i=0;i<s.length;i++){if(!s[i].hidden&&vis(s[i]))return s[i]}return null}
+  function run(){
+    var sc=sec(),t=document.getElementById('sh-tabs'),mine=!!(t&&t.querySelector('nav.cu-pnav'));
+    var old=document.querySelectorAll('.cu-psrc');
+    var g=null;
+    if(sc&&PAGES[sc.id]&&(!t||mine)){g=sc.querySelector('.tabs[role=group]');if(g&&g.querySelectorAll(':scope>button').length<2)g=null}
+    for(var i=0;i<old.length;i++)if(old[i]!==g)old[i].classList.remove('cu-psrc');
+    if(!g){if(mine)t.remove();return}
+    var ph=document.getElementById('sh-ph');if(!ph)return;
+    g.classList.add('cu-psrc');
+    var bs=g.querySelectorAll(':scope>button'),h='';
+    for(var j=0;j<bs.length;j++){var on=bs[j].getAttribute('aria-pressed')==='true'||bs[j].classList.contains('on');h+='<button type="button" data-cu-pt="'+j+'"'+(on?' aria-current="page"':'')+'>'+bs[j].innerHTML+'</button>'}
+    var html='<div class="sh-utrow"><nav class="sh-hubtabs sh-utabs cu-pnav" aria-label="'+PAGES[sc.id]+'" style="--tc: '+bs.length+';">'+h+'</nav></div>';
+    if(!t){t=document.createElement('div');t.id='sh-tabs';t.className='sh-tabs'}
+    if(t.previousElementSibling!==ph)ph.after(t);
+    if(t.__cuh!==html){t.__cuh=html;t.innerHTML=html}
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('nav.cu-pnav [data-cu-pt]');if(!b)return;
+    var g=document.querySelector('.cu-psrc');if(!g)return;var bs=g.querySelectorAll(':scope>button'),x=bs[+b.dataset.cuPt];if(x)x.click();
+  });
+  var raf=0;function later(){if(!raf)raf=requestAnimationFrame(function(){raf=0;try{run()}catch(e){}})}
+  function start(){new MutationObserver(function(l){for(var i=0;i<l.length;i++){var n=l[i].target;if(n.closest&&n.closest('#sh-tabs'))continue;later();return}}).observe(document.getElementById('sh-main')||document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-pressed','hidden','class']});later()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();
 </script>
