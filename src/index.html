@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611041935';
+const VERSION='1202611041955';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14005,13 +14005,9 @@ html body .cu-sbox:not(.cu-sshow){display:none!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ph-acts>button.cu-sb.cu-on2{color:var(--cu-or)!important}
 html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .in>p{display:none!important}
 @media (max-width:899.98px){
-html body nav.sh-side{display:none!important}
-html body #sh-main#sh-main,html body .sh-main,html body.has-fab #sh-main#sh-main{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))!important}
-html body #toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
-html body #nt-pop{bottom:calc(16px + env(safe-area-inset-bottom,0px))!important}
-html body #im_toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!important}
-}
-}
+html body nav.sh-side [data-nav=menu]{display:none!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{display:none!important}
+}}
 </style>
 <script id="cardui-js">
 (function(){
@@ -14032,7 +14028,7 @@ html body #im_toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!importan
     var has=!!(ph&&!desk&&ph.offsetParent&&ph.querySelector('h1'));
     if(document.body.classList.contains('cu-hasph')!==has)document.body.classList.toggle('cu-hasph',has);
     if(!ph)return;
-    var ttl=ph.querySelector('.ttl'),back=ph.querySelector('.sh-back'),noBack=!(back&&getComputedStyle(back).display!=='none');
+    var ttl=ph.querySelector('.ttl'),back=ph.querySelector('.sh-back'),noBack=!back;
     var lg=ph.querySelector('.cu-logo'),tb=ph.querySelector('.cu-tb'),src=mt&&mt.querySelector('.sh-tb');
     if(!has||!noBack||!ttl){if(lg)lg.remove();if(tb)tb.remove();return}
     if(!lg){var im=mt&&mt.querySelector('.sh-logo');if(im){lg=im.cloneNode(true);lg.className='cu-logo';lg.removeAttribute('width');lg.removeAttribute('height');ttl.insertBefore(lg,ttl.firstChild)}}
@@ -14174,9 +14170,8 @@ html body #im_toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))!importan
   function burgers(){
     if(desk())return;
     var ph=document.getElementById('sh-ph'),ttl=ph&&ph.querySelector('.ttl'),back=ph&&ph.querySelector('.sh-back');
-    var noBack=!(back&&getComputedStyle(back).display!=='none');
     var b1=ttl&&ttl.querySelector(':scope>.cu-burger');
-    if(ttl&&noBack){if(!b1){b1=document.createElement('button');b1.type='button';b1.className='cu-burger';b1.setAttribute('aria-label','Menu');b1.innerHTML=BURGER;b1.addEventListener('click',toggle);ttl.insertBefore(b1,ttl.firstChild)}}
+    if(ttl){if(!b1){b1=document.createElement('button');b1.type='button';b1.className='cu-burger';b1.setAttribute('aria-label','Menu');b1.innerHTML=BURGER;b1.addEventListener('click',toggle);ttl.insertBefore(b1,ttl.firstChild)}}
     else if(b1)b1.remove();
     var mt=document.querySelector('.sh-mtop'),b2=mt&&mt.querySelector(':scope>.cu-burger');
     if(mt&&!b2){b2=document.createElement('button');b2.type='button';b2.className='cu-burger';b2.setAttribute('aria-label','Menu');b2.innerHTML=BURGER;b2.addEventListener('click',toggle);mt.insertBefore(b2,mt.firstChild)}
