@@ -11059,7 +11059,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611050647';
+const VERSION='1202611050715';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14019,6 +14019,7 @@ html body .cu-burger svg{width:26px!important;height:26px!important;stroke:curre
 html body #sh-ph .cu-logo{display:none!important}
 
 html body .cu-sbox:not(.cu-sshow){display:none!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main button.cu-per{all:unset;display:block!important;box-sizing:border-box;width:calc(100% - 32px);margin:0 16px 12px!important;padding:0!important;min-height:0!important;height:auto!important;background:transparent!important;border:0!important;color:var(--sh-ink)!important;font:700 16px/1.3 'Barlow',system-ui,sans-serif!important;cursor:pointer;text-align:left!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5>button b{font-size:19px!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .rb-tot.rb-tot5>button small{font-size:12px!important}
@@ -14229,9 +14230,10 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
     for(var i=1;i<out.length;i++){var a=out[i-1],b=out[i];if(a.contains(b)||b.contains(a))continue;var ra=R(a),rb=R(b);
       if(rb.top<ra.bottom-1||Math.abs(ra.left-rb.left)>6)continue;var g=rb.top-ra.bottom;if(g<=2||g>64)continue;
       var lab=!vis(a,getComputedStyle(a))&&ra.height<40&&txt(a);var want=lab?8:12;var d=Math.round(want-g);if(Math.abs(d)<1)continue;
-      var cur=parseFloat(getComputedStyle(b).marginTop)||0;b.setAttribute('data-cu-mt',(b.style.getPropertyValue('margin-top')||'')+'|'+(b.style.getPropertyPriority('margin-top')||''));
-      b.style.setProperty('margin-top',(cur+d)+'px','important');
-      var nb=R(b);if(Math.abs((nb.top-ra.bottom)-want)>1){var c2=parseFloat(getComputedStyle(b).marginTop)||0;b.style.setProperty('margin-top',(c2+(want-(nb.top-ra.bottom)))+'px','important')}}
+      var tg=b;while(tg.parentElement&&tg.parentElement!==sec&&!tg.parentElement.contains(a)&&getComputedStyle(tg.parentElement).display!=='contents')tg=tg.parentElement;
+      var cur=parseFloat(getComputedStyle(tg).marginTop)||0;if(!tg.hasAttribute('data-cu-mt'))tg.setAttribute('data-cu-mt',(tg.style.getPropertyValue('margin-top')||'')+'|'+(tg.style.getPropertyPriority('margin-top')||''));
+      tg.style.setProperty('margin-top',(cur+d)+'px','important');
+      var nb=R(b);if(Math.abs((nb.top-ra.bottom)-want)>1){var c2=parseFloat(getComputedStyle(tg).marginTop)||0;tg.style.setProperty('margin-top',(c2+(want-(nb.top-ra.bottom)))+'px','important')}}
   }
   document.addEventListener('click',function(){setTimeout(function(){if(!raf)raf=requestAnimationFrame(sync)},60)});
   function upl(){
@@ -14257,6 +14259,11 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
     var p=fb.parentNode,kids=p.children;
     for(var k=0;k<kids.length;k++){if(kids[k]!==fb&&(kids[k].classList.contains('fold-x')||kids[k].classList.contains('cu-panel'))&&!kids[k].classList.contains('cu-panel'))kids[k].classList.add('cu-panel')}
     var txt=label(fb),pill=p.querySelector(':scope>.cu-pill');if(pill)pill.remove();
+    var per=sec.querySelector(':scope>.cu-per');var ptxt=txt.replace(/\s*·\s*All\s*$/i,'').trim();
+    if(!per){per=document.createElement('button');per.type='button';per.className='cu-per';per.addEventListener('click',open);sec.insertBefore(per,sec.firstChild)}
+    else if(per!==sec.firstElementChild)sec.insertBefore(per,sec.firstChild);
+    var stale=document.querySelectorAll('.cu-per');for(var q=0;q<stale.length;q++){if(stale[q]!==per&&!stale[q].closest('.sh-sec:not([hidden])'))stale[q].remove()}
+    if(per.textContent!==ptxt)per.textContent=ptxt;
     if(acts){
       var btn=acts.querySelector('.cu-fb');
       if(!btn){btn=document.createElement('button');btn.type='button';btn.className='cu-fb ix-filter';btn.setAttribute('aria-label','Filter');btn.title='Filter';btn.addEventListener('click',open);acts.insertBefore(btn,acts.firstChild)}
