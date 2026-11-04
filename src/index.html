@@ -11043,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611041732';
+const VERSION='1202611041801';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -13901,6 +13901,17 @@ html body .cu-panel.cu-panel:not(.fold-x)::before{content:"";position:absolute;t
 body.cu-open #cu-dim,body.cu-open #cu-done{display:block}
 body.cu-open{overflow:hidden}
 
+
+/* Top bar: title card replaces the brand bar */
+html body.cu-hasph .sh-mtop.sh-mtop{display:none!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-logo{height:34px!important;width:34px!important;border-radius:8px!important;flex:none!important;margin:0 2px 0 0!important;display:block!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb{display:flex!important;gap:8px!important;flex:none!important;margin-left:auto!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button{width:40px!important;min-width:40px!important;height:40px!important;border-radius:12px!important;background:rgba(255,255,255,.09)!important;color:#fff!important;border:0!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:0!important;position:relative!important;margin:0!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb>button svg{width:22px!important;height:22px!important;color:#fff!important;fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-tb .bdg{position:absolute!important;top:-4px!important;right:-4px!important}
+html body:not(.cu-hasph) .sh-mtop.sh-mtop.sh-mtop{margin:10px 12px 0!important;padding:10px 12px!important;background:var(--cu-navy)!important;border:1.5px solid var(--cu-edge)!important;border-bottom:3px solid var(--cu-or)!important;border-radius:18px!important;box-shadow:none!important;min-height:0!important}
+html body .sh-mtop.sh-mtop.sh-mtop .sh-brand .bt small{display:none!important}
+html body .sh-mtop.sh-mtop.sh-mtop .sh-brand .sh-logo{width:44px!important;height:44px!important}
 /* Menu as cards */
 html body #sh-menu#sh-menu#sh-menu .am-g{margin:0 0 6px!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
 html body #sh-menu#sh-menu#sh-menu .am-g>h2{display:flex!important;align-items:center!important;gap:8px!important;margin:12px 0 8px!important;padding:10px 12px!important;background:var(--cu-card)!important;border:1px solid var(--cu-line)!important;border-left:4px solid currentColor!important;border-radius:12px!important;font-size:.85rem!important;letter-spacing:.08em!important;text-transform:uppercase!important;line-height:1.1!important}
@@ -13927,8 +13938,23 @@ html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .bdg{position:absolute!impor
   function current(){return bar(act())}
   function open(){var fb=current();if(!fb)return;if(fb.getAttribute('aria-expanded')!=='true')fb.click();sync()}
   function close(){var fb=current();if(fb&&fb.getAttribute('aria-expanded')==='true')fb.click();document.body.classList.remove('cu-open');sync()}
+  function top(){
+    var ph=document.getElementById('sh-ph'),mt=document.querySelector('.sh-mtop');
+    var desk=document.querySelector('.sh-side .sh-tb');desk=!!(desk&&desk.offsetParent);
+    var has=!!(ph&&!desk&&ph.offsetParent&&ph.querySelector('h1'));
+    if(document.body.classList.contains('cu-hasph')!==has)document.body.classList.toggle('cu-hasph',has);
+    if(!ph)return;
+    var ttl=ph.querySelector('.ttl'),back=ph.querySelector('.sh-back'),noBack=!(back&&getComputedStyle(back).display!=='none');
+    var lg=ph.querySelector('.cu-logo'),tb=ph.querySelector('.cu-tb'),src=mt&&mt.querySelector('.sh-tb');
+    if(!has||!noBack||!ttl){if(lg)lg.remove();if(tb)tb.remove();return}
+    if(!lg){var im=mt&&mt.querySelector('.sh-logo');if(im){lg=im.cloneNode(true);lg.className='cu-logo';lg.removeAttribute('width');lg.removeAttribute('height');ttl.insertBefore(lg,ttl.firstChild)}}
+    if(src){
+      if(!tb){tb=document.createElement('span');tb.className='cu-tb';ttl.appendChild(tb)}
+      if(tb.innerHTML!==src.innerHTML)tb.innerHTML=src.innerHTML;
+    }else if(tb)tb.remove();
+  }
   function sync(){
-    raf=0;ensureFixed();
+    raf=0;ensureFixed();try{top()}catch(e){}
     var sec=act(),fb=bar(sec),acts=document.querySelector('#sh-ph .ph-acts');
     var olds=document.querySelectorAll('#sh-ph .cu-fb');
     for(var i=0;i<olds.length;i++){if(!fb||olds[i].parentNode!==acts)olds[i].remove()}
@@ -13936,9 +13962,7 @@ html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .bdg{position:absolute!impor
     if(!fb.classList.contains('cu-fh'))fb.classList.add('cu-fh');
     var p=fb.parentNode,kids=p.children;
     for(var k=0;k<kids.length;k++){if(kids[k]!==fb&&(kids[k].classList.contains('fold-x')||kids[k].classList.contains('cu-panel'))&&!kids[k].classList.contains('cu-panel'))kids[k].classList.add('cu-panel')}
-    var txt=label(fb),pill=p.querySelector(':scope>.cu-pill');
-    if(!pill){pill=document.createElement('button');pill.type='button';pill.className='cu-pill ix-cal';pill.addEventListener('click',open);p.insertBefore(pill,fb)}
-    if(pill.textContent!==txt)pill.textContent=txt;
+    var txt=label(fb),pill=p.querySelector(':scope>.cu-pill');if(pill)pill.remove();
     if(acts){
       var btn=acts.querySelector('.cu-fb');
       if(!btn){btn=document.createElement('button');btn.type='button';btn.className='cu-fb ix-filter';btn.setAttribute('aria-label','Filter');btn.title='Filter';btn.addEventListener('click',open);acts.insertBefore(btn,acts.firstChild)}
@@ -13951,7 +13975,7 @@ html body #sh-menu#sh-menu#sh-menu .am-list>.am-row .bdg{position:absolute!impor
   function later(){if(!raf)raf=requestAnimationFrame(sync)}
   function start(){
     var m=document.getElementById('sh-main')||document.body;
-    new MutationObserver(function(list){for(var i=0;i<list.length;i++){var t=list[i].target;if(t.id==='cu-dim'||t.id==='cu-done'||(t.classList&&(t.classList.contains('cu-pill')||t.classList.contains('cu-fb'))))continue;later();return}}).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-expanded','hidden','class']});
+    new MutationObserver(function(list){for(var i=0;i<list.length;i++){var t=list[i].target;if(t.id==='cu-dim'||t.id==='cu-done'||(t.closest&&t.closest('.cu-tb,.cu-logo,.cu-fb')))continue;later();return}}).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-expanded','hidden','class']});
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('cu-open'))close()});
     later();
   }
