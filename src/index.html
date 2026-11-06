@@ -11059,7 +11059,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611050715';
+const VERSION='1202611070615';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11503,7 +11503,7 @@ async function boot(){
   loading();
   ROLE=null;
   if(OWNERS.includes(EMAIL)){ROLE='admin';window.__webMe={email:EMAIL,emails:OWNERS.slice(),staff:'',name:'',role:'admin'}}
-  else{try{const s=await cacheFirst(fs.doc('access/'+EMAIL));if(s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE,login:d.login||'',run:d.run||''}}}catch(e){console.warn(e)}}
+  else{try{const aRef=fs.doc('access/'+EMAIL);/* a driver who just confirmed their email can still hold a sign in pass that says 'not confirmed' for up to an hour, and the database refuses them; get a fresh pass first */try{const t=await u.getIdTokenResult();if(t&&t.claims&&t.claims.email_verified===false)await u.getIdToken(true)}catch(e){}let s=null;try{s=await cacheFirst(aRef)}catch(e){}/* not found (or refused): refresh the pass and ask the server once more before saying they're not on the team list */if(!s||!s.exists){try{await u.getIdToken(true);s=await aRef.get({source:'server'})}catch(e){console.warn(e)}}if(s&&s.exists){const d=s.data();ROLE=d.role==='admin'?'admin':'driver';NAME=d.name||'';window.__webMe={email:EMAIL,emails:[EMAIL],staff:ROLE==='admin'?'':(d.staff||''),name:NAME,role:ROLE,login:d.login||'',run:d.run||''}}}catch(e){console.warn(e)}}
   if(!ROLE){deniedScreen();return}
   if(OWNERS.includes(EMAIL)&&!skipImport){try{const m=await getFast(fs.doc('meta/imported'));if(!m.exists&&!m.metadata.fromCache){importScreen();return}}catch(e){}}
   loading();
