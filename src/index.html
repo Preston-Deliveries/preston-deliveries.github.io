@@ -1636,12 +1636,15 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   const scn=Object.entries(MC.leave).filter(([,b])=>b&&b.from&&lvEve(b.from)===T&&lvLong(b)&&!b.scanIn&&!b.office).sort((a,b)=>a[1].from.localeCompare(b[1].from));
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
-  const html=!ready?'':(document.documentElement.classList.contains('dk')?mbBoard(drv,on,offIds,nm,enqN,ex.length):'')+`<section class="dh-card mc"><h2>Morning check</h2>
+  const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
    ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${!notYet.length&&exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>${notYet.length?`<details class="mc-nd"${window.__mcOpen?' open':''}><summary><span>Not clocked on yet</span><b>${notYet.length}</b></summary><span class="mc-not">${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span></details>`:''}`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Last day before they go. Get their scanner back today.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
    ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
-  if(el.__h!==html){el.__h=html;el.innerHTML=html}try{adminSum()}catch(e){}}
+  if(el.__h!==html){el.__h=html;el.innerHTML=html}
+  try{const dk=document.documentElement.classList.contains('dk');let bx=document.getElementById('ah_board');const fd=document.querySelector('#mod-home .ah-find');
+    if(dk&&ready&&fd){if(!bx){bx=document.createElement('div');bx.id='ah_board'}if(bx.nextElementSibling!==fd)fd.parentNode.insertBefore(bx,fd);const bh=mbBoard(drv,on,offIds,nm,enqN,ex.length);if(bx.__h!==bh){bx.__h=bh;bx.innerHTML=bh}bx.hidden=false}else if(bx)bx.hidden=true}catch(e){}
+  try{adminSum()}catch(e){}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
 const TL={day:null,tab:'all',clock:{},chk:{},subs:[],busy:{}};
@@ -11129,7 +11132,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101225';
+const VERSION='1202611101235';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14570,7 +14573,7 @@ html.dk.dk.dk.dk.dk.dk #sh-main #mod-results .wrap,html.dk.dk.dk.dk.dk.dk #sh-ma
 html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:1200px!important}
 html.dk.dk.dk.dk.dk.dk #sh-main #r_driverView,html.dk.dk.dk.dk.dk.dk #sh-main #v_driverView{max-width:none!important}
 /* the big search on Home is replaced by the one in the top bar */
-html.dk.dk.dk #mod-home .ah-fq-wrap,html.dk.dk.dk #mod-home label:has(>#ah_fq){display:none!important}
+html.dk.dk.dk #mod-home .ah-find .ah-frow{display:none!important}
 
 /* Drivers split view on computers */
 #mod-staff .dm-split{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start;padding-top:16px}
@@ -14595,23 +14598,28 @@ html.dk.dk.dk.dk.dk.dk .sh-side .web-out{position:static!important;align-self:fl
 
 /* Home morning board on computers */
 html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:none!important}
-#mod-home .mb{padding:16px 18px!important}
-#mod-home .mb-ks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
-#mod-home .mb-k{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:12px 14px;border:1px solid var(--sh-line);border-radius:12px;background:var(--sh-sunk);color:var(--sh-ink);cursor:pointer;font:inherit;text-align:left}
-#mod-home .mb-k small{font-size:12px;font-weight:700;color:var(--sh-muted)}
-#mod-home .mb-k b{font-size:24px;font-weight:800}
-#mod-home .mb-k.ok b{color:var(--ok,#1E7A45)}#mod-home .mb-k.warn b{color:#C27A00}
-#mod-home .mb-h{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}#mod-home .mb-h h2{margin:0}#mod-home .mb-h span{margin-left:auto;font-size:13px;color:var(--sh-muted)}
-#mod-home .mb-g{display:grid;gap:0;border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
-#mod-home .mb-c{border-right:1px solid var(--sh-line);min-width:0}#mod-home .mb-c:last-child{border-right:0}
-#mod-home .mb-c h3{display:flex;align-items:center;margin:0;padding:9px 12px;font-size:13px;font-weight:800;color:var(--d,var(--sh-ink));background:var(--ds,var(--sh-sunk))}
-#mod-home .mb-c h3 span{margin-left:auto}
-#mod-home .mb-r{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px solid var(--sh-line);font-size:14px}
-#mod-home .mb-r b{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#mod-home .mb-r span{font-size:12px;color:var(--sh-muted);white-space:nowrap}
-#mod-home .mb-r i{width:8px;height:8px;border-radius:50%;flex:none;background:#2E9E68}
-#mod-home .mb-r.no i{background:#E8A33D}#mod-home .mb-r.no span{color:#C27A00;font-weight:700}
-#mod-home .mb-r.off i{background:var(--sh-line)}#mod-home .mb-r.off b{color:var(--sh-muted)}
+#ah_board .mb{padding:16px 18px!important;margin:0}#ah_board[hidden]{display:none}
+#ah_board .mb-ks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+#ah_board .mb-k{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:12px 14px;border:1px solid var(--sh-line);border-radius:12px;background:var(--sh-sunk);color:var(--sh-ink);cursor:pointer;font:inherit;text-align:left}
+#ah_board .mb-k small{font-size:12px;font-weight:700;color:var(--sh-muted)}
+#ah_board .mb-k b{font-size:24px;font-weight:800}
+#ah_board .mb-k.ok b{color:var(--ok,#1E7A45)}#ah_board .mb-k.warn b{color:#C27A00}
+#ah_board .mb-h{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}#ah_board .mb-h h2{margin:0}#ah_board .mb-h span{margin-left:auto;font-size:13px;color:var(--sh-muted)}
+#ah_board .mb-g{display:grid;gap:0;border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+#ah_board .mb-c{border-right:1px solid var(--sh-line);min-width:0}#ah_board .mb-c:last-child{border-right:0}
+#ah_board .mb-c h3{display:flex;align-items:center;margin:0;padding:9px 12px;font-size:13px;font-weight:800;color:var(--d,var(--sh-ink));background:var(--ds,var(--sh-sunk))}
+#ah_board .mb-c h3 span{margin-left:auto}
+#ah_board .mb-r{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px solid var(--sh-line);font-size:14px}
+#ah_board .mb-r b{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ah_board .mb-r span{font-size:12px;color:var(--sh-muted);white-space:nowrap}
+#ah_board .mb-r i{width:8px;height:8px;border-radius:50%;flex:none;background:#2E9E68}
+#ah_board .mb-r.no i{background:#E8A33D}#ah_board .mb-r.no span{color:#C27A00;font-weight:700}
+#ah_board .mb-r.off i{background:var(--sh-line)}#ah_board .mb-r.off b{color:var(--sh-muted)}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav="menu"]{display:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links{gap:8px!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav]{padding:6px 10px!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sb-acts button{min-height:34px!important;padding:6px 10px!important}
+#dk-top .dk-mic{color:#F2782D}
 </style>
 <script id="dk-js">
 /* Computer layout: adds .dk on wide screens and builds the top bar. Phones and narrow windows never get it */
@@ -14626,7 +14634,7 @@ html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:none!important}
   const t=document.createElement('header');t.id='dk-top';
   t.innerHTML='<button type="button" class="dk-b" data-dk="home" aria-label="Home"><img src="icon-192.png" alt=""><span><small>Preston Delivery Service</small><b>Contract 1161</b></span></button>'+
    '<label class="dk-q">'+sv(ic.s)+'<input id="dk-q" type="search" placeholder="Search drivers, streets or pages" aria-label="Search the app" autocomplete="off"><kbd>Ctrl K</kbd></label>'+
-   '<div class="dk-r"><button type="button" class="dk-i" data-theme-set="toggle" aria-label="Switch light or dark" title="Light or dark"><span class="dk-moon">'+sv(ic.moon)+'</span><span class="dk-sun">'+sv(ic.sun)+'</span></button>'+
+   '<div class="dk-r"><button type="button" class="dk-i dk-mic" data-dk="mic" aria-label="Ask by voice" title="Ask by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button><button type="button" class="dk-i" data-theme-set="toggle" aria-label="Switch light or dark" title="Light or dark"><span class="dk-moon">'+sv(ic.moon)+'</span><span class="dk-sun">'+sv(ic.sun)+'</span></button>'+
    '<button type="button" class="dk-i" data-dk="bell" aria-label="Notifications" title="Notifications">'+sv(ic.bell)+'<span class="dk-n" hidden></span></button>'+
    '<button type="button" class="dk-i" data-dk="gear" aria-label="Settings" title="Settings">'+sv(ic.gear)+'</button>'+
    '<span class="dk-av" aria-hidden="true"></span><span class="dk-nm"></span></div>';
@@ -14634,7 +14642,8 @@ html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:none!important}
   t.addEventListener('click',e=>{const b=e.target.closest('[data-dk]');if(!b)return;const k=b.dataset.dk;
    if(k==='home'){const h=document.querySelector('.sh-side [data-nav="home"]');h&&h.click()}
    if(k==='bell'){const o=document.querySelector('.sh-side .sh-bell');o&&o.click()}
-   if(k==='gear'){const o=document.querySelector('.sh-side .sh-mode');o&&o.click()}});
+   if(k==='gear'){const o=document.querySelector('.sh-side .sh-mode');o&&o.click()}
+   if(k==='mic'){const home=document.getElementById('mod-home'),away=!!(home&&home.hidden);if(away){const n=document.querySelector('.sh-side [data-nav="home"]');n&&n.click()}setTimeout(()=>{const m=document.getElementById('ah_mic');m&&m.click()},away?300:0)}});
   const q=t.querySelector('#dk-q');
   q.addEventListener('input',()=>{const h=document.getElementById('ah_fq');if(!h)return;const home=document.getElementById('mod-home');if(home&&home.hidden){const n=document.querySelector('.sh-side [data-nav="home"]');n&&n.click()}h.value=q.value;h.dispatchEvent(new Event('input',{bubbles:true}))});
   q.addEventListener('keydown',e=>{const h=document.getElementById('ah_fq');if(!h)return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){h.dispatchEvent(new KeyboardEvent('keydown',{key:e.key,bubbles:true}));if(e.key!=='Enter')e.preventDefault()}if(e.key==='Escape'){q.value='';h.value='';h.dispatchEvent(new Event('input',{bubbles:true}));q.blur()}});
