@@ -1111,7 +1111,6 @@ function go(sec,opts){{const t=document.getElementById('im_toast');if(t)t.classL
   if(!previewChild){try{const u=location.pathname+location.search+(sec==='home'?'':'#'+encodeURIComponent(sec));if(location.pathname+location.search+location.hash!==u)history.replaceState(null,'',u)}catch(e){}}
   const want=MOD[sec];
   document.querySelectorAll('.sh-sec').forEach(el=>el.hidden=el.id!==want);
-  if(matchMedia('(min-width:900px)').matches&&!opts.back0){const se=document.getElementById(want),ph=document.getElementById('sh-ph');[se,ph].forEach(x=>{if(!x)return;x.classList.remove('sh-enter');void x.offsetWidth;x.classList.add('sh-enter')})}
   if((sec==='sort'||sec==='runs')&&window.RUNS) RUNS.setView(sec==='sort'?'lookup':'runs');
   if(sec==='home') renderHome();
   if(sec==='menu') renderMenu();
@@ -3892,7 +3891,7 @@ function fit(boxId,boardId,W){
   b.style.transform=s<1?`scale(${s})`:"";
   box.style.height=(b.offsetHeight*s)+"px";
 }
-addEventListener("resize",()=>{fit("fit","board",1280);fit("fit4","board4",1000)});
+addEventListener("resize",()=>{/* only when the boards are on screen */if(!$("fit").offsetParent&&!$("fit4").offsetParent)return;fit("fit","board",1280);fit("fit4","board4",1000)});
 
 // Tabs
 function tab(which){
@@ -10985,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101825';
+const VERSION='1202611101835';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
