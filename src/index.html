@@ -2048,7 +2048,7 @@ function pageHtml(snap){
   /* the Queensland date helper the modules use (the user view page doesn't get the main page's head) */
   const qh='<script>window.__qISO=window.__qISO||function(d){var t=(d||new Date()).getTime();if(isNaN(t))t=Date.now();return new Date(t+36e6).toISOString().slice(0,10)};window.__qDate=window.__qDate||function(){var p=window.__qISO().split("-");return new Date(+p[0],p[1]-1,+p[2],12)};<\/script>';
   const early=qh+'<script>try{var t=localStorage.getItem("theme1161");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var z=localStorage.getItem("ts1161");if(z==="l"||z==="xl")document.documentElement.setAttribute("data-ts",z)}catch(e){}<\/script>';
-  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style></style>'+early+'</head><body>'+body+'\n'+xtra+mods+'\n'+thm+'</body></html>';
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>@layer pdsfirst;</style>'+early+'</head><body>'+body+'\n'+xtra+mods+'\n'+thm+'</body></html>';
 }
 async function publish(patch){
   if(window.__collect){Object.assign(window.__collect,patch);return}
@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101945';
+const VERSION='1202611110630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
