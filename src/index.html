@@ -11094,7 +11094,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101100';
+const VERSION='1202611101110';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12539,7 +12539,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
  const secOf=()=>[...document.querySelectorAll('#sh-main .sh-sec')].find(x=>!x.hidden&&x.getClientRects().length);
  function acts(){const ph=document.getElementById('sh-ph');if(!ph||ph.hidden)return;const ttl=ph.querySelector('.ttl');if(!ttl)return;const sec=secOf();if(!sec)return;
    const want=[];
-   for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))||(!!x.closest('.dm-head')&&!x.closest('[hidden]'))));if(b)want.push({k,label,b})}
+   for(const [k,label,sel] of ACT){const b=[...sec.querySelectorAll(sel)].find(x=>!x.closest('.ix-keep')&&!(x.closest('[data-tab]')&&!['view',undefined].includes(x.closest('[data-tab]').dataset.tab))&&(vis(x)||(x.closest('.ix-moved')&&vis(x.closest('.ix-moved').parentElement))||(x.closest('.cu-sbox')&&vis(x.closest('.cu-sbox').parentElement))||(!!x.closest('.dm-head')&&!x.closest('[hidden]'))));if(b)want.push({k,label,b})}
    for(const [tk,tsel,offL,onL] of [['load',LOADTAB,'Load new results','Back to results'],['edit','#modes [data-act="mode"][data-v="edit"]','Edit run sheet','Done editing']]){
      const lt=[...sec.querySelectorAll(tsel)].find(x=>!x.parentElement.hidden&&(vis(x.parentElement)||(x.parentElement.classList.contains('ix-moved')&&vis(x.parentElement.parentElement))));
      if(lt){const grp=lt.parentElement;const on=lt.getAttribute('aria-pressed')==='true';want.push({k:tk,label:on?onL:offL,b:lt,grp,on})}}
