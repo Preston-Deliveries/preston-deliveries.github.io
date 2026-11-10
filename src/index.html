@@ -11132,7 +11132,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101300';
+const VERSION='1202611101310';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14662,12 +14662,12 @@ html.dk.dk.dk.dk.dk.dk .sh-side .sb-acts button{min-height:34px!important;paddin
   if(!on)return;
   const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec)return;
   const walk=(e,d)=>{for(const c of e.children){if(c.matches('.sheet,canvas,img,svg,dialog,table,.dm-side,.sh-thm,[role=dialog]'))continue;
-    const cs=getComputedStyle(c),mw=parseFloat(cs.maxWidth);
-    if((c.matches(WSEL)||(cs.maxWidth.indexOf('px')>-1&&mw>=600&&mw<1500&&cs.display!=='inline'))&&!c.closest('.sheet')){c.style.setProperty('max-width','none','important');c.style.setProperty('margin-left','0','important');c.style.setProperty('margin-right','0','important');c.setAttribute('data-dkw','1')}
+    const cs=getComputedStyle(c),mm=/([\d.]+)px/.exec(cs.maxWidth),mw=mm?parseFloat(mm[1]):NaN;
+    if((c.matches(WSEL)||(mw>=600&&mw<1500&&cs.display!=='inline'))&&!c.closest('.sheet')){c.style.setProperty('max-width','none','important');c.style.setProperty('margin-left','0','important');c.style.setProperty('margin-right','0','important');c.setAttribute('data-dkw','1')}
     if(d<4)walk(c,d+1)}};
   walk(sec,0);
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
- const later=()=>{if(!wq)wq=requestAnimationFrame(widen)};
+ const later=()=>{if(!wq)wq=setTimeout(widen,30)};
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')&&root.classList.contains('dk')){const q=document.getElementById('dk-q');if(q){e.preventDefault();q.focus();q.select()}}});
