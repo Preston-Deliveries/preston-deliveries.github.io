@@ -4145,27 +4145,62 @@ async function capture(boardId,boxId,W,name,shotId,shotBox,say){
     catch(e){if(e&&e.code==="declined")say("Save cancelled.");else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();say("PDF downloaded.","ok")}}
   }else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000);say("PDF downloaded.","ok");}
 }
-/* Neat A4 PDF of the NPS ranking, always one page */
+/* Neat A4 PDF of the NPS results, laid out like the screen: every driver, every score and every comment */
 async function npsPdf(drivers,title,sub,name,say){
-  const rows=svRows(drivers).sort((a,b)=>(a.rank||999)-(b.rank||999)||b.pts-a.pts||b.n-a.n);if(!rows.length){say("No NPS scores to put in the PDF.","err");return}
+  const rows=svRows(drivers).sort((a,b)=>(a.name||a.id).toLowerCase().localeCompare((b.name||b.id).toLowerCase()));if(!rows.length){say("No NPS scores to put in the PDF.","err");return}
   if(!window.jspdf)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
   if(!window.jspdf.jsPDF.API.autoTable)await new Promise((ok,no)=>{const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js";sc.onload=ok;sc.onerror=no;document.head.appendChild(sc)});
-  const all=rows.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,team=window.NPS(all);
-  const {jsPDF}=window.jspdf;let doc,RH=null,tries=0;
-  for(;;){doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
-    const W=210,M=10,top=40,bottom=14,n=rows.length,rh=RH!=null?RH:Math.max(3.2,Math.min(9,(297-top-bottom)/(n+1)-0.6)),fs=Math.max(5,Math.min(11,rh*1.25));
+  const all=rows.flatMap(r=>r.r),N=all.length,P=all.filter(x=>x.s>=9).length,X=all.filter(x=>x.s<7).length,M=N-P-X,team=window.NPS(all);
+  /* the standard PDF font only knows Western characters: swap the rest so nothing prints as junk */
+  const pt=s=>String(s||"").replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g," ").replace(/…/g,"...").replace(/[^\x20-\x7E -ÿ]/g,"").replace(/\s+/g," ").trim();
+  const CH={p:{bg:[220,243,228],tx:[30,138,76]},m:{bg:[253,240,212],tx:[176,110,10]},d:{bg:[252,226,226],tx:[198,40,40]}};
+  const kd=s=>s>=9?"p":s>=7?"m":"d";
+  const PC={"4214":[29,95,209],"4215":[11,122,110],"4217":[184,110,0],"4218":[194,24,91],xl:[57,73,171],relief:[20,128,74],sup:[109,63,199],office:[194,65,12]};
+  const npsCol=v=>v>=70?[30,138,76]:v>=0?[184,115,51]:[198,40,40];
+  const {jsPDF}=window.jspdf;const W=210,Mg=10,K=72/25.4;
+  const CW={0:44,1:40,2:14,3:92};
+  let doc,fs=9.5;
+  for(;;){
+    doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    const pad=Math.max(1.4,fs*0.25),lh=fs/K*1.18,chW=Math.max(5,fs*0.72),chH=lh+0.9,gap=0.9,cGap=fs*0.16;
+    /* work out every row's layout first, so the table knows each row's height */
+    const lay=rows.map(r=>{
+      doc.setFont("helvetica","bold");doc.setFontSize(fs);const nm=doc.splitTextToSize(pt(r.name||r.id),CW[0]-2*pad);
+      const dH=nm.length*lh+(r.grp?chH*0.85+1:0);
+      const per=Math.max(1,Math.floor((CW[1]-2*pad+gap)/(chW+gap))),sH=Math.ceil(r.r.length/per)*(chH+gap)-gap;
+      doc.setFont("helvetica","normal");doc.setFontSize(fs);
+      const cm=r.r.filter(x=>x.c&&pt(x.c)).map(x=>({s:x.s,l:doc.splitTextToSize('"'+pt(x.c)+'"',CW[3]-2*pad-chW-1.5)}));
+      const cH=cm.length?cm.reduce((t,c)=>t+Math.max(c.l.length*lh,chH),0)+cGap*(cm.length-1):lh;
+      return{nm,dH,per,sH,cm,cH,h:Math.max(dH,sH,cH)+2*pad};
+    });
+    /* page one top: brand band, summary cards and the mix bar */
     doc.setFillColor(15,26,42);doc.rect(0,0,W,26,"F");doc.setFillColor(242,120,45);doc.rect(0,26,W,1.6,"F");
-    doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  ·  CONTRACT 1161",M,9);
-    doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text(title,M,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(sub,M,23.5);
-    doc.setTextColor(20,33,58);doc.setFontSize(10);doc.setFont("helvetica","bold");doc.text(`Team NPS ${team==null?"–":team}`,M,34);doc.setFont("helvetica","normal");doc.setTextColor(90,102,128);doc.text(`${N} customer score${N===1?"":"s"}  ·  ${P} gave 9 or 10  ·  ${X} gave 0 to 6`,M+32,34);
-    doc.autoTable({head:[["#","DRIVER","POSTCODE","CUSTOMERS","9 OR 10","7 OR 8","0 TO 6","NPS"]],body:rows.map(r=>[r.rank?String(r.rank):"–",r.name?r.name+"  ("+r.id+")":r.id,r.grp||"",String(r.n),String(r.hi),String(r.mid),String(r.lo),r.pts==null?"–":String(r.pts)]),
-      startY:top,margin:{left:M,right:M,bottom},theme:"plain",
-      styles:{fontSize:fs,cellPadding:{top:(rh-fs*0.35)/2,bottom:(rh-fs*0.35)/2,left:1.5,right:1.5},textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2}},
-      headStyles:{fontStyle:"bold",textColor:[90,102,128],fontSize:Math.max(5,fs-1.5)},alternateRowStyles:{fillColor:[244,246,250]},
-      columnStyles:{0:{halign:"center",cellWidth:10,fontStyle:"bold"},1:{cellWidth:"auto",fontStyle:"bold",overflow:"ellipsize"},2:{halign:"center",cellWidth:20},3:{halign:"center",cellWidth:22},4:{halign:"center",cellWidth:18},5:{halign:"center",cellWidth:18},6:{halign:"center",cellWidth:18},7:{halign:"right",cellWidth:16,fontStyle:"bold"}},
-      didParseCell:d=>{if(d.section!=="body")return;const r=rows[d.row.index];if(d.column.index===4)d.cell.styles.textColor=[30,138,76];if(d.column.index===6&&r.lo)d.cell.styles.textColor=[198,40,40];if(d.column.index===7)d.cell.styles.textColor=r.pts>=70?[30,138,76]:r.pts>=0?[184,115,51]:[198,40,40]}});
-    if(doc.getNumberOfPages()<=1||++tries>12)break;RH=(RH!=null?RH:rh)*0.9}
-  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(90,102,128);doc.text("NPS = (customers who gave 9 or 10 minus customers who gave 0 to 6) ÷ all customers × 100. Same NPS: more customers ranks first.",10,291);
+    doc.setTextColor(242,120,45);doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("PRESTON DELIVERY SERVICE  ·  CONTRACT 1161",Mg,9);
+    doc.setTextColor(255,255,255);doc.setFontSize(18);doc.text(title,Mg,18);doc.setFontSize(11);doc.setFont("helvetica","normal");doc.setTextColor(201,214,230);doc.text(pt(sub),Mg,23.5);
+    const cards=[["NPS SCORES",String(N),[20,33,58]],["TEAM NPS",team==null?"0":String(team),team==null?[20,33,58]:npsCol(team)],["9 OR 10",String(P),[30,138,76]],["0 TO 6",String(X),[198,40,40]]];
+    const cw=(W-2*Mg-3*3)/4;cards.forEach((c,i)=>{const x=Mg+i*(cw+3);doc.setDrawColor(221,227,236);doc.setFillColor(248,250,252);doc.setLineWidth(0.25);doc.roundedRect(x,31,cw,14,2,2,"FD");
+      doc.setFont("helvetica","bold");doc.setFontSize(7);doc.setTextColor(90,102,128);doc.text(c[0],x+3,35.5);doc.setFontSize(14);doc.setTextColor(...c[2]);doc.text(c[1],x+3,42.3)});
+    {const y=48,bw=W-2*Mg;doc.setFillColor(230,234,240);doc.roundedRect(Mg,y,bw,2,1,1,"F");let x=Mg;
+      [[P,[90,201,135]],[M,[242,178,74]],[X,[240,128,128]]].forEach(([v,c])=>{if(!N||!v)return;const w=bw*v/N;doc.setFillColor(...c);doc.rect(x,y,w,2,"F");x+=w})}
+    doc.autoTable({head:[["DRIVER","CUSTOMER SCORES","NPS","WHAT CUSTOMERS SAID"]],body:rows.map(r=>["","",window.NPS(r.r)==null?"":String(window.NPS(r.r)),""]),
+      startY:53,margin:{left:Mg,right:Mg,top:12,bottom:14},theme:"plain",showHead:"everyPage",
+      styles:{fontSize:fs,cellPadding:pad,textColor:[20,33,58],lineColor:[221,227,236],lineWidth:{bottom:0.2},valign:"middle"},
+      headStyles:{fontStyle:"bold",textColor:[90,102,128],fontSize:Math.max(5.5,fs-2),fillColor:[244,246,250]},
+      columnStyles:{0:{cellWidth:CW[0]},1:{cellWidth:CW[1]},2:{cellWidth:CW[2],halign:"right",fontStyle:"bold"},3:{cellWidth:CW[3]}},
+      rowPageBreak:"avoid",
+      didParseCell:d=>{if(d.section!=="body")return;d.cell.styles.minCellHeight=lay[d.row.index].h;if(d.column.index===2){const v=window.NPS(rows[d.row.index].r);if(v!=null)d.cell.styles.textColor=npsCol(v)}},
+      didDrawCell:d=>{if(d.section!=="body")return;const r=rows[d.row.index],L=lay[d.row.index],c=d.cell,x0=c.x+pad;
+        const chip=(x,y,s,w)=>{const k=CH[kd(s)];doc.setFillColor(...k.bg);doc.roundedRect(x,y,w,chH,1,1,"F");doc.setFont("helvetica","bold");doc.setFontSize(fs*0.92);doc.setTextColor(...k.tx);doc.text(String(s),x+w/2,y+chH/2,{align:"center",baseline:"middle"})};
+        if(d.column.index===0){let y=c.y+(c.height-L.dH)/2;doc.setFont("helvetica","bold");doc.setFontSize(fs);doc.setTextColor(20,33,58);doc.text(L.nm,x0,y,{baseline:"top",lineHeightFactor:1.18});y+=L.nm.length*lh+1;
+          if(r.grp){const lab=pt(GRPN[r.grp]||r.grp),col=PC[r.grp]||[90,102,128];doc.setFontSize(fs*0.72);const tw=doc.getTextWidth(lab)+3,h=chH*0.85;doc.setFillColor(...col.map(v=>Math.round(v+(255-v)*0.85)));doc.roundedRect(x0,y,tw,h,h/2,h/2,"F");doc.setTextColor(...col);doc.text(lab,x0+1.5,y+h/2,{baseline:"middle"})}}
+        if(d.column.index===1){const y0=c.y+(c.height-L.sH)/2;r.r.forEach((x,i)=>chip(x0+(i%L.per)*(chW+gap),y0+Math.floor(i/L.per)*(chH+gap),x.s,chW))}
+        if(d.column.index===3){let y=c.y+(c.height-L.cH)/2;if(!L.cm.length){doc.setFont("helvetica","normal");doc.setFontSize(fs);doc.setTextColor(120,132,150);doc.text("No comment",x0,y,{baseline:"top"});return}
+          L.cm.forEach(m=>{chip(x0,y-0.45,m.s,chW);doc.setFont("helvetica","normal");doc.setFontSize(fs);doc.setTextColor(20,33,58);doc.text(m.l,x0+chW+1.5,y,{baseline:"top",lineHeightFactor:1.18});y+=Math.max(m.l.length*lh,chH)+cGap})}
+      }});
+    if(doc.getNumberOfPages()<=1||fs<=6.6)break;fs=Math.max(6.5,fs-0.4)}
+  const pages=doc.getNumberOfPages();doc.setPage(pages);
+  doc.setFont("helvetica","normal");doc.setFontSize(7.5);doc.setTextColor(90,102,128);doc.text("NPS = (customers who gave 9 or 10 minus customers who gave 0 to 6) ÷ all customers × 100.",10,291);
+  if(pages>1)for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(7.5);doc.setTextColor(90,102,128);doc.text(`Page ${i} of ${pages}`,W-Mg,291,{align:"right"})}
   const blob=doc.output("blob");
   if(downloads){try{await downloads.save({filename:name,data:blob});say("PDF saved.","ok")}catch(e){if(e&&e.code==="declined")say("Save cancelled.");else throw e}}
   else{const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),3000);say("PDF downloaded.","ok")}
@@ -4174,13 +4209,13 @@ const clean=s=>s.replace(/[^\w ]+/g," ").replace(/\s+/g," ").trim();
 $("save").addEventListener("click",async()=>{
   if(!cur){status("No NPS results loaded for this week yet.","err");return;}
   const b=$("save");b.disabled=true;status("Making the PDF…");
-  try{await npsPdf(cur.drivers,"NPS ranking",`Pay week ${sel.week}  \u00b7  ${weekRange(sel.cycleStart,sel.week)}`,`1161 NPS Ranking Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,status)}catch(e){console.warn(e);status("Couldn't make the PDF. Try again.","err")}
+  try{await npsPdf(cur.drivers,"NPS results",`Pay week ${sel.week}  \u00b7  ${weekRange(sel.cycleStart,sel.week)}`,`1161 NPS Week ${sel.week} ${clean(weekRange(sel.cycleStart,sel.week))}.pdf`,status)}catch(e){console.warn(e);status("Couldn't make the PDF. Try again.","err")}
   b.disabled=false;
 });
 $("save4").addEventListener("click",async()=>{
   if(!$("cycle").value){status4("No weeks saved yet.","err");return;}
   const b=$("save4");b.disabled=true;status4("Making the PDF…");
-  try{const key=$("cycle").value,agg={};saved.filter(w=>w.cycleStart===key).forEach(w=>Object.entries(w.drivers||{}).forEach(([id,r])=>{(agg[id]=agg[id]||[]).push(...r)}));await npsPdf(agg,"Monthly NPS ranking",`${monthName(key)}  \u00b7  ${cycleLabel(key)}`,`1161 NPS Ranking ${clean(monthName(key))}.pdf`,status4)}catch(e){console.warn(e);status4("Couldn't make the PDF. Try again.","err")}
+  try{const key=$("cycle").value,agg={};saved.filter(w=>w.cycleStart===key).forEach(w=>Object.entries(w.drivers||{}).forEach(([id,r])=>{(agg[id]=agg[id]||[]).push(...r)}));await npsPdf(agg,"Monthly NPS results",`${monthName(key)}  \u00b7  ${cycleLabel(key)}`,`1161 NPS ${clean(monthName(key))}.pdf`,status4)}catch(e){console.warn(e);status4("Couldn't make the PDF. Try again.","err")}
   b.disabled=false;
 });
 
@@ -11059,7 +11094,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611100544';
+const VERSION='1202611101100';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
