@@ -1884,6 +1884,14 @@ function findPages(q){const ws=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(
   return visible().filter(x=>x!=='home'&&NAMES[x]).map(x=>{const nm=NAMES[x].toLowerCase(),hay=(nm+' '+(PAGE_WORDS[x]||'')+' '+(d[x]||'')).toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(/\s+/);
     if(!ws.every(w=>hay.some(h=>h.startsWith(w))))return null;return{x,score:nm.startsWith(ws[0])?0:nm.split(' ').some(h=>h.startsWith(ws[0]))?1:2}}).filter(Boolean).sort((a,b)=>a.score-b.score).slice(0,4).map(o=>o.x)}
 function hl(name,q){const t=String(q||'').trim().toUpperCase().replace(/[^A-Z0-9 ]/g,'');if(!t)return esc(name);const i=String(name).toUpperCase().indexOf(t);if(i<0)return esc(name);return esc(name.slice(0,i))+'<mark>'+esc(name.slice(i,i+t.length))+'</mark>'+esc(name.slice(i+t.length))}
+/* search: people from Driver Details by name, driver number, login or mobile; opens their record */
+function staffFind(q){q=String(q||'').trim().toLowerCase();if(q.length<2)return [];try{if(typeof mcStart==='function')mcStart()}catch(e){}const P=(typeof MC!=='undefined'&&MC.staff)||{};const qd=q.replace(/\D/g,'');const ws=q.split(/\s+/).filter(Boolean);const out=[];
+  for(const[id,p]of Object.entries(P)){if(!p)continue;const nm=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().replace(/\s+/g,' ').trim();if(!nm)continue;const runs=(p.runs||[]).filter(Boolean).map(r=>String(r).toLowerCase());const login=String(p.login||'').toLowerCase();const mob=String(p.mobile||p.phone||'').replace(/\D/g,'');
+    const hay=(nm+' '+runs.join(' ')+' '+login).split(/\s+/);const hit=ws.every(w=>hay.some(h=>h.startsWith(w)))||(qd.length>=4&&mob.includes(qd));if(!hit)continue;
+    const cap=nm.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
+    out.push({id,name:cap,sub:[(p.runs||[]).filter(Boolean).join(', '),p.role?String(p.role).charAt(0)+String(p.role).slice(1).toLowerCase():'',p.mobile||''].filter(Boolean).join(' · '),score:nm.startsWith(ws[0])?0:1})}
+  return out.sort((a,b)=>a.score-b.score||a.name.localeCompare(b.name)).slice(0,6)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-fstaff]');if(!b)return;const id=b.dataset.fstaff;const n=document.querySelector('.sh-side [data-nav="staff"]')||document.querySelector('[data-nav="staff"]');if(window.APP&&APP.go)APP.go('staff');else if(n)n.click();let t=0;(function tryOpen(){const r=document.querySelector('#mod-staff [data-dm="open"][data-v="'+CSS.escape(id)+'"]');if(r){r.click();return}if(++t<30)setTimeout(tryOpen,100)})()});
 function findRender(){const el=$('ah_fres');if(!el)return;clearTimeout(findT);findT=null;const q=findQ.trim();
   if(!q&&!findPin){el.innerHTML='';return}
   const P=findPin?[findPin,...findPages(q).filter(x=>x!==findPin)].slice(0,4):findPages(q);
@@ -1891,11 +1899,13 @@ function findRender(){const el=$('ah_fres');if(!el)return;clearTimeout(findT);fi
   const D=role==='mgr'&&window.SUMMARY&&SUMMARY.find?SUMMARY.find(q):[];
   if(D==null&&role==='mgr'&&q.length>=2&&!findT)findT=setTimeout(()=>{findT=null;findRender()},900);
   const dv=D&&D.length?`<h3 class="ah-fh">Drivers</h3><div class="ah-flist">${D.map(d=>`<button type="button" class="ah-fp ah-fdrv" data-fsum="${esc(d.key)}"><span class="ah-fwho"><b>${hl(d.name,q)}</b><small>${[d.nos.join(', '),d.pc,'Summary'].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`:'';
+  const SP=role==='mgr'?staffFind(q):[];
+  const sp=SP.length?`<h3 class="ah-fh">People</h3><div class="ah-flist">${SP.map(x=>`<button type="button" class="ah-fp ah-fdrv" data-fstaff="${esc(x.id)}"><span class="ah-fwho"><b>${hl(x.name,q)}</b><small>${esc(x.sub)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`:'';
   const R=q.length>=2&&window.RUNS&&RUNS.find?RUNS.find(q):[];
-  if(R==null){el.innerHTML=dv+pg+'<p class="ah-fnote">Loading streets…</p>';findT=setTimeout(findRender,700);return}
-  if(!R.length&&!P.length&&!(D&&D.length)){el.innerHTML='<p class="ah-fnote">No street or page matches. Check the spelling or try the first few letters.</p>';return}
+  if(R==null){el.innerHTML=sp+dv+pg+'<p class="ah-fnote">Loading streets…</p>';findT=setTimeout(findRender,700);return}
+  if(!R.length&&!P.length&&!(D&&D.length)&&!SP.length){el.innerHTML='<p class="ah-fnote">No street or page matches. Check the spelling or try the first few letters.</p>';return}
   const shown=R.slice(0,8);
-  el.innerHTML=dv+pg+(shown.length?`${P.length||(D&&D.length)?'<h3 class="ah-fh">Streets</h3>':''}<div class="ah-flist">${shown.map(g=>`<div class="ah-fst"><div class="ah-ftop"><b>${g.num!=null?esc(g.num)+' ':''}${hl(g.name,g.num!=null?g.t:q)}</b><span class="ah-fpc">${esc(g.pc)}</span></div>${g.num!=null&&g.all>1?`<p class="ah-fnum">${esc(g.how==='num'?`Split street. Number ${g.num} is on this run.`:g.how==='rest'?`Split street. Number ${g.num} is not in a listed range, so it is the rest of the street.`:`Split street. No run lists number ${g.num}, so check the ranges below.`)}</p>`:''}${g.parts.map(x=>`<button type="button" class="ah-fp" data-fid="${esc(x.id)}"><i style="background:${x.col||'#999'}"></i><span class="ah-fwho"><b>${esc(x.driver||'Unassigned')}</b><small>${[x.login,x.bay?'Trolley bay '+x.bay:'',x.rg].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`).join('')}</div>${R.length>8?`<p class="ah-fnote">${R.length-8} more streets. Keep typing to narrow it down.</p>`:''}`:'');
+  el.innerHTML=sp+dv+pg+(shown.length?`${P.length||(D&&D.length)||SP.length?'<h3 class="ah-fh">Streets</h3>':''}<div class="ah-flist">${shown.map(g=>`<div class="ah-fst"><div class="ah-ftop"><b>${g.num!=null?esc(g.num)+' ':''}${hl(g.name,g.num!=null?g.t:q)}</b><span class="ah-fpc">${esc(g.pc)}</span></div>${g.num!=null&&g.all>1?`<p class="ah-fnum">${esc(g.how==='num'?`Split street. Number ${g.num} is on this run.`:g.how==='rest'?`Split street. Number ${g.num} is not in a listed range, so it is the rest of the street.`:`Split street. No run lists number ${g.num}, so check the ranges below.`)}</p>`:''}${g.parts.map(x=>`<button type="button" class="ah-fp" data-fid="${esc(x.id)}"><i style="background:${x.col||'#999'}"></i><span class="ah-fwho"><b>${esc(x.driver||'Unassigned')}</b><small>${[x.login,x.bay?'Trolley bay '+x.bay:'',x.rg].filter(Boolean).map(esc).join(' · ')}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}</div>`).join('')}</div>${R.length>8?`<p class="ah-fnote">${R.length-8} more streets. Keep typing to narrow it down.</p>`:''}`:'');
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='ah_fq'){findQ=e.target.value;findPin=null;hSay('');findRender()}});
 /* Home: tap Ask, say "who does Palmer St", see and hear whose street it is */
@@ -11131,7 +11141,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101510';
+const VERSION='1202611101520';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
