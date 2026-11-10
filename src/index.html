@@ -6,7 +6,7 @@
 /* Steady screen: the app has many small scripts that tidy a page after it is drawn. Run all of that tidying in the same frame, before the screen is painted, so nothing visibly moves or jiggles after a click. */
 (function(){
  if(window.__steady)return;window.__steady=1;
- var nat=window.requestAnimationFrame.bind(window);
+ var nat=window.requestAnimationFrame.bind(window);window.__natRAF=nat;
  var Q=[],deferred=[],ids=0,flushing=false,scheduled=0,ran=0,seen=null;
  function start(t){scheduled=0;flushing=true;ran=0;seen=new Set();Q=deferred.concat(Q);deferred=[];flush(t)}
  function again(){if(!scheduled)scheduled=nat(start)}
@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101620';
+const VERSION='1202611101630';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14763,6 +14763,25 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
 /* table headings on every page in plain grey, not the section colour */
 html body #sh-main#sh-main#sh-main .sh-sec.pg thead th{color:var(--sh-muted)!important}
 </style>
+<style id="settle-css">html.pds-settle #sh-main>.sh-sec{visibility:hidden!important}</style>
+<script id="settle-js">
+/* No jumping when you change page or tab: the old page stays on screen until the new one has been drawn and has stopped moving, then it shows in one go */
+(function(){
+ if(window.__settle)return;window.__settle=1;
+ const root=document.documentElement,raf=window.__natRAF||window.requestAnimationFrame.bind(window);
+ const TRIG='[data-nav],#sh-tabs button,[role=tab],.sh-hubtabs button,[data-sh="back"],[data-rtab],[data-qa],[data-fstaff],[data-fsum],[data-fid],.ah-fp,.sh-tile';
+ let armedUntil=0,on=false,startT=0,last='',sameSince=0;
+ function sig(){const s=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!s)return '';const r=s.getBoundingClientRect();let out=s.id+Math.round(r.y)+':'+Math.round(r.height);const w=document.createTreeWalker(s,NodeFilter.SHOW_ELEMENT);let n,c=0;while((n=w.nextNode())&&c<6){if(n.matches('script,style,template,[hidden]'))continue;const b=n.getBoundingClientRect();if(b.height>12&&b.width>40&&(n.children.length===0||b.height<120)){c++;out+='|'+Math.round(b.y)+':'+Math.round(b.x)}}return out}
+ function loop(t){if(!on)return;const now=performance.now(),cur=sig();if(cur!==last){last=cur;sameSince=now}
+  if(now-sameSince>=110||now-startT>=700){on=false;root.classList.remove('pds-settle');return}raf(loop)}
+ function hide(){if(on)return;on=true;startT=performance.now();sameSince=startT;last=sig();root.classList.add('pds-settle');raf(loop)}
+ document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest(TRIG);if(t)armedUntil=performance.now()+1500},true);
+ addEventListener('popstate',()=>{armedUntil=performance.now()+1500});addEventListener('hashchange',()=>{armedUntil=performance.now()+1500});
+ function watch(){const m=document.getElementById('sh-main');if(!m){setTimeout(watch,300);return}
+  new MutationObserver(ms=>{if(performance.now()>armedUntil)return;for(const x of ms){if(x.target.closest&&x.target.closest('#sh-ph,#sh-tabs'))continue;hide();armedUntil=0;return}}).observe(m,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','style']})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+})();
+</script>
 <style id="no-motion">
 /* No animations, transitions, shakes or press movement anywhere in the app: everything changes instantly */
 html *,html *::before,html *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
