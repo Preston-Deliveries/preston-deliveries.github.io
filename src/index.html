@@ -1643,7 +1643,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
    ${rows.length||scn.length?'':'<p class="mc-ok">✓ Nothing else needs you this morning.</p>'}</section>`;
   if(el.__h!==html){el.__h=html;el.innerHTML=html}
   try{const dk=document.documentElement.classList.contains('dk');let bx=document.getElementById('ah_board');const fd=document.querySelector('#mod-home .ah-find');
-    if(dk&&ready&&fd){if(!bx){bx=document.createElement('div');bx.id='ah_board'}if(bx.nextElementSibling!==fd)fd.parentNode.insertBefore(bx,fd);const bh=mbBoard(drv,on,offIds,nm,enqN,ex.length);if(bx.__h!==bh){bx.__h=bh;bx.innerHTML=bh}bx.hidden=false}else if(bx)bx.hidden=true}catch(e){}
+    if(dk&&ready&&fd){if(!bx){bx=document.createElement('div');bx.id='ah_board'}if(fd.nextElementSibling!==bx)fd.parentNode.insertBefore(bx,fd.nextSibling);const bh=mbBoard(drv,on,offIds,nm,enqN,ex.length);if(bx.__h!==bh){bx.__h=bh;bx.innerHTML=bh}bx.hidden=false}else if(bx)bx.hidden=true}catch(e){}
   try{adminSum()}catch(e){}}
 setInterval(()=>{try{if(cur==='home'&&role==='mgr')adminMorning()}catch(e){}},60000);
 /* 2 loads check: every morning, look at who said they did 2 loads on the last work day. Confirm it, or say no and it goes back to 1 load. */
@@ -11132,7 +11132,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101315';
+const VERSION='1202611101330';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14646,7 +14646,10 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
    if(k==='gear'){const o=document.querySelector('.sh-side .sh-mode');o&&o.click()}
    if(k==='mic'){const home=document.getElementById('mod-home'),away=!!(home&&home.hidden);if(away){const n=document.querySelector('.sh-side [data-nav="home"]');n&&n.click()}setTimeout(()=>{const m=document.getElementById('ah_mic');m&&m.click()},away?300:0)}});
   const q=t.querySelector('#dk-q');
-  q.addEventListener('input',()=>{const h=document.getElementById('ah_fq');if(!h)return;const home=document.getElementById('mod-home');if(home&&home.hidden){const n=document.querySelector('.sh-side [data-nav="home"]');n&&n.click()}h.value=q.value;h.dispatchEvent(new Event('input',{bubbles:true}))});
+  /* typing here searches the whole app: results show at the top of Home, from any page */
+  const toHome=()=>{const home=document.getElementById('mod-home');if(!home||home.hidden||!document.getElementById('ah_fq')){const n=document.querySelector('.sh-side [data-nav="home"]');n&&n.click()}};
+  const push=(tries)=>{const h=document.getElementById('ah_fq');if(!h){if(tries>0)setTimeout(()=>push(tries-1),100);return}if(h.value!==q.value){h.value=q.value;h.dispatchEvent(new Event('input',{bubbles:true}))}const f=document.querySelector('#mod-home .ah-find');if(f&&q.value.trim())f.scrollIntoView({block:'start'})};
+  q.addEventListener('input',()=>{toHome();push(20)});
   q.addEventListener('keydown',e=>{const h=document.getElementById('ah_fq');if(!h)return;if(e.key==='Enter'||e.key==='ArrowDown'||e.key==='ArrowUp'){h.dispatchEvent(new KeyboardEvent('keydown',{key:e.key,bubbles:true}));if(e.key!=='Enter')e.preventDefault()}if(e.key==='Escape'){q.value='';h.value='';h.dispatchEvent(new Event('input',{bubbles:true}));q.blur()}});
   return t}
  function sync(){const t=document.getElementById('dk-top');if(!t)return;
@@ -14668,7 +14671,8 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
     if(d<4)walk(c,d+1)}};
   walk(sec,0);
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
- const later=()=>{if(!wq)wq=setTimeout(widen,30)};
+ const later=()=>{if(!wq)wq=setTimeout(()=>{widen();clearQ()},30)};
+ function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')&&root.classList.contains('dk')){const q=document.getElementById('dk-q');if(q){e.preventDefault();q.focus();q.select()}}});
