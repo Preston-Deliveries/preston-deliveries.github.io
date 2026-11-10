@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101555';
+const VERSION='1202611101610';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14721,10 +14721,20 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
   {const T=document.getElementById('sh-tabs');if(T){T.style.setProperty('border-bottom','0','important');T.style.setProperty('box-shadow','none','important');const u=T.querySelector('.sh-utrow');if(u){u.style.setProperty('border-bottom','1px solid '+(getComputedStyle(document.documentElement).getPropertyValue('--sh-line').trim()||'#24344F'),'important');u.setAttribute('data-dkw','1')}}}
   document.querySelectorAll('#sh-tabs .sh-utrow,#sh-tabs nav').forEach(e=>{e.style.setProperty('max-width','none','important');e.style.setProperty('margin-left','0','important');e.style.setProperty('margin-right','0','important');e.setAttribute('data-dkw','1')});
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
- let inW=false;const later=()=>{if(inW)return;inW=true;try{widen();clearQ();try{placeQ()}catch(e){}}finally{inW=false}};
+ /* every page and tab starts its content the same distance under the title or tabs, so switching tabs never makes the page jump up or down */
+ let lvKey='';
+ function level(){const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec||sec.id==='mod-home'||!sec.getClientRects().length)return;
+  const tb=document.getElementById('sh-tabs'),ph=document.getElementById('sh-ph');const hasT=!!(tb&&tb.getClientRects().length&&tb.getBoundingClientRect().height>4);
+  const base=hasT?tb.getBoundingClientRect().bottom:(ph&&!ph.hidden&&ph.getClientRects().length?ph.getBoundingClientRect().bottom:null);if(base==null)return;
+  const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n,first=null;
+  while((n=w.nextNode())){if(n.matches('script,style,template,dialog,[hidden]')){continue}const r=n.getBoundingClientRect();if(r.height>12&&r.width>40&&(n.children.length===0||r.height<120)){first=n;break}}
+  if(!first)return;const sr=sec.getBoundingClientRect(),z=(sr.width/(sec.offsetWidth||sr.width))||1;
+  const want=(hasT?6:14)*z,diff=(want-(first.getBoundingClientRect().y-base))/z;if(Math.abs(diff)<1||Math.abs(diff)>48)return;
+  const cur=parseFloat(getComputedStyle(sec).marginTop)||0;sec.style.setProperty('margin-top',(cur+diff)+'px','important')}
+ let inW=false;const later=()=>{if(inW)return;inW=true;try{try{widen()}catch(e){}clearQ();try{placeQ()}catch(e){}try{level()}catch(e){}}finally{inW=false}};
  function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
- try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
+ try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','aria-selected','aria-pressed']})}catch(e){}
  try{new MutationObserver(()=>{later();try{sheet();placeQ()}catch(e){}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-ts']})}catch(e){}
  /* the filter sheet: on computers it lines up with the page column instead of the whole window */
  function sheet(){const P=[...document.querySelectorAll('.cu-panel')],D=document.getElementById('cu-done');
