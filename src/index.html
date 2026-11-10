@@ -2491,6 +2491,8 @@ pool.remove();
 function applyNames(){const M=window.__runNames;if(!M||!Object.keys(M).length)return;for(const id of Object.keys(S.runs)){const r=S.runs[id];const k=String(r.login||'').toUpperCase().replace(/\s+/g,'');r.driver=M[k]||'Unassigned'}}
 window.addEventListener('runnames',()=>{try{applyNames();render()}catch(e){}});
 function render(){
+  /* only draw the run and sort sheets while they are on screen; if data arrives while they are hidden, draw once when opened */
+  {const sec=document.getElementById('mod-runs');if(sec&&sec.hidden&&S.loaded){render.__dirty=true;if(!render.__mo){render.__mo=new MutationObserver(()=>{if(!sec.hidden&&render.__dirty)render()});render.__mo.observe(sec,{attributes:true,attributeFilter:['hidden']})}return}render.__dirty=false}
   applyNames();
   renderTop();
   if(S.noDb){app.innerHTML=`<div class="state"><h2>Nothing shared yet</h2><p class="hint">The sort and run sheets will show here once the manager sends them to the drivers’ link.</p></div>`;return}
@@ -10982,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101810';
+const VERSION='1202611101820';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
