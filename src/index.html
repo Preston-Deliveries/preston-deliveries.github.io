@@ -4979,7 +4979,7 @@ function render(){
   if(state==='wait'){box.innerHTML='<div class="dm"><div class="empty">Opening driver details</div></div>';return}
   if(state==='denied'){box.innerHTML='<div class="dm"><div class="empty">Only the manager can see driver details.</div></div>';return}
   if(state==='nodb'){box.innerHTML='<div class="dm"><div class="empty">Driver details are only available when you open this page in Claude while signed in.</div></div>';return}
-  if(openId!==null){box.innerHTML=detailHTML();return}
+  if(openId!==null){box.innerHTML=document.documentElement.classList.contains('dk')?splitHTML():detailHTML();return}
   const c=counts();
   const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
   box.innerHTML=`<div class="dm">
@@ -4998,6 +4998,14 @@ function render(){
     <div class="dm-cl">${DGROUPS.map(([gk,gt])=>({gk,gt,L:list.filter(p=>dgrp(p.role)===gk)})).filter(g=>g.L.length).map(({gk,gt,L})=>`<h3 class="dg-${gk}">${esc(gt)} <span>${L.length}</span></h3>${L.map(p=>`<div class="cr dg-${gk}" data-dm="open" data-v="${esc(p.id)}" tabindex="0" role="button"><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="tx"><b>${esc(fullName(p))}</b><small>${runsOf(p).map(d=>`<span class="dno">${esc(d)}</span>`).join('')}${p.mobile?esc(phoneTxt(p.mobile)):'No mobile'}</small></span>${p.mobile?`<a class="ci tel" data-dm="tel" href="tel:${esc(telOf(p.mobile))}" aria-label="Call ${esc(fullName(p))}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h2.8l1.4 4-2 1.3a11 11 0 0 0 6.4 6.4l1.3-2 4 1.4v2.8a2 2 0 0 1-2.2 2A16.5 16.5 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg></a><a class="ci wa" data-dm="tel" href="https://wa.me/${esc(waOf(p.mobile))}" target="_blank" rel="noopener" aria-label="WhatsApp ${esc(fullName(p))}">${WAI}</a>`:''}</div>`).join('')}`).join('')}</div>`})():`<div class="tw"><div class="empty">${Object.keys(people).length?'Nobody matches those filters.':'No drivers yet. Add the first person with the button above.'}</div></div>`}
   </div>`;
 }
+/* computer only: the list stays on the left while one person is open on the right */
+function splitHTML(){
+  const L=sorted(Object.values(people));
+  return `<div class="dm-split"><aside class="dm-side" aria-label="Everyone"><div class="dm-sq"><input type="search" id="dm_sq" placeholder="Find a person" autocomplete="off" aria-label="Find a person"><button type="button" class="sh-btn" data-dm="add" aria-label="Add a person" title="Add a person">+</button></div>
+    ${DGROUPS.map(([gk,gt])=>({gk,gt,G:L.filter(p=>dgrp(p.role)===gk)})).filter(g=>g.G.length).map(({gk,gt,G})=>`<div class="dm-sg dg-${gk}"><h3>${esc(gt)}<span>${G.length}</span></h3>${G.map(p=>`<button type="button" class="dm-sr dg-${gk}" data-dm="open" data-v="${esc(p.id)}" data-n="${esc(fullName(p).toLowerCase()+' '+runsOf(p).join(' ').toLowerCase())}" ${p.id===openId?'aria-current="true"':''}><span class="av" aria-hidden="true">${esc(ini(fullName(p)))}</span><span class="tx"><b>${esc(fullName(p))}</b><small>${esc([runsOf(p).join(', '),bayLine(p)].filter(Boolean).join(' · ')||'')}</small></span></button>`).join('')}</div>`).join('')}
+  </aside><div class="dm-det">${detailHTML()}</div></div>`;
+}
+document.addEventListener('input',e=>{if(e.target.id!=='dm_sq')return;const v=e.target.value.trim().toLowerCase();document.querySelectorAll('#mod-staff .dm-sr').forEach(b=>{b.hidden=!!v&&!b.dataset.n.includes(v)});document.querySelectorAll('#mod-staff .dm-sg').forEach(g=>{g.hidden=![...g.querySelectorAll('.dm-sr')].some(b=>!b.hidden)})});
 function detailHTML(){
   const p=isNew?{id:'',first:'',last:'',role:'RELIEF',runs:[],bay:'',login:'',mobile:'',email:'',van:'',rego:'',regoDue:'',licDue:'',tenDue:'',fit2work:'',ecName:'',ecPhone:'',notes:''}:people[openId];
   if(!p){openId=null;return render()}
@@ -11109,7 +11117,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101200';
+const VERSION='1202611101215';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14524,15 +14532,15 @@ html.dk.dk.dk.dk.dk.dk .sh-side :is(.sh-brand,.sh-thm,.sb-sendwhat){display:none
 html.dk.dk.dk.dk.dk.dk .sh-side .sh-links{zoom:1!important;gap:12px!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .sh-grp{gap:1px!important;padding:0!important;border:0!important;background:none!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .sh-gl{display:block!important;font:700 11px var(--sh-body,Inter,sans-serif)!important;letter-spacing:.08em!important;text-transform:uppercase!important;color:var(--dk-smut)!important;padding:0 10px 5px!important;margin:0!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:100%!important;padding:7px 10px!important;border-radius:8px!important;color:var(--dk-sink)!important;background:transparent!important;min-height:0!important;text-align:left!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab:hover{background:var(--dk-son)!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab svg{width:19px!important;height:19px!important;padding:0!important;background:none!important;border-radius:0!important;color:var(--g,var(--dk-smut))!important;flex:none!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab :is(.lg,.sm){font:500 14px var(--sh-body,Inter,sans-serif)!important;color:var(--dk-sink)!important;letter-spacing:0!important;text-transform:none!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab .sm{display:none!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab .lg{display:inline!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab[aria-current="page"]{background:var(--dk-son)!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab[aria-current="page"] :is(.lg,.sm){font-weight:800!important}
-html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button.tab::before{display:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav]{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:100%!important;padding:7px 10px!important;border-radius:8px!important;color:var(--dk-sink)!important;background:transparent!important;min-height:0!important;text-align:left!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav]:hover{background:var(--dk-son)!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav] svg{width:19px!important;height:19px!important;padding:0!important;background:none!important;border-radius:0!important;color:var(--g,var(--dk-smut))!important;flex:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav] :is(.lg,.sm){font:500 14px var(--sh-body,Inter,sans-serif)!important;color:var(--dk-sink)!important;letter-spacing:0!important;text-transform:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav] .sm{display:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav] .lg{display:inline!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav][aria-current="page"]{background:var(--dk-son)!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav][aria-current="page"] :is(.lg,.sm){font-weight:800!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav]::before{display:none!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .g-perf{--g:#8B6BE0}html.dk.dk.dk.dk.dk.dk .sh-side .g-road{--g:#3F7FE8}html.dk.dk.dk.dk.dk.dk .sh-side .g-team{--g:#2E9E68}html.dk.dk.dk.dk.dk.dk .sh-side .g-admin{--g:#E0662A}html.dk.dk.dk.dk.dk.dk .sh-side .g-start{--g:#8A97AB}
 html.dk.dk.dk.dk.dk.dk .sh-side :is(.sh-role,.sb-ver,.web-out){color:var(--dk-smut)!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .sh-vt .seg{background:var(--dk-son)!important;border-color:var(--dk-sline)!important}
@@ -14551,6 +14559,27 @@ html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:1200px!important}
 html.dk.dk.dk.dk.dk.dk #sh-main #r_driverView,html.dk.dk.dk.dk.dk.dk #sh-main #v_driverView{max-width:none!important}
 /* the big search on Home is replaced by the one in the top bar */
 html.dk.dk.dk #mod-home .ah-fq-wrap,html.dk.dk.dk #mod-home label:has(>#ah_fq){display:none!important}
+
+/* Drivers split view on computers */
+#mod-staff .dm-split{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start;padding-top:16px}
+#mod-staff .dm-side{position:sticky;top:calc(var(--dk-top,56px) + 12px);max-height:calc(100vh - var(--dk-top,56px) - 24px);overflow:auto;background:var(--sh-surface);border:1px solid var(--sh-line);border-radius:12px}
+#mod-staff .dm-sq{position:sticky;top:0;z-index:1;display:flex;gap:6px;padding:10px;background:var(--sh-surface);border-bottom:1px solid var(--sh-line)}
+#mod-staff .dm-sq input{flex:1;min-width:0;height:36px;border:1px solid var(--sh-line);border-radius:8px;padding:0 10px;background:var(--sh-sunk);color:var(--sh-ink);font:500 14px var(--sh-body,Inter,sans-serif)}
+#mod-staff .dm-sq .sh-btn{width:36px;height:36px;min-height:0;padding:0;font-size:20px;line-height:1}
+#mod-staff .dm-sg h3{display:flex;align-items:center;margin:0;padding:7px 12px;font:800 11px var(--sh-body,Inter,sans-serif);letter-spacing:.08em;text-transform:uppercase;color:var(--d,var(--sh-muted));background:var(--ds,var(--sh-sunk))}
+#mod-staff .dm-sg h3 span{margin-left:auto;font-weight:700}
+#mod-staff .dm-sr{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;border-bottom:1px solid var(--sh-line);background:transparent;color:var(--sh-ink);text-align:left;cursor:pointer;font:inherit}
+#mod-staff .dm-sr:hover{background:var(--sh-sunk)}
+#mod-staff .dm-sr[aria-current="true"]{background:var(--sh-accent-soft);box-shadow:inset 3px 0 0 #F2782D}
+#mod-staff .dm-sr .av{width:30px;height:30px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 11px var(--sh-body,Inter,sans-serif);color:var(--d,var(--sh-ink));background:var(--ds,var(--sh-sunk))}
+#mod-staff .dm-sr .tx{display:flex;flex-direction:column;min-width:0}
+#mod-staff .dm-sr b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mod-staff .dm-sr small{font-size:12px;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mod-staff .dm-det>.dm{max-width:none!important;padding-top:0!important}
+#mod-staff .dm-det>.dm>.back{display:none}
+html.dk.dk.dk #sh-main .cu-burger{display:none!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .sb-ver{position:static!important;display:block!important;margin:6px 2px 0!important;font-size:11px!important}
+html.dk.dk.dk.dk.dk.dk .sh-side .web-out{position:static!important;align-self:flex-start!important;padding:6px 12px!important}
 </style>
 <script id="dk-js">
 /* Computer layout: adds .dk on wide screens and builds the top bar. Phones and narrow windows never get it */
