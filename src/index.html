@@ -2,7 +2,7 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script id="prof-js">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>@layer pdsfirst;</style><script id="prof-js">
 /* Speed check (off unless switched on for testing): times every timer and frame task so slow parts can be found */
 (function(){try{if(localStorage.getItem('pds-prof')!=='1')return}catch(e){return}
  const S=window.__prof=new Map();const rec=(fn,d)=>{if(d<8)return;const k=String(fn).replace(/\s+/g,' ').slice(0,140);const v=S.get(k)||[0,0,0];v[0]+=d;v[1]++;v[2]=Math.max(v[2],d);S.set(k,v)};
@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101900';
+const VERSION='1202611101905';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12880,7 +12880,7 @@ const soon=()=>{if(!q)q=requestAnimationFrame(mark)};try{new MutationObserver(so
 })();
 </script>
 <style id="calm-heads">html body #sh-main#sh-main#sh-main .sh-sec.pg thead th{color:var(--sh-muted)!important}</style>
-<style id="seg-tabs">
+<style id="seg-tabs">@layer pdsfirst{
 /* Tab style 2: segmented control. Page tabs and the tabs inside pages sit in a rounded track; the picked one is filled navy. Phone and computer, light and dark */
 :root{--sg-track:#EEF2F7;--sg-line:#D6DDE7;--sg-ink:#5A6680;--sg-on:#14284A;--sg-on-ink:#FFFFFF;--sg-cnt:#E1E7F0}
 :root[data-theme="dark"]{--sg-track:#16233A;--sg-line:#24344F;--sg-ink:#8E9DB5;--sg-on:#1E3355;--sg-on-ink:#FFFFFF;--sg-cnt:#22314A}
@@ -12897,7 +12897,7 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::before,html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::after{display:none!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
-</style>
+}</style>
 <style id="settle-css">html.pds-settle #sh-main>.sh-sec{visibility:hidden!important}</style>
 <script id="settle-js">
 /* No jumping when you change page or tab: the old page stays on screen until the new one has been drawn and has stopped moving, then it shows in one go */
