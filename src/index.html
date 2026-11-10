@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101610';
+const VERSION='1202611101620';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14727,7 +14727,7 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
   const tb=document.getElementById('sh-tabs'),ph=document.getElementById('sh-ph');const hasT=!!(tb&&tb.getClientRects().length&&tb.getBoundingClientRect().height>4);
   const base=hasT?tb.getBoundingClientRect().bottom:(ph&&!ph.hidden&&ph.getClientRects().length?ph.getBoundingClientRect().bottom:null);if(base==null)return;
   const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n,first=null;
-  while((n=w.nextNode())){if(n.matches('script,style,template,dialog,[hidden]')){continue}const r=n.getBoundingClientRect();if(r.height>12&&r.width>40&&(n.children.length===0||r.height<120)){first=n;break}}
+  let fy=1e9,cnt=0;while((n=w.nextNode())&&cnt<60){if(n.matches('script,style,template,dialog,[hidden]'))continue;const r=n.getBoundingClientRect();if(r.height>12&&r.width>40&&(n.children.length===0||r.height<120)){cnt++;if(r.y<fy){fy=r.y;first=n}}}
   if(!first)return;const sr=sec.getBoundingClientRect(),z=(sr.width/(sec.offsetWidth||sr.width))||1;
   const want=(hasT?6:14)*z,diff=(want-(first.getBoundingClientRect().y-base))/z;if(Math.abs(diff)<1||Math.abs(diff)>48)return;
   const cur=parseFloat(getComputedStyle(sec).marginTop)||0;sec.style.setProperty('margin-top',(cur+diff)+'px','important')}
