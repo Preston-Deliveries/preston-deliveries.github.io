@@ -1885,7 +1885,7 @@ function findPages(q){const ws=q.toLowerCase().replace(/[^a-z0-9 ]/g,' ').split(
     if(!ws.every(w=>hay.some(h=>h.startsWith(w))))return null;return{x,score:nm.startsWith(ws[0])?0:nm.split(' ').some(h=>h.startsWith(ws[0]))?1:2}}).filter(Boolean).sort((a,b)=>a.score-b.score).slice(0,4).map(o=>o.x)}
 function hl(name,q){const t=String(q||'').trim().toUpperCase().replace(/[^A-Z0-9 ]/g,'');if(!t)return esc(name);const i=String(name).toUpperCase().indexOf(t);if(i<0)return esc(name);return esc(name.slice(0,i))+'<mark>'+esc(name.slice(i,i+t.length))+'</mark>'+esc(name.slice(i+t.length))}
 /* search: people from Driver Details by name, driver number, login or mobile; opens their record */
-function staffFind(q){q=String(q||'').trim().toLowerCase();if(q.length<2)return [];try{if(typeof mcStart==='function')mcStart()}catch(e){}const P=(typeof MC!=='undefined'&&MC.staff)||{};const qd=q.replace(/\D/g,'');const ws=q.split(/\s+/).filter(Boolean);const out=[];
+function staffFind(q){q=String(q||'').trim().toLowerCase();if(q.length<2)return [];try{if(typeof mcStart==='function')mcStart()}catch(e){}const P=(typeof MC!=='undefined'&&MC.staff)||{};if(!Object.keys(P).length){staffFind.n=(staffFind.n||0)+1;if(staffFind.n<15)setTimeout(()=>{try{findRender()}catch(e){}},700);return []}staffFind.n=0;const qd=q.replace(/\D/g,'');const ws=q.split(/\s+/).filter(Boolean);const out=[];
   for(const[id,p]of Object.entries(P)){if(!p)continue;const nm=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().replace(/\s+/g,' ').trim();if(!nm)continue;const runs=(p.runs||[]).filter(Boolean).map(r=>String(r).toLowerCase());const login=String(p.login||'').toLowerCase();const mob=String(p.mobile||p.phone||'').replace(/\D/g,'');
     const hay=(nm+' '+runs.join(' ')+' '+login).split(/\s+/);const hit=ws.every(w=>hay.some(h=>h.startsWith(w)))||(qd.length>=4&&mob.includes(qd));if(!hit)continue;
     const cap=nm.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join(' ');
@@ -11141,7 +11141,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101520';
+const VERSION='1202611101530';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14678,7 +14678,7 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
  const WSEL='.lvx,.eqx,.pcx,.ntx,.smx,.ivx,.tbx,.unx,.vcx,.tsx,.dyx,.rpx,.brx,.dm,.fbx,.my-x,.pfx,.sh-wa,.dv,#sh-home,main.wrap,.wrap';
  let wq=0;
  function widen(){const on=root.classList.contains('dk');
-  document.querySelectorAll('[data-dkw]').forEach(e=>{if(!on||!document.body.contains(e)){if(e.classList.contains('cu-burger'))e.style.removeProperty('display');['padding-left','padding-right','box-sizing','zoom'].forEach(k=>{if(e.id==='sh-ph'||e.id==='sh-tabs'||e.classList.contains('sh-sec'))e.style.removeProperty(k)});e.style.removeProperty('max-width');e.style.removeProperty('margin-left');e.style.removeProperty('margin-right');e.removeAttribute('data-dkw')}});
+  document.querySelectorAll('[data-dkw]').forEach(e=>{if(!on||!document.body.contains(e)){if(e.classList.contains('cu-burger'))e.style.removeProperty('display');['padding-left','padding-right','box-sizing','zoom','border-bottom','box-shadow'].forEach(k=>{if(e.id==='sh-ph'||e.id==='sh-tabs'||e.classList.contains('sh-sec')||e.classList.contains('sh-utrow'))e.style.removeProperty(k)});e.style.removeProperty('max-width');e.style.removeProperty('margin-left');e.style.removeProperty('margin-right');e.removeAttribute('data-dkw')}});
   if(!on)return;
   const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec)return;
   const walk=(e,d)=>{for(const c of e.children){if(c.matches('.sheet,canvas,img,svg,dialog,table,.dm-side,.sh-thm,[role=dialog]'))continue;
@@ -14689,6 +14689,7 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
   /* title, section tabs and page share one centred column with the same side padding and size */
   for(const e of [document.getElementById('sh-ph'),document.getElementById('sh-tabs'),sec]){if(!e)continue;const st=e.style;st.setProperty('max-width','1440px','important');st.setProperty('margin-left','auto','important');st.setProperty('margin-right','auto','important');st.setProperty('padding-left','32px','important');st.setProperty('padding-right','32px','important');st.setProperty('box-sizing','border-box','important');st.setProperty('zoom','.88','important');e.setAttribute('data-dkw','1')}
   document.querySelectorAll('#mod-tasks>div').forEach(e=>{e.style.setProperty('padding-left','0','important');e.style.setProperty('padding-right','0','important')});
+  {const T=document.getElementById('sh-tabs');if(T){T.style.setProperty('border-bottom','0','important');T.style.setProperty('box-shadow','none','important');const u=T.querySelector('.sh-utrow');if(u){u.style.setProperty('border-bottom','1px solid '+(getComputedStyle(document.documentElement).getPropertyValue('--sh-line').trim()||'#24344F'),'important');u.setAttribute('data-dkw','1')}}}
   document.querySelectorAll('#sh-tabs .sh-utrow,#sh-tabs nav').forEach(e=>{e.style.setProperty('max-width','none','important');e.style.setProperty('margin-left','0','important');e.style.setProperty('margin-right','0','important');e.setAttribute('data-dkw','1')});
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
  let inW=false;const later=()=>{if(inW)return;inW=true;try{widen();clearQ();try{placeQ()}catch(e){}}finally{inW=false}};
