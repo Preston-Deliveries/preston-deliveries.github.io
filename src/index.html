@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101640';
+const VERSION='1202611101650';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14777,7 +14777,7 @@ html body #sh-main#sh-main#sh-main .sh-sec.pg thead th{color:var(--sh-muted)!imp
  let armedUntil=0,on=false,startT=0,last='',sameSince=0;
  function sig(){const s=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!s)return '';const r=s.getBoundingClientRect();let out=s.id+Math.round(r.y)+':'+Math.round(r.height);const w=document.createTreeWalker(s,NodeFilter.SHOW_ELEMENT);let n,c=0;while((n=w.nextNode())&&c<6){if(n.matches('script,style,template,[hidden]'))continue;const b=n.getBoundingClientRect();if(b.height>12&&b.width>40&&(n.children.length===0||b.height<120)){c++;out+='|'+Math.round(b.y)+':'+Math.round(b.x)}}return out}
  function loop(t){if(!on)return;const now=performance.now(),cur=sig();if(cur!==last){last=cur;sameSince=now}
-  if(now-sameSince>=160||now-startT>=900){on=false;root.classList.remove('pds-settle');return}raf(loop)}
+  if(now-sameSince>=40||now-startT>=350){on=false;root.classList.remove('pds-settle');return}raf(loop)}
  function hide(){if(on)return;on=true;startT=performance.now();sameSince=startT;last=sig();root.classList.add('pds-settle');raf(loop)}
  document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest(TRIG);if(t)armedUntil=performance.now()+1500},true);
  addEventListener('popstate',()=>{armedUntil=performance.now()+1500});addEventListener('hashchange',()=>{armedUntil=performance.now()+1500});
