@@ -1601,6 +1601,18 @@ async function mcStart(){if(MC.st)return;MC.st=true;let db=null;try{db=window.__
   const A='2026-10-05',n=Math.floor((new Date(T+'T12:00:00')-new Date(A+'T12:00:00'))/864e5/28)-1,s=mcAdd(A,n*28),e=mcAdd(s,26);MC.prev=[s,e];
   if(T<=mcAdd(e,14)){try{const sn=await db.collection('clock').where('date','>=',s).where('date','<=',e).get();const w=new Set();for(const d of sn.docs){const v=D(d);if(v&&v.staff)w.add(v.staff)}MC.worked=w;adminMorning()}catch(x){MC.worked=null}}
 }
+/* computer only: live morning board, every driver by postcode with their clock in time */
+function mbBoard(drv,on,offIds,nm,enqN,exN){
+  const G=window.__runGrp||{},cl={};for(const c of Object.values(MC.clock))if(c&&c.start&&c.staff)cl[c.staff]=c.start;
+  const ORD=['4214','4215','4217','4218','xl','sup'],LAB={xl:'XL',sup:'Supervisors'},cols={};
+  for(const[id,p]of drv){const r=(p.runs||[]).filter(Boolean)[0];const g=G[String(r||'').toUpperCase().replace(/\s+/g,'')]||'';if(!ORD.includes(g))continue;(cols[g]=cols[g]||[]).push({n:nm(p),st:cl[id]?'in':offIds.has(id)?'off':'no',t:cl[id]?String(cl[id]).slice(0,5):offIds.has(id)?'On leave':'Not yet'})}
+  const K=ORD.filter(g=>cols[g]&&cols[g].length);if(!K.length)return '';
+  const inN=Object.values(cols).flat().filter(x=>x.st==='in').length,allN=Object.values(cols).flat().filter(x=>x.st!=='off').length,offN=Object.values(cols).flat().filter(x=>x.st==='off').length;
+  const kp=(l,v,c,qa)=>`<button type="button" class="mb-k ${c}" ${qa?`data-qa="${qa}" data-act=""`:''}><small>${l}</small><b>${v}</b></button>`;
+  return `<section class="dh-card mb" aria-label="Morning board"><div class="mb-ks">${kp('Clocked on',inN+' / '+allN,inN>=allN?'ok':'',"timesheets")}${kp('On leave today',offN,'','leave')}${kp('Enquiries to decide',enqN,enqN?'warn':'',"enquiries")}${kp('Papers expiring',exN,exN?'warn':'',"staff")}</div>
+   <div class="mb-h"><h2>Morning board</h2><span>Updates as drivers clock on</span></div>
+   <div class="mb-g" style="grid-template-columns:repeat(${K.length},minmax(0,1fr))">${K.map(g=>{const L=cols[g].sort((a,b)=>a.n.localeCompare(b.n));return `<div class="mb-c dg-${g}"><h3>${LAB[g]||g}<span>${L.filter(x=>x.st==='in').length} / ${L.filter(x=>x.st!=='off').length}</span></h3>${L.map(x=>`<div class="mb-r ${x.st}"><i aria-hidden="true"></i><b>${esc(x.n)}</b><span>${esc(x.t)}</span></div>`).join('')}</div>`}).join('')}</div></section>`;
+}
 function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el||role!=='mgr')return;mcStart();
   const T=mcIso(new Date()),sun=tlOff(new Date())&&!Object.values(MC.clock).some(c=>c&&c.start),P=MC.staff,nm=p=>{const w=[p.first,p.last].filter(Boolean).join(' ').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return w.length>1?w[0]+' '+w[w.length-1][0]:w[0]||''};
   const norm=s=>String(s||'').toLowerCase().replace(/[^a-z]/g,'');
@@ -1624,7 +1636,7 @@ function adminMorning(){try{adminFocus()}catch(e){}const el=$('ah_morn');if(!el|
   const scn=Object.entries(MC.leave).filter(([,b])=>b&&b.from&&lvEve(b.from)===T&&lvLong(b)&&!b.scanIn&&!b.office).sort((a,b)=>a[1].from.localeCompare(b[1].from));
   if(ex.length)rows.push(['staff',ex.length+(ex.length===1?' paper expiring':' papers expiring'),ex.slice(0,4).map(z=>z.t).join('. ')+(ex.length>4?'. And '+(ex.length-4)+' more.':''),ex.some(z=>z.n<0)?'bad':'']);
   const ready=Object.keys(P).length>0;
-  const html=!ready?'':`<section class="dh-card mc"><h2>Morning check</h2>
+  const html=!ready?'':(document.documentElement.classList.contains('dk')?mbBoard(drv,on,offIds,nm,enqN,ex.length):'')+`<section class="dh-card mc"><h2>Morning check</h2>
    ${sun?'<div class="mc-ck"><span class="mc-n">'+(new Date().getDay()===0?'Sunday':'Saturday')+'</span><span class="mc-t">No shift today.</span></div>':`<button type="button" class="mc-ck" data-qa="timesheets" data-act=""><span class="mc-n"><b>${onN}</b>${exp?' of '+exp:''}</span><span class="mc-t">clocked on${off.length?` · ${off.length} on leave`:''}</span>${exp?`<span class="mc-bar"><i style="width:${Math.round(onN/exp*100)}%"></i></span>`:''}${!notYet.length&&exp?'<span class="mc-all">✓ Everyone is on</span>':''}</button>${notYet.length?`<details class="mc-nd"${window.__mcOpen?' open':''}><summary><span>Not clocked on yet</span><b>${notYet.length}</b></summary><span class="mc-not">${notYet.map(n=>`<em>${esc(n)}</em>`).join('')}</span></details>`:''}`}
    ${rows.map(([sec,t,s,c])=>`<button type="button" class="dh-do t-${sec} ${c}" ${c==='tlgo'?'data-tlgo="1"':`data-qa="${sec}" data-act=""`}><span class="ic">${ICONS[sec]||''}</span><span class="tx"><b>${esc(t)}</b><small>${esc(s)}</small></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>`).join('')}
    ${scn.length?`<div class="mc-sc"><h3>📟 Scanners to collect</h3>${scn.map(([id,b])=>{const wk=Math.max(1,Math.round(((new Date(b.to+'T12:00:00')-new Date(b.from+'T12:00:00'))/864e5+1)/7));const nmx=String(b.name||'').toLowerCase().split(/\s+/).filter(Boolean).map(z=>z[0].toUpperCase()+z.slice(1));return `<div class="mc-scr"><span class="tx"><b>${esc(nmx.length>1?nmx[0]+' '+nmx[nmx.length-1][0]:nmx[0]||'')}</b><small>Holiday from ${esc(b.from===T?'today':mcNice(b.from))}, ${wk} week${wk===1?'':'s'}. Last day before they go. Get their scanner back today.</small></span><button type="button" data-scan="${esc(id)}" ${MC.scBusy[id]?'disabled':''}>✓ Got it</button></div>`}).join('')}</div>`:''}
@@ -11117,7 +11129,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101215';
+const VERSION='1202611101225';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14580,6 +14592,26 @@ html.dk.dk.dk #mod-home .ah-fq-wrap,html.dk.dk.dk #mod-home label:has(>#ah_fq){d
 html.dk.dk.dk #sh-main .cu-burger{display:none!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .sb-ver{position:static!important;display:block!important;margin:6px 2px 0!important;font-size:11px!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .web-out{position:static!important;align-self:flex-start!important;padding:6px 12px!important}
+
+/* Home morning board on computers */
+html.dk.dk.dk.dk.dk.dk #sh-main #sh-home{max-width:none!important}
+#mod-home .mb{padding:16px 18px!important}
+#mod-home .mb-ks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+#mod-home .mb-k{display:flex;flex-direction:column;gap:2px;align-items:flex-start;padding:12px 14px;border:1px solid var(--sh-line);border-radius:12px;background:var(--sh-sunk);color:var(--sh-ink);cursor:pointer;font:inherit;text-align:left}
+#mod-home .mb-k small{font-size:12px;font-weight:700;color:var(--sh-muted)}
+#mod-home .mb-k b{font-size:24px;font-weight:800}
+#mod-home .mb-k.ok b{color:var(--ok,#1E7A45)}#mod-home .mb-k.warn b{color:#C27A00}
+#mod-home .mb-h{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}#mod-home .mb-h h2{margin:0}#mod-home .mb-h span{margin-left:auto;font-size:13px;color:var(--sh-muted)}
+#mod-home .mb-g{display:grid;gap:0;border:1px solid var(--sh-line);border-radius:12px;overflow:hidden}
+#mod-home .mb-c{border-right:1px solid var(--sh-line);min-width:0}#mod-home .mb-c:last-child{border-right:0}
+#mod-home .mb-c h3{display:flex;align-items:center;margin:0;padding:9px 12px;font-size:13px;font-weight:800;color:var(--d,var(--sh-ink));background:var(--ds,var(--sh-sunk))}
+#mod-home .mb-c h3 span{margin-left:auto}
+#mod-home .mb-r{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px solid var(--sh-line);font-size:14px}
+#mod-home .mb-r b{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mod-home .mb-r span{font-size:12px;color:var(--sh-muted);white-space:nowrap}
+#mod-home .mb-r i{width:8px;height:8px;border-radius:50%;flex:none;background:#2E9E68}
+#mod-home .mb-r.no i{background:#E8A33D}#mod-home .mb-r.no span{color:#C27A00;font-weight:700}
+#mod-home .mb-r.off i{background:var(--sh-line)}#mod-home .mb-r.off b{color:var(--sh-muted)}
 </style>
 <script id="dk-js">
 /* Computer layout: adds .dk on wide screens and builds the top bar. Phones and narrow windows never get it */
