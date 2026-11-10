@@ -4991,6 +4991,7 @@ function render(){
   if(state==='wait'){box.innerHTML='<div class="dm"><div class="empty">Opening driver details</div></div>';return}
   if(state==='denied'){box.innerHTML='<div class="dm"><div class="empty">Only the manager can see driver details.</div></div>';return}
   if(state==='nodb'){box.innerHTML='<div class="dm"><div class="empty">Driver details are only available when you open this page in Claude while signed in.</div></div>';return}
+  if(openId===null&&document.documentElement.classList.contains('dk')&&!window.__dmList){const f=sorted(Object.values(people))[0];if(f)openId=f.id}
   if(openId!==null){box.innerHTML=document.documentElement.classList.contains('dk')?splitHTML():detailHTML();return}
   const c=counts();
   const list=sorted(Object.values(people).filter(p=>matchesFilter(p)&&matchesQ(p)&&matchesMiss(p)));
@@ -5011,6 +5012,7 @@ function render(){
   </div>`;
 }
 /* computer only: the list stays on the left while one person is open on the right */
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-nav="staff"],[data-dm="open"]'))window.__dmList=false},true);
 function splitHTML(){
   const L=sorted(Object.values(people));
   return `<div class="dm-split"><aside class="dm-side" aria-label="Everyone"><div class="dm-sq"><input type="search" id="dm_sq" placeholder="Find a person" autocomplete="off" aria-label="Find a person"><button type="button" class="sh-btn" data-dm="add" aria-label="Add a person" title="Add a person">+</button></div>
@@ -5179,7 +5181,7 @@ document.addEventListener('click',e=>{
   if(a==='col'){shown.has(v)?shown.delete(v):shown.add(v);try{localStorage.setItem('dm_cols',JSON.stringify([...shown].filter(x=>x!=='pw')))}catch(x){}render();return}
   if(a==='open'){window.__edY={y:scrollY,s:window.APP&&APP.section};openId=v;isNew=false;msg=null;render();window.scrollTo(0,0);{const p=people[v];if(p&&p.email&&window.__accessOf)window.__accessOf(p.email).then(x=>{accNow[v]=x;if(openId===v)render()})}return}
   if(a==='add'){openId='';isNew=true;newFull=false;msg=null;render();window.scrollTo(0,0);setTimeout(()=>($('f_email')||$('f_first'))?.focus(),0);return}
-  if(a==='back'){openId=null;isNew=false;msg=null;render();return}
+  if(a==='back'){window.__dmList=true;openId=null;isNew=false;msg=null;render();return}
   if(a==='save'){save();return}
   if(a==='del'){del();return}
   if(a==='export'){exportXlsx();return}
@@ -11129,7 +11131,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101500';
+const VERSION='1202611101510';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14164,7 +14166,7 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .cu-logo{displa
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(.sh-btn.primary,button.on,.tabs>button,.seg>button):disabled{background:var(--sh-surface)!important;border-color:var(--sh-line)!important;color:var(--sh-muted)!important;opacity:1!important}
 html body #sh-main .cu-psrc{display:none!important}
 html body #sh-main#sh-main#sh-main#sh-main :is(.sh-btn.primary,.ah-mic,button.on:not(.pcbtn):not([class*=pcz-]):not(.danger):not(.qx):not(.cd-r):not(.sh-mode),button[aria-selected=true]:not(.pcbtn):not([class*=pcz-]):not(.danger):not(.qx)),html body :is(#sh-set .sh-btn.primary,.sh-sheet .sh-btn.primary,#pds-fab,#dl-ready .dlr-a .dlr-p,#sh-set button[aria-pressed=true],.pu-days button[aria-pressed=true],.pu-tos button[aria-pressed=true],.pu-when button[aria-pressed=true]){background:#F2782D!important;background-image:none!important;border-color:#F2782D!important;color:#fff!important}
-html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dmc>button[aria-pressed=true]{--cc:#fff!important;background:#F2782D!important;border-color:#F2782D!important;color:#fff!important}
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dmc>button[aria-pressed=true]{--cc:#fff!important;background:#1E3355!important;border-color:#3A5A8C!important;color:#fff!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-staff .dmc>button[aria-pressed=true] :is(svg,svg *,span,i){color:#fff!important;stroke:#fff!important}
 html body #mod-precards .pc-rv{display:inline-block;align-self:flex-start;margin:2px 0;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(242,120,45,.16);color:var(--cu-ortx)}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main #mod-leave label.lv-vsel{display:block!important;width:100%!important;margin:0 0 4px!important;order:-100!important}
@@ -14588,7 +14590,6 @@ html.dk.dk.dk #mod-home .ah-find .ah-frow{display:none!important}
 #mod-staff .dm-sr b{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mod-staff .dm-sr small{font-size:12px;color:var(--sh-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #mod-staff .dm-det>.dm{max-width:none!important;padding-top:0!important}
-#mod-staff .dm-det .back{display:none!important}
 html.dk.dk.dk .cu-burger{display:none!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .sb-ver{position:static!important;display:block!important;margin:6px 2px 0!important;font-size:11px!important}
 html.dk.dk.dk.dk.dk.dk .sh-side .web-out{position:static!important;align-self:flex-start!important;padding:6px 12px!important}
@@ -14707,6 +14708,10 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
  setTimeout(fit,800);setInterval(sync,4000);
 })();
 </script>
+<style id="calm-heads">
+/* table headings on every page in plain grey, not the section colour */
+html body #sh-main#sh-main#sh-main .sh-sec.pg thead th{color:var(--sh-muted)!important}
+</style>
 <style id="no-motion">
 /* No animations, transitions, shakes or press movement anywhere in the app: everything changes instantly */
 html *,html *::before,html *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
