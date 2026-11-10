@@ -11132,7 +11132,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101400';
+const VERSION='1202611101410';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14672,6 +14672,7 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
   walk(sec,0);
   /* title, section tabs and page share one centred column with the same side padding and size */
   for(const e of [document.getElementById('sh-ph'),document.getElementById('sh-tabs'),sec]){if(!e)continue;const st=e.style;st.setProperty('max-width','1440px','important');st.setProperty('margin-left','auto','important');st.setProperty('margin-right','auto','important');st.setProperty('padding-left','32px','important');st.setProperty('padding-right','32px','important');st.setProperty('box-sizing','border-box','important');st.setProperty('zoom','.88','important');e.setAttribute('data-dkw','1')}
+  document.querySelectorAll('#mod-tasks>div').forEach(e=>{e.style.setProperty('padding-left','0','important');e.style.setProperty('padding-right','0','important')});
   document.querySelectorAll('#sh-tabs .sh-utrow,#sh-tabs nav').forEach(e=>{e.style.setProperty('max-width','none','important');e.style.setProperty('margin-left','0','important');e.style.setProperty('margin-right','0','important');e.setAttribute('data-dkw','1')});
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
  const later=()=>{if(!wq)wq=setTimeout(()=>{widen();clearQ()},30)};
