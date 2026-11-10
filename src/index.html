@@ -1678,7 +1678,7 @@ function tlBy(){const me=window.__webMe||{};const em=String(me.email||'').toLowe
 document.addEventListener('click',async e=>{const s=e.target.closest&&e.target.closest('[data-scan]');if(!s||role!=='mgr')return;const id=s.dataset.scan;MC.scBusy[id]=true;adminMorning();
   try{const db=window.__getDb?await window.__getDb():null;if(db)await db.doc('leave/'+id).update({scanIn:true,scanInAt:new Date().toISOString()})}catch(x){homeMsg={err:true,t:'Could not save that just now. Check your connection.'}}delete MC.scBusy[id];adminMorning()});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lang-set]');if(b&&window.__setLang)window.__setLang(b.dataset.langSet)});
-document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-tlgo]');if(g){const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}});
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-tlgo]');if(g){const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'auto',block:'start'})}});
 document.addEventListener('click',async e=>{const b=e.target.closest&&e.target.closest('[data-tl]');if(!b||role!=='mgr')return;const a=b.dataset.tl,id=b.dataset.v;
   if(a==='tab'){TL.tab=id;adminLoads();return}
   if(a==='prev'||a==='next'){const d=new Date(TL.day+'T12:00:00');do{d.setDate(d.getDate()+(a==='prev'?-1:1))}while(tlOff(d));const n=mcIso(d);if(n>tlPrevDay())return;TL.day=n;adminLoads();tlWatch();return}
@@ -1764,7 +1764,7 @@ function adminFocus(){try{adminFollow()}catch(e){}const el=$('ah_focus');if(!el|
 document.addEventListener('change',async e=>{const b=e.target.closest&&e.target.closest('input[data-fu]');if(!b||role!=='mgr')return;const id=b.dataset.fu;let db=null;try{db=window.__getDb?await window.__getDb():null}catch(x){}if(!db)return;FC.busy[id]=true;adminFocus();
   try{if(FC.fu[id]){await db.doc('followup/'+id).delete();delete FC.fu[id]}else{const v={date:b.dataset.d,login:b.dataset.l,by:tlBy(),at:new Date().toISOString()};await db.doc('followup/'+id).set(v);FC.fu[id]=v}}catch(x){homeMsg={err:true,t:'Could not save that just now. Check your connection.'}}
   delete FC.busy[id];adminFocus()});
-document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-fcgo="tl"]');if(!g)return;const f=myFocus();if(f){TL.tab=f.pc;adminLoads()}const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-fcgo="tl"]');if(!g)return;const f=myFocus();if(f){TL.tab=f.pc;adminLoads()}const t=$('ah_tl');if(t)t.scrollIntoView({behavior:'auto',block:'start'})});
 
 /* One line period picker: ‹ This week · 19 to 24 Oct ›. It sits over the existing week and month chips and drives them. */
 (()=>{const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],DW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -2001,7 +2001,7 @@ function guideTopic(said){const T=window.__T||[];if(!T.length)return null;
 function vWait(sel,cb,ms){const t0=Date.now();(function tick(){const el=document.querySelector(sel);if(el&&el.offsetParent!==null){cb(el);return}if(Date.now()-t0<(ms||3500))setTimeout(tick,120)})()}
 function vFill(sel,val){vWait(sel,el=>{el.value=val;el.dispatchEvent(new Event('input',{bubbles:true}));try{el.scrollIntoView({block:'center'})}catch(e){}})}
 function vClick(sel){const t0=Date.now();(function tick(){const el=document.querySelector(sel);if(el&&(el.offsetParent!==null||Date.now()-t0>900)){el.click();try{if(typeof renderPageHead==='function')setTimeout(renderPageHead,80)}catch(x){}return}if(Date.now()-t0<4000)setTimeout(tick,120)})()}
-function vFlashText(secSel,word){vWait(secSel,box=>{setTimeout(()=>{const w=word.toLowerCase();const el=[...box.querySelectorAll('h2,h3,h4,b,strong,.nm,button,label')].find(e=>(e.textContent||'').toLowerCase().includes(w));if(el){const c=el.closest('.card,section,li,div')||el;c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('v-flash');setTimeout(()=>c.classList.remove('v-flash'),2400)}},250)})}
+function vFlashText(secSel,word){vWait(secSel,box=>{setTimeout(()=>{const w=word.toLowerCase();const el=[...box.querySelectorAll('h2,h3,h4,b,strong,.nm,button,label')].find(e=>(e.textContent||'').toLowerCase().includes(w));if(el){const c=el.closest('.card,section,li,div')||el;c.scrollIntoView({behavior:'auto',block:'center'});c.classList.add('v-flash');setTimeout(()=>c.classList.remove('v-flash'),2400)}},250)})}
 /* "2 days ago", "last week", "the 25th", "last Monday", "this month"... -> which period and date */
 function voiceWhen(t){t=' '+String(t||'').toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ')+' ';
   const W={a:1,an:1,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,couple:2,few:3};
@@ -2114,7 +2114,7 @@ function vRun(alts){const R=window.RUNS||{};
     if(spot){findQ='';const inp0=$('ah_fq');if(inp0)inp0.value='';findRender();
       const card=spot.closest('.dh-card')||spot;const txt=(card.innerText||'').replace(/\s+/g,' ').trim().slice(0,160);
       hSay(`<span class="hd">You said: “${esc(alts[0]||'')}”</span><b>Here it is.</b>${card.classList.contains('wx')&&txt?`<span class="hd" style="margin-top:6px;opacity:.9">${esc(txt)}</span>`:''}`);
-      card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('v-flash');setTimeout(()=>card.classList.remove('v-flash'),2200);return}
+      card.scrollIntoView({behavior:'auto',block:'center'});card.classList.add('v-flash');setTimeout(()=>card.classList.remove('v-flash'),2200);return}
     if(!ans&&!findPin){for(const a of alts){const raw=a.replace(/^(open|go to|show me|show|take me to|find)\s+/i,'').replace(/\b(page|please)\b/ig,'').trim();pages=findPages(raw);
       try{drv=role==='mgr'&&window.SUMMARY&&SUMMARY.find?(SUMMARY.find(raw)||[]):[]}catch(x){drv=[]}
       if(pages.length||drv.length){q=raw;break}}}
@@ -2708,7 +2708,7 @@ async function act(a,el){
   if(a==='step'){S.step=d.v;S.sheetSt=null;render();document.querySelector('#mod-runs .pl-steps')?.scrollIntoView({block:'start'});window.scrollBy(0,-70);return}
   if(a==='into'){S.into=d.v;S.traySearch='';render();return}
   if(a==='showAll'){S.showAll=true;render();return}
-  if(a==='sheet'){S.sheetSt=S.sheetSt===d.st?null:d.st;S.confirm=null;render();if(S.sheetSt)setTimeout(()=>{const x=document.querySelector('#mod-runs .pl-inl');if(x){const row=x.closest('li').previousElementSibling,bar=document.querySelector('#mod-runs .pl-steps');const off=(bar?bar.getBoundingClientRect().bottom:0)+8;window.scrollTo({top:Math.max(0,row.getBoundingClientRect().top+scrollY-Math.max(off,70)),behavior:'smooth'})}},0);return}
+  if(a==='sheet'){S.sheetSt=S.sheetSt===d.st?null:d.st;S.confirm=null;render();if(S.sheetSt)setTimeout(()=>{const x=document.querySelector('#mod-runs .pl-inl');if(x){const row=x.closest('li').previousElementSibling,bar=document.querySelector('#mod-runs .pl-steps');const off=(bar?bar.getBoundingClientRect().bottom:0)+8;window.scrollTo({top:Math.max(0,row.getBoundingClientRect().top+scrollY-Math.max(off,70)),behavior:'auto'})}},0);return}
   if(a==='sheetClose'){S.sheetSt=null;S.confirm=null;render();return}
   if(a==='copy'){const t=sheetText(r);try{await navigator.clipboard.writeText(t);toast('Copied. Paste it into Connecteam or a message.')}catch{const ta=document.createElement('textarea');ta.value=t;ta.style.width='100%';ta.rows=12;app.prepend(ta);ta.select();toast('Select all and copy the text above')}return}
   if(a==='download'){el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(printDoc(r),{margin:10});await downloads.save({filename:`Run sheet ${r.driver} ${r.login}.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
@@ -3601,7 +3601,7 @@ function mountRT(box,rows,multi){
     const f=e.target.closest("[data-rf]");if(f){RT.st=RT.st===f.dataset.rf&&f.dataset.rf!=="all"?"all":f.dataset.rf;saveRT();rtBody(box);return}
     const a=e.target.closest("[data-rt]");if(!a)return;
     if(a.dataset.rt==="clear"){RT.q="";RT.grp="all";RT.st="all";saveRT();const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}
-    if(a.dataset.rt==="find"){const mr=(box.__rows||[]).find(x=>x.me);if(mr){const k=rgOf(mr.grp),cur=[...box.querySelectorAll("[data-rgo][aria-expanded=true]")].map(b=>b.dataset.rgo);if(!cur.includes(k)){RT.open=cur.concat(k);saveRT();rtBody(box)}}if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
+    if(a.dataset.rt==="find"){const mr=(box.__rows||[]).find(x=>x.me);if(mr){const k=rgOf(mr.grp),cur=[...box.querySelectorAll("[data-rgo][aria-expanded=true]")].map(b=>b.dataset.rgo);if(!cur.includes(k)){RT.open=cur.concat(k);saveRT();rtBody(box)}}if(RT.st!=="all"&&RT.st!=="me"||RT.grp!=="all"||RT.q){RT.q="";RT.grp="all";RT.st="all";const q=box.querySelector("[data-rt=q]");if(q)q.value="";rtBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"auto"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
   });
 }
 
@@ -4322,7 +4322,7 @@ function mountSV(box,drivers,emptyTxt){
     const g=e.target.closest("[data-sg]");if(g){SV.grp=g.dataset.sg;svBody(box);return}
     const a=e.target.closest("[data-sv]");if(!a)return;
     if(a.dataset.sv==="clear"){SV.q="";SV.grp="all";const q=box.querySelector("[data-sv=q]");if(q)q.value="";svBody(box)}
-    if(a.dataset.sv==="find"){if(SV.q||SV.grp!=="all"){SV.q="";SV.grp="all";const q=box.querySelector("[data-sv=q]");if(q)q.value="";svBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"smooth"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
+    if(a.dataset.sv==="find"){if(SV.q||SV.grp!=="all"){SV.q="";SV.grp="all";const q=box.querySelector("[data-sv=q]");if(q)q.value="";svBody(box)}const tr=box.querySelector("tr.me");if(tr){tr.scrollIntoView({block:"center",behavior:"auto"});tr.classList.remove("flash");void tr.offsetWidth;tr.classList.add("flash")}}
   });
 }
 /* the drivers' copy: the last two pay cycles, sent live whenever a week is saved or removed */
@@ -4955,7 +4955,7 @@ window.__dmOpen=(id,sel)=>{if(!people[id])return;if(sel==='.dm-ind')indOpen[id]=
 document.addEventListener('click',e=>{if(!e.target.closest||!window.ONB)return;if(e.target.closest('#mod-staff [data-dmp]'))window.ONB.preview();else if(e.target.closest('#mod-staff [data-dmpd]'))window.ONB.previewDec()});
 document.addEventListener('change',e=>{const el=e.target.closest&&e.target.closest('[data-dmx="indtick"]');if(!el||!openId)return;const T=indTick[openId]||(indTick[openId]=new Set());el.checked?T.add(+el.dataset.v):T.delete(+el.dataset.v);
   const b=document.querySelector('#mod-staff [data-dmx="indsign"]');if(b)b.disabled=!indCanSign(openId);const h=document.querySelector('#mod-staff .dm-indn span');if(h)h.textContent=T.size+'/'+IND_ITEMS.length+' done';const h2=document.querySelector('#mod-staff .dm-indn2');if(h2)h2.textContent='('+T.size+' of '+IND_ITEMS.length+' ticked)';
-  const sg=document.querySelector('#mod-staff .dm-indsig');if(sg){const was=sg.hidden;sg.hidden=T.size!==IND_ITEMS.length;if(was&&!sg.hidden){indPadInit(openId);sg.scrollIntoView({block:'nearest',behavior:'smooth'})}}});
+  const sg=document.querySelector('#mod-staff .dm-indsig');if(sg){const was=sg.hidden;sg.hidden=T.size!==IND_ITEMS.length;if(was&&!sg.hidden){indPadInit(openId);sg.scrollIntoView({block:'nearest',behavior:'auto'})}}});
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-dmx]');if(!el||!openId||!document.getElementById('mod-staff').contains(el))return;const a=el.dataset.dmx,id=openId;
   if(a==='indtick')return;
   if(a==='agtick'){const on=el.checked;await saveExtra(id,on?{agSigned:true,agSignedAt:new Date().toISOString(),agSignedBy:meFull()||meName()}:{agSigned:false,agSignedAt:'',agSignedBy:''},on?'Ticked as signed.':'Unticked.');return}
@@ -6898,7 +6898,7 @@ async function share(){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-lv]');if(!el||!document.getElementById('mod-leave').contains(el))return;
   const a=el.dataset.lv,v=el.dataset.v;if(a!=='del')armDel=false;
-  if(a==='rqopen'){rqOpen=true;msg=null;render();const f=$('rqf');if(f)f.focus({preventScroll:true});const c=document.querySelector('#mod-leave .card.rq');if(c){const r=c.getBoundingClientRect();if(r.top>innerHeight-80||r.top<0)c.scrollIntoView({block:'start',behavior:'smooth'})}return}
+  if(a==='rqopen'){rqOpen=true;msg=null;render();const f=$('rqf');if(f)f.focus({preventScroll:true});const c=document.querySelector('#mod-leave .card.rq');if(c){const r=c.getBoundingClientRect();if(r.top>innerHeight-80||r.top<0)c.scrollIntoView({block:'start',behavior:'auto'})}return}
   if(a==='rqcancel'){rqOpen=false;msg=null;render();return}
   if(a==='rqsend'){rqSend();return}
   if(a==='rqdel'){try{await db.doc('leavereq/'+v).delete();delete reqs[v];msg={t:'Request cancelled.'}}catch(x){msg={err:true,t:'Could not cancel just now.'}}render();return}
@@ -6909,7 +6909,7 @@ document.addEventListener('click',async e=>{
   if(a==='today'){const n=new Date();month=new Date(n.getFullYear(),n.getMonth(),1);wk=monday(n);sel=cv==='month'?today:null;render();return}
   if(a==='wprev'||a==='wnext'){wk=new Date(wk.getFullYear(),wk.getMonth(),wk.getDate()+(a==='wprev'?-7:7));render();return}
   if(a==='cv'){cv=v;try{localStorage.setItem('lv_cv',v)}catch(x){}if(v==='month')month=new Date(wk.getFullYear(),wk.getMonth(),1);else if(sel)wk=monday(fromIso(sel));render();return}
-  if(a==='day'){sel=sel===v?null:v;render();setTimeout(()=>{const d=document.querySelector('#mod-leave .det');if(d&&d.getBoundingClientRect().top>innerHeight-60)d.scrollIntoView({block:'nearest',behavior:'smooth'})},0);return}
+  if(a==='day'){sel=sel===v?null:v;render();setTimeout(()=>{const d=document.querySelector('#mod-leave .det');if(d&&d.getBoundingClientRect().top>innerHeight-60)d.scrollIntoView({block:'nearest',behavior:'auto'})},0);return}
   if(a==='view'){view=v;msg=null;render();return}
   if(a==='tot'){topen=topen===v?null:v;$('tt').innerHTML=totTable();return}
   if(a==='addfor'){editing='new';prefill=v;msg=null;render();window.scrollTo(0,0);return}
@@ -7159,7 +7159,7 @@ function liveSync(){
 document.addEventListener('click',async e=>{
   const el=e.target.closest('[data-dy]');if(!el||!document.getElementById('mod-directory').contains(el))return;
   const a=el.dataset.dy;
-  if(a==='jump'){document.getElementById('dy_g_'+el.dataset.v)?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='jump'){document.getElementById('dy_g_'+el.dataset.v)?.scrollIntoView({behavior:'auto',block:'start'});return}
   if(a==='vis'){const id=el.dataset.v;el.checked?hide.delete(id):hide.add(id);saveHide();return}
   if(a==='share'){busy=true;msg={t:'Sending to drivers…'};render();try{await share();msg={t:'Done. Drivers now see the latest directory. The page is reloading.'}}catch(x){busy=false;msg={err:true,t:'Could not send just now. Try again in a minute.'}}render();return}
 });
@@ -7583,7 +7583,7 @@ document.addEventListener('click',async e=>{
   if(a==='copy'){if(!ready())return;try{await navigator.clipboard.writeText(orderText());msg={t:'Order copied.'}}catch(x){msg={t:'Select the message above and copy it.'}}render();return}
   if(a==='syncNames'){el.disabled=true;msg={t:'Sending…'};try{await APP.publish({uniform:Object.assign({},cfg(),{names:staffNames.slice()})})}catch(x){el.disabled=false;msg={err:true,t:'Could not send just now.'};render()}return}
   if(a==='cat'){cat=v;render();return}
-  if(a==='goOrder'){$('order')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(a==='goOrder'){$('order')?.scrollIntoView({behavior:'auto',block:'start'});return}
   if(a==='view'){view=v;msg=null;parsed=null;sel.clear();render();return}
   if(a==='togglePaste'){showPaste=!showPaste;parsed=null;render();if(showPaste)setTimeout(()=>$('paste')?.focus(),0);return}
   if(a==='sel'){el.checked?sel.add(v):sel.delete(v);render();return}
@@ -11129,7 +11129,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101420';
+const VERSION='1202611101435';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14618,6 +14618,8 @@ html.dk.dk.dk.dk.dk.dk .sh-side .sh-links button[data-nav]{padding:6px 10px!impo
 html.dk.dk.dk.dk.dk.dk .sh-side .sb-acts button{min-height:34px!important;padding:6px 10px!important}
 #dk-top .dk-mic{color:#F2782D}
 html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left:0!important;padding-right:0!important}
+html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>#sh-tabs{max-width:1440px!important;margin:0 auto!important;padding:0 32px!important;box-sizing:border-box!important;zoom:.88}
+html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>#sh-tabs :is(.sh-utrow,nav){max-width:none!important}
 </style>
 <script id="dk-js">
 /* Computer layout: adds .dk on wide screens and builds the top bar. Phones and narrow windows never get it */
@@ -14658,7 +14660,7 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
  /* pages were built for phones and cap their width in many places: on computers lift those caps so every page lines up with its title */
  const WSEL='.lvx,.eqx,.pcx,.ntx,.smx,.ivx,.tbx,.unx,.vcx,.tsx,.dyx,.rpx,.brx,.dm,.fbx,.my-x,.pfx,.sh-wa,.dv,#sh-home,main.wrap,.wrap';
  let wq=0;
- function widen(){wq=0;const on=root.classList.contains('dk');
+ function widen(){const on=root.classList.contains('dk');
   document.querySelectorAll('[data-dkw]').forEach(e=>{if(!on||!document.body.contains(e)){if(e.classList.contains('cu-burger'))e.style.removeProperty('display');['padding-left','padding-right','box-sizing','zoom'].forEach(k=>{if(e.id==='sh-ph'||e.id==='sh-tabs'||e.classList.contains('sh-sec'))e.style.removeProperty(k)});e.style.removeProperty('max-width');e.style.removeProperty('margin-left');e.style.removeProperty('margin-right');e.removeAttribute('data-dkw')}});
   if(!on)return;
   const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec)return;
@@ -14672,7 +14674,7 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
   document.querySelectorAll('#mod-tasks>div').forEach(e=>{e.style.setProperty('padding-left','0','important');e.style.setProperty('padding-right','0','important')});
   document.querySelectorAll('#sh-tabs .sh-utrow,#sh-tabs nav').forEach(e=>{e.style.setProperty('max-width','none','important');e.style.setProperty('margin-left','0','important');e.style.setProperty('margin-right','0','important');e.setAttribute('data-dkw','1')});
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
- const later=()=>{if(!wq)wq=setTimeout(()=>{widen();clearQ()},30)};
+ let inW=false;const later=()=>{if(inW)return;inW=true;try{widen();clearQ()}finally{inW=false}};
  function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
@@ -14682,5 +14684,11 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main #mod-tasks>div{padding-left
  setTimeout(fit,800);setInterval(sync,4000);
 })();
 </script>
+<style id="no-motion">
+/* No animations, transitions, shakes or press movement anywhere in the app: everything changes instantly */
+html *,html *::before,html *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html :is(button,a,[role=button],[data-dm],[data-nav],.tab,.card,tr,label):active{transform:none!important}
+html{scroll-behavior:auto!important}
+</style>
 </body>
 </html>
