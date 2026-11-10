@@ -2,7 +2,36 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script id="nps-js">/* Net Promoter Score, the way Australia Post works it out: 9 or 10 = promoter, 7 or 8 = passive, 0 to 6 = detractor. NPS = (promoters - detractors) / customers x 100, halves rounded up. */window.NPS=function(a){var v=(a||[]).map(function(x){return typeof x==='object'&&x?+x.s:+x}).filter(function(x){return !isNaN(x)});if(!v.length)return null;var p=0,d=0;v.forEach(function(x){if(x>=9)p++;else if(x<=6)d++});return Math.floor((p-d)/v.length*100+0.5)};</script><script>try{if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover")}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script id="steady-js">
+/* Steady screen: the app has many small scripts that tidy a page after it is drawn. Run all of that tidying in the same frame, before the screen is painted, so nothing visibly moves or jiggles after a click. */
+(function(){
+ if(window.__steady)return;window.__steady=1;
+ var nat=window.requestAnimationFrame.bind(window);
+ var Q=[],deferred=[],ids=0,flushing=false,scheduled=0,ran=0,seen=null;
+ function start(t){scheduled=0;flushing=true;ran=0;seen=new Set();Q=deferred.concat(Q);deferred=[];flush(t)}
+ function again(){if(!scheduled)scheduled=nat(start)}
+ function flush(t){
+  if(!Q.length){flushing=false;if(deferred.length)again();return}
+  if(ran>300){flushing=false;deferred=deferred.concat(Q);Q=[];again();return}
+  var it=Q.shift();
+  /* the same function asking again in one frame is an animation loop: it waits for the next frame */
+  if(seen.has(it.fn)){deferred.push(it);queueMicrotask(function(){flush(t)});return}
+  seen.add(it.fn);ran++;
+  try{it.fn(t)}catch(e){setTimeout(function(){throw e})}
+  /* let page watchers react first, then carry on in this same frame */
+  queueMicrotask(function(){flush(t)})}
+ window.requestAnimationFrame=function(fn){var id=++ids;Q.push({id:id,fn:fn});if(!flushing)again();return id};
+ window.cancelAnimationFrame=function(id){Q=Q.filter(function(x){return x.id!==id});deferred=deferred.filter(function(x){return x.id!==id})};
+ /* no movement on hover, press or focus: take out size, position and weight changes from those styles */
+ var P=['transform','translate','scale','rotate','padding','padding-top','padding-right','padding-bottom','padding-left','margin','margin-top','margin-right','margin-bottom','margin-left','border-width','border-top-width','border-right-width','border-bottom-width','border-left-width','font-weight','font-size','letter-spacing','width','height','top','left','right','bottom','zoom'];
+ function clean(rules){for(var i=0;i<rules.length;i++){var r=rules[i];try{if(r.cssRules&&r.cssRules.length&&!r.selectorText)clean(r.cssRules);if(r.selectorText&&/:(hover|active|focus)(?![-\w])/.test(r.selectorText)&&!/:focus-visible/.test(r.selectorText)){for(var j=0;j<P.length;j++){if(r.style.getPropertyValue(P[j]))r.style.removeProperty(P[j])}}}catch(e){}}}
+ var done=new WeakSet();
+ function scan(){for(var i=0;i<document.styleSheets.length;i++){var ss=document.styleSheets[i];if(done.has(ss))continue;try{clean(ss.cssRules);done.add(ss)}catch(e){}}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
+ addEventListener('load',scan);setTimeout(scan,1500);setTimeout(scan,5000);
+})();
+</script>
+<script id="nps-js">/* Net Promoter Score, the way Australia Post works it out: 9 or 10 = promoter, 7 or 8 = passive, 0 to 6 = detractor. NPS = (promoters - detractors) / customers x 100, halves rounded up. */window.NPS=function(a){var v=(a||[]).map(function(x){return typeof x==='object'&&x?+x.s:+x}).filter(function(x){return !isNaN(x)});if(!v.length)return null;var p=0,d=0;v.forEach(function(x){if(x>=9)p++;else if(x<=6)d++});return Math.floor((p-d)/v.length*100+0.5)};</script><script>try{if(/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1)){document.querySelector('meta[name=viewport]').setAttribute("content","width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover")}}catch(e){}</script>
 <title>Contract 1161</title>
 <meta name="description" content="Preston Delivery Service, Contract 1161">
 <meta name="theme-color" content="#0F1A2A">
@@ -11141,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101530';
+const VERSION='1202611101545';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
