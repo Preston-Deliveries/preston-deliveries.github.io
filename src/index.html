@@ -2,7 +2,18 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script id="steady-js">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script id="prof-js">
+/* Speed check (off unless switched on for testing): times every timer and frame task so slow parts can be found */
+(function(){try{if(localStorage.getItem('pds-prof')!=='1')return}catch(e){return}
+ const S=window.__prof=new Map();const rec=(fn,d)=>{if(d<8)return;const k=String(fn).replace(/\s+/g,' ').slice(0,140);const v=S.get(k)||[0,0,0];v[0]+=d;v[1]++;v[2]=Math.max(v[2],d);S.set(k,v)};
+ const st=window.setTimeout;window.setTimeout=function(fn,ms,...a){if(typeof fn!=='function')return st.call(window,fn,ms,...a);return st.call(window,function(){const t=performance.now();try{return fn.apply(this,arguments)}finally{rec(fn,performance.now()-t)}},ms,...a)};
+ const OM=window.MutationObserver;window.MutationObserver=function(cb){return new OM(function(m,o){const t=performance.now();try{return cb.call(this,m,o)}finally{rec(cb,performance.now()-t)}})};window.MutationObserver.prototype=OM.prototype;
+ const ae=EventTarget.prototype.addEventListener;EventTarget.prototype.addEventListener=function(type,fn,opt){if(typeof fn!=='function')return ae.call(this,type,fn,opt);const w=function(){const t=performance.now();try{return fn.apply(this,arguments)}finally{rec('['+type+'] '+fn,performance.now()-t)}};fn.__pw=w;return ae.call(this,type,w,opt)};
+ const re=EventTarget.prototype.removeEventListener;EventTarget.prototype.removeEventListener=function(type,fn,opt){return re.call(this,type,fn&&fn.__pw||fn,opt)};
+ window.__profTop=()=>[...S].sort((a,b)=>b[1][0]-a[1][0]).slice(0,25).map(([k,v])=>Math.round(v[0])+'ms x'+v[1]+' max'+Math.round(v[2])+' '+k).join('\n');
+})();
+</script>
+<script id="steady-js">
 /* Steady screen: the app has many small scripts that tidy a page after it is drawn. Run all of that tidying in the same frame, before the screen is painted, so nothing visibly moves or jiggles after a click. */
 (function(){
  if(window.__steady)return;window.__steady=1;
@@ -17,7 +28,7 @@
   /* the same function asking again in one frame is an animation loop: it waits for the next frame */
   if(seen.has(it.fn)){deferred.push(it);queueMicrotask(function(){flush(t)});return}
   seen.add(it.fn);ran++;
-  try{it.fn(t)}catch(e){setTimeout(function(){throw e})}
+  var t0=performance.now();try{it.fn(t)}catch(e){setTimeout(function(){throw e})}if(window.__prof){var d=performance.now()-t0;if(d>=8){var k='[raf] '+String(it.fn).replace(/\s+/g,' ').slice(0,140),v=window.__prof.get(k)||[0,0,0];v[0]+=d;v[1]++;v[2]=Math.max(v[2],d);window.__prof.set(k,v)}}
   /* let page watchers react first, then carry on in this same frame */
   queueMicrotask(function(){flush(t)})}
  window.requestAnimationFrame=function(fn){var id=++ids;Q.push({id:id,fn:fn});if(!flushing)again();return id};
@@ -10971,7 +10982,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101800';
+const VERSION='1202611101810';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
