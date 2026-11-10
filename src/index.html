@@ -11129,7 +11129,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101435';
+const VERSION='1202611101445';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14678,6 +14678,16 @@ html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>#sh-tabs :is(.sh-utrow,nav)
  function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
+ /* the filter sheet: on computers it lines up with the page column instead of the whole window */
+ function sheet(){const P=[...document.querySelectorAll('.cu-panel')],D=document.getElementById('cu-done');
+  const clear=()=>{P.forEach(p=>['left','right'].forEach(k=>p.style.removeProperty(k)));if(D)['left','right'].forEach(k=>D.style.removeProperty(k))};
+  if(!root.classList.contains('dk')||!document.body.classList.contains('cu-open')){clear();return}
+  const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec)return;
+  const r=sec.getBoundingClientRect(),z=r.width/(sec.offsetWidth||r.width)||1,pad=32*z,L=r.x+pad,R=innerWidth-(r.right-pad);
+  P.forEach(p=>{if(!p.getClientRects().length)return;const pz=(p.getBoundingClientRect().width/(p.offsetWidth||1))||1;p.style.setProperty('left',(L/pz)+'px','important');p.style.setProperty('right',(R/pz)+'px','important')});
+  if(D){D.style.setProperty('left',L+'px','important');D.style.setProperty('right',R+'px','important')}}
+ try{new MutationObserver(sheet).observe(document.body,{attributes:true,attributeFilter:['class']})}catch(e){}
+ addEventListener('resize',sheet);
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')&&root.classList.contains('dk')){const q=document.getElementById('dk-q');if(q){e.preventDefault();q.focus();q.select()}}});
  addEventListener('resize',fit);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fit);else fit();
