@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101700';
+const VERSION='1202611101710';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14723,19 +14723,19 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
   document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
  /* every page and tab starts its content the same distance under the title or tabs, so switching tabs never makes the page jump up or down */
  let lvKey='',lvInit=false;
+ /* line the page up once, just before it is shown: the content starts the same distance under the title or tabs on every page */
  function level(){const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec||sec.id==='mod-home'||!sec.getClientRects().length)return;
-  /* only line a page up while it is being opened (hidden), never while you are looking at it */
-  const at=[...document.querySelectorAll('#sh-tabs [aria-selected="true"],#sh-tabs [aria-current],#sh-tabs .on')].map(x=>x.textContent.trim()).join('|');const key=sec.id+'#'+at;
-  if(lvInit&&!root.classList.contains('pds-settle'))return;if(key===lvKey&&!root.classList.contains('pds-settle'))return;
+  sec.style.removeProperty('margin-top');
   const tb=document.getElementById('sh-tabs'),ph=document.getElementById('sh-ph');const hasT=!!(tb&&tb.getClientRects().length&&tb.getBoundingClientRect().height>4);
   const base=hasT?tb.getBoundingClientRect().bottom:(ph&&!ph.hidden&&ph.getClientRects().length?ph.getBoundingClientRect().bottom:null);if(base==null)return;
-  const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n,first=null;
-  let fy=1e9,cnt=0;while((n=w.nextNode())&&cnt<60){if(n.matches('script,style,template,dialog,[hidden]'))continue;const r=n.getBoundingClientRect();if(r.height>12&&r.width>40&&(n.children.length===0||r.height<120)){cnt++;if(r.y<fy){fy=r.y;first=n}}}
-  if(!first)return;lvKey=key;if(!root.classList.contains('pds-settle'))setTimeout(()=>{lvInit=true},1500);const sr=sec.getBoundingClientRect(),z=(sr.width/(sec.offsetWidth||sr.width))||1;
-  const want=(hasT?6:14)*z,diff=(want-(first.getBoundingClientRect().y-base))/z;if(Math.abs(diff)<2||Math.abs(diff)>48)return;
+  const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n,first=null,fy=1e9,cnt=0;
+  while((n=w.nextNode())&&cnt<60){if(n.matches('script,style,template,dialog,[hidden]'))continue;const r=n.getBoundingClientRect();if(r.height>12&&r.width>40&&(n.children.length===0||r.height<120)){cnt++;if(r.y<fy){fy=r.y;first=n}}}
+  if(!first)return;const sr=sec.getBoundingClientRect(),z=(sr.width/(sec.offsetWidth||sr.width))||1;
+  const want=(hasT?6:14)*z,diff=(want-(fy-base))/z;if(Math.abs(diff)<1||Math.abs(diff)>48)return;
   const cur=parseFloat(getComputedStyle(sec).marginTop)||0;sec.style.setProperty('margin-top',(cur+diff)+'px','important')}
-  
- let inW=false;const later=()=>{if(inW)return;inW=true;try{try{widen()}catch(e){}clearQ();try{placeQ()}catch(e){}try{level()}catch(e){}}finally{inW=false}};window.__dkLater=later;
+ window.__dkLevel=()=>{try{level()}catch(e){}};
+ setTimeout(window.__dkLevel,1200);setTimeout(window.__dkLevel,3000);
+ let inW=false;const later=()=>{if(inW)return;inW=true;try{try{widen()}catch(e){}clearQ();try{placeQ()}catch(e){}}finally{inW=false}};window.__dkLater=later;
  function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','aria-selected','aria-pressed']})}catch(e){}
@@ -14779,7 +14779,7 @@ html body #sh-main#sh-main#sh-main .sh-sec.pg thead th{color:var(--sh-muted)!imp
  function loop(t){if(!on)return;const now=performance.now(),cur=sig();if(cur!==last){last=cur;sameSince=now}
   if(now-sameSince>=40||now-startT>=350){
    /* last tidy-up while still hidden; if it moved anything, wait one more moment */
-   try{window.__dkLater&&window.__dkLater()}catch(e){}const again=sig();if(again!==last&&now-startT<350){last=again;sameSince=now;raf(loop);return}
+   try{window.__dkLater&&window.__dkLater();window.__dkLevel&&window.__dkLevel()}catch(e){}const again=sig();last=again;
    on=false;root.classList.remove('pds-settle');return}raf(loop)}
  function hide(){if(on)return;on=true;startT=performance.now();sameSince=startT;last=sig();root.classList.add('pds-settle');raf(loop)}
  document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest(TRIG);if(t)armedUntil=performance.now()+1500},true);
