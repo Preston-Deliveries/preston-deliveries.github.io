@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101545';
+const VERSION='1202611101555';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14716,7 +14716,7 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
     if(d<4)walk(c,d+1)}};
   walk(sec,0);
   /* title, section tabs and page share one centred column with the same side padding and size */
-  for(const e of [document.getElementById('sh-ph'),document.getElementById('sh-tabs'),sec]){if(!e)continue;const st=e.style;st.setProperty('max-width','1440px','important');st.setProperty('margin-left','auto','important');st.setProperty('margin-right','auto','important');st.setProperty('padding-left','32px','important');st.setProperty('padding-right','32px','important');st.setProperty('box-sizing','border-box','important');st.setProperty('zoom','.88','important');e.setAttribute('data-dkw','1')}
+  for(const e of [document.getElementById('sh-ph'),document.getElementById('sh-tabs'),sec]){if(!e)continue;const st=e.style;st.setProperty('max-width','1440px','important');st.setProperty('margin-left','auto','important');st.setProperty('margin-right','auto','important');st.setProperty('padding-left','32px','important');st.setProperty('padding-right','32px','important');st.setProperty('box-sizing','border-box','important');st.setProperty('zoom',String(({l:1,xl:1.12})[root.getAttribute('data-ts')]||.88),'important');e.setAttribute('data-dkw','1')}
   document.querySelectorAll('#mod-tasks>div').forEach(e=>{e.style.setProperty('padding-left','0','important');e.style.setProperty('padding-right','0','important')});
   {const T=document.getElementById('sh-tabs');if(T){T.style.setProperty('border-bottom','0','important');T.style.setProperty('box-shadow','none','important');const u=T.querySelector('.sh-utrow');if(u){u.style.setProperty('border-bottom','1px solid '+(getComputedStyle(document.documentElement).getPropertyValue('--sh-line').trim()||'#24344F'),'important');u.setAttribute('data-dkw','1')}}}
   document.querySelectorAll('#sh-tabs .sh-utrow,#sh-tabs nav').forEach(e=>{e.style.setProperty('max-width','none','important');e.style.setProperty('margin-left','0','important');e.style.setProperty('margin-right','0','important');e.setAttribute('data-dkw','1')});
@@ -14725,6 +14725,7 @@ html.dk.dk.dk.dk.dk.dk[data-theme="light"] body #sh-main#sh-main#sh-main>#sh-tab
  function clearQ(){const q=document.getElementById('dk-q'),home=document.getElementById('mod-home');if(q&&q.value&&home&&home.hidden&&document.activeElement!==q)q.value=''}
  function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
  try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
+ try{new MutationObserver(()=>{later();try{sheet();placeQ()}catch(e){}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-ts']})}catch(e){}
  /* the filter sheet: on computers it lines up with the page column instead of the whole window */
  function sheet(){const P=[...document.querySelectorAll('.cu-panel')],D=document.getElementById('cu-done');
   const clear=()=>{P.forEach(p=>['left','right'].forEach(k=>p.style.removeProperty(k)));if(D)['left','right'].forEach(k=>D.style.removeProperty(k))};
