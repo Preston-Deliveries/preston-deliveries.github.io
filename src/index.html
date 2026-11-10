@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101835';
+const VERSION='1202611101845';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12895,7 +12895,9 @@ const soon=()=>{if(!q)q=requestAnimationFrame(mark)};try{new MutationObserver(so
    /* last tidy-up while still hidden; if it moved anything, wait one more moment */
    try{window.__dkLater&&window.__dkLater();window.__dkLevel&&window.__dkLevel()}catch(e){}const again=sig();last=again;
    on=false;root.classList.remove('pds-settle');return}raf(loop)}
- function hide(){if(on)return;on=true;startT=performance.now();sameSince=startT;last=sig();root.classList.add('pds-settle');raf(loop)}
+ function hide(){if(on)return;on=true;startT=performance.now();sameSince=startT;last=sig();root.classList.add('pds-settle');raf(loop);
+  /* safety: never leave a page hidden, even if the screen is not drawing (app in the background) */
+  setTimeout(()=>{if(on&&performance.now()-startT>=390){on=false;root.classList.remove('pds-settle')}},400)}
  document.addEventListener('click',e=>{const t=e.target&&e.target.closest&&e.target.closest(TRIG);if(t)armedUntil=performance.now()+1500},true);
  addEventListener('popstate',()=>{armedUntil=performance.now()+1500});addEventListener('hashchange',()=>{armedUntil=performance.now()+1500});
  function watch(){const m=document.getElementById('sh-main');if(!m){setTimeout(watch,300);return}
