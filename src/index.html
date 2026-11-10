@@ -11132,7 +11132,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101240';
+const VERSION='1202611101300';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -14565,8 +14565,8 @@ html.dk.dk.dk.dk.dk.dk .sh-side .web-out{background:transparent!important;border
 
 /* page area: sits under the top bar and beside the menu, and uses the full width */
 html.dk.dk.dk.dk.dk.dk .sh-main{margin-left:var(--dk-side)!important;padding-top:var(--dk-top)!important}
-html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>.sh-sec{max-width:1640px!important;padding:0 32px!important}
-html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>.sh-ph{max-width:1640px!important;padding:20px 32px 0!important}
+html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>.sh-sec{max-width:none!important;margin:0!important;padding:0 32px 32px!important}
+html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>.sh-ph{max-width:none!important;margin:0!important;padding:20px 32px 0!important}
 html.dk.dk.dk.dk.dk.dk body #sh-main#sh-main#sh-main>.sh-ph>.in{max-width:none!important}
 html.dk.dk.dk.dk.dk.dk #sh-main :is(.tbx,.dyx,.eqx,.ivx,.lvx,.pcx,.ntx,.dm,.smx,.tsx,.unx,.vcx,.fbx,.rpx,.my-x,.pfx,.brx,.sh-wa){max-width:none!important}
 html.dk.dk.dk.dk.dk.dk #sh-main #mod-results .wrap,html.dk.dk.dk.dk.dk.dk #sh-main #mod-survey .wrap,html.dk.dk.dk.dk.dk.dk #sh-main #mod-runs>main.wrap,html.dk.dk.dk.dk.dk.dk #sh-main #mod-guide main{max-width:none!important}
@@ -14654,7 +14654,22 @@ html.dk.dk.dk.dk.dk.dk .sh-side .sb-acts button{min-height:34px!important;paddin
   const ob=document.querySelector('.sh-side .sh-bell .bdg'),nb=t.querySelector('.dk-n');if(ob&&nb){nb.hidden=ob.hidden||!ob.textContent.trim();nb.textContent=ob.textContent}
   const bell=t.querySelector('[data-dk="bell"]'),gear=t.querySelector('[data-dk="gear"]'),obell=document.querySelector('.sh-side .sh-bell'),ogear=document.querySelector('.sh-side .sh-mode');
   if(bell)bell.hidden=!obell||!obell.getClientRects().length&&!!obell.closest('[hidden]');if(gear)gear.hidden=!ogear}
- function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}}
+ /* pages were built for phones and cap their width in many places: on computers lift those caps so every page lines up with its title */
+ const WSEL='.lvx,.eqx,.pcx,.ntx,.smx,.ivx,.tbx,.unx,.vcx,.tsx,.dyx,.rpx,.brx,.dm,.fbx,.my-x,.pfx,.sh-wa,.dv,#sh-home,main.wrap,.wrap';
+ let wq=0;
+ function widen(){wq=0;const on=root.classList.contains('dk');
+  document.querySelectorAll('[data-dkw]').forEach(e=>{if(!on||!document.body.contains(e)){if(e.classList.contains('cu-burger'))e.style.removeProperty('display');e.style.removeProperty('max-width');e.style.removeProperty('margin-left');e.style.removeProperty('margin-right');e.removeAttribute('data-dkw')}});
+  if(!on)return;
+  const sec=[...document.querySelectorAll('#sh-main>.sh-sec')].find(x=>!x.hidden);if(!sec)return;
+  const walk=(e,d)=>{for(const c of e.children){if(c.matches('.sheet,canvas,img,svg,dialog,table,.dm-side,.sh-thm,[role=dialog]'))continue;
+    const cs=getComputedStyle(c),mw=parseFloat(cs.maxWidth);
+    if((c.matches(WSEL)||(cs.maxWidth.indexOf('px')>-1&&mw>=600&&mw<1500&&cs.display!=='inline'))&&!c.closest('.sheet')){c.style.setProperty('max-width','none','important');c.style.setProperty('margin-left','0','important');c.style.setProperty('margin-right','0','important');c.setAttribute('data-dkw','1')}
+    if(d<4)walk(c,d+1)}};
+  walk(sec,0);
+  document.querySelectorAll('.cu-burger').forEach(b=>{b.style.setProperty('display','none','important');b.setAttribute('data-dkw','1')})}
+ const later=()=>{if(!wq)wq=requestAnimationFrame(widen)};
+ function fit(){const on=innerWidth>=W&&!!document.querySelector('.sh-app');root.classList.toggle('dk',on);if(on){build();sync()}later()}
+ try{new MutationObserver(later).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']})}catch(e){}
  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&(e.key==='k'||e.key==='K')&&root.classList.contains('dk')){const q=document.getElementById('dk-q');if(q){e.preventDefault();q.focus();q.select()}}});
  addEventListener('resize',fit);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fit);else fit();
