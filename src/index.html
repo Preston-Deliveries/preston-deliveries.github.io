@@ -11170,7 +11170,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611101710';
+const VERSION='1202611101720';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12733,7 +12733,7 @@ html:root:root:root:root:root:root:root:root:root:root body #sh-main#sh-main#sh-
 /* Even spacing: the first thing on every page sits the same distance under the title bar and tabs, on phone and desktop */
 (()=>{const GAP=12;const vis=e=>!!(e&&e.getClientRects().length);
  const paints=(n,cs)=>/^(BUTTON|INPUT|SELECT|TEXTAREA|IMG|SVG|CANVAS|VIDEO|TABLE)$/i.test(n.tagName)||parseFloat(cs.borderTopWidth)>0||(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor))||cs.backgroundImage!=='none'||cs.boxShadow!=='none'||[...n.childNodes].some(x=>x.nodeType===3&&x.textContent.trim());
- function norm(){if(scrollY>4)return;const sec=[...document.querySelectorAll('#sh-main .sh-sec')].find(s=>!s.hidden&&vis(s));if(!sec||sec.id==='mod-home')return;
+ function norm(){return;/* replaced by the single page levelling in dk-js: two scripts doing the same job fought each other and made pages jump */if(scrollY>4)return;const sec=[...document.querySelectorAll('#sh-main .sh-sec')].find(s=>!s.hidden&&vis(s));if(!sec||sec.id==='mod-home')return;
    const hs=[document.getElementById('sh-tabs'),document.getElementById('sh-ph')].filter(e=>vis(e)&&!sec.contains(e));if(!hs.length)return;
    const hb=Math.max(...hs.map(e=>e.getBoundingClientRect().bottom));
    let top=Infinity;const w=document.createTreeWalker(sec,NodeFilter.SHOW_ELEMENT);let n;
@@ -14253,7 +14253,7 @@ html body #sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph#sh-ph .ttl>.sh-back{d
     for(var i=0;i<d.length;i++){var p=d[i].parentNode;if(p&&p.lastElementChild!==d[i]){var x=d[i];while(x.nextElementSibling&&x.nextElementSibling.tagName==='DETAILS'&&x.nextElementSibling.classList.contains('sc-how'))x=x.nextElementSibling;if(x.nextElementSibling)p.appendChild(d[i])}if(!d[i].classList.contains('cu-how'))d[i].classList.add('cu-how')}
   }
   var gapKey='';
-  function gap(){
+  function gap(){return;/* replaced by the single page levelling in dk-js */
     var sec=act();if(!sec)return;var sm=document.getElementById('sh-main');
     if((window.scrollY||0)>2||(sm&&sm.scrollTop>2))return;
     var hd=[document.getElementById('sh-ph'),document.getElementById('sh-tabs'),document.querySelector('.sh-mtop')],hb=0;
