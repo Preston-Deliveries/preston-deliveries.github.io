@@ -7909,7 +7909,7 @@ function render(){
   :''}
   ${perBar('enq',enqs().map(x=>x.date),`<div class="eq-pcs" role="group" aria-label="Postcode">${(()=>{const pc=getPc(),open=enqs().filter(r=>inPer(r.date,'enq'));const n=k=>open.filter(r=>!k||pcOf(r)===k).length;
     return [['','All']].concat(PCOWN.map(([k])=>[k,k])).map(([k,l])=>`<div role="button" tabindex="0" class="eq-pc" data-eq="eqpc" data-v="${k}" aria-pressed="${pc===k}"><span class="l">${l}</span><span class="c">${n(k)}</span></div>`).join('')})()}</div>`)}
-  ${(P=>`${(()=>{const nY=P.filter(x=>x.fault==='yes').length,nP=P.filter(x=>x.fault==='partly').length,T=(v,c,n,l)=>`<button type="button" class="ct ct-${c}${n?'':' z'}" data-eq="eqf" data-v="${v}" aria-pressed="${eqF===v}" ${!n&&eqF!==v?'disabled':''}><b>${n}</b><small>${l}</small></button>`;return `<div class="nstat nstf">${T('','none',P.length,'All enquiries')}${T('yes','bad',nY,'At fault')}${T('partly','warn',nP,'Partly at fault')}</div>`})()}`)(enqs().filter(x=>inPer(x.date,'enq')&&(!getPc()||pcOf(x)===getPc())))}
+  ${(P=>`${(()=>{const nY=P.filter(x=>x.fault==='yes').length,nP=P.filter(x=>x.fault==='partly').length,nN=P.filter(x=>x.fault==='no').length,T=(v,c,n,l)=>`<button type="button" class="ct ct-${c}${n?'':' z'}" data-eq="eqf" data-v="${v}" aria-pressed="${eqF===v}" ${!n&&eqF!==v?'disabled':''}><b>${n}</b><small>${l}</small></button>`;return `<div class="nstat nstf">${T('','none',P.length,'All enquiries')}${T('yes','bad',nY,'At fault')}${T('partly','warn',nP,'Partly at fault')}${T('no','good',nN,'Not at fault')}</div>`})()}`)(enqs().filter(x=>inPer(x.date,'enq')&&(!getPc()||pcOf(x)===getPc())))}
   <div class="srch one"><input type="search" id="eq_qd" value="${esc(qDriver)}" placeholder="Driver, address or case" aria-label="Search enquiries" list="eq_dl" autocomplete="off"></div>
   <datalist id="eq_dl">${staff.map(p=>`<option value="${esc(p.name)}">`).join('')}</datalist>
   <div id="eq_res" class="eres">${resHTML(L)}</div>
@@ -7950,7 +7950,7 @@ function formHTML(){
   ${lboxHTML()}
   <label class="f" for="eq_det">What happened<textarea id="eq_det" rows="6" placeholder="Paste the enquiry or write what happened">${esc(r.details||'')}</textarea></label>
   <span class="lbl">Outcome (required)</span>
-  <div class="oc ${msg&&msg.err&&!r.fault?'need':''}" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button>${r.fault==='no'?`<button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="true">Not at fault</button>`:''}</div>
+  <div class="oc ${msg&&msg.err&&!r.fault?'need':''}" role="group" aria-label="Supervisor outcome"><button type="button" class="ob yes" data-eq="f" data-v="yes" aria-pressed="${r.fault==='yes'}">At fault</button><button type="button" class="ob part" data-eq="f" data-v="partly" aria-pressed="${r.fault==='partly'}">Partly at fault</button><button type="button" class="ob no" data-eq="f" data-v="no" aria-pressed="${r.fault==='no'}">Not at fault</button></div>
   <label class="f" for="eq_note">Supervisor note (optional)<textarea id="eq_note" rows="2" placeholder="Anything the supervisor wants to note">${esc(r.note||'')}</textarea></label>
   ${msg&&msg.err?`<p class="msg err eq-ferr" role="alert">${esc(msg.t)}</p>`:''}
   <div class="foot"><button type="button" class="sh-btn primary" data-eq="save">${isNew?'Save enquiry':'Save changes'}</button><button type="button" class="sh-btn" data-eq="cancel">Cancel</button></div>
@@ -8126,7 +8126,7 @@ document.addEventListener('click',async ev=>{
   if(a==='print'){printList();return}
   if(a==='save'||a==='savesend'){const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
     if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
-    if(!r.fault){msg={err:true,t:'Choose At fault or Partly at fault.'};render();return}
+    if(!r.fault){msg={err:true,t:'Choose At fault, Partly at fault or Not at fault.'};render();return}
     const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
     const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
       events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611111030';
+const VERSION='1202611111040';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12016,7 +12016,7 @@ const A={ /* office */
  'mod-results':'Results come from the daily performance reports. Use the date bar to pick a day, week or pay period, and tap How the Contract Score works to see how each score is worked out.',
  'mod-survey':'Scores from the customer survey. A 9 or 10 is a promoter and 0 to 6 is a detractor. Tap How the NPS score works to see how the team score is worked out.',
  'mod-summary':'The whole contract at a glance for the period you pick, built from the same results as the Results tab.',
- 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver.':'Only at fault and partly at fault enquiries are recorded, and they count in the driver results. Pick a postcode and a month to see them. Press + to add one from the case PDF.',
+ 'mod-enquiries':t=>/NCR/i.test(t)?'NCRs come from the facility manager. Press + NCR to record one against the driver.':'At fault and partly at fault enquiries count in the driver results; not at fault ones are kept for the record. Pick a postcode and a month to see them. Press + to add one from the case PDF.',
  'mod-runs':t=>/sort/i.test(t)?'Which driver each street goes to, by postcode. Use it at the depot to redirect missorts. Drivers get changes after you press Send latest to drivers.':'Each driver’s streets in delivery order, with customer and access notes. Pick a postcode at the top. Drivers get changes after you press Send latest to drivers.',
  'mod-precards':'Precards are split into Approved and Under review. Check the ones under review and approve them once they are right.',
  'mod-lockers':'Parcel lockers on the contract, with the building and Australia Post details for each one.',
@@ -12910,6 +12910,12 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::before,html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::after{display:none!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
+}</style>
+<style id="enq-3way">@layer pdsfirst{
+/* Enquiry outcome: At fault, Partly at fault and Not at fault side by side; the count cards on one row */
+#sh-main #mod-enquiries .oc{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#sh-main #mod-enquiries .oc .ob{height:auto!important;min-height:46px!important;padding:6px!important;line-height:1.2!important;white-space:normal!important}
+#sh-main #mod-enquiries .nstat.nstf{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 }</style>
 <style id="settle-css">html.pds-settle #sh-main>.sh-sec{visibility:hidden!important}</style>
 <script id="settle-js">
