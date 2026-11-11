@@ -4812,7 +4812,7 @@ document.addEventListener('change',e=>{const el=e.target.closest&&e.target.close
 document.addEventListener('click',async e=>{const el=e.target.closest&&e.target.closest('[data-dmx]');if(!el||!openId||!document.getElementById('mod-staff').contains(el))return;const a=el.dataset.dmx,id=openId;
   if(a==='indtick')return;
   if(a==='agtick'){const on=el.checked;await saveExtra(id,on?{agSigned:true,agSignedAt:new Date().toISOString(),agSignedBy:meFull()||meName()}:{agSigned:false,agSignedAt:'',agSignedBy:''},on?'Ticked as signed.':'Unticked.');return}
-  if(a==='agfopen'){const f=people[id].agFile;if(f&&window.AGRF){const ok=await window.AGRF.open(id,f);if(!ok){msg={err:true,t:'Could not open the file. Check your connection.'};render()}}return}
+  if(a==='agfopen'){const f=people[id].agFile;if(f&&window.AGRF){const ok=await window.AGRF.open(id,f);if(!ok){msg={err:true,t:'Could not open the file. Check your connection.'};render()}else if(ok==='saved'){msg={t:'Agreement saved to your phone. Open it from your Downloads.'};render()}}return}
   if(a==='agfdel'){if(agBusy!=='del:'+id){agBusy='del:'+id;render();setTimeout(()=>{if(agBusy==='del:'+id){agBusy='';render()}},3500);return}agBusy='';try{await window.AGRF.del(id,people[id].agFile)}catch(x){}await saveExtra(id,{agFile:null},'File removed. The signed tick stays as it was.');return}
   if(a==='fdpdf'){if(window.ONB&&window.ONB.firstDay)window.ONB.firstDay(fullName(people[id]).replace(/^New driver.*$/,''),el);return}
   if(a==='apsign'){apPad=true;render();setTimeout(apPadInit,0);return}
@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611110650';
+const VERSION='1202611111030';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11607,8 +11607,21 @@ window.AGRF={
     for(let i=0;i<n;i++)await fs.doc('agrfile/'+sid+'_'+i).set({staff:sid,b:b64.slice(i*AGR_PART,(i+1)*AGR_PART)});
     for(let i=n;i<n+20;i++){try{const d=await fs.doc('agrfile/'+sid+'_'+i).get();if(!d.exists)break;await fs.doc('agrfile/'+sid+'_'+i).delete()}catch(e){break}}
     return {name:file.name,parts:n,size:u.length,at:new Date().toISOString()}},
-  async open(sid,meta){const w=window.open('','_blank');try{const P=await Promise.all(Array.from({length:meta.parts},(_,i)=>fs.doc('agrfile/'+sid+'_'+i).get()));const u=b64ToU8(P.map(d=>d.exists?(d.data().b||''):'').join(''));
-      const url=URL.createObjectURL(new Blob([u],{type:'application/pdf'}));if(w)w.location.href=url;else{const a=document.createElement('a');a.href=url;a.download=meta.name||'Sub-contractor Agreement.pdf';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),500)}return true}catch(e){if(w)w.close();return false}},
+  /* Open it: on a computer the PDF opens in a new tab; on a phone it saves to the phone (Downloads), where the phone's PDF viewer opens it.
+     (A blank tab that is then pointed at the file stayed blank on phones and in the Home Screen app, so that is no longer used.) */
+  async open(sid,meta){
+    const phone=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)||(window.matchMedia&&matchMedia('(pointer:coarse)').matches&&innerWidth<900);
+    const name=/\.pdf$/i.test(meta.name||'')?meta.name:((meta.name||'Sub-contractor Agreement')+'.pdf');
+    const w=phone?null:window.open('','_blank');
+    try{const P=await Promise.all(Array.from({length:meta.parts},(_,i)=>fs.doc('agrfile/'+sid+'_'+i).get()));
+      if(P.some(d=>!d.exists))throw new Error('missing part');
+      const u=b64ToU8(P.map(d=>d.data().b||'').join(''));
+      const blob=new Blob([u],{type:'application/pdf'}),url=URL.createObjectURL(blob);
+      if(w&&!w.closed){const e=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+        w.document.open();w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+e(name)+'</title><style>html,body{margin:0;height:100%;background:#525659}iframe{border:0;width:100%;height:100%;display:block}</style></head><body><iframe src="'+url+'" title="'+e(name)+'"></iframe></body></html>');w.document.close();
+        setTimeout(()=>URL.revokeObjectURL(url),600000);return true}
+      const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},60000);return phone?'saved':true}
+    catch(e){if(w)try{w.close()}catch(x){}return false}},
   async del(sid,meta){for(let i=0;i<(meta&&meta.parts||0);i++){try{await fs.doc('agrfile/'+sid+'_'+i).delete()}catch(e){}}}
 };
 function agrCheck(){}
