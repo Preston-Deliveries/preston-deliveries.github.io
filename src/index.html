@@ -397,7 +397,7 @@ window.__qDate=function(){var p=window.__qISO().split('-');return new Date(+p[0]
 <script>
 /* Start the app's parts. The ones the Home page needs run straight away; the rest run one at a time
    while the phone is idle, so the app opens quicker. Tapping to another page runs anything still waiting first. */
-window.__ivLoad=()=>window.IV_FILES?Promise.resolve():(window.__ivP=window.__ivP||new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='assets/iv-files.js';sc.onload=ok;sc.onerror=()=>{window.__ivP=null;no(new Error('load'))};document.head.appendChild(sc)}));
+window.__ivLoad=()=>window.IV_FILES?Promise.resolve():(window.__ivP=window.__ivP||new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='assets/iv-files.js?v=hr1';sc.onload=ok;sc.onerror=()=>{window.__ivP=null;no(new Error('load'))};document.head.appendChild(sc)}));
 /* admin pages that keep big lists live only start listening once that page is first opened (saves database reads on every open) */
 window.__lazyStart=(pages,fn)=>{let done=false;return role=>{if(done)return;if(role!=='mgr'){fn(role);return}
   const now=()=>{if(done)return;done=true;window.removeEventListener('sh:go',h);fn(role)};const h=e=>{if(pages.includes(e.detail))now()};
@@ -6857,11 +6857,11 @@ function render(){
   ${msg?`<p class="msg ${msg.err?'err':''}" role="status">${esc(msg.t)}</p>`:''}
   <ol class="steps">
    <li class="step"><h2><span class="n">1</span>Pick your template</h2>
-    <div class="entry"><span class="lbl">How do you want to enter your numbers?</span><div class="seg" role="group" aria-label="Enter numbers"><button type="button" data-iv="entry" data-v="day" aria-pressed="${entry==='day'}">Each day</button><button type="button" data-iv="entry" data-v="week" aria-pressed="${entry==='week'}">Each week</button></div>
-     <p class="sub">${entry==='week'?'One line for each week. Add up the week yourself and type the totals in.':'One line for each day. The template adds up each week for you.'}</p></div>
+    <div class="entry"><span class="lbl">How do you want to enter your numbers?</span><div class="seg" role="group" aria-label="Enter numbers"><button type="button" data-iv="entry" data-v="day" aria-pressed="${entry==='day'}">Each day</button><button type="button" data-iv="entry" data-v="week" aria-pressed="${entry==='week'}">Each week</button><button type="button" data-iv="entry" data-v="hr" aria-pressed="${entry==='hr'}">Hourly only</button></div>
+     <p class="sub">${entry==='hr'?'For drivers paid by the hour only. One line for each day: start, finish and break. Hours and pay add up by themselves.':entry==='week'?'One line for each week. Add up the week yourself and type the totals in.':'One line for each day. The template adds up each week for you.'}</p></div>
     <div class="pick">
-     <div class="tpl"><span class="tag">Registered for GST</span><h3>Tax invoice</h3><p>Adds 10% GST to your total. Use this if your ABN is registered for GST.</p><span class="fn">Excel file (.xlsx), prints on one A4 page</span><button type="button" class="sh-btn primary" data-iv="dl" data-v="${entry==='week'?'gst_wk':'gst'}">Download GST template${entry==='week'?' (weekly)':''}</button></div>
-     <div class="tpl"><span class="tag alt">Not registered for GST</span><h3>Invoice</h3><p>No GST is added. Use this if you have an ABN but are not registered for GST.</p><span class="fn">Excel file (.xlsx), prints on one A4 page</span><button type="button" class="sh-btn primary" data-iv="dl" data-v="${entry==='week'?'nogst_wk':'nogst'}">Download non GST template${entry==='week'?' (weekly)':''}</button></div>
+     <div class="tpl"><span class="tag">Registered for GST</span><h3>Tax invoice</h3><p>Adds 10% GST to your total. Use this if your ABN is registered for GST.</p><span class="fn">Excel file (.xlsx), prints on one A4 page</span><button type="button" class="sh-btn primary" data-iv="dl" data-v="${entry==='hr'?'gst_hr':entry==='week'?'gst_wk':'gst'}">Download GST template${entry==='hr'?' (hourly)':entry==='week'?' (weekly)':''}</button></div>
+     <div class="tpl"><span class="tag alt">Not registered for GST</span><h3>Invoice</h3><p>No GST is added. Use this if you have an ABN but are not registered for GST.</p><span class="fn">Excel file (.xlsx), prints on one A4 page</span><button type="button" class="sh-btn primary" data-iv="dl" data-v="${entry==='hr'?'nogst_hr':entry==='week'?'nogst_wk':'nogst'}">Download non GST template${entry==='hr'?' (hourly)':entry==='week'?' (weekly)':''}</button></div>
     </div>
     <p class="sub">Not sure which one? Search your ABN on <a href="https://abr.business.gov.au" target="_blank" rel="noopener">ABN Lookup</a>. It shows whether you are registered for GST. If it still isn’t clear, ask your accountant or ${esc(c.contact.split(' ')[0])}.</p>
    </li>
@@ -6874,7 +6874,12 @@ function render(){
       <li><b>Period From and To:</b> the first and last day you are invoicing for.</li>
       <li><b>Payment details:</b> account name, BSB and account number.</li>
       <li><b>Bill To</b> is already filled in. Leave it.</li></ul></div>
-     ${entry==='week'?`<div><h3>Each week</h3><ul>
+     ${entry==='hr'?`<div><h3>Hourly only</h3><ul>
+      <li>Type <b>Period From</b> first. The date for every day fills in by itself.</li>
+      <li>Type your agreed hourly rate in <b>YOUR HOURLY RATE</b>.</li>
+      <li>For each day you worked, type your <b>START</b> and <b>FINISH</b> time, for example 6:30 AM and 3:00 PM.</li>
+      <li>Had an unpaid break? Put the minutes in <b>BREAK</b>, for example 30.</li>
+      <li>Leave days you didn’t work empty. Hours, week totals and the amount due add up by themselves.</li></ul></div>`:entry==='week'?`<div><h3>Each week</h3><ul>
       <li>Add up the week and put the parcel total in the <b>1 LOAD</b> or <b>2 LOAD</b> column.</li>
       <li>Did both 1 load and 2 load days that week? Put each total in its own column on the same line.</li>
       <li>Put that week’s extra parcels in <b>EXTRA PARCELS</b>.</li>
@@ -6893,7 +6898,7 @@ function render(){
    </li>
    <li class="step"><h2><span class="n">3</span>Check it</h2>
     <p class="sub">Before you send it, make sure:</p>
-    <ul class="chk">${CHECK.map(t=>`<li>${esc(entry==='week'?t.replace(/^Each day/,'Each week'):t)}</li>`).join('')}</ul>
+    <ul class="chk">${CHECK.map(t=>`<li>${esc(entry==='hr'?t.replace(/^Each day is in the right column.*$/,'Start and finish times and breaks are right for each day you worked'):entry==='week'?t.replace(/^Each day/,'Each week'):t)}</li>`).join('')}</ul>
    </li>
    <li class="step"><h2><span class="n">4</span>Email it to ${esc(c.contact)}</h2>
     <div class="send">
@@ -10984,7 +10989,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611111044';
+const VERSION='1202611111443';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12910,6 +12915,10 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::before,html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::after{display:none!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
+}</style>
+<style id="iv-tpl-btn">@layer pdsfirst{
+/* template download buttons stay inside their card (long names like "Download non GST template (hourly)" wrap) */
+#sh-main #mod-invoices .tpl [data-iv=dl]{max-width:100%!important;box-sizing:border-box!important;white-space:normal!important;height:auto!important;min-height:46px!important;text-align:center!important;line-height:1.2!important}
 }</style>
 <style id="enq-3way">@layer pdsfirst{
 /* Enquiry outcome: At fault, Partly at fault and Not at fault side by side; the count cards on one row */
