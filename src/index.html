@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611111040';
+const VERSION='1202611111037';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -11741,7 +11741,7 @@ function goNew(v){const k='c1161_v_'+v;try{const n=+(sessionStorage.getItem(k)||
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkVersion()});
 /* the saved copy opened instantly; the background part says when a newer version has finished downloading */
 function askNewer(){try{const sw=navigator.serviceWorker;if(!sw)return;sw.ready.then(r=>{const w=r.active||sw.controller;if(!w)return;const ch=new MessageChannel();
-  ch.port1.onmessage=e=>{const v=(e.data||{}).v;if(!(+v>+VERSION))return;
+  ch.port1.onmessage=e=>{const v=String((e.data||{}).v||'');/* any different live version, newer or not, since the version is now the real build time */if(!/^\d+$/.test(v)||v===String(VERSION))return;
     const tryGo=()=>{const typing=document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);const dlg=document.querySelector('#sh-set.on,dialog[open]');if(typing||dlg){setTimeout(tryGo,4000);return}goNew(v)};tryGo()};
   w.postMessage({type:'pagever'},[ch.port2])}).catch(()=>{})}catch(e){}}
 setTimeout(askNewer,800);

@@ -3,7 +3,17 @@ import fs from 'node:fs';
 import postcss from 'postcss';
 import {minify} from 'terser';
 const [,,SRC,OUT]=process.argv;
-const html=fs.readFileSync(SRC,'utf8');
+let html=fs.readFileSync(SRC,'utf8');
+// Version stamp: every build sets VERSION to the real time it was built, Queensland time (UTC+10, no daylight saving): 1 + year month day hour minute.
+// It is written back into src/index.html too, so the two files always match. Set NO_STAMP=1 to keep the version as it is.
+if(!process.env.NO_STAMP){
+  const q=new Date(Date.now()+10*3600e3),z=n=>String(n).padStart(2,'0');
+  const stamp='1'+q.getUTCFullYear()+z(q.getUTCMonth()+1)+z(q.getUTCDate())+z(q.getUTCHours())+z(q.getUTCMinutes());
+  if(!/const VERSION='\d+'/.test(html))throw new Error('No VERSION line found in '+SRC);
+  html=html.replace(/const VERSION='\d+'/,"const VERSION='"+stamp+"'");
+  fs.writeFileSync(SRC,html);
+  console.log('Version '+stamp+' (Queensland time '+z(q.getUTCDate())+'/'+z(q.getUTCMonth()+1)+'/'+q.getUTCFullYear()+' '+z(q.getUTCHours())+':'+z(q.getUTCMinutes())+')');
+}
 // split into chunks: top level <style> and <script> blocks, leaving everything else alone
 const parts=[];let i=0;
 const re=/<(style|script)(\s[^>]*)?>/gi;let m;

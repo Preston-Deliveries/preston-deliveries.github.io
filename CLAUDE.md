@@ -10,5 +10,5 @@ cd tools && npm install && npm run build
 
 Then commit both `src/index.html` and `index.html`.
 
-- Bump `const VERSION='…'` in `src/index.html` with every change (year month day hour minute, Queensland time). The build keeps a copy of it so the update check and `sw.js` still find it.
+- Don't set `const VERSION='…'` by hand. `npm run build` stamps it with the real Queensland time it was built (1 + year month day hour minute) and writes it into both `src/index.html` and `index.html`. The build also keeps a copy of it so the update check and `sw.js` still find it.
 - The build only removes style declarations that a later rule with the exact same selector replaces, and minifies styles and code. It does not change how anything looks.
