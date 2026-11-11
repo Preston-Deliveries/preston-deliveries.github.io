@@ -10984,7 +10984,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611111037';
+const VERSION='1202611111044';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12917,6 +12917,14 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 #sh-main #mod-enquiries .oc .ob{height:auto!important;min-height:46px!important;padding:6px!important;line-height:1.2!important;white-space:normal!important}
 #sh-main #mod-enquiries .nstat.nstf{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 }</style>
+<style id="pc-cards-desk">
+/* Precards and Parcel lockers on a computer: the same postcode count cards as the phone, above the table (the phone's grouped list stays phone only) */
+@media (min-width:900px){
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcx>.pcm{display:block!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcx>.pcm>:not(.pcm-t){display:none!important}
+html:root body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main :is(#mod-precards,#mod-lockers) .pcx>.pcm>.pcm-t{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:10px!important;margin:0 0 12px!important}
+}
+</style>
 <style id="settle-css">html.pds-settle #sh-main>.sh-sec{visibility:hidden!important}</style>
 <script id="settle-js">
 /* No jumping when you change page or tab: the old page stays on screen until the new one has been drawn and has stopped moving, then it shows in one go */
