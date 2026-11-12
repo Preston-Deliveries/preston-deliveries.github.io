@@ -2554,9 +2554,13 @@ async function act(a,el){
   if(a==='edRm'){const p=S.ed&&S.ed.parts[+d.i];if(p){p.del=true;S.ed.err='';renderEd()}return}
   if(a==='edAdd'){if(!S.ed)return;const used=new Set(S.ed.parts.filter(p=>!p.del).map(p=>p.to));const pick=allIds().filter(id=>String(S.runs[id].postcode)===S.ed.pc).find(id=>!used.has(id))||allIds().find(id=>String(S.runs[id].postcode)===S.ed.pc);S.ed.parts.push({run:pick,to:pick,rg:'',del:false,isNew:true,odds:'',evens:'',other:''});renderEd();return}
   if(a==='edSave'){if(S.ed)edSave();return}
+  if(a==='showT'){const k=d.v;SHOW[k]=!SHOW[k];if(!SHOW.nm&&!SHOW.dn&&!SHOW.fl)SHOW.nm=true;saveShow();renderResults();return}
+  if(a==='flOpen'){if(!canWrite)return;flOpen();return}
+  if(a==='flClose'){S.fl=null;renderFl();return}
+  if(a==='flSave'){flSave();return}
   if(a==='shareRuns'){el.disabled=true;toast('Sending to drivers…');try{await shareRuns();toast('Done. Drivers now see the latest. Reloading.')}catch(e){el.disabled=false;toast(e&&e.code==='conflict'?'Changed elsewhere at the same time. Try again after it reloads.':'Could not send to drivers just now.')}return}
   if(a==='clearQ'){S.q='';render();focusQ();return}
-  if(a==='printSort'){if(!downloads)return;el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(sortPrintDoc(S.pc),{margin:9});await downloads.save({filename:`${S.pc} Missort Sheet.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
+  if(a==='printSort'){if(!downloads)return;el.disabled=true;toast('Making the PDF…');try{const pdf=await window.htmlToPdf(sortPrintDoc(S.pc),{margin:9});await downloads.save({filename:`${S.pc} ${chuteOnly()?'Chute':'Missort'} Sheet.pdf`,data:pdf});toast('PDF saved. Open it to print.')}catch(err){if(err&&err.code!=='declined')toast('Could not save the file')}el.disabled=false;return}
   if(a==='driver'){if(d.pc&&S.runs[d.v])S.pc=String(d.pc);S.cur=d.v;S.open.clear();S.trayEdit=null;S.traySearch='';S.confirm=null;S.sheetSt=null;S.into=null;S.showAll=false;render();window.scrollTo(0,0);return}
   if(a==='step'){S.step=d.v;S.sheetSt=null;render();document.querySelector('#mod-runs .pl-steps')?.scrollIntoView({block:'start'});window.scrollBy(0,-70);return}
   if(a==='into'){S.into=d.v;S.traySearch='';render();return}
@@ -2718,6 +2722,41 @@ function addrFind(q){
 const badgeHTML=(login,col)=>`<span class="dno" style="background:${col}">${esc(login)}</span>`;
 function shortDrv(n){const all=[...new Set(allIds().map(i=>String(S.runs[i].driver||'')))],p=String(n||'').trim().split(/\s+/),f=p[0]||'';const dup=all.some(x=>x!==n&&x.split(/\s+/)[0]===f);return dup&&p.length>1?f+' '+p[p.length-1][0]+'.':f}
 const nameHTML=(name,col)=>`<span class="dno nm" style="background:${col}">${esc(shortDrv(name))}</span>`;
+/* ---------- chute floors: which floor (chute position) each driver number's trolley is on, and what the sort sheet shows ---------- */
+/* starting floors from the chute team's sheets (14 and 15): driver number -> floor. The office can change them under Floors. */
+const FLOOR0={'14':{D13:5,D2:6,D4:7,D5:8,D3:9,D6:10,D7:11,D8:12,D9:13,D1:14,D11:15,D19:19,D10:20,D21:21,D15:22,D17:23,D18:24,D12:25,D20:26},
+ '15':{D42:7,D40:8,D36:9,D41:10,D34:11,D35:13,D39:14,D37:15,D31:19,D24:20,D28:21,D33:22,D23:23,D30:24,D32:25,D25:26,D29:27}};
+const dnum=v=>{const t=String(v||'').toUpperCase().replace(/\s+/g,'');return /^\d+$/.test(t)?'D'+t:t};
+function floorOf(r){if(!r)return{fl:'',ch:''};if(r.floor!=null&&String(r.floor).trim()!=='')return{fl:String(r.floor).trim(),ch:String(r.chute||'').trim()};
+  const k=dnum(r.login);for(const ch of Object.keys(FLOOR0))if(FLOOR0[ch][k]!=null)return{fl:String(FLOOR0[ch][k]),ch};return{fl:'',ch:''}}
+/* a postcode whose drivers are on more than one chute shows the chute with the floor (15·7), so the same floor number is never mixed up */
+function chuteMixed(pc){const c=new Set(allIds().filter(id=>String(S.runs[id].postcode)===pc).map(id=>floorOf(S.runs[id])).filter(f=>f.fl&&f.ch).map(f=>f.ch));return c.size>1}
+function floorLabel(r,mixed){const f=floorOf(r);if(!f.fl)return '';return mixed&&f.ch?f.ch+'·'+f.fl:f.fl}
+const floorHTML=lab=>lab?`<span class="dno fl" title="Floor">${esc(lab)}</span>`:`<span class="dno fl none" title="No floor yet">?</span>`;
+let SHOW=(()=>{try{const v=JSON.parse(localStorage.getItem('sort_show')||'null');if(v&&typeof v==='object')return{nm:v.nm!==false,dn:!!v.dn,fl:!!v.fl}}catch(e){}return{nm:true,dn:false,fl:false}})();
+const saveShow=()=>{try{localStorage.setItem('sort_show',JSON.stringify(SHOW))}catch(e){}};
+const chuteOnly=()=>SHOW.fl&&!SHOW.nm&&!SHOW.dn;
+function partBadges(p,mixed){const R=S.runs[p.id]||{};return (SHOW.nm?nameHTML(p.driver,p.col):'')+(SHOW.dn&&p.login?badgeHTML(dnum(p.login),p.col):'')+(SHOW.fl?floorHTML(floorLabel(R,mixed)):'')}
+/* split street where every part is on the same floor: one line on the chute sheet */
+function sameFloor(g,mixed){const L=new Set(g.parts.map(p=>floorLabel(S.runs[p.id],mixed)));return L.size===1?[...L][0]:null}
+function showBarHTML(){const T=[['nm','Name'],['dn','Driver no.'],['fl','Floor']];
+  return `<div class="lk-show" role="group" aria-label="Show">${T.map(([k,l])=>`<button type="button" data-act="showT" data-v="${k}" aria-pressed="${!!SHOW[k]}">${l}</button>`).join('')}${canWrite&&SHOW.fl?`<button type="button" class="lk-fled" data-act="flOpen" aria-label="Edit floors" title="Edit floors"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></button>`:''}</div>`}
+function flOpen(){const L=ids().map(id=>{const r=S.runs[id],f=floorOf(r);return{id,fl:f.fl,ch:f.ch}});S.fl={pc:S.pc,L,err:''};renderFl()}
+function renderFl(){const box=document.getElementById('lkEd');if(!box)return;const F=S.fl;if(!F){box.innerHTML='';document.body.classList.remove('ed-on');return}
+  document.body.classList.add('ed-on');
+  box.innerHTML=`<div class="edbg" data-act="flClose"></div><div class="edm" role="dialog" aria-modal="true" aria-labelledby="flT">
+    <div class="edh"><h2 id="flT">Floors</h2><span class="lk-pc">${esc(F.pc)}</span><button type="button" class="btn ghost sm" data-act="flClose" aria-label="Close">✕</button></div>
+    <div class="fl-list">${F.L.map((x,i)=>{const r=S.runs[x.id];return `<div class="fl-row"><span class="fl-who"><b>${esc(dnum(r.login))}</b><small>${esc(r.driver||'')}</small></span>
+      <label class="f" for="flC${i}">Chute<input type="text" id="flC${i}" data-fl="ch" data-i="${i}" value="${esc(x.ch)}" inputmode="numeric" maxlength="4"></label>
+      <label class="f" for="flF${i}">Floor<input type="text" id="flF${i}" data-fl="fl" data-i="${i}" value="${esc(x.fl)}" inputmode="numeric" maxlength="4"></label></div>`}).join('')}</div>
+    ${F.err?`<p class="ederr" role="alert">${esc(F.err)}</p>`:''}
+    <div class="edf"><button type="button" class="btn primary" data-act="flSave">Save floors</button><button type="button" class="btn" data-act="flClose">Cancel</button></div></div>`}
+function flSave(){const F=S.fl;if(!F)return;let n=0;
+  for(const x of F.L){const r=S.runs[x.id];if(!r)continue;const fl=String(x.fl||'').trim(),ch=String(x.ch||'').trim();const cur=floorOf(r);
+    if(fl===cur.fl&&ch===cur.ch&&(r.floor!=null||!fl))continue;r.floor=fl;r.chute=ch;markDirty(x.id);n++}
+  S.fl=null;renderFl();renderResults();toast(n?'Floors saved.':'No changes.')}
+document.addEventListener('input',e=>{const el=e.target;if(!S.fl||!el.dataset||!el.dataset.fl)return;const x=S.fl.L[+el.dataset.i];if(x)x[el.dataset.fl]=el.value});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.fl){S.fl=null;renderFl()}});
 function stName(g){return canWrite?`<button type="button" class="stb" data-act="edSt" data-pc="${esc(g.pc)}" data-v="${esc(g.name)}" title="Edit ${esc(g.name)}"><b>${esc(g.name)}</b><span class="pen" aria-hidden="true">✎</span></button>`:`<b>${esc(g.name)}</b>`}
 function parseSplit(v){
   v=String(v||'').trim();const o={odds:'',evens:'',other:''};if(!v||/^all$/i.test(v))return o;
@@ -2783,6 +2822,7 @@ function lookupHTML(){
       ${(downloads=window.__UVDL||downloads||window.__DLSHIM)?`<button type="button" class="btn primary" data-act="printSort">Download ${esc(S.pc)} printout</button>`:''}
       ${window.APP&&APP.isEditor?`<button type="button" class="btn" data-act="shareRuns" title="Drivers see the sort and run sheets as they are now">Send latest to drivers</button>`:''}
     </div>
+    <div id="lkShow">${showBarHTML()}</div>
     <div class="lk-count" id="lkCount" aria-live="polite"></div>
     <div id="lkRes"></div>
     <div id="lkEd"></div>
@@ -2792,14 +2832,14 @@ function renderResults(){
   const box=document.getElementById('lkRes'); if(!box) return;
   const t=normName(S.q), idx=streetIndex(), cnt=document.getElementById('lkCount');
   if(!t){
-    const rows=idx.filter(g=>g.pc===S.pc);
-    cnt.textContent='';
+    const rows=idx.filter(g=>g.pc===S.pc),mixed=SHOW.fl&&chuteMixed(S.pc);
+    cnt.textContent='';{const sb=document.getElementById('lkShow');if(sb)sb.innerHTML=showBarHTML()}
     let last='',h='';
     for(const g of rows){
       const L=g.n[0]||'#'; if(L!==last){h+=(last?'</section>':'')+`<section class="lt"><h3>${esc(L)}</h3>`;last=L}
-      const one=g.parts.length===1&&!g.parts[0].rg;
-      if(one){const p=g.parts[0];h+=`<div class="row">${stName(g)}${nameHTML(p.driver,p.col)}</div>`}
-      else h+=`<div class="grp"><div class="row">${stName(g)}<span class="split">Split</span></div>${g.parts.map(p=>`<div class="sub"><span>${esc(p.rg||'Rest of street')}</span>${nameHTML(p.driver,p.col)}</div>`).join('')}</div>`;
+      const one=(g.parts.length===1&&!g.parts[0].rg)||(chuteOnly()&&sameFloor(g,mixed)!==null);
+      if(one){const p=g.parts[0];h+=`<div class="row">${stName(g)}<span class="ssb">${partBadges(p,mixed)}</span></div>`}
+      else h+=`<div class="grp"><div class="row">${stName(g)}<span class="split">Split</span></div>${g.parts.map(p=>`<div class="sub"><span>${esc(p.rg||'Rest of street')}</span><span class="ssb">${partBadges(p,mixed)}</span></div>`).join('')}</div>`;
     }
     box.innerHTML=rows.length?`<div class="az">${h}${last?'</section>':''}</div>`:`<div class="state"><h2>No streets for ${esc(S.pc)} yet</h2><p class="hint">Streets appear here once the drivers for this postcode are loaded.</p></div>`;
     return;
@@ -2821,24 +2861,25 @@ function renderResults(){
     :drv.length?'':`<div class="state"><h2>No street or driver matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Check the spelling, or try the first few letters.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`);
 }
 function sortPrintDoc(pc){
-  const rows=streetIndex().filter(g=>g.pc===pc), col=colourMap();
+  const rows=streetIndex().filter(g=>g.pc===pc), col=colourMap(), mixed=SHOW.fl&&chuteMixed(pc), CH=chuteOnly();
+  const pb=p=>{const R=S.runs[p.id]||{};return (SHOW.nm?b(shortDrv(p.driver),p.col):'')+(SHOW.dn&&p.login?b(dnum(p.login),p.col):'')+(SHOW.fl?`<span class="b fl">${esc(floorLabel(R,mixed)||'?')}</span>`:'')};
   const list=ids(), groups=[];
   for(const id of list){const r=S.runs[id];let g=groups.find(x=>x.driver===r.driver);if(!g){g={driver:r.driver,ids:[]};groups.push(g)}g.ids.push(id)}
   const b=(l,c)=>`<span class="b" style="background:${c}">${esc(l)}</span>`;
   const blocks=[];
   for(const g of rows){
     const L=g.n[0]||'#';let k=blocks[blocks.length-1];if(!k||k.L!==L){k={L,h:`<h3>${esc(L)}</h3>`,w:2.2};blocks.push(k)}
-    if(g.parts.length===1&&!g.parts[0].rg){k.h+=`<div class="r"><b>${esc(g.name)}</b>${b(shortDrv(g.parts[0].driver),g.parts[0].col)}</div>`;k.w+=1}
-    else{k.h+=`<div class="g"><div class="r"><b>${esc(g.name)}</b> <i>split</i></div>${g.parts.map(p=>`<div class="s"><span>${esc(p.rg||'Rest of street')}</span>${b(shortDrv(p.driver),p.col)}</div>`).join('')}</div>`;k.w+=1+g.parts.length}
+    if((g.parts.length===1&&!g.parts[0].rg)||(CH&&sameFloor(g,mixed)!==null)){k.h+=`<div class="r"><b>${esc(g.name)}</b><span class="bs">${pb(g.parts[0])}</span></div>`;k.w+=1}
+    else{k.h+=`<div class="g"><div class="r"><b>${esc(g.name)}</b> <i>split</i></div>${g.parts.map(p=>`<div class="s"><span>${esc(p.rg||'Rest of street')}</span><span class="bs">${pb(p)}</span></div>`).join('')}</div>`;k.w+=1+g.parts.length}
   }
   const tot=blocks.reduce((a,k)=>a+k.w,0);let acc=0,cut=blocks.length;
   for(let x=0;x<blocks.length;x++){if(acc+blocks[x].w/2>=tot/2){cut=Math.max(1,x);break}acc+=blocks[x].w}
   const halves=[blocks.slice(0,cut),blocks.slice(cut)].filter(a=>a.length);
   const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
-  const key=`<div class="key">${groups.map(g=>`<span class="k">${b(g.driver,col[g.ids[0]])}</span>`).join('')}</div>`;
-  const pages=halves.map((hb,pi)=>`<section class="pg"><header><h1>${pc}</h1><p><b>MISSORT SHEET</b><br>Contract 1161 · Printed ${today}</p><div class="pn"><b>${esc(hb[0].L)} to ${esc(hb[hb.length-1].L)}</b><br>Page ${pi+1} of ${halves.length}</div></header>
-${key}<div class="cols">${hb.map(k=>`<div class="lt">${k.h}</div>`).join('')}</div><footer>House numbers as listed on the run sheets. Reprint after moving streets between drivers.</footer></section>`).join('');
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${pc} Missort Sheet</title><style>@page{size:A4;margin:9mm}*{box-sizing:border-box}body{margin:0 auto;width:192mm;font-family:"Arial Narrow",Arial,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pg{break-after:page;page-break-after:always;overflow:hidden}.pg:last-child{break-after:auto;page-break-after:auto}header{display:flex;align-items:center;gap:14px;background:#14201D;color:#fff;padding:8px 12px;border-radius:4px}header h1{margin:0;font-size:28px}header p{margin:0;font-size:12px}header .pn{margin-left:auto;text-align:right;font-size:12px}header .pn b{font-size:16px;color:#F2B705}.key{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 2px;border-bottom:1.5px solid #14201D;margin-bottom:6px;font-size:11px;font-weight:700}.key span.k{display:flex;align-items:center;gap:3px}.cols{columns:4;column-gap:12px;font-size:10.5px}h3{margin:.35em 0 .1em;font-size:1.2em;border-bottom:1px solid #999;break-after:avoid}.r,.s{display:flex;align-items:center;gap:.45em;padding:.05em 0;line-height:1.2;break-inside:avoid}.g{break-inside:avoid}.s{padding-left:1em;color:#333;font-size:.95em}.r>.b,.s>.b{margin-left:auto;flex:none}.lt{border:1.6pt solid #111;border-radius:4px;margin:0 0 .7em;-webkit-box-decoration-break:clone;box-decoration-break:clone}.lt>h3{margin:0 0 .15em;padding:.1em .5em;background:#14201D;color:#fff;border:0}.lt>.r,.lt>.g{border-bottom:.6pt solid #b8b8b8;padding:0 .4em .15em}.lt>.r:last-child,.lt>.g:last-child{border-bottom:0}.lt>.g>.r{border:0;padding:0}.lt>.g>.s{padding-left:1em}.r>b,.s>span{min-width:0}.b{display:inline-block;min-width:5em;white-space:nowrap;text-align:center;color:#fff;font-weight:700;font-size:.9em;padding:1px 3px;border-radius:3px}i{font-style:normal;font-size:.8em;color:#666;text-transform:uppercase}footer{margin-top:6px;font-size:9px;color:#555}</style></head><body>${pages}<script>(function(){var H=1040,ps=[].slice.call(document.querySelectorAll('.pg')),cs=[].slice.call(document.querySelectorAll('.cols'));
+  const key=SHOW.nm||SHOW.dn?`<div class="key">${groups.map(g=>`<span class="k">${b(g.driver,col[g.ids[0]])}${SHOW.dn?' '+esc(g.ids.map(i=>dnum(S.runs[i].login)).filter(Boolean).join(', ')):''}</span>`).join('')}</div>`:'<div class="key"></div>';
+  const pages=halves.map((hb,pi)=>`<section class="pg"><header><h1>${pc}</h1><p><b>${CH?'CHUTE SHEET':'MISSORT SHEET'}</b><br>Contract 1161 · Printed ${today}</p><div class="pn"><b>${esc(hb[0].L)} to ${esc(hb[hb.length-1].L)}</b><br>Page ${pi+1} of ${halves.length}</div></header>
+${key}<div class="cols">${hb.map(k=>`<div class="lt">${k.h}</div>`).join('')}</div><footer>${CH?'Street and floor. Reprint after moving streets or floors.':'House numbers as listed on the run sheets. Reprint after moving streets between drivers.'}</footer></section>`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${pc} ${CH?'Chute':'Missort'} Sheet</title><style>@page{size:A4;margin:9mm}*{box-sizing:border-box}body{margin:0 auto;width:192mm;font-family:"Arial Narrow",Arial,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pg{break-after:page;page-break-after:always;overflow:hidden}.pg:last-child{break-after:auto;page-break-after:auto}header{display:flex;align-items:center;gap:14px;background:#14201D;color:#fff;padding:8px 12px;border-radius:4px}header h1{margin:0;font-size:28px}header p{margin:0;font-size:12px}header .pn{margin-left:auto;text-align:right;font-size:12px}header .pn b{font-size:16px;color:#F2B705}.bs{margin-left:auto;display:flex;gap:3px;flex:none}.b.fl{background:#fff!important;color:#111!important;border:1.4pt solid #111;min-width:2.1em;text-align:center;font-weight:800}.key{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 2px;border-bottom:1.5px solid #14201D;margin-bottom:6px;font-size:11px;font-weight:700}.key span.k{display:flex;align-items:center;gap:3px}.cols{columns:4;column-gap:12px;font-size:10.5px}h3{margin:.35em 0 .1em;font-size:1.2em;border-bottom:1px solid #999;break-after:avoid}.r,.s{display:flex;align-items:center;gap:.45em;padding:.05em 0;line-height:1.2;break-inside:avoid}.g{break-inside:avoid}.s{padding-left:1em;color:#333;font-size:.95em}.r>.b,.s>.b{margin-left:auto;flex:none}.lt{border:1.6pt solid #111;border-radius:4px;margin:0 0 .7em;-webkit-box-decoration-break:clone;box-decoration-break:clone}.lt>h3{margin:0 0 .15em;padding:.1em .5em;background:#14201D;color:#fff;border:0}.lt>.r,.lt>.g{border-bottom:.6pt solid #b8b8b8;padding:0 .4em .15em}.lt>.r:last-child,.lt>.g:last-child{border-bottom:0}.lt>.g>.r{border:0;padding:0}.lt>.g>.s{padding-left:1em}.r>b,.s>span{min-width:0}.b{display:inline-block;min-width:5em;white-space:nowrap;text-align:center;color:#fff;font-weight:700;font-size:.9em;padding:1px 3px;border-radius:3px}i{font-style:normal;font-size:.8em;color:#666;text-transform:uppercase}footer{margin-top:6px;font-size:9px;color:#555}</style></head><body>${pages}<script>(function(){var H=1040,ps=[].slice.call(document.querySelectorAll('.pg')),cs=[].slice.call(document.querySelectorAll('.cols'));
 function set(n,f){cs.forEach(function(c){c.style.columnCount=n;c.style.fontSize=f+'px'})}function fits(){return ps.every(function(p){return p.scrollHeight<=H})}
 var ok=false;for(var n=4;n<=5&&!ok;n++){for(var f=12;f>=7;f-=.25){set(n,f);if(fits()){ok=true;break}}}
 if(!ok){set(5,7);ps.forEach(function(p){var z=H/p.scrollHeight;if(z<1){p.style.zoom=z;p.style.width=(192/z)+'mm'}})}})()<\/script></body></html>`;
@@ -10989,7 +11030,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611111443';
+const VERSION='1202611121632';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12916,6 +12957,22 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
 }</style>
+<style id="sort-show">
+/* Sort sheets: choose what shows beside each street (name, driver number, floor) and the floor editor */
+#mod-runs .lk-show{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 4px}
+#mod-runs .lk-show>button[data-act=showT]{flex:1 1 0;min-width:0;height:38px;border-radius:10px;border:1px solid var(--sh-line,#D6DCE4);background:var(--sh-surface,#fff);color:var(--sh-ink,#14201D);font:700 .95rem var(--sh-body,system-ui);cursor:pointer}
+#mod-runs .lk-show>button[data-act=showT][aria-pressed=true]{background:#14284A;border-color:#14284A;color:#fff}
+#mod-runs .lk-show .lk-fled{flex:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--sh-line,#D6DCE4);background:var(--sh-surface,#fff);color:var(--sh-ink,#14201D);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+#mod-runs .lk-show .lk-fled svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#mod-runs .az .ssb{margin-left:auto;display:inline-flex;gap:4px;flex:none}#mod-runs .az .ssb .dno.nm{margin-left:0}
+#mod-runs .dno.fl{background:var(--sh-surface,#fff);color:var(--sh-ink,#14201D);border:2px solid var(--sh-ink,#14201D)}
+#mod-runs .dno.fl.none{opacity:.45;border-style:dashed}
+#mod-runs .fl-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto}
+#mod-runs .fl-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 80px;gap:8px;align-items:end}
+#mod-runs .fl-who{display:flex;flex-direction:column;min-width:0;padding-bottom:6px}
+#mod-runs .fl-who small{color:var(--sh-muted,#5A6680);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mod-runs .fl-row input{text-align:center}
+</style>
 <style id="iv-tpl-btn">@layer pdsfirst{
 /* template download buttons stay inside their card (long names like "Download non GST template (hourly)" wrap) */
 #sh-main #mod-invoices .tpl [data-iv=dl]{max-width:100%!important;box-sizing:border-box!important;white-space:normal!important;height:auto!important;min-height:46px!important;text-align:center!important;line-height:1.2!important}
