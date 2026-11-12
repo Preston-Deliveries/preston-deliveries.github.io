@@ -912,7 +912,7 @@ function tagPc(R){(R?under(R,PCSEL):document.querySelectorAll(PCSEL)).forEach(el
 /* Download, print and import buttons always sit together on the far right, with an icon */
 const DLRE=/^(download|print|export|save image|import time|baixar|imprimir|exportar|salvar imagem|ਡਾਊਨਲੋਡ|ਪ੍ਰਿੰਟ|ਤਸਵੀਰ ਸੇਵ|PDF ਡਾਊਨਲੋਡ)/i;
 const DLSEL='#sh-main .sh-sec :is(button,a.sh-btn,a.btn)';
-function tagDl(R){(R?under(R,DLSEL):document.querySelectorAll(DLSEL)).forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^(print|imprimir|ਪ੍ਰਿੰਟ)/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
+function tagDl(R){(R?under(R,DLSEL):document.querySelectorAll(DLSEL)).forEach(el=>{const t=el.textContent.trim();if(!DLRE.test(t)||el.closest('.ckwa,.sh-wa,dialog,.dlg,.az,.lk-res,.lk2,#lkEd')||el.matches('.stb,.lk2-p,.lk2-ed,[data-act=edSt],[data-act=openRun]'))return;if(!el.classList.contains('dlb')){el.classList.add('dlb',/^(print|imprimir|ਪ੍ਰਿੰਟ)/i.test(t)?'dl-print':/^import/i.test(t)?'dl-in':'dl-down')}});
   const parents=new Set((R?under(R,'#sh-main .sh-sec .dlb').concat(R.filter(r=>r.isConnected&&r.parentNode&&r.parentNode.querySelector&&r.parentNode.querySelector(':scope>.dlb')).map(r=>r.parentNode.querySelector(':scope>.dlb'))):[...document.querySelectorAll('#sh-main .sh-sec .dlb')]).map(b=>b.parentNode));
   parents.forEach(p=>{const kids=[...p.children];const dl=kids.filter(k=>k.classList.contains('dlb'));if(!dl.length)return;const firstDl=kids.indexOf(dl[0]);const tail=kids.slice(firstDl);dl.sort((a,b)=>b.classList.contains('dl-in')-a.classList.contains('dl-in'));const want=kids.filter(k=>!k.classList.contains('dlb')).concat(dl);if(!p.matches('td,li,tr')&&want.some((k,i)=>kids[i]!==k))dl.forEach(b=>p.appendChild(b));dl.forEach((b,i)=>{if(b.classList.contains('dlb1')!==(i===0))b.classList.toggle('dlb1',i===0)});if(!p.classList.contains('has-dl'))p.classList.add('has-dl')})}
 /* switch counts: one round badge everywhere, hidden when the count is 0 */
@@ -2732,7 +2732,12 @@ function floorOf(r){if(!r)return{fl:'',ch:''};if(r.floor!=null&&String(r.floor).
 /* a postcode whose drivers are on more than one chute shows the chute with the floor (15·7), so the same floor number is never mixed up */
 function chuteMixed(pc){const c=new Set(allIds().filter(id=>String(S.runs[id].postcode)===pc).map(id=>floorOf(S.runs[id])).filter(f=>f.fl&&f.ch).map(f=>f.ch));return c.size>1}
 function floorLabel(r,mixed){const f=floorOf(r);if(!f.fl)return '';return mixed&&f.ch?f.ch+'·'+f.fl:f.fl}
-const floorHTML=lab=>lab?`<span class="dno fl" title="Floor">${esc(lab)}</span>`:`<span class="dno fl none" title="No floor yet">?</span>`;
+const FLPAL=['#1F5FA8','#C2410C','#15803D','#7C3AED','#B91C1C','#0E7490','#A16207','#BE185D','#4D7C0F','#334155','#9333EA','#0F766E'];
+/* every floor in a postcode gets its own strong colour (lowest floor first), so the eye finds the number fast and like floors look alike down the page */
+function floorCols(pc,mixed){const L=[...new Set(allIds().filter(id=>String(S.runs[id].postcode)===pc).map(id=>floorLabel(S.runs[id],mixed)).filter(Boolean))];
+  const n=x=>{const m=String(x).match(/(\d+)\D*(\d+)?$/);return m?(m[2]?+m[1]*1000+ +m[2]:+m[1]):1e9};L.sort((a,b)=>n(a)-n(b)||String(a).localeCompare(String(b)));const m={};L.forEach((x,i)=>m[x]=FLPAL[i%FLPAL.length]);return m}
+let FLC={};
+const floorHTML=lab=>lab?`<span class="dno fl" title="Floor" style="background:${FLC[lab]||'#334155'}">${esc(lab)}</span>`:`<span class="dno fl none" title="No floor yet">?</span>`;
 let SHOW=(()=>{try{const v=JSON.parse(localStorage.getItem('sort_show')||'null');if(v&&typeof v==='object')return{nm:v.nm!==false,dn:!!v.dn,fl:!!v.fl}}catch(e){}return{nm:true,dn:false,fl:false}})();
 const saveShow=()=>{try{localStorage.setItem('sort_show',JSON.stringify(SHOW))}catch(e){}};
 const chuteOnly=()=>SHOW.fl&&!SHOW.nm&&!SHOW.dn;
@@ -2832,7 +2837,7 @@ function renderResults(){
   const box=document.getElementById('lkRes'); if(!box) return;
   const t=normName(S.q), idx=streetIndex(), cnt=document.getElementById('lkCount');
   if(!t){
-    const rows=idx.filter(g=>g.pc===S.pc),mixed=SHOW.fl&&chuteMixed(S.pc);
+    const rows=idx.filter(g=>g.pc===S.pc),mixed=SHOW.fl&&chuteMixed(S.pc);FLC=floorCols(S.pc,mixed);
     cnt.textContent='';{const sb=document.getElementById('lkShow');if(sb)sb.innerHTML=showBarHTML()}
     let last='',h='';
     for(const g of rows){
@@ -2861,8 +2866,8 @@ function renderResults(){
     :drv.length?'':`<div class="state"><h2>No street or driver matches</h2><p class="hint">${S.allPc?'Check the spelling, or try the first few letters.':`Check the spelling, or try the first few letters.`}</p><button type="button" class="btn" data-act="clearQ">Clear search</button></div>`);
 }
 function sortPrintDoc(pc){
-  const rows=streetIndex().filter(g=>g.pc===pc), col=colourMap(), mixed=SHOW.fl&&chuteMixed(pc), CH=chuteOnly();
-  const pb=p=>{const R=S.runs[p.id]||{};return (SHOW.nm?b(shortDrv(p.driver),p.col):'')+(SHOW.dn&&p.login?b(dnum(p.login),p.col):'')+(SHOW.fl?`<span class="b fl">${esc(floorLabel(R,mixed)||'?')}</span>`:'')};
+  const rows=streetIndex().filter(g=>g.pc===pc), col=colourMap(), mixed=SHOW.fl&&chuteMixed(pc), CH=chuteOnly(), FC=floorCols(pc,mixed);
+  const pb=p=>{const R=S.runs[p.id]||{};return (SHOW.nm?b(shortDrv(p.driver),p.col):'')+(SHOW.dn&&p.login?b(dnum(p.login),p.col):'')+(SHOW.fl?(()=>{const l=floorLabel(R,mixed);return l?`<span class="b fl" style="background:${FC[l]}">${esc(l)}</span>`:'<span class="b fl none">?</span>'})():'')};
   const list=ids(), groups=[];
   for(const id of list){const r=S.runs[id];let g=groups.find(x=>x.driver===r.driver);if(!g){g={driver:r.driver,ids:[]};groups.push(g)}g.ids.push(id)}
   const b=(l,c)=>`<span class="b" style="background:${c}">${esc(l)}</span>`;
@@ -2876,10 +2881,10 @@ function sortPrintDoc(pc){
   for(let x=0;x<blocks.length;x++){if(acc+blocks[x].w/2>=tot/2){cut=Math.max(1,x);break}acc+=blocks[x].w}
   const halves=[blocks.slice(0,cut),blocks.slice(cut)].filter(a=>a.length);
   const today=new Date().toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'});
-  const key=SHOW.nm||SHOW.dn?`<div class="key">${groups.map(g=>`<span class="k">${b(g.driver,col[g.ids[0]])}${SHOW.dn?' '+esc(g.ids.map(i=>dnum(S.runs[i].login)).filter(Boolean).join(', ')):''}</span>`).join('')}</div>`:'<div class="key"></div>';
-  const pages=halves.map((hb,pi)=>`<section class="pg"><header><h1>${pc}</h1><p><b>${CH?'CHUTE SHEET':'MISSORT SHEET'}</b><br>Contract 1161 · Printed ${today}</p><div class="pn"><b>${esc(hb[0].L)} to ${esc(hb[hb.length-1].L)}</b><br>Page ${pi+1} of ${halves.length}</div></header>
+  const key=SHOW.nm||SHOW.dn?`<div class="key">${groups.map(g=>`<span class="k">${b(g.driver,col[g.ids[0]])}${SHOW.dn?' '+esc(g.ids.map(i=>dnum(S.runs[i].login)).filter(Boolean).join(', ')):''}</span>`).join('')}</div>`:`<div class="key fk"><span class="kl">FLOORS</span>${Object.entries(FC).map(([l,c])=>`<span class="b fl" style="background:${c}">${esc(l)}</span>`).join('')}</div>`;
+  const pages=halves.map((hb,pi)=>`<section class="pg${CH?' chute':''}"><header><h1>${pc}</h1><p><b>${CH?'CHUTE SHEET':'MISSORT SHEET'}</b><br>Contract 1161 · Printed ${today}</p><div class="pn"><b>${esc(hb[0].L)} to ${esc(hb[hb.length-1].L)}</b><br>Page ${pi+1} of ${halves.length}</div></header>
 ${key}<div class="cols">${hb.map(k=>`<div class="lt">${k.h}</div>`).join('')}</div><footer>${CH?'Street and floor. Reprint after moving streets or floors.':'House numbers as listed on the run sheets. Reprint after moving streets between drivers.'}</footer></section>`).join('');
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${pc} ${CH?'Chute':'Missort'} Sheet</title><style>@page{size:A4;margin:9mm}*{box-sizing:border-box}body{margin:0 auto;width:192mm;font-family:"Arial Narrow",Arial,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pg{break-after:page;page-break-after:always;overflow:hidden}.pg:last-child{break-after:auto;page-break-after:auto}header{display:flex;align-items:center;gap:14px;background:#14201D;color:#fff;padding:8px 12px;border-radius:4px}header h1{margin:0;font-size:28px}header p{margin:0;font-size:12px}header .pn{margin-left:auto;text-align:right;font-size:12px}header .pn b{font-size:16px;color:#F2B705}.bs{margin-left:auto;display:flex;gap:3px;flex:none}.b.fl{background:#fff!important;color:#111!important;border:1.4pt solid #111;min-width:2.1em;text-align:center;font-weight:800}.key{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 2px;border-bottom:1.5px solid #14201D;margin-bottom:6px;font-size:11px;font-weight:700}.key span.k{display:flex;align-items:center;gap:3px}.cols{columns:4;column-gap:12px;font-size:10.5px}h3{margin:.35em 0 .1em;font-size:1.2em;border-bottom:1px solid #999;break-after:avoid}.r,.s{display:flex;align-items:center;gap:.45em;padding:.05em 0;line-height:1.2;break-inside:avoid}.g{break-inside:avoid}.s{padding-left:1em;color:#333;font-size:.95em}.r>.b,.s>.b{margin-left:auto;flex:none}.lt{border:1.6pt solid #111;border-radius:4px;margin:0 0 .7em;-webkit-box-decoration-break:clone;box-decoration-break:clone}.lt>h3{margin:0 0 .15em;padding:.1em .5em;background:#14201D;color:#fff;border:0}.lt>.r,.lt>.g{border-bottom:.6pt solid #b8b8b8;padding:0 .4em .15em}.lt>.r:last-child,.lt>.g:last-child{border-bottom:0}.lt>.g>.r{border:0;padding:0}.lt>.g>.s{padding-left:1em}.r>b,.s>span{min-width:0}.b{display:inline-block;min-width:5em;white-space:nowrap;text-align:center;color:#fff;font-weight:700;font-size:.9em;padding:1px 3px;border-radius:3px}i{font-style:normal;font-size:.8em;color:#666;text-transform:uppercase}footer{margin-top:6px;font-size:9px;color:#555}</style></head><body>${pages}<script>(function(){var H=1040,ps=[].slice.call(document.querySelectorAll('.pg')),cs=[].slice.call(document.querySelectorAll('.cols'));
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${pc} ${CH?'Chute':'Missort'} Sheet</title><style>@page{size:A4;margin:9mm}*{box-sizing:border-box}body{margin:0 auto;width:192mm;font-family:"Arial Narrow",Arial,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pg{break-after:page;page-break-after:always;overflow:hidden}.pg:last-child{break-after:auto;page-break-after:auto}header{display:flex;align-items:center;gap:14px;background:#14201D;color:#fff;padding:8px 12px;border-radius:4px}header h1{margin:0;font-size:28px}header p{margin:0;font-size:12px}header .pn{margin-left:auto;text-align:right;font-size:12px}header .pn b{font-size:16px;color:#F2B705}.bs{margin-left:auto;display:flex;gap:3px;flex:none}.b.fl{color:#fff!important;min-width:2.3em;text-align:center;font-weight:800;font-size:1.12em}.b.fl.none{background:#fff!important;color:#111!important;border:1.2pt dashed #111}.key.fk{align-items:center;gap:4px}.key.fk .kl{margin-right:6px}.chute .lt>.r:nth-of-type(even),.chute .lt>.g:nth-of-type(even){background:#EEF1F5}.chute .r>b{font-size:1.08em}.chute .lt>h3{font-size:1.45em}.key{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 2px;border-bottom:1.5px solid #14201D;margin-bottom:6px;font-size:11px;font-weight:700}.key span.k{display:flex;align-items:center;gap:3px}.cols{columns:4;column-gap:12px;font-size:10.5px}h3{margin:.35em 0 .1em;font-size:1.2em;border-bottom:1px solid #999;break-after:avoid}.r,.s{display:flex;align-items:center;gap:.45em;padding:.05em 0;line-height:1.2;break-inside:avoid}.g{break-inside:avoid}.s{padding-left:1em;color:#333;font-size:.95em}.r>.b,.s>.b{margin-left:auto;flex:none}.lt{border:1.6pt solid #111;border-radius:4px;margin:0 0 .7em;-webkit-box-decoration-break:clone;box-decoration-break:clone}.lt>h3{margin:0 0 .15em;padding:.1em .5em;background:#14201D;color:#fff;border:0}.lt>.r,.lt>.g{border-bottom:.6pt solid #b8b8b8;padding:0 .4em .15em}.lt>.r:last-child,.lt>.g:last-child{border-bottom:0}.lt>.g>.r{border:0;padding:0}.lt>.g>.s{padding-left:1em}.r>b,.s>span{min-width:0}.b{display:inline-block;min-width:5em;white-space:nowrap;text-align:center;color:#fff;font-weight:700;font-size:.9em;padding:1px 3px;border-radius:3px}i{font-style:normal;font-size:.8em;color:#666;text-transform:uppercase}footer{margin-top:6px;font-size:9px;color:#555}</style></head><body>${pages}<script>(function(){var H=1040,ps=[].slice.call(document.querySelectorAll('.pg')),cs=[].slice.call(document.querySelectorAll('.cols'));
 function set(n,f){cs.forEach(function(c){c.style.columnCount=n;c.style.fontSize=f+'px'})}function fits(){return ps.every(function(p){return p.scrollHeight<=H})}
 var ok=false;for(var n=4;n<=5&&!ok;n++){for(var f=12;f>=7;f-=.25){set(n,f);if(fits()){ok=true;break}}}
 if(!ok){set(5,7);ps.forEach(function(p){var z=H/p.scrollHeight;if(z<1){p.style.zoom=z;p.style.width=(192/z)+'mm'}})}})()<\/script></body></html>`;
@@ -11030,7 +11035,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611121632';
+const VERSION='1202611121641';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12965,8 +12970,8 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 #mod-runs .lk-show .lk-fled{flex:none;width:38px;height:38px;border-radius:10px;border:1px solid var(--sh-line,#D6DCE4);background:var(--sh-surface,#fff);color:var(--sh-ink,#14201D);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 #mod-runs .lk-show .lk-fled svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 #mod-runs .az .ssb{margin-left:auto;display:inline-flex;gap:4px;flex:none}#mod-runs .az .ssb .dno.nm{margin-left:0}
-#mod-runs .dno.fl{background:var(--sh-surface,#fff);color:var(--sh-ink,#14201D);border:2px solid var(--sh-ink,#14201D)}
-#mod-runs .dno.fl.none{opacity:.45;border-style:dashed}
+#mod-runs .dno.fl{color:#fff;font-weight:800;min-width:40px}
+#mod-runs .dno.fl.none{background:transparent;color:var(--sh-ink,#14201D);border:2px dashed var(--sh-muted,#5A6680);opacity:.6}
 #mod-runs .fl-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto}
 #mod-runs .fl-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 80px;gap:8px;align-items:end}
 #mod-runs .fl-who{display:flex;flex-direction:column;min-width:0;padding-bottom:6px}
