@@ -6548,9 +6548,9 @@ function drvReqHTML(){const mine=reqList();let form='';
     <div class="foot"><button type="button" class="sh-btn primary" data-lv="rqsend" ${ok&&(!lg||rq.ack)&&!rqBusy?'':'disabled'}>${rqBusy?'Sending…':'Send request'}</button><button type="button" class="sh-btn" data-lv="rqcancel">Cancel</button></div>
     ${ok&&lg&&!rq.ack?'<p class="sub">Tick the box above to send the request.</p>':''}</section>`}
   return `${form}
-   ${mine.length?`<section class="card rq-mine"><h2>My requests</h2>${mine.map(r=>`<div class="rq-row"><div><b>${esc(niceShort(r.from))}${r.to!==r.from?' to '+esc(niceShort(r.to)):''}</b><small>${(r.days||[]).length} working day${(r.days||[]).length===1?'':'s'}${r.long?' · own cover: '+esc(r.cover||'not given'):''}</small>${r.reply?`<small class="rp">Manager: ${esc(r.reply)}</small>`:''}</div><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.status==='pending'?`<button type="button" class="sh-btn sm ghost" data-lv="rqdel" data-v="${esc(r.id)}">Cancel</button>`:''}</div>`).join('')}</section>`:''}`}
+   ${mine.length?`<section class="card rq-mine"><h2>My requests</h2>${mine.map(r=>`<div class="rq-row"><div><b>${esc(niceShort(r.from))}${r.to!==r.from?' to '+esc(niceShort(r.to)):''}</b><small>${(r.days||weekdaysBetween(r.from,r.to)).length} working day${(r.days||weekdaysBetween(r.from,r.to)).length===1?'':'s'}${r.long?' · own cover: '+esc(r.cover||'not given'):''}</small>${r.reply?`<small class="rp">Manager: ${esc(r.reply)}</small>`:''}</div><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.status==='pending'?`<button type="button" class="sh-btn sm ghost" data-lv="rqdel" data-v="${esc(r.id)}">Cancel</button>`:''}</div>`).join('')}</section>`:''}`}
 function mgrReqHTML(){const L=reqList(),pend=L.filter(r=>r.status==='pending').sort((a,b)=>String(a.from).localeCompare(String(b.from))),done=L.filter(r=>r.status!=='pending').slice(0,10);
-  const row=r=>{const days=r.days||[],cl=clashes(days);return `<article class="card rq-item"><div class="rq-top"><b>${esc(r.name)}</b><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.long?'<span class="rq-lg">Over 3 weeks</span>':''}</div>
+  const row=r=>{const days=r.days||weekdaysBetween(r.from,r.to),cl=clashes(days);return `<article class="card rq-item"><div class="rq-top"><b>${esc(r.name)}</b><span class="rq-st st-${esc(r.status)}">${RQS[r.status]||'Waiting'}</span>${r.long?'<span class="rq-lg">Over 3 weeks</span>':''}</div>
     <p class="rq-sum">${esc(nice(r.from))}${r.to!==r.from?' to '+esc(nice(r.to)):''} · <b>${days.length} working day${days.length===1?'':'s'}</b></p>
     ${r.long?`<p class="rq-sub">Own cover: <b>${esc(r.cover||'Not given')}</b></p>`:''}
     ${r.note?`<p class="rq-sub">“${esc(r.note)}”</p>`:''}
@@ -8264,7 +8264,8 @@ FRI 9/10 DANIEL T 1 at fault
 /* the 1161 Performance Report for 12 to 16 Oct 2026: every enquiry, by login and day, all at fault (Jonathan, 27 Oct 2026) */
 const SEED_REPORT=[['2026-10-12','KAHSAYG',1],['2026-10-13','RAMSAYJ3',1],['2026-10-15','FRESSADII',2],['2026-10-15','KARROL2',1],['2026-10-15','RAMSAYJ3',1],['2026-10-16','WATSONC25',1]];
 let seeded=false;
-async function seedOnce(){if(seeded||mode!=='mgr'||!db||!staff.length)return;seeded=true;
+/* the old enquiry lists were loaded in Oct 2026; switched off so other admins (supervisors) are never asked to match them again and deleted ones never come back */
+async function seedOnce(){return;if(seeded||mode!=='mgr'||!db||!staff.length)return;seeded=true;
   {const now=new Date().toISOString();let n=0;
     for(const[date,login,c]of SEED_REPORT)for(let i=1;i<=c;i++){const id='imp-'+date+'-'+login+'-'+i;if(recs[id])continue;const p=byLogin(login);
       const doc={enqType:'',category:'',customer:'',tracking:'',scanAddr:'',deliveredAt:'',postcode:'',date,caseNo:'',login,driver:p?p.name:login,address:'',details:'Imported from the 1161 Performance Report.',supervisor:'',fault:'yes',note:'',source:'report',createdAt:now,updatedAt:now};
@@ -11050,7 +11051,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611131151';
+const VERSION='1202611140626';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12976,6 +12977,9 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::before,html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button::after{display:none!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
+
+/* a tab row that has been moved up into the page title bar stays hidden in the page */
+html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec .cu-psrc{display:none!important}
 }</style>
 <style id="pm-group">/* Afternoon drivers group colour (indigo), light and dark */
 #sh-main#sh-main .dg-pm,#sh-main#sh-main.dg-pm,#mod-directory .dg-pm,#mod-staff .dg-pm,#mod-vchecks .dg-pm{--d:#4338CA;--ds:#E3E1FB;--p:#4338CA;--ps:#E3E1FB}
