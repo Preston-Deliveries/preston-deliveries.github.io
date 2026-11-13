@@ -7934,7 +7934,7 @@ let eqTab='todo';
 const PCOWN=[['4214','Joshua Drewes'],['4215','Stephen Seaborn'],['4217','Jonathan Simpson'],['4218','Kim Rutten']];
 const myPc=()=>{let me=window.__webMe||{};try{me=me.name?me:(window.parent.__webMe||me)}catch(e){}const n=String(me.name||'').toLowerCase().replace(/\s+/g,' ').trim();const em=String(me.email||'').toLowerCase();
   if(['jozza21@gmail.com','jozza721@gmail.com'].includes(em))return '4217';const hit=PCOWN.find(([,nm])=>n&&(n===nm.toLowerCase()||n.split(' ')[0]===nm.toLowerCase().split(' ')[0]&&n.split(' ').pop()===nm.toLowerCase().split(' ').pop()));return hit?hit[0]:''};
-let eqPc=null,eqF='';const getPc=()=>{if(eqPc==null)eqPc=myPc()||'';return eqPc};
+let eqPc=null,eqF='',eqBusy=false;const getPc=()=>{if(eqPc==null)eqPc=myPc()||'';return eqPc};
 const isDone=r=>{const D=DRV[r.id];return D?!!D.closedAt:!!r.fault};
 const actRank=r=>{const D=DRV[r.id];if(D&&unread(D))return 0;if(!D)return r.fault?3:1;return 2};
 function filtered(){
@@ -8183,18 +8183,29 @@ document.addEventListener('click',async ev=>{
       msg={t:n+' at fault enquir'+(n===1?'y':'ies')+' added. They count in the results for those days.'}}catch(e){msg={err:true,t:'Could not save all of them just now ('+n+' added). Try again.'}}
     render();return}
   if(a==='print'){printList();return}
-  if(a==='save'||a==='savesend'){const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
-    if(!r.login){msg={err:true,t:'Pick the driver.'};render();return}
-    if(!r.fault){msg={err:true,t:'Choose At fault, Partly at fault or Not at fault.'};render();return}
-    const id=r.id||(r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6));const now=new Date().toISOString();
-    const doc={enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
-      events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)};
-    try{await db.doc('enqlog/'+id).set(doc);
+  if(a==='save'||a==='savesend'){if(eqBusy)return;const r=readForm();const andSend=a==='savesend';sendOpt.note=String(($('snote')||{}).value||sendOpt.note||'');
+    const showErr=t=>{msg={err:true,t};render();setTimeout(()=>{const e=document.querySelector('#mod-enquiries .eq-ferr');if(e)e.scrollIntoView({block:'center'})},30)};
+    if(!r.login){showErr('Pick the driver.');return}
+    if(!r.fault){showErr('Choose At fault, Partly at fault or Not at fault.');return}
+    /* a new enquiry keeps the same id if Save is pressed again, so it is never saved twice */
+    if(!r.id&&!r._nid)r._nid=r.date+'-'+(r.caseNo||'x')+'-'+Math.random().toString(36).slice(2,6);
+    const id=r.id||r._nid;const now=new Date().toISOString();
+    /* show it is saving and stop double taps */
+    eqBusy=true;{const b=document.querySelector('#mod-enquiries [data-eq=save]');if(b){b.disabled=true;b.textContent='Saving…'}}
+    const done=()=>{eqBusy=false};
+    const prev=recs[id]?Object.assign({},recs[id]):{};delete prev.id;
+    const doc=Object.assign(prev,{enqType:r.enqType||'',category:r.category||'',customer:r.customer||'',tracking:r.tracking||'',scanAddr:r.scanAddr||'',deliveredAt:r.deliveredAt||'',postcode:pcOf(r),date:r.date,caseNo:r.caseNo,login:r.login,driver:r.driver,address:r.address,details:r.details,supervisor:r.supervisor,fault:r.fault,note:r.note,createdAt:r.createdAt||now,updatedAt:now,
+      events:r.events||[],outside:!!r.outside,geo:r.geo||'',keyEv:r.keyEv||'',pics:r._imgs?r._imgs.length:(r.pics||0)});
+    try{/* no answer in 20 seconds (poor signal): say so, and let them press Save again */
+      await Promise.race([db.doc('enqlog/'+id).set(doc),new Promise((ok,no)=>setTimeout(()=>no({code:'slow'}),20000))]);
       /* pictures from the PDF (maps and scan photo) are kept beside the enquiry and only download when it is opened */
       if(r._imgs){try{const old=await db.collection('enqimg').where('enq','==',id).get();for(const d of old.docs)await db.doc('enqimg/'+d.id).delete()}catch(x){}
         let k=0;for(const im of r._imgs){if(String(im.data).length>900000)continue;try{await db.doc('enqimg/'+id+'_p'+(k++)).set({enq:id,name:im.name,type:'image/jpeg',data:im.data,eat:now})}catch(x){}}delete eImgs[id]}
       if(DRV[id]){const h=handlerOf(doc);if(DRV[id].handlerStaff!==h.handlerStaff||DRV[id].handler!==h.handler){try{await db.doc('drvenq/'+id).update(h);Object.assign(DRV[id],h)}catch(x){}}}
-      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'}}catch(x){msg={err:true,t:'Could not save just now.'};render();return}render();window.scrollTo(0,0);
+      recs[id]=Object.assign({id},doc);open=id;view='one';draft=null;msg={t:'Saved.'};done();
+      /* show the postcode it was saved under, so it is there when you go back to the list */
+      {const pc=pcOf(doc);if(getPc()&&getPc()!==pc)eqPc=pc||''}}
+    catch(x){done();showErr(x&&x.code==='slow'?'Saving is taking too long. Check your signal, then press Save again.':'Could not save just now. Check your signal, then press Save again.');return}render();window.scrollTo(0,0);
     if(andSend&&!DRV[id])await sendDrv(id,'enq',false);return}
   if(a==='del'){if(!arm){arm=true;render();setTimeout(()=>{if(arm){arm=false;render()}},3500);return}
     try{const id0=open;await db.doc('enqlog/'+id0).delete();await dropAll(id0);delete recs[id0];view='list';open=null;arm=false;msg={t:'Enquiry deleted.'}}catch(x){arm=false;msg={err:true,t:'Could not delete just now.'}}render();return}
@@ -11043,7 +11054,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611131137';
+const VERSION='1202611131145';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
