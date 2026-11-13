@@ -1510,7 +1510,7 @@ function tlRows(){const ids=new Set([...Object.keys(TL.clock).filter(id=>TL.cloc
 function tlCount(){return null;if(TL.day!==tlPrevDay()||!TL.ready)return null;return tlRows().filter(r=>r.st==='todo'||r.st==='sus').length}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tl="toggle"]');if(!b)return;TL.open=!TL.open;try{adminLoads()}catch(x){}});
 function adminLoads(){const el=$('ah_tl');if(el&&el.innerHTML)el.innerHTML='';return;if(!TL.day){TL.day=tlPrevDay();tlWatch()}if(!TL.fset){const f=myFocus();if(f){TL.tab=f.pc;TL.fset=true}else if(Object.keys(MC.staff).length)TL.fset=true}
-  const R=tlRows(),ORD=['4214','4215','4217','4218','xl','relief','sup','office','other'],LAB={xl:'XL',relief:'Relief',sup:'Supervisors',office:'Office',other:'Other'},G=[['all','All']].concat([...new Set(R.map(r=>r.grp))].sort((a,b)=>((ORD.indexOf(a)+1)||50)-((ORD.indexOf(b)+1)||50)||a.localeCompare(b)).map(k=>[k,LAB[k]||k.toUpperCase()]));
+  const R=tlRows(),ORD=['4214','4215','4217','4218','pm','xl','relief','sup','office','other'],LAB={pm:'Afternoon',xl:'XL',relief:'Relief',sup:'Supervisors',office:'Office',other:'Other'},G=[['all','All']].concat([...new Set(R.map(r=>r.grp))].sort((a,b)=>((ORD.indexOf(a)+1)||50)-((ORD.indexOf(b)+1)||50)||a.localeCompare(b)).map(k=>[k,LAB[k]||k.toUpperCase()]));
   const tabNow=G.some(([k])=>k===TL.tab)?TL.tab:'all';const show=R.filter(r=>tabNow==='all'||r.grp===tabNow);
   const left=R.filter(r=>r.st==='todo').length,sus=R.filter(r=>r.st==='sus').length;
   const pill={todo:'',ok:'<span class="tl-p ok">✓ 2 loads confirmed</span>',no:'<span class="tl-p no">Changed to 1 load</span>',sus:'<span class="tl-p sus">⚠ Driver changed it back to 2 loads</span>',drop:'<span class="tl-p no">Driver changed it to 1 load</span>'};
@@ -4560,8 +4560,8 @@ if(window.APP)APP.stat("guide",T.length+" topics in "+CAT_ORDER.length+" groups"
 (()=>{
 const $=id=>document.getElementById('dm_'+id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const ROLES=['4214','4215','4217','4218','RELIEF','XL','XL RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
-const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['relief','Relief'],['xl','XL'],['office','Office']];
+const ROLES=['4214','4215','4217','4218','AFTERNOON','RELIEF','XL','XL RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
+const FILTERS=[['all','All'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['pm','Afternoon'],['relief','Relief'],['xl','XL'],['office','Office']];
 const OFFICE=['SUPERVISOR','MANAGER','ADMIN','PRINCIPLE'];
 const FIELDS=[['first','First name'],['last','Last name'],['role','Role'],['runs','Driver numbers','e.g. D17, or D2, D4'],['bay','Parking bay','where the van parks'],['focusPc','Looks after postcode','supervisors only, e.g. 4214'],['login','Login'],['pw','Password'],
   ['mobile','Mobile'],['email','Email'],['van','Van year, make and model'],['rego','Rego'],['regoDue','Rego due'],['licNo','Licence number'],['licDue','Licence expiry'],['tenDue','Tenure expiry'],['apId','Australia Post ID number'],['apIdDue','Australia Post ID expiry'],['wfNo','Workforce number'],['fit2work','Fit2Work status'],['visa','Work status'],['visaType','Visa type or subclass'],['visaDue','Visa expiry'],['workRights','Work rights'],['vevoAt','VEVO checked on','date you checked on VEVO'],['dob','Date of birth'],['address','Home address'],['abn','ABN'],['gst','GST registered'],['bankName','Bank account name'],['bsb','BSB'],['acct','Account number'],['payFreq','Paid every'],['appAccess','Access level'],['ecName','Emergency contact'],['ecPhone','Emergency contact number'],['notes','Notes']];
@@ -4585,6 +4585,7 @@ function matchesFilter(p){
   const r=String(p.role||'').toUpperCase();
   if(filter==='all')return true;
   if(filter==='relief')return r==='RELIEF';
+  if(filter==='pm')return r==='AFTERNOON';
   if(filter==='xl')return r.startsWith('XL');
   if(filter==='office')return OFFICE.includes(r);
   return r===filter;
@@ -4594,12 +4595,12 @@ function matchesQ(p){
   const t=q.toLowerCase().replace(/\s+/g,'');
   return [p.first,p.last,p.login,p.mobile,p.email,p.rego,p.van,p.role,runsOf(p).join(' '),p.ecName].join(' ').toLowerCase().replace(/\s+/g,'').includes(t);
 }
-function roleTag(r){r=String(r||'');const c=r==='RELIEF'||r==='XL RELIEF'?'relief':OFFICE.includes(r)?'office':'';return `<span class="role ${c}">${esc(r==='PRINCIPLE'?'Principal':r==='RELIEF'?'Relief':title(r).replace(/^Xl/,'XL'))}</span>`}
+function roleTag(r){r=String(r||'');const c=r==='RELIEF'||r==='XL RELIEF'?'relief':OFFICE.includes(r)?'office':'';return `<span class="role ${c}">${esc(r==='PRINCIPLE'?'Principal':r==='RELIEF'?'Relief':r==='AFTERNOON'?'Afternoon':title(r).replace(/^Xl/,'XL'))}</span>`}
 let miss='',sortBy='name';
 const MISS=[['mobile','No mobile',p=>!p.mobile],['login','No login',p=>!p.login],['email','No email',p=>!p.email],['van','No van or rego',p=>!p.van&&!p.rego],['ec','No emergency contact',p=>!p.ecName&&!p.ecPhone],['run','No driver number',p=>!runsOf(p).length]];
 function matchesMiss(p){if(!miss)return true;const m=MISS.find(x=>x[0]===miss);return m?m[2](p):true}
 const runKey=p=>{const r=runsOf(p)[0]||'';const m=/(\d+)/.exec(r);return m?r.replace(/\d+/,'')+String(+m[1]).padStart(4,'0'):'~'};
-function sorted(list){const G=['office','sup','4214','4215','4217','4218','xl','relief','other'];const byName=(a,b)=>fullName(a).localeCompare(fullName(b));
+function sorted(list){const G=['office','sup','4214','4215','4217','4218','pm','xl','relief','other'];const byName=(a,b)=>fullName(a).localeCompare(fullName(b));
   if(sortBy==='run')return list.sort((a,b)=>runKey(a).localeCompare(runKey(b))||byName(a,b));
   if(sortBy==='group')return list.sort((a,b)=>G.indexOf(dgrp(a.role))-G.indexOf(dgrp(b.role))||runKey(a).localeCompare(runKey(b))||byName(a,b));
   if(sortBy==='login')return list.sort((a,b)=>String(a.login||'~').localeCompare(String(b.login||'~'))||byName(a,b));
@@ -4625,8 +4626,8 @@ const daysTo=s=>{if(!s)return null;const a=new Date(s+'T00:00:00'),b=new Date(to
 const expTxt=(n,s)=>n<0?'Expired '+niceDue(s):n===0?'Expires today':'Expires '+niceDue(s)+' ('+n+' day'+(n===1?'':'s')+')';
 const dueTxt=p=>{const n=dueIn(p);if(n==null)return '';return n<0?`Rego overdue since ${niceDue(p.regoDue)}`:n===0?'Rego due today':n<=RDAYS?`Rego due ${niceDue(p.regoDue)} (${n} day${n===1?'':'s'})`:`Rego due ${niceDue(p.regoDue)}`};
 /* list laid out like the Directory: a colour for each group, initials, run tags and a call button */
-const DGROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
-const dgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return DGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
+const DGROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['pm','Afternoon'],['xl','XL'],['relief','Relief'],['other','Others']];
+const dgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(r==='AFTERNOON')return 'pm';if(/^\d{4}$/.test(r))return DGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 const telOf=p=>{const d=String(p||'').replace(/[^\d+]/g,'');return d};
 const waOf=p=>{let d=String(p||'').replace(/\D/g,'');if(d.startsWith('0'))d='61'+d.slice(1);return d};
 const WAI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 0 0-7.3 12.8L3.5 20.5l4.3-1.1A8.5 8.5 0 1 0 12 3.5z"/><path d="M9 8.6c.2-.4.5-.4.7-.4h.5c.2 0 .4 0 .5.4l.7 1.6c.1.2 0 .4-.1.6l-.5.6c-.1.1-.2.3 0 .5.6 1 1.4 1.8 2.4 2.4.2.1.4.1.5 0l.6-.7c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5 0 .9-.6 1.8-1.6 1.9-2.6.3-6.4-2.8-6.6-5.4 0-.6.1-1.1.3-1.6z"/></svg>';
@@ -5696,7 +5697,7 @@ async function signSheet(btn,bid){
   let people=[];
   try{const s=await db.collection('staff').get();people=s.docs.map(d=>({...__D(d),_id:d.id}))}catch(e){people=[]}
   const OUT=['MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
-  const ORDER=['4214','4215','4217','4218','XL','XL RELIEF','RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
+  const ORDER=['4214','4215','4217','4218','AFTERNOON','XL','XL RELIEF','RELIEF','SUPERVISOR','MANAGER','ADMIN','PRINCIPLE','PRINCIPAL'];
   const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,c)=>a+c.toUpperCase());
   const dn=p=>parseInt(String((p.runs||[])[0]||'').replace(/\D/g,''),10)||999;
   people=people.sort((a,c)=>{const ra=ORDER.indexOf(String(a.role).toUpperCase()),rc=ORDER.indexOf(String(c.role).toUpperCase());return (ra<0?99:ra)-(rc<0?99:rc)||dn(a)-dn(c)||tc(a.first+' '+a.last).localeCompare(tc(c.first+' '+c.last))});
@@ -7004,10 +7005,10 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const $=id=>document.getElementById('dy_'+id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s'(])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
-const ROLE={MANAGER:'Contract Manager',PRINCIPLE:'Principal',PRINCIPAL:'Principal',ADMIN:'Office Coordinator',SUPERVISOR:'Supervisor',RELIEF:'Relief driver',XL:'XL driver','XL RELIEF':'XL relief driver'};
-const GROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['other','Others']];
-const grpOf=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return GROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
-const grpFromText=t=>{t=String(t||'');const m=t.match(/^Driver, (\d{4})$/);if(m)return GROUPS.some(g=>g[0]===m[1])?m[1]:'other';if(/Manager|Principal|Coordinator/.test(t))return 'office';if(t==='Supervisor')return 'sup';if(t==='XL driver')return 'xl';if(/relief/i.test(t))return 'relief';return 'other'};
+const ROLE={MANAGER:'Contract Manager',PRINCIPLE:'Principal',PRINCIPAL:'Principal',ADMIN:'Office Coordinator',SUPERVISOR:'Supervisor',RELIEF:'Relief driver',XL:'XL driver','XL RELIEF':'XL relief driver',AFTERNOON:'Afternoon driver'};
+const GROUPS=[['office','Office'],['sup','Supervisors'],['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['pm','Afternoon'],['xl','XL'],['relief','Relief'],['other','Others']];
+const grpOf=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(r==='AFTERNOON')return 'pm';if(/^\d{4}$/.test(r))return GROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
+const grpFromText=t=>{t=String(t||'');const m=t.match(/^Driver, (\d{4})$/);if(m)return GROUPS.some(g=>g[0]===m[1])?m[1]:'other';if(/Manager|Principal|Coordinator/.test(t))return 'office';if(t==='Supervisor')return 'sup';if(t==='Afternoon driver')return 'pm';if(t==='XL driver')return 'xl';if(/relief/i.test(t))return 'relief';return 'other'};
 const ORDER=['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN','SUPERVISOR'];
 const roleText=r=>{r=String(r||'').toUpperCase().trim();return ROLE[r]||(/^\d{4}$/.test(r)?'Driver, '+r:tc(r)||'Driver')};
 const phoneText=p=>{const d=String(p||'').replace(/\D/g,'');return d.length===10&&d[0]==='0'?d.slice(0,4)+' '+d.slice(4,7)+' '+d.slice(7):String(p||'')};
@@ -8854,8 +8855,8 @@ const fails=r=>ITEMS.filter(([k])=>r.items&&r.items[k]==='fix');
 function badge(o){const v=OUT[o];return v?`<span class="ob ${v[1]}">${esc(v[0])}</span>`:''}
 
 /* ---------- views ---------- */
-const VGROUPS=[['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['xl','XL'],['relief','Relief'],['office','Office'],['sup','Supervisors'],['other','Others']];
-const vgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(/^\d{4}$/.test(r))return VGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
+const VGROUPS=[['4214','4214'],['4215','4215'],['4217','4217'],['4218','4218'],['pm','Afternoon'],['xl','XL'],['relief','Relief'],['office','Office'],['sup','Supervisors'],['other','Others']];
+const vgrp=r=>{r=String(r||'').toUpperCase().trim();if(['MANAGER','PRINCIPLE','PRINCIPAL','ADMIN'].includes(r))return 'office';if(r==='SUPERVISOR')return 'sup';if(r==='AFTERNOON')return 'pm';if(/^\d{4}$/.test(r))return VGROUPS.some(g=>g[0]===r)?r:'other';if(r==='XL')return 'xl';if(r.includes('RELIEF'))return 'relief';return 'other'};
 function statusHTML(){
   const all=checks(),t=q.trim().toLowerCase();
   const rows=drivers().map(p=>{const mine=all.filter(r=>r.driverId===p.id||(!r.driverId&&r.driver===p.name));const last=mine[0];const age=last?daysBetween(last.date,TODAY):null;return{p,last,age,n:mine.length,due:last?every-age:null}})
@@ -11042,7 +11043,7 @@ if(window.APP&&APP.role&&APP.role!=='loading')start(APP.role);
 const CFG={"apiKey": "AIzaSyALhXylLxs2U7V_aaKiwVniCDIVEApoAR8", "authDomain": "preston-deliveries.firebaseapp.com", "projectId": "preston-deliveries", "storageBucket": "preston-deliveries.firebasestorage.app", "messagingSenderId": "462643337234", "appId": "1:462643337234:web:9bd56c392abfa852fca0cb"};
 const OWNERS=['jozza721@gmail.com','jozza21@gmail.com'];
 /* Version: year month day hour minute (Queensland time), always bigger than the last one. 202610323700 was a typo for a day 32, so the next versions start from 1 Nov. */
-const VERSION='1202611131133';
+const VERSION='1202611131137';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const standalone=(()=>{try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}})();
@@ -12969,6 +12970,11 @@ html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-ma
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button small{margin:0!important;font-size:12px!important;font-weight:800!important;border-radius:999px!important;padding:1px 8px!important;background:var(--sg-cnt)!important;color:var(--sg-ink)!important;border:0!important}
 html body #sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main#sh-main .sh-sec :is(.tabs,.seg.tstabs)>button:is([aria-pressed="true"],[aria-selected="true"],.on) small{background:rgba(255,255,255,.18)!important;color:#fff!important}
 }</style>
+<style id="pm-group">/* Afternoon drivers group colour (indigo), light and dark */
+#sh-main#sh-main .dg-pm,#sh-main#sh-main.dg-pm,#mod-directory .dg-pm,#mod-staff .dg-pm,#mod-vchecks .dg-pm{--d:#4338CA;--ds:#E3E1FB;--p:#4338CA;--ps:#E3E1FB}
+:root[data-theme="dark"] #sh-main#sh-main :is(.dg-pm),:root[data-theme="dark"] #sh-main#sh-main.dg-pm{--d:#A5B4FC;--ds:#1E1B4B;--p:#A5B4FC;--ps:#1E1B4B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #sh-main#sh-main :is(.dg-pm),:root:not([data-theme="light"]) #sh-main#sh-main.dg-pm{--d:#A5B4FC;--ds:#1E1B4B;--p:#A5B4FC;--ps:#1E1B4B}}
+</style>
 <style id="sort-show">
 /* Sort sheets: choose what shows beside each street (name, driver number, floor) and the floor editor */
 #mod-runs .lk-show{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0 4px}
